@@ -23,7 +23,8 @@ Source code repository for upcoming O'Reilly's «Enterprise Web Development. Fro
 	* [Ch13. «Save a Child» with Sencha Touch](#13)
 	* [Ch14. Hybrid Applications: HTML + Native API](#14)
 
-#<a name="ch1">HTML5 and its New APIs</a>
+_#<a name="ch1">HTML5 and its New APIs</a>_
+
 Provide a brief overview of all APIs that are included in HTML5 spec (Web Storage, WebSQL, Web Sockets, Web Workers). List the browsers supporting HTML5. Is it safe to start an HTML5 project since not all Web browsers fully support HTML5?
 
 #<a name="ch2">Mocking Up the «Save a Child» Web Site</a>
