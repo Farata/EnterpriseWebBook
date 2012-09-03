@@ -1,7 +1,11 @@
 Enterprise Web Development: From Desktop to Mobile
 ===================
 
-Source code repository for upcoming O'Reilly's «Enterprise Web Development. From Desktop to Mobile» book.
+This ia a home of the new book (work in progress) «Enterprise Web Development. From Desktop to Mobile». 
+It's released under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported [license](http://creativecommons.org/licenses/by-nc-sa/3.0/) meaning
+you can both get a copy of the book for free or help to further improve it.
+This book will be printed and available for purchase via [O'Reilly Media](http://oreilly.com/). Readers will have an option of purchasing this
+book in a number of digital formats.
 
 ## Table Of Contents
 
