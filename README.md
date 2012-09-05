@@ -9,6 +9,7 @@ This book will be printed and available for purchase via [O'Reilly Media](http:/
 book in a number of digital formats.
 
 ## Table Of Contents
+* ### [Introduction] (#intro)
 
 * ### Part 1. Desktop
 	* [Ch1. HTML5 and its New APIs](#ch1)
@@ -27,6 +28,9 @@ book in a number of digital formats.
 	* [Ch12. «Save a Child» With JQuery Mobile](#ch12)
 	* [Ch13. «Save a Child» with Sencha Touch](#13)
 	* [Ch14. Hybrid Applications: HTML + Native API](#14)
+
+#<a name="intro">Introduction</a>
+
 
 #<a name="ch1">HTML5 and its New APIs</a>
 Provide a brief overview of all APIs that are included in HTML5 spec (Web Storage, WebSQL, Web Sockets, Web Workers). List the browsers supporting HTML5. Is it safe to start an HTML5 project since not all Web browsers fully support HTML5?
