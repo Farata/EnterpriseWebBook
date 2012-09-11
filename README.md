@@ -9,7 +9,7 @@ This book will be printed and available for purchase via [O'Reilly Media](http:/
 book in a number of digital formats.
 
 ## Table Of Contents
-* ### [Introduction](EnterpriseWebBook/0_Introduction/Introduction.mdown)
+* ### [Introduction](EnterpriseWebBook/blob/master/0_Introduction/Introduction.mdown)
 
 * ### Part 1. Desktop
 	* [Ch1. HTML5 and its New APIs](#ch1)
