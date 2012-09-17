@@ -16,10 +16,10 @@ book in a number of digital formats.
 	* [Ch2. Mocking Up the “Save a Child” Web Site](#ch2)
 	* [Ch3. Advanced Intro to JavaScript](#ch3)
 	* [Ch4. Using Ajax and JSON](#ch4)
-	* [Ch5. Test-Driven Development with JavaScript](#ch5)
+	* [Ch5. Test-Driven Development with JavaScript](EnterpriseWebBook/blob/master/1_Desktop/Chapter_5_Test-Driven_Development_with_JavaScript.mdown)
 	* [Ch6. «Save a Child» with JQuery framework](#ch6)
 	* [Ch7. «Save a Child» with Ext JS framework](#ch7)
-	* [Ch8. Replacing HTTP with WebSockets](#ch8)
+	* [Ch8. Replacing HTTP with WebSockets](EnterpriseWebBook/blob/master/1_Desktop/Chapter_8_Replacing_HTTP_With_WebSockets.mdown)
 	* [Ch9. Securing Web Applications](#ch9)
 	* [Ch10. Large Scale JavaScript Projects](#ch10)
 
@@ -45,9 +45,6 @@ After explaining the JSON data format we’ll deploy Save a Child under the remo
 Then goes the explanation of the AJAX way of retrieving data from the remote server without the need to refresh the entire page.
 In the final version of the Web site the data feed will be organized by a Java program deployed under a Java EE server – we’ll use Oracle’s GlassFish 4.0 for being the leader in implementing all the latest Java EE specifications.
 
-#<a name="ch5">Test-Driven Development with JavaScript</a>
-The chapter starts with a brief overview of available test frameworks. Then, it explains how to set up a new Save a Child  project in the IDE using selected test framework.
-
 #<a name="ch6">«Save a Child» with JQuery framework</a>
 In this chapter we’ll start introducing JQuery framework to Save a Child code developed in chapters 2-5. While this chapter won’t have a formal tutorial on the JQuery framework, we’ll briefly explain its basics and each component that’ll be used in Save a Child.
 By the end of this chapter the reader has a working version of Save a Child site built using HTML, JavaScript, CSS, JSon, Ajax, and JQuery framework.
@@ -57,10 +54,6 @@ In this chapter we’ll use some of the code from ch 2-5, but this time we’ll 
 The reader will learn the principles of building Web sites with Ext JS.
 We’ll demo the use of our own open source generator Clear Data Builder that can generate the EXT JS code based on Java classes.
 By the end of this chapter the reader will have working version of the Save a Child Web site. We’ll also compare the pros and cons of its Ext JS and JQuery’s versions.
-#<a name="ch8">Replacing HTTP with WebSockets</a>
-This chapter will introduce the WebSocket API, which is a part of HTML5 spec. We’ll pick one of the data flow in Save a Child site and replace HTTP communication with WebSockets protocol.
-Using the monitoring tool we’ll show the performance bandwidth usage benefits that WebSockets protocol brings to the Web.
-This chapter will be based on [this WebSockets presentation](http://www.youtube.com/watch?v=vP6MfPnE1c0).
 
 #<a name="ch9">Securing Web Applications</a>
 This chapter will add authentication and authorization features for the users Save a child. They will be able to login to this Web site and perform different actions according to their role.
