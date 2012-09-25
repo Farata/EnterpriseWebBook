@@ -16,10 +16,10 @@ book in a number of digital formats.
 	* [Ch2. Advanced Intro to JavaScript](#ch2)
 	* [Ch3. Mocking Up the “Save a Child” Web Site](EnterpriseWebBook/blob/master/1_Desktop/03_Mockup/ch3_mokup.mdown)
 	* [Ch4. Using Ajax and JSON](#ch4)
-	* [Ch5. Test-Driven Development with JavaScript](EnterpriseWebBook/blob/master/1_Desktop/05_Websockets/Chapter_5_Test-Driven_Development_with_JavaScript.mdown)
+	* [Ch5. Test-Driven Development with JavaScript](EnterpriseWebBook/blob/master/1_Desktop/05_Testing_JavaScript/Chapter_5_Test-Driven_Development_with_JavaScript.mdown)
 	* [Ch6. «Save a Child» with JQuery framework](#ch6)
 	* [Ch7. «Save a Child» with Ext JS framework](#ch7)
-	* [Ch8. Replacing HTTP with WebSockets](EnterpriseWebBook/blob/master/1_Desktop/Chapter_8_Replacing_HTTP_With_WebSockets.mdown)
+	* [Ch8. Replacing HTTP with WebSockets](EnterpriseWebBook/blob/master/1_Desktop/08_Websockets/Chapter_8_Replacing_HTTP_With_WebSockets.mdown)
 	* [Ch9. Securing Web Applications](#ch9)
 	* [Ch10. Large Scale JavaScript Projects](#ch10)
 
