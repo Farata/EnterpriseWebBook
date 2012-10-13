@@ -24,7 +24,7 @@ book in a number of digital formats.
 	* [Ch10. Large Scale JavaScript Projects](#ch10)
 
 * ### Part 2. Mobile
-	* [Ch11. Responsive Design: One Site Fits All](EnterpriseWebBook/blob/master/2_Mobile/11_responsive.mkdown)
+	* [Ch11. Responsive Design: One Site Fits All](EnterpriseWebBook/blob/master/2_Mobile/11_responsive.mdown)
 	* [Ch12. «Save a Child» With JQuery Mobile](#ch12)
 	* [Ch13. «Save a Child» with Sencha Touch](#13)
 	* [Ch14. Hybrid Applications: HTML + Native API](#14)
