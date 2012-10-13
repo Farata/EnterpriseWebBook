@@ -13,7 +13,7 @@ book in a number of digital formats.
 
 * ### Part 1. Desktop
 	* [Ch1. HTML5 and its New APIs](EnterpriseWebBook/blob/master/1_Desktop/01_html/ch1_html.mdown)
-	* [Ch2. Advanced Intro to JavaScript](#ch2)
+	* [Ch2. Advanced Intro to JavaScript](EnterpriseWebBook/blob/master/1_Desktop/02_JavaScript/ch2_advancedjs.mdown)
 	* [Ch3. Mocking Up the “Save a Child” Web Site](EnterpriseWebBook/blob/master/1_Desktop/03_Mockup/ch3_mokup.mdown)
 	* [Ch4. Using Ajax and JSON](#ch4)
 	* [Ch5. Test-Driven Development with JavaScript](EnterpriseWebBook/blob/master/1_Desktop/05_Testing_JavaScript/Chapter_5_Test-Driven_Development_with_JavaScript.mdown)
@@ -24,7 +24,7 @@ book in a number of digital formats.
 	* [Ch10. Large Scale JavaScript Projects](#ch10)
 
 * ### Part 2. Mobile
-	* [Ch11. Responsive Design: One Site Fits All](#ch11)
+	* [Ch11. Responsive Design: One Site Fits All](EnterpriseWebBook/blob/master/2_Mobile/11_responsive.mkdown)
 	* [Ch12. «Save a Child» With JQuery Mobile](#ch12)
 	* [Ch13. «Save a Child» with Sencha Touch](#13)
 	* [Ch14. Hybrid Applications: HTML + Native API](#14)
