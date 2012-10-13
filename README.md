@@ -29,10 +29,6 @@ book in a number of digital formats.
 	* [Ch13. «Save a Child» with Sencha Touch](#13)
 	* [Ch14. Hybrid Applications: HTML + Native API](#14)
 
-#<a name="ch2">Advanced Intro to JavaScript</a>
-This chapter should cover the JavaScript language overview based on the «Advanced Intro to JavaScript» presentation : Objects, Functions, Closures, JS in the Web Browser. All examples should be re-written as building blocks for the «Save a Child» site. Coverage of the tools (IDE, Web inspectors and debuggers go here too).
-By the end of this chapter we’ll have a new version of Save a Child, which includes some scripts in JavaScript. All the data are stored in a plain text format in local files.
-
 #<a name="ch4">Using Ajax and JSON</a>
 After explaining the JSON data format we’ll deploy Save a Child under the remote Tomcat server on one of our servers. We’ll also provide the instructions on installing Tomcat on the local machine for those readers who want to do it.
 Then goes the explanation of the AJAX way of retrieving data from the remote server without the need to refresh the entire page.
@@ -54,10 +50,6 @@ This chapter will add authentication and authorization features for the users Sa
 #<a name="ch10"></a>
 The Save a Chile site is a rather small Web project. But in the enterprise world, lots of applications have a lot larger code base. In this chapter we’ll give an example of how to build modularized Web applications that can load the code on as needed basis. We’ll also give an example of how to organize the data exchange between different modules in a loosely coupled fashion.
 
-#<a name="ch11">Responsive Design: One Site Fits All</a>
-The chapter starts with a brief overview of different approaches to making the Web site to the mobile space. One of the approaches is having only one Web site for all devices. This approach is is called Responsive Design, and we’ll modify the design of the Save a Child site to introduce different layouts for the desktop, tablet, and smartphone devices.
-By the end of this chapter the site Save a Child will automatically change its layout based on the user’s device without the losing any functionality.
-
 #<a name="ch12">«Save a Child» With JQuery Mobile</a>
 This chapter will demonstrate how to build the mobile version of Save a Child using JQuery Mobile framework.
 
@@ -67,4 +59,3 @@ This chapter will demonstrate how to build the mobile version of Save a Child us
 #<a name="ch14">Hybrid Applications: HTML + Native API</a>
 This chapter explains how to add the bridge HTML and native mobile API with the Phone GAP framework. It’ll add the GPS service to the mobile version of “Save a Child”.
 
-[introduction]:  
