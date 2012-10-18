@@ -30,25 +30,25 @@ book in a number of digital formats.
 	* [Ch14. Hybrid Applications: HTML + Native API](#14)
 
 #<a name="ch4">Using Ajax and JSON</a>
-After explaining the JSON data format we’ll deploy Save a Child under the remote Tomcat server on one of our servers. We’ll also provide the instructions on installing Tomcat on the local machine for those readers who want to do it.
+After explaining the JSON data format we'll deploy Save a Child under the remote Tomcat server on one of our servers. We'll also provide the instructions on installing Tomcat on the local machine for those readers who want to do it.
 Then goes the explanation of the AJAX way of retrieving data from the remote server without the need to refresh the entire page.
-In the final version of the Web site the data feed will be organized by a Java program deployed under a Java EE server – we’ll use Oracle’s GlassFish 4.0 for being the leader in implementing all the latest Java EE specifications.
+In the final version of the Web site the data feed will be organized by a Java program deployed under a Java EE server – we'll use Oracle's GlassFish 4.0 for being the leader in implementing all the latest Java EE specifications.
 
 #<a name="ch6">«Save a Child» with JQuery framework</a>
-In this chapter we’ll start introducing JQuery framework to Save a Child code developed in chapters 2-5. While this chapter won’t have a formal tutorial on the JQuery framework, we’ll briefly explain its basics and each component that’ll be used in Save a Child.
+In this chapter we'll start introducing JQuery framework to Save a Child code developed in chapters 2-5. While this chapter won't have a formal tutorial on the JQuery framework, we'll briefly explain its basics and each component that'll be used in Save a Child.
 By the end of this chapter the reader has a working version of Save a Child site built using HTML, JavaScript, CSS, JSon, Ajax, and JQuery framework.
 
 #<a name="ch7">«Save a Child» with Ext JS framework»</a>
-In this chapter we’ll use some of the code from ch 2-5, but this time we’ll use the Sencha’s Ext JS framework.
+In this chapter we'll use some of the code from ch 2-5, but this time we'll use the Sencha's Ext JS framework.
 The reader will learn the principles of building Web sites with Ext JS.
-We’ll demo the use of our own open source generator Clear Data Builder that can generate the EXT JS code based on Java classes.
-By the end of this chapter the reader will have working version of the Save a Child Web site. We’ll also compare the pros and cons of its Ext JS and JQuery’s versions.
+We'll demo the use of our own open source generator Clear Data Builder that can generate the EXT JS code based on Java classes.
+By the end of this chapter the reader will have working version of the Save a Child Web site. We'll also compare the pros and cons of its Ext JS and JQuery's versions.
 
 #<a name="ch9">Securing Web Applications</a>
 This chapter will add authentication and authorization features for the users Save a child. They will be able to login to this Web site and perform different actions according to their role.
 
 #<a name="ch10"></a>
-The Save a Chile site is a rather small Web project. But in the enterprise world, lots of applications have a lot larger code base. In this chapter we’ll give an example of how to build modularized Web applications that can load the code on as needed basis. We’ll also give an example of how to organize the data exchange between different modules in a loosely coupled fashion.
+The Save a Chile site is a rather small Web project. But in the enterprise world, lots of applications have a lot larger code base. In this chapter we'll give an example of how to build modularized Web applications that can load the code on as needed basis. We'll also give an example of how to organize the data exchange between different modules in a loosely coupled fashion.
 
 #<a name="ch12">«Save a Child» With JQuery Mobile</a>
 This chapter will demonstrate how to build the mobile version of Save a Child using JQuery Mobile framework.
@@ -57,5 +57,5 @@ This chapter will demonstrate how to build the mobile version of Save a Child us
 This chapter will demonstrate how to build the mobile version of Save a Child using the Sencha Touch framework.
 
 #<a name="ch14">Hybrid Applications: HTML + Native API</a>
-This chapter explains how to add the bridge HTML and native mobile API with the Phone GAP framework. It’ll add the GPS service to the mobile version of “Save a Child”.
+This chapter explains how to add the bridge HTML and native mobile API with the Phone GAP framework. It'll add the GPS service to the mobile version of “Save a Child”.
 
