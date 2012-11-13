@@ -1,6 +1,6 @@
 var ws;
 if(window.WebSocket) {    // <1>
-    console.log("WebSocket supported in your browser");   
+    console.log("WebSocket object is supported in your browser");   
 
     ws = new WebSocket("ws://www.websockets.org/echo"); // <2>
     ws.onopen = function() { console.log("onopen"); 
@@ -17,5 +17,5 @@ if(window.WebSocket) {    // <1>
     };
 
 } else {
-    output("WebSocket not supported in your browser");
+    output("WebSocket object is not supported in your browser");
 }
