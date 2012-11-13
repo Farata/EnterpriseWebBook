@@ -13,7 +13,7 @@ source.addEventListener('create', function(e) {                 // <3>
     console.log(e.data);
 }, false);
 
-source.addEventListener('remove', function(e) {                 // <4>
+source.addEventListener('update', function(e) {                 // <4>
     console.log(e.data);
 }, false);
 
