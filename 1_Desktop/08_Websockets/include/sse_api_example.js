@@ -1,13 +1,24 @@
-var dataStream = new EventSource("http://www.example.com"); // <1>
-
-dataStream.onopen = function(evt) {         // <2>
-    console.log("open");
+var source;
+if( !! window.EventSource) {
+    source = new EventSource('/donate_web/api/donations/events');  // <1>
+} else {
+    console.log("sse not supported")
 }
-dataStream.onerror = function(evt) {
-    console.log("error");
-};
 
-dataStream.onmessage = function(evt) {      // <3>
-    // Process message
-    console.log("message: " + evt.data);
-}
+source.addEventListener('open', function(e) {                   // <2>
+    // Connection was opened.
+}, false);
+
+source.addEventListener('create', function(e) {                 // <3>
+    console.log(e.data);
+}, false);
+
+source.addEventListener('remove', function(e) {                 // <4>
+    console.log(e.data);
+}, false);
+
+source.addEventListener('error', function(e) {
+    if(e.readyState == EventSource.CLOSED) {
+        // Connection was closed.
+    }
+}, false);
