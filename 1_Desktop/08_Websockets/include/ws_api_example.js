@@ -2,7 +2,7 @@ var ws;
 if(window.WebSocket) {    // <1>
     console.log("WebSocket object is supported in your browser");   
 
-    ws = new WebSocket("ws://www.websockets.org/echo"); // <2>
+    ws = new WebSocket("ws://www.websocket.org/echo"); // <2>
     ws.onopen = function() { console.log("onopen"); 
     };  // <3> 
      
