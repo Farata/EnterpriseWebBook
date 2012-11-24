@@ -4,12 +4,15 @@ function Person(name, title){
 	this.title=title;
 	this.subordinates=[];
 	
-	this.addSubordinate=function (person){
-		this.subordinates.push(person)
-	}
-
-	
 }
+
+
+Person.prototype.addSubordinate=function(subordinate){
+   this.subordinates.push(subordinate);
+   return subordinate; 	
+}
+
+
 
 // Constructor function Employee
 function Employee(name, title){
@@ -26,4 +29,4 @@ var emp2 = new Employee("Joe", "VP");
 
 mgr.addSubordinate(emp1);
 mgr.addSubordinate(emp2);
-console.log("mgr.subordinates.length is " + mgr.subordinates.length);
+console.log("mgr.subordinates[0].name " + mgr.subordinates[0].name + "mgr.subordinates[1].name " + mgr.subordinates[1].name );
