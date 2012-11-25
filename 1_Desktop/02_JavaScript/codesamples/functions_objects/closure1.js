@@ -7,8 +7,9 @@
  	
       	var yourTax;
       	    
-        if (customerName != "God Father"){
-          yourTax =   income*0.05 - taxDeduction;        	
+        if (customerName != "Tony Soprano"){
+          yourTax =   income*0.05 - taxDeduction;  
+      	
         } else{
           yourTax =   mafiaSpecial(income);  
         }
@@ -27,6 +28,5 @@
 // calling doTaxes() in the global scope. 
 doTaxes(100000, "John Smith");  // The closure remembers its context: taxDeduction=500
 
-doTaxes(100000, "God Father");
-setTimeout(doTaxes(50000, ”Mary Lou”), 2);   // Call in 2 seconds  
+doTaxes(100000, "Tony Soprano");
 mafiaSpecial();                              // an error - this function is private 
