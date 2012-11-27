@@ -1,24 +1,21 @@
 var ws;
-if(window.WebSocket) {   
-    output("WebSocket supported in your browser");   
+if(window.WebSocket) {    // <1>
+    console.log("WebSocket object is supported in your browser");   
 
-    ws = new WebSocket("ws://www.websockets.org/echo");
-
-    // Set event handlers.
-    ws.onopen = function() { output("onopen"); 
-    };   
-
-    ws.onmessage = function(e) {     
-        // e.data contains received string.
-             output("echo from server : " + e.data);
+    ws = new WebSocket("ws://www.websocket.org/echo"); // <2>
+    ws.onopen = function() { console.log("onopen"); 
+    };  // <3> 
+     
+    ws.onmessage = function(e) {
+        console.log("echo from server : " + e.data);  // <4>
     };
 
-    ws.onclose = function() {
+    ws.onclose = function() { // <5>
         output("onclose"); 
     };
-    ws.onerror = function() { output("onerror"); 
+    ws.onerror = function() { output("onerror");  // <6>
     };
 
 } else {
-    output("WebSocket not supported in your browser");
+    output("WebSocket object is not supported in your browser");
 }
