@@ -1,4 +1,4 @@
-[Constructor(DOMString url, optional (DOMString or DOMString[]) protocols)]
+[Constructor(DOMString url, optional (DOMString or DOMString[]) protocols)] //<1>
 interface WebSocket : EventTarget {
   readonly attribute DOMString url;
 
