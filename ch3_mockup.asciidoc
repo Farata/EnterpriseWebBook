@@ -24,7 +24,6 @@ The chances are slim that the desktop users will lose the Internet connection fo
 
 Thinking upfront of the minimal content to be displayed on a small mobile screens may force you to change the design of the desktop Web pages too. In our sample Save Sick Child application we need to make sure that there is a space for the Donate button even on the smallest devices.
 
-
 === Introducing Balsamiq Mockups
 
 Visualize a project owner talking to Alex in a cafeteria, and Alex is drawing sketches of the future Web site on a napkin. Well, in the 21st Century he’ll use an electronic napkin so to speak - an excellent prototyping tool called http://balsamiq.com[Balsamiq Mockups]. This easy to use program gives you a working area where you create a mockup of your future Web application by dragging and dropping the required UI components from the toolbar onto the image of the Web page (see <<FIG3-1>>).
@@ -105,48 +104,47 @@ In this section you'll see several Aptana projects that show how the static mock
 ----
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>Save Sick Child | Home Page</title>
-		<link rel="stylesheet" href="css/styles.css">
-	</head>
-	<body>
-		<div id="main-container">
-			<header>
-				<h1>Save Sick Child</h1>
-				<nav>
-					<ul>
-						<li>
-							<a href="javascript:void()">Who we are</a>
-						</li>
-						<li>
-							<a href="javascript:void()">What we do</a>
-						</li>
-						<li>
-							<a href="javascript:void()">Way to give</a>
-						</li>
-						<li>
-							<a href="javascript:void()">How we work</a>
-						</li>
-					</ul>
-				</nav>
-			</header>
-			<div id="main" role="main">
-				<section>
-					Donate section and Video Player go here
-				</section>
-				<section>
-					Find local kids, results and tab folder go here.
-				</section>
-			</div>
-			<footer>
-				<section id="temp-project-name-container">
-					<b>project 01</b>: This is the page footer
-				</section>
-			</footer>
+ <head>
+	<meta charset="utf-8">
+	<title>Save Sick Child | Home Page</title>
+	<link rel="stylesheet" href="css/styles.css">
+ </head>
+ <body>
+	<div id="main-container">
+		<header>
+		 <h1>Save Sick Child</h1>
+		 <nav>
+		  <ul>
+			<li>
+			  <a href="javascript:void()">Who we are</a>
+			</li>
+			<li>
+			  <a href="javascript:void()">What we do</a>
+			</li>
+			<li>
+			  <a href="javascript:void()">Way to give</a>
+			</li>
+			<li>
+			  <a href="javascript:void()">How we work</a>
+			</li>
+		  </ul>
+		 </nav>
+		</header>
+		<div id="main" role="main">
+			<section>
+			  Donate section and Video Player go here
+			</section>
+			<section>
+			  Locate sick child, stats and tab folder go here
+			</section>
 		</div>
-	</body>
-	</body>
+		<footer>
+			<section id="temp-project-name-container">
+				<b>project 01</b>: This is the page footer
+			</section>
+		</footer>
+	</div>
+ </body>
 </html>
 ----
 
@@ -193,6 +191,126 @@ The above CSS controls not only the styles of the page content, but also that se
 TIP: In Chapter 11 you'll see how to create Web pages with more flexible layouts that don't require specifying absolute sizes in pixels.
 
 [[FIG3-6]]
-.Working prototype. Take 1.
+.Working prototype. Take 1: Getting Started.
 image::images/fig_03_06.png[]
+
+
+The next version of our prototype is a lot more interesting and it will contain a lot more code. First of all, the CSS file will become fancier, the layout of the four page sections will properly divide the screen real estate. We'll add a Logo and a nicely styled Login button to the top of the page. This version of the code will also introduce some JavaScript supporting user's authorization. Run the Aptana project project-02-login, and you'll see a window similar to <<FIG3-7>>.
+
+[[FIG3-7]]
+.Working prototype. Take2: Login.
+image::images/fig_03_07.png[]
+
+The new Aptana project created by Alex has several directories to keep JavaScript, images, CSS, and fonts separately. While we are not overly interested in the fonts used in this prototypes, let's take a close look at the HTML code. The first thing worth mentioning is that we started using a special JavaScript library called http://modernizr.com/[Modernizr]. This is a must have feature detection library that helps your application to figure out if the user's browser supports certain HTML5/CSS3 features, and we'll spend a moment explaining how the Modernizer work a bit later. For now just note that the HTML code below includes two `<script>` sections - the Modernizr's JavaScript gets loaded first, while our own main.js is loaded at the end of the `<body>` section.
+
+[source, html]
+----
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+ <head>
+ 	<meta charset="utf-8">
+ 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+ 	<title>Save Sick Child</title>
+ 	<link rel="stylesheet" href="assets/css/styles.css">
+ 	
+ 	<!-- All JavaScript at the bottom, except for Modernizr.-->
+ 	<script src="assets/js/libs/modernizr-2.5.3.min.js"></script>
+ 	
+ </head>
+  <body>
+ 	<div id="main-container">
+ 	 <header>
+ 	  <h1 id="logo"><a href="javascript:void(0)">Save Sick Child</a></h1>
+ 	   <nav id="top-nav">
+ 	  	<ul>
+ 	  	  <li id="login">
+ 	  	 	<div id="authorized">
+ 	  	 		<span class="icon-user authorized-icon"></span>
+ 	  	 		<span id="user-authorized">admin</span>
+ 	  	 		<br/>
+ 	  	 		<a id="profile-link" href="javascript:void(0);">profile</a> | 
+ 	  	 		<a id="logout-link" href="javascript:void(0);">logout</a>
+ 	  	 	</div>
+
+ 	  	 	<form id="login-form">
+ 	  	 		<span class="icon-user login-form-icons"></span>
+ 	  	 		<input id="username" name="username" type="text" 
+ 	  	 		            placeholder="username" autocomplete="off" />
+ 	  	 		&nbsp; <span class="icon-locked login-form-icons"></span>
+ 	  	 		<input id="password" name="password" 
+ 	  	 		            type="password" placeholder="password"/>
+ 	  	 	</form>
+ 	  	 	<a id="login-submit" href="javascript:void(0)">login &nbsp;
+ 	  	 	        <span class="icon-enter"></span> </a>
+ 	  	 	<a id="login-link" class="show-form" 
+ 	  	 	                   href="javascript:void(0)">login &nbsp;
+ 	  	 		<span class="icon-enter"></span> </a>
+
+ 	  	 	<div class="clearfix"></div>
+ 	  	 </li>
+ 	  	 <li id="top-menu-items">
+ 	  	 	<ul>
+ 	  	 		<li>
+ 	  	 			<a href="javascript:void(0)">Who We Are</a>
+ 	  	 		</li>
+ 	  	 		<li>
+ 	  	 			<a href="javascript:void(0)">What We Do</a>
+ 	  	 		</li>
+ 	  	 		<li>
+ 	  	 			<a href="javascript:void(0)">Where We Work</a>
+ 	  	 		</li>
+ 	  	 		<li>
+ 	  	 			<a href="javascript:void(0)">Way To Give</a>
+ 	  	 		</li>
+ 	  	 	</ul>
+ 	  	 </li>
+ 	  	</ul>
+ 	   </nav>
+ 	 </header>
+ 	 
+ 	 <div id="main" role="main">
+ 	 	<section id="main-top-section">
+ 	 		<br/>
+ 	 		Main content. Top section.
+ 	 	</section>
+ 	 	<section id="main-bottom-section">
+ 	 		Main content. Bottom section.
+ 	 	</section>
+ 	 </div>
+ 	 <footer>
+ 	 	<section id="temp-project-name-container">
+ 	 		<b>This is the footer</b>
+ 	 	</section>
+ 	 </footer>
+ 	</div>
+ 	<script src="assets/js/main.js"></script>
+ </body>
+</html>
+----    
+
+WARNING: Run this project in Aptana and click on the button Login, and you'll see that it reacts. But looking at the login-related `<a>` tags in the code above you'll find nothing but `href="javascript:void(0)"`. So why the button reacts? Read the code in the main.js shown below, and you'll find there line `loginLink.addEventListener('click', showLoginForm, false);` that invokes the callback `showLoginForm()`. That why the Login button reacts! If this seems confusing you can also use `href="#"` instead to keep the link alive.
+
+==== How Modernizr Works
+
+Modernizr is a tiny open source JavaScript library that help your script to figure out if the latest HTML or CSS features are supported by the user's browser. Instead of maintaining complex cross-browser feature matrix to see if, say `border-radius` is supported, the Modernizer queries the `<html>` elements to see what's supported and what's not. 
+
+Please note the following fragment from our HTML code: `<html class="no-js" lang="en">`.  For Modernizr to work, your HTML root element has to have the class named `"no-js"`. On page load, the Modernizr will replace the `no-js` class with extended version that lists all detected features, and those that are not supported will get a prefix `no-`.  
+
+[[FIG3-8]]
+.Modernizr changed the HTML's class property
+image::images/fig_03_08.png[]
+
+Re-running the above HTML code in Firebug replaced the value of the `class` property, and <<Fig 3-8>>  shows that this version of Firefox doesn't support touch events (`no-touch`), websockets (`no-websockets`), et al. But the `borderradius`is supported that's why the CSS property `border-radius: 2px;` for the Login button worked fine.    
+
+[source, html]
+----
+li#login input {
+	width: 122px;
+	padding: 4px;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+}
+----
 
