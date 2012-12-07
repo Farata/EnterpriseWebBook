@@ -115,6 +115,7 @@ include::include/ws_api_example.js[]
 <5> handle closing connection ...
 <6> ... and errors
 
+[[HANDSHAKE]]
 ===== WebSockets Handshake
 
 Handshake upgrades the connection from HTTP to the WebSockets protocol. It's an upgrade to a message based communication. We will discuss messages (a.k.a. frames) later in this chapter. Why upgrading from HTTP instead of starting with the TCP as a protocol in the first place? The reason is that the WebSockets operates on the same ports (80 and 443) as HTTP and HTTPS do. It's an advantage because all ports under 1024 are _privileged_, and they are  handled differently than non privileged ones.
@@ -304,3 +305,91 @@ ____
 
 - http 2.0, spdy, websockets
 - framed protocols (describe frames)
+
+<vik>
+
+=== «Save Sick Child» Auction Application
+
+==== Auction Messages Specification
+
+1. Client connects to WebSockets endpoint.
+2. Client sends +AUCTION_LIST+ message to retrieve list of all available auctions
++
+
+.Request for list of available auctions
+[source,javascript]
+----------------------------------------------------------------------
+include::include/auctions_list_request.json[]
+----------------------------------------------------------------------
+<1> type of message is `AUCTION_LIST`
+<2> empty data
+<3> We don't know exact auction id so we just send `-1`
+
++
+Lets see how response looks like.
++
+
+.Response with auction list data
+[source,javascript]
+----------------------------------------------------------------------
+include::include/auctions_list_response.json[]
+----------------------------------------------------------------------
+<1> Message type is `AUCTION_LIST`
+<2> +data+ property of response object contains list of all available auctions. Auction can be in not running, running and finished states.
+<3> +item+ property of response contains Auction Item object
+<4> +auctionId+ property contains unique identifier of selected auction
+
+3. User picks interesting auction from list, enters desired nick name and joins to the auction. Client side application sends +login+ message
++
+
+[source,javascript]
+----------------------------------------------------------------------
+{
+    "type": "LOGIN", // <1>
+    "data": "gamussa", // <2>
+    "auctionId": "second" //<3>
+}
+----------------------------------------------------------------------
+
+<1> Message type is `LOGIN`
+<2> +data+ property of request contains user nickname
+<3> +auctionId+ property helps server side code to route message to correct auction
+
++
+NOTE: In this simple scenario, client doesn't send any explicit information to help server to identify it. As soon as the WebSocket handshake completes successfully, the WebSocket implementation provides the endpoint an active WebSocket session. Server has all required data about client encapsulated in session object. This server-side object represents a conversation between two web socket endpoints.
++
+
+4. Each time when user enters bid price client side code sends following +bid+ message
++
+
+.Bit message
+[source,javascript]
+----------------------------------------------------------------------
+{
+    "type": "BID",
+    "data": "1100.0",
+    "auctionId": "second"
+}
+----------------------------------------------------------------------
+
+5. TBD `PriceUpdate` message
+6. TBD `AuctionResult` message
+
+==== Monitor WebSocket traffic with Chrome Developers Tools
+
+Now it's time observe information described in <<HANDSHAKE>> section on real application. And Chrome Developer Tools can help us.
+Chrome Developer Tools provide information about the initial handshake <<FIG8-4>>. This can be viewed in the Network tab and selecting the path of the WebSocket endpoint.
+
+[[FIG8-4]]
+.Initial WebSockets handshake in Chrome DevTools
+image::images/fig_08_04.png[]
+
+You can also click on +WebSockets+ on the bottom-right to show only the WebSocket endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG8-5>>
+White colored rows represent incoming data, green rows - outgoing.
+
+[[FIG8-5]]
+.Monitoring WebSocket frames in Chrome Developer Tools
+image::images/fig_08_05.png[]
+
+
+</vik>
