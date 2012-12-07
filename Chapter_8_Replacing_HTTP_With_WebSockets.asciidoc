@@ -1,8 +1,6 @@
 == Chapter 8. Replacing HTTP with WebSockets
 
 
-
-
 [quote, http://ietf.org/mail-archive/web/hybi/current/msg00784.html ]
 ____
 Shaving off hundreds of bytes of HTTP overhead and reducing the latency from 150ms to 50 ms makes WebSocket worthwhile considering for any application.
@@ -306,14 +304,13 @@ ____
 - http 2.0, spdy, websockets
 - framed protocols (describe frames)
 
-<vik>
 
-=== «Save Sick Child» Auction Application
+=== Adding an Auction to Save Sick Child
 
 ==== Auction Messages Specification
 
-1. Client connects to WebSockets endpoint.
-2. Client sends +AUCTION_LIST+ message to retrieve list of all available auctions
+1. The client's code connects to the WebSockets endpoint on the server.
+2. The client's code sends `AUCTION_LIST` message to retrieve the list of currently running auctions.
 +
 
 .Request for list of available auctions
@@ -326,7 +323,7 @@ include::include/auctions_list_request.json[]
 <3> We don't know exact auction id so we just send `-1`
 
 +
-Lets see how response looks like.
+Let's review the JSON object that will be arriving from the server as the auction's response.
 +
 
 .Response with auction list data
@@ -334,12 +331,12 @@ Lets see how response looks like.
 ----------------------------------------------------------------------
 include::include/auctions_list_response.json[]
 ----------------------------------------------------------------------
-<1> Message type is `AUCTION_LIST`
-<2> +data+ property of response object contains list of all available auctions. Auction can be in not running, running and finished states.
-<3> +item+ property of response contains Auction Item object
-<4> +auctionId+ property contains unique identifier of selected auction
+<1> The message type is `AUCTION_LIST`
+<2> The +data+ property of the response object contains the list of all running auctions. An auction can be in one of three states: _not running_, _running_, or _finished_.
+<3> The +item+ property of the response object is a nested object that represents the auction item.
+<4> The +auctionId+ property contains a unique identifier of the selected auction.
 
-3. User picks interesting auction from list, enters desired nick name and joins to the auction. Client side application sends +login+ message
+3. The user picks the auction from the list, enters a desired nick name, and joins to the auction. The client-side application sends the following +login+ message.
 +
 
 [source,javascript]
@@ -351,15 +348,15 @@ include::include/auctions_list_response.json[]
 }
 ----------------------------------------------------------------------
 
-<1> Message type is `LOGIN`
-<2> +data+ property of request contains user nickname
-<3> +auctionId+ property helps server side code to route message to correct auction
+<1> The message type is `LOGIN`
+<2> The +data+ property of the request contains the user's nickname.
+<3> The +auctionId+ property helps the server-side code to route the message to the correct auction.
 
 +
-NOTE: In this simple scenario, client doesn't send any explicit information to help server to identify it. As soon as the WebSocket handshake completes successfully, the WebSocket implementation provides the endpoint an active WebSocket session. Server has all required data about client encapsulated in session object. This server-side object represents a conversation between two web socket endpoints.
+NOTE: In this simple scenario, the client's code doesn't send any explicit information to help the server to identify the client. As soon as the handshake completes successfully, the code that implements  `WebSocket` protocol provides the endpoint an active WebSocket session. The server has all required data about the client encapsulated in session object. This server-side object represents the conversation between two web socket endpoints.
 +
 
-4. Each time when user enters bid price client side code sends following +bid+ message
+4. Each time when the user enters the bid price client side code sends following +bid+ message:
 +
 
 .Bit message
@@ -375,21 +372,16 @@ NOTE: In this simple scenario, client doesn't send any explicit information to h
 5. TBD `PriceUpdate` message
 6. TBD `AuctionResult` message
 
-==== Monitor WebSocket traffic with Chrome Developers Tools
+==== Monitor the WebSockets traffic with Chrome Developers Tools
 
-Now it's time observe information described in <<HANDSHAKE>> section on real application. And Chrome Developer Tools can help us.
-Chrome Developer Tools provide information about the initial handshake <<FIG8-4>>. This can be viewed in the Network tab and selecting the path of the WebSocket endpoint.
+Let's see whatever is described in the <<HANDSHAKE>> action with the help of Chrome Developer Tools, which provide the information about the initial handshake <<FIG8-4>>. This can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint.
 
 [[FIG8-4]]
 .Initial WebSockets handshake in Chrome DevTools
 image::images/fig_08_04.png[]
 
-You can also click on +WebSockets+ on the bottom-right to show only the WebSocket endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG8-5>>
-White colored rows represent incoming data, green rows - outgoing.
+You can also click on +WebSockets+ on the bottom-right to show only the `WebSocket` endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG8-5>>. The white colored rows represent incoming data, and the green rows - outgoing.
 
 [[FIG8-5]]
 .Monitoring WebSocket frames in Chrome Developer Tools
 image::images/fig_08_05.png[]
-
-
-</vik>
