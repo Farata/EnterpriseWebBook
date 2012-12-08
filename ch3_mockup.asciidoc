@@ -217,7 +217,9 @@ The new Aptana project created by Jerry has several directories to keep JavaScri
   <body>
  	<div id="main-container">
  	 <header>
+<!-- <1> -->
  	  <h1 id="logo"><a href="javascript:void(0)">Save Sick Child</a></h1>
+
  	   <nav id="top-nav">
  	  	<ul>
  	  	  <li id="login">
@@ -239,9 +241,14 @@ The new Aptana project created by Jerry has several directories to keep JavaScri
  	  	 	</form>
  	  	 	<a id="login-submit" href="javascript:void(0)">login &nbsp;
  	  	 	        <span class="icon-enter"></span> </a>
- 	  	 	<a id="login-link" class="show-form" 
- 	  	 	                   href="javascript:void(0)">login &nbsp;
- 	  	 		<span class="icon-enter"></span> </a>
+
+<!-- <2> --> 	  	 	        
+			<!-- <a id="login-link" class="show-form" 
+			                        href="javascript:void(0)">login 
+			                        &nbsp;<span class="icon-enter"></span> </a> -->
+							
+			<div id="login-link" class="show-form">login 
+			                        &nbsp; <span class="icon-enter"></span></div>
 
  	  	 	<div class="clearfix"></div>
  	  	 </li>
@@ -285,12 +292,86 @@ The new Aptana project created by Jerry has several directories to keep JavaScri
 </html>
 ----    
 
-WARNING:
------ 
-Run this project in Aptana and click on the button Login, and you'll see that it reacts. But looking at the login-related `<a>` tags in the code above you'll find nothing but `href="javascript:void(0)"`. So why the button reacts? Read the code in the main.js shown below, and you'll find there line `loginLink.addEventListener('click', showLoginForm, false);` that invokes the callback `showLoginForm()`. That why the Login button reacts. This seems confusing cause the anchor component was used here just for styling purposes. 
+<1> Usually, the logos on multi-page Web sites are clickable - they bring up the home page. That's why Jerry placed the anchor tag there. But we are planning to build a single-page application (SPA) so having a clickable logo won't be needed.  If you're interested where the image came from, open the styles.css file and you'll find `background: url(../img/logo.png) no-repeat;` in the `header h1#logo` section.
 
-In this example a better solution  would be to replace the anchor tag `<a id="login-link" class="show-form" href="javascript:void(0)">` with another component that doesn't make the code confusing, for example `<div id="login-link" class="show-form">`.	
------
+<2> Run this project in Aptana and click on the button Login, and you'll see that it reacts. But looking at the login-related `<a>` tags in the code above you'll find nothing but `href="javascript:void(0)"`. So why the button reacts? Read the code in the main.js shown below, and you'll find there line `loginLink.addEventListener('click', showLoginForm, false);` that invokes the callback `showLoginForm()`. That why the Login button reacts. This seems confusing cause the anchor component was used here just for styling purposes. In this example a better solution  would be to replace the anchor tag `<a id="login-link" class="show-form" href="javascript:void(0)">` with another component that doesn't make the code confusing, for example `<div id="login-link" class="show-form">`.	
+
+
+NOTE: Single Page Web Applications (SPA) are the ones that don't require loading multiple pages as a result of the user's action. The user enters the URL in the browser, which brings the Web page that remains open on the screen until the user stop working with this application. The portion of the user's screen may change using the AJAX techniques (see Chapter 4), but the page doesn't gets reloaded. This allows building so-called fat client applications that can remember its state. 
+
+Now let's examine the JavaScript code located in main.js. This code will self-invoke the anonymous function, which creates an object - encapsulated namespace ssc (short for Save Sick Child). This avoids polluting the global namespace. If we wanted to expose anything from this closure to the global namespace we could have done is as described in Chapter 2 in the section Closures, but in our example the code in main.js is completely sealed.  
+
+[source, javascript]
+----
+// global namespace ssc
+var ssc = (function() {
+    // Encapsulated variables
+    
+	/* --------- login section  elements-------------- */
+		var loginLink = document.getElementById("login-link");
+		var loginForm = document.getElementById("login-form");
+		var loginSubmit = document.getElementById('login-submit');
+		var logoutLink = document.getElementById('logout-link');
+		var profileLink = document.getElementById('profile-link');
+		var authorizedSection = document.getElementById("authorized");
+		
+		var userName = document.getElementById('username');
+		var userPassword = document.getElementById('password');
+
+		// Register event listeners
+		loginLink.addEventListener('click', showLoginForm, false);
+		loginSubmit.addEventListener('click', logIn, false);
+		logoutLink.addEventListener('click', logOut, false);
+		profileLink.addEventListener('click', getProfile, false);
+		
+		function showLoginForm() {
+			loginLink.style.display = "none";
+			loginForm.style.display = "block";
+			loginSubmit.style.display = "block";
+		}
+		
+		function showAuthorizedSection() {
+			authorizedSection.style.display = "block";
+			loginForm.style.display = "none";
+			loginSubmit.style.display = "none";
+		}
+
+		function logIn() {
+			//check credentials			
+			var userNameValue = userName.value;
+			var userNameValueLength = userName.value.length;
+			var userPasswordValue = userPassword.value;
+			var userPasswordLength = userPassword.value.length;
+
+			if (userNameValueLength == 0 || userPasswordLength == 0) {
+				if (userNameValueLength == 0) {
+					console.log("username can't be empty");
+				}
+				if (userPasswordLength == 0) {
+					console.log("password can't be empty");
+				}
+			} else if (userNameValue != 'admin' || userPasswordValue != '1234') {
+				console.log('username or password is invalid');
+			} else if (userNameValue == 'admin' && userPasswordValue == '1234') {
+				showAuthorizedSection();
+			}
+		}
+
+		function logOut() {
+			userName.value = '';
+			userPassword.value = '';
+			authorizedSection.style.display = "none";
+			loginLink.style.display = "block";
+		}
+
+		function getProfile() {
+			console.log('Profile link clicked');
+		}
+
+	})();
+----
+
+This function queries the DOM to get references to login-related HTML elements. It also registers the event listeners for the clickable login elements. 
 
 
 === Adding Video
@@ -332,6 +413,6 @@ What if the Modernizer detects that a certain feature is not supported yet by a 
 
 TIP: Addy Osmani published http://www.dzone.com/links/r/javafx_for_tablets_amp_mobile.html[The Developer's Guide To Writing Cross-Browser JavaScript Polyfills]
 
-Development version of Modernizr weighs 42Kb and can detect lots and lots of feature. But you can make it smaller by configuring the detection of only selected features. Just visit http://modernizr.com/[Modernizr] and press the red Production button that will allow to configure the build specifically for your application. For example, if you're just interested to detect the HTML5 video support, the size of the generated Modernizr library will be reduced to under 2Kb.
+The Development version of Modernizr weighs 42Kb and can detect lots of features. But you can make it smaller by configuring the detection of only selected features. Just visit http://modernizr.com/[Modernizr] and press the red Production button that will allow to configure the build specifically for your application. For example, if you're just interested to detect the HTML5 video support, the size of the generated Modernizr library will be reduced to under 2Kb.
 
 
