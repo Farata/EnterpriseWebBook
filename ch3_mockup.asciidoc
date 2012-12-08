@@ -307,7 +307,7 @@ Now let's examine the JavaScript code located in main.js. This code will self-in
 var ssc = (function() {
     // Encapsulated variables
     
-	/* --------- login section  elements-------------- */
+	    // Find login section elements                      //  <1>
 		var loginLink = document.getElementById("login-link");
 		var loginForm = document.getElementById("login-form");
 		var loginSubmit = document.getElementById('login-submit');
@@ -318,14 +318,15 @@ var ssc = (function() {
 		var userName = document.getElementById('username');
 		var userPassword = document.getElementById('password');
 
-		// Register event listeners
+		// Register event listeners                          // <2>
+
 		loginLink.addEventListener('click', showLoginForm, false);
 		loginSubmit.addEventListener('click', logIn, false);
 		logoutLink.addEventListener('click', logOut, false);
 		profileLink.addEventListener('click', getProfile, false);
 		
 		function showLoginForm() {
-			loginLink.style.display = "none";
+			loginLink.style.display = "none";                // <3>
 			loginForm.style.display = "block";
 			loginSubmit.style.display = "block";
 		}
@@ -350,10 +351,14 @@ var ssc = (function() {
 				if (userPasswordLength == 0) {
 					console.log("password can't be empty");
 				}
-			} else if (userNameValue != 'admin' || userPasswordValue != '1234') {
+			} else if (userNameValue != 'admin' || 
+			                          userPasswordValue != '1234') {
 				console.log('username or password is invalid');
-			} else if (userNameValue == 'admin' && userPasswordValue == '1234') {
-				showAuthorizedSection();
+
+			} else if (userNameValue == 'admin' && 
+			                          userPasswordValue == '1234') {
+
+				showAuthorizedSection();                     // <4>
 			}
 		}
 
@@ -371,7 +376,17 @@ var ssc = (function() {
 	})();
 ----
 
-This function queries the DOM to get references to login-related HTML elements. It also registers the event listeners for the clickable login elements. 
+<1> First queries the DOM to get references to login-related HTML elements. 
+
+<2> Register event listeners for the clickable login elements. 
+
+<3> To make a DOM element invisible set its `style.display="none"`. Hide the login button and show the login form having two input fields for entering the user id and the password.
+
+<4> If the user is admin and the password is 1234, hide the `loginForm` and make the top corner of the page look as in <<FIG3-8>>
+
+[[FIG3-8]]
+.After successful login
+image::images/fig_03_08.png[]	
 
 
 === Adding Video
@@ -386,17 +401,17 @@ The first thing worth mentioning is that we started using a special JavaScript l
 
 Modernizr is an open source JavaScript library that help your script to figure out if the latest HTML or CSS features are supported by the user's browser. Instead of maintaining complex cross-browser feature matrix to see if, say `border-radius` is supported, the Modernizer queries the `<html>` elements to see what's supported and what's not. 
 
-Please note the following fragment from our HTML code: `<html class="no-js" lang="en">`.  For Modernizr to work, your HTML root element has to have the class named `"no-js"`. On page load, the Modernizr will replace the `no-js` class with extended version that lists all detected features, and those that are not supported will get a prefix `no-`. Re-running the above HTML code in Firebug replaced the value of the `class` property, and <<Fig 3-8>>  shows that this version of Firefox doesn't support touch events (`no-touch`), websockets (`no-websockets`), et al.  
+Please note the following fragment from our HTML code: `<html class="no-js" lang="en">`.  For Modernizr to work, your HTML root element has to have the class named `"no-js"`. On page load, the Modernizr will replace the `no-js` class with extended version that lists all detected features, and those that are not supported will get a prefix `no-`. Re-running the above HTML code in Firebug replaced the value of the `class` property, and <<Fig 3-88>>  shows that this version of Firefox doesn't support touch events (`no-touch`), websockets (`no-websockets`), et al.  
 
-[[FIG3-8]]
+[[FIG3-88]]
 .Modernizr changed the HTML's class property
-image::images/fig_03_08.png[]
+image::images/fig_03_088.png[]
 
-Modernizr will also create a new JavaScript object `window.Modernizr` with lots of boolean properties indicating if a certain feature is or is not supported (see <<FIG3-9>>).
+Modernizr will also create a new JavaScript object `window.Modernizr` with lots of boolean properties indicating if a certain feature is or is not supported (see <<FIG3-99>>).
 
-[[FIG3-9]]
+[[FIG3-99]]
 .window.Modernizr object
-image::images/fig_03_09.png[]
+image::images/fig_03_099.png[]
 
 So in your JavaScript you can test if certain features are supported or not. For example, if you are not sure that each user has a Web browser that supports HTML5 video, do a feature detection first, and then apply appropriate application logic in your JavaScript code, for example:
 
