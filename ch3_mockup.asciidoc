@@ -83,7 +83,7 @@ The latter shows different UI states should the user decide to log in. The proje
 .The user haven't clicked on the Login button
 image::images/fig_03_05.png[]
 
-=== From Mockups to a Prototype
+=== From Mockups to a Prototype. 
 
 We are lucky - Jerry knows HTML and CSS. He's ready to turn the still mockups into the first working prototype. It'll use only hard-coded data but the layout of the site will be done in CSS and we’ll use HTML5 markup.
 
@@ -93,10 +93,10 @@ NOTE: Authors of this book assume that the users of our "Save Sick Child" site w
 
 ****
 
-This chapter will include a lot of sample code illustrating how the UI is gradually being built.  We've created a number of Aptana Studio projects and each of them can be run independently. Create a new workspace in Aptana Studio (File | Switch Workspace) and import all these projects from ch3.zip in one shot (File | Import | General | Exiting projects into Workspace ). After that you'll be able to run each of these examples by right-clicking on the index.html and selecting Run as | JavaScript Web Application.
+This chapter will include lots of code samples illustrating how the UI is gradually being built.  We've created a number of Aptana Studio projects and each of them can be run independently. Create a new workspace in Aptana Studio (File | Switch Workspace) and import all these projects from ch3.zip in one shot (File | Import | General | Exiting projects into Workspace ). After that you'll be able to run each of these examples by right-clicking on the index.html and selecting Run as | JavaScript Web Application.
 
 
-=== Bringing Life to the Mockup
+==== Basic Page Layout and Login
 
 In this section you'll see several Aptana projects that show how the static mockup will turn into a working prototype with the help of HTML, CSS, and JavaScript. Jerry, the designer, decided to have four separate areas on the page hence he created the HTML file index.html that has the tag `<header>` with the navigation tag `<nav>`, two `<div>` tags for the middle sections of the page and a `<footer>`:
 
@@ -201,6 +201,7 @@ The next version of our prototype is a lot more interesting and it will contain 
 .Working prototype. Take2: Login.
 image::images/fig_03_07.png[]
 
+
 The new Aptana project created by Jerry has several directories to keep JavaScript, images, CSS, and fonts separately. While we are not overly interested in the fonts used in this prototypes, let's take a close look at the HTML code. 
 
 [source, html]
@@ -244,11 +245,11 @@ The new Aptana project created by Jerry has several directories to keep JavaScri
 
 <!-- <2> --> 	  	 	        
 			<!-- <a id="login-link" class="show-form" 
-			                        href="javascript:void(0)">login 
-			                        &nbsp;<span class="icon-enter"></span> </a> -->
+			           href="javascript:void(0)">login 
+			           &nbsp;<span class="icon-enter"></span> </a> -->
 							
 			<div id="login-link" class="show-form">login 
-			                        &nbsp; <span class="icon-enter"></span></div>
+			              &nbsp; <span class="icon-enter"></span></div>
 
  	  	 	<div class="clearfix"></div>
  	  	 </li>
@@ -292,7 +293,7 @@ The new Aptana project created by Jerry has several directories to keep JavaScri
 </html>
 ----    
 
-<1> Usually, the logos on multi-page Web sites are clickable - they bring up the home page. That's why Jerry placed the anchor tag there. But we are planning to build a single-page application (SPA) so having a clickable logo won't be needed.  If you're interested where the image came from, open the styles.css file and you'll find `background: url(../img/logo.png) no-repeat;` in the `header h1#logo` section.
+<1> Usually, the logos on multi-page Web sites are clickable - they bring up the home page. That's why Jerry placed the anchor tag there. But we are planning to build a single-page application (SPA) so having a clickable logo won't be needed.  
 
 <2> Run this project in Aptana and click on the button Login, and you'll see that it reacts. But looking at the login-related `<a>` tags in the code above you'll find nothing but `href="javascript:void(0)"`. So why the button reacts? Read the code in the main.js shown below, and you'll find there line `loginLink.addEventListener('click', showLoginForm, false);` that invokes the callback `showLoginForm()`. That why the Login button reacts. This seems confusing cause the anchor component was used here just for styling purposes. In this example a better solution  would be to replace the anchor tag `<a id="login-link" class="show-form" href="javascript:void(0)">` with another component that doesn't make the code confusing, for example `<div id="login-link" class="show-form">`.	
 
@@ -387,6 +388,45 @@ var ssc = (function() {
 [[FIG3-8]]
 .After successful login
 image::images/fig_03_08.png[]	
+
+In the beginning of Chapter 2 we've recommended to put the `<script>` tag with your JavaScript at the end of your HTML file, which we did in our index.html above. Now move the line `<script src="assets/js/main.js"></script>` to the top of the `<body>` section and re-run index.html. The screen will look as in <<FIG3-7>>, but clicking on the Login won't display the login form as it should. Why? Because registering of the event listeners in the script main.js failed cause the DOM components  (`login-link`, `login-form` and others) were not created yet by the time this script was running. Open the Firebug or other debugging tool and you'll see an error on the console that will look similar to the following:
+
+__"TypeError: loginLink is null
+loginLink.addEventListener('click', showLoginForm, false);"__
+
+Of course, in many cases your JavaScript code could have tested if the DOM elements exist before using them, but in this particular sample it's just easier to to put the script at the end of the HTML file. Another solution would be to load the JavaScript code located in main.js in a separate handler function that would run only when the window's `load` event is dispatched by the browser indicated that the DOM is ready: `window.onload = function() {...}`. You'll see how to do this in the next version of main.js.
+
+After reviewing the HTML and JavaScript code let's spend a little more time with the CSS that supports the pages shown in <<FIG3-7>>. The difference between the screen shots shown in <<FIG3-6>> and <<FIG3-7>> is substantial. First, the top left image is nowere to be found in index.html. Open the styles.css file and you'll see the line `background: url(../img/logo.png) no-repeat;` in the `header h1#logo` section.
+
+The page layout is also specified in the file styles.css. In this version the sizes of each section is specified in pixels (px), which won't make you page fluid and easily resizable.  For example, the HTML element with `id="main-top-section"` is styled like this:
+
+[source, css]
+----
+#main-top-section {
+	width: 100%;
+	height: 320px;
+	margin-top: 18px;
+}
+----
+
+This section take the entire width of the browser's window and will be 320 pixels tall. If you'll keep in mind the "Mobile First" mantra, this may not be the best approach cause 320 pixels mmeans difference size on the displays with different screen density. For example, 320 pixels on the iPhone 5 with retina display will look a lot smaller than 320 pixels on the iPhone 4. You may consider switching from `px` to `em` units: 1em is equal to the current font height, 2em means twice the size et al. You can read more about creating scalable style sheets with _em_ units at http://www.w3.org/WAI/GL/css2em.htm[http://www.w3.org/WAI/GL/css2em.htm]. 
+
+What looks a Login button on <<FIG3-7>> is not a button, but a styled `div` element. Initially it was a clickable anchor `<a>`, and we've explained this change right after the listing shown index.html above. The CSS fragment supporting the Login button looks like this:
+
+[source, html]
+----
+li#login input {
+	width: 122px;
+	padding: 4px;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+}
+----
+
+The `border-radius` element makes the corners rounded of the HTML element it applied to.  But why we repeat it three times with additional prefixes `-moz-` and `-webkit-`? These are so called _CSS vendor prefixes_, which allow the Web browser vendors to implement experimental CSS properties that haven't been standardized yet. For example, `-webkit-` is the prefix for all WebKit-based browsers: Chrome, Safari, Android, iOS. Microsoft uses `-ms-` for Internet Explorer, Opera uses `-o-`.  These prefixes are temporary measures, which make the CSS files heavier than they need to be. The time will come when the CSS3 standard properties will be implemented by all browser vendors and you won't need to use these prefixes. As the matter of fact, the line `-moz-border-radius: 2px;` can be removed from our styles.css because Mozilla has implemented already the property `border-radius`. Yo ucan find a list of CSS properties with the corresponding vendor prefixes in http://peter.sh/experiments/vendor-prefixed-css-property-overview/[this list] maintained by Peter Beverloo.
+
 
 
 === Adding Video
