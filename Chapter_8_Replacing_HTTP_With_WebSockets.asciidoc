@@ -106,7 +106,7 @@ After the introduction of the WebSockets interface lets see how the client's Jav
 include::include/ws_api_example.js[]
 ----------------------------------------------------------------------
 
-<1> <vik>Not all browsers support WebSockets natively yet.</vik> Check if the +WebSocket+ object is supported by the browser.
+<1> Not all Web browsers support WebSockets natively as of yet. Check if the +WebSocket+ object is supported by the browser.
 <2> Instantiate the new +WebSocket+ object with passing endpoint URI as constructor parameter.
 <3> Set event handlers for `open`, `message`, `close` events.
 <4> `e.data` property of the message event contains the received message.
@@ -250,18 +250,15 @@ Pings can be sent whenever required, but a pong may sent at server's discretion.
 
 There is no JavaScript API to send Ping frames or receive Pongs http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames[frames]. This is either supported by your browser, or not. http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104[There is also no API] to enable, configure or detect whether the browser supports and is using Ping/Pong frames.
 
-<vik>
 
 ===== Data Frames =====
 
-As we explained earlier in this chapter, WebSockets data can be fragmented into multiple frames. The first frame that transmits the data has a opcode on it that indicates what sort of data is being transmitted:
+As we explained earlier in this chapter, the WebSockets protocol allows the data to be fragmented into multiple frames. If this happens, the first frame that transmits the data will be prepended with one of the following opcodes indicating the type of data being transmitted:
 
-- Opcode `0x01` indicates UTF-8 encoded text data.
-- Opcode `0x02` indicates the binary data.
+- The opcode `0x01` indicates the UTF-8 encoded text data.
+- The opcode `0x02` indicates the binary data.
 
-Most people will transmit JSON over the wire in which case you want to chose the text opcode. When you emit binary data it will be represented in a browser specific `Blob` object.
-
-</vik>
+The chances are that your application will transmit JSON over the wire in which case you want to chose the text opcode. When your code emits binary data it will be represented in a browser specific `Blob` object.
 
 [quote]
 ____
@@ -270,24 +267,22 @@ _TODO_
 - Server-side API
 ____
 
-<vik>
-
 ++++
 <remark>
     This section is WIP
 </remark>
 ++++
 
-=== Client-side frameworks ===
+=== Client-side WebSockets frameworks ===
 
-==== Portal ====
+==== The Portal ====
 
 The Portal[https://github.com/flowersinthesand/portal] is a server agnostic JavaScript library that not just provides a socket for browser-based applications that need two-way communication with servers, but also aims to utilize a full duplex connection for modern web application development.
 
 ==== Atmosphere.js ====
 
 Atmosphere.js[https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API]
-</vik>
+
 === WebSocket Use Cases
 
 WebSockets really shine with following applications:
@@ -303,7 +298,6 @@ For the "Save Sick Child" application we're going to use WebSockets to implement
 ==== Protocols Considerations for Enterprise Applications
 
 The downside: WebSockets specification gives you only the transport, but it doesn't include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from protocol modeling perspective.
-<vik>
 
 ++++
 <remark>
@@ -311,52 +305,51 @@ The downside: WebSockets specification gives you only the transport, but it does
 </remark>
 ++++
 
-The first consideration in cross-platform communication is the message format The most common formats what widely used in enterprises are CSV, XML and JSON. They are both easy to create and parse and widely supported via many frameworks for serialization in most major development platforms. As good as XML and JSON are, they are still quite heavy since they are essentially transmitted as strings across the wire. The can be a waste of memory and bandwidth for both the client and server, especially for internal communications. The alternative is binary, which has traditionally been difficult for cross-platform communication.
+Selecting a message format for the your application's data communications is important. The most common text formats are CSV, XML and JSON. They are easy to generate, parse,  and are widely supported by many frameworks in most major development platforms. While XML and JSON allow you to represent the data in a hierarchical and easily readable by humans form, they create a lot of overhead by wrapping up each data element into additional text identifiers. Sending such additional textual information places consumes a lot of extra bandwidth and may need additional wtring-to-type conversion on both the client and server's code. The binary format is an alternative way of sending data.
 
 ===== CSV =====
 
-CSV stands for "comma separated values". Essentially, the delimiter can be any character, not only comma. It depends on parser design and implementation. Another popular type of delimiter is `|` - "pipe" . Lets describe pros and cons of CSV message format.
+CSV stands for Comma Separated Values although the delimiter can be any character, not only comma. It depends on parser design and implementation. Another popular type of delimiter is `|` - "pipe" . Lets describe pros and cons of the CSV message format.
+
 Pros:
 
-- This format is very compact. The overhead for service symbols is minimal. This major advantage of CSV what can help to reduce bandwidth.
-- Simple to create and parse. Using standard JavaScript `String.split` method CSV message can be turned into array of values.
+- This format is very compact. The overhead of the separator symbol is minimal.
+- It's simple to create and parse. The CSV message can be turned into array of values by using the standard JavaScript `String.split()` 
 
 Cons:
 
-- Not suitable for storing complex data structures and hierarchies. In auction example application, we need transfer to client the auction item attributes for each the Auction. In this case we can't simple use general purpose `String.split` and have to design complex parser. The problem with customizing CSV format is that it involves overhead of maintaining more and more complex parsers.
+- It's not suitable for storing complex data structures and hierarchies. In case of an auction application, we need transfer to client auction items' attributes for each auction. In this case we can't simple use general purpose `String.split()` and have to design and implement a more complex parser. 
 
 ===== XML =====
 
-XML stands for "extensible markup language". XML was created to represent hierarchal data structures.
+XML stands for Extensible Markup Language, and it nicely represents any hierarchal data structures.
 
 Pros:
 
-- Long time XML advertised as human-readable format.
-- The most browsers have build-in XML readers and parsers
-- XML can be validated against XSD or DTD schema.
+- It's a human-readable format.
+- Most browsers have build-in XML readers and parsers.
+- XML data can be validated against XSD or DTD schema.
 +
-XML schema is very useful mechanism. XML schema defines structure, content and semantic of XML document. Because of human-readability feature, XML schema used by non-developers to agree about an interchange format between different enterprise systems written event in different languages and technologies.
+XML schema is very useful language feature as it defines structure, content and semantic of XML document. Because of its human-readability the XML schema can be used used by people who are not software developers and can be applied for integrating systems written in different programming languages.
 
 Cons:
 
-- XML is very verbose because.
-- XML validation on the client is very complex task.
+- XML is very verbose. To send a name of a customer you'd need something like this: `<cust_name>Mary</cust_name>`
+- The XML validation on the client is a complex task.
 
 _TBD_
 
 ===== JSON =====
 
-JSON stands for JavaScript Object Notation, and it's a way of representing structured data that has native implementations of encoding and decoding in all modern browsers. JSON has picked up acceptance on the web for data serialization.
+As explained in Chapter 4, JSON stands for JavaScript Object Notation, and it's a way of representing structured data, which can be encoded and decoded by all modern browsers. JSON is widely accepted by the Web community as a popular way of the data serialization.
 
 _TBD_
 
 ===== Google Protocol Buffers =====
 
-Google Protocol Buffers is a framework for data serialization. It is language-neutral, platform-neutral, extensible mechanism for serializing structured data. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams.
+Google Protocol Buffers is a framework for data serialization. It's language and platform neutral, and offers an extensible mechanism for serializing the structured data. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams.
 
 _TBD_
-
-</vik>
 
 === WebSockets and Proxies
 
@@ -427,9 +420,9 @@ include::include/auctions_list_response.json[]
 <3> The +auctionId+ property helps the server-side code to route the message to the correct auction.
 
 +
-<vik>
-NOTE: As soon as the handshake completes successfully, the server side code that implements `WebSocket` protocol exposes WebSocket session object.  The session object encapsulates conversation between WebSocket endpoint (server - side) and remote endpoint (browser). Check documentation for your server side framework for details about how it handles and exposes the remote endpoints in API.
-</vik>
+
+NOTE: As soon as the handshake completes successfully, the server side code that implements `WebSocket` protocol exposes the WebSocket session object.  The session object encapsulates conversation between the WebSocket endpoint (server - side) and remote endpoint (browser). Check the documentation for your server side framework for details about how it handles and exposes the remote endpoints in API.
+
 +
 
 4. Each time when the user enters the bid price client side code sends following +bid+ message:
@@ -450,7 +443,7 @@ NOTE: As soon as the handshake completes successfully, the server side code that
 
 ==== Monitor the WebSockets traffic with Chrome Developers Tools ====
 
-Let's see whatever is described in the <<HANDSHAKE>> action.  With the help of Chrome Developer Tools (<vik>You can open it by choosing +View > Developer > Developer Tools+) you can get the information about the initial handshake </vik> <<FIG8-4>>. This can be viewed in the +Network+ tab after selecting the path of the `WebSocket` endpoint.
+Let's see whatever is described in the <<HANDSHAKE>> action.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <<FIG8-4>>. This can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint.
 
 [[FIG8-4]]
 .Initial WebSockets handshake in Chrome DevTools
@@ -463,22 +456,20 @@ You can also click on +WebSockets+ on the bottom-right to show only the `WebSock
 image::images/fig_08_05.png[]
 
 For more gore details you can navigate your Google Chrome to secter URL - `chrome://net-internals`
-<vik>
+
 [[FIG8-6]]
 .Details of initial handshake in Chrome Net Internals
 image::images/fig_08_06.png[]
 
 [[FIG8-7]
-.Details of socket connection
+.Details of the socket connection
 image::images/fig_08_07.png[]
 
-[[FIG8-7]]
-.Dev tools display only payload size but net internals display actual size of frame (include service metadata)
+[[FIG8-8]]
+.Dev tools display not only the payload size but net internals display actual size of frames (include service metadata)
 image::images/fig_08_08.png[]
 
 ==== Sniffing WebSockets frames with Wireshark ====
 
 _TBD_
 
-
-</vik>
