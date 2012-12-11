@@ -73,10 +73,10 @@ This technique is still HTTP-based, and it requires the server's support of a co
 WebSockets is a bi-directional full-duplex socket-based protocol. The idea behind WebSockets is straightforward:
 
 - Establish a socket connection between the client and the server using HTTP for the initial handshake.
-- Switch the communication protocol from HTTP to direct socket-based protocol
+- Switch the communication protocol from HTTP to direct socket-based protocol.
 - Send messages in both directions simultaneously (full duplex).
-- Send messages independently. No request-response model. Both the server and the client can initiate data transmission which enables real server-push
-- Accordungly, both the server and the client can initiate  disconnect.
+- Send messages independently. No request-response model. Both the server and the client can initiate data transmission which enables real server-push.
+- Accordingly, both the server and the client can initiate  disconnect.
 
 We will explain each of this statements later in this chapter while introducing WebSocket API.
 
@@ -106,7 +106,7 @@ After the introduction of the WebSockets interface lets see how the client's Jav
 include::include/ws_api_example.js[]
 ----------------------------------------------------------------------
 
-<1> Check if the +WebSocket+ object is supported by the browser.
+<1> <vik>Not all browsers support WebSockets natively yet.</vik> Check if the +WebSocket+ object is supported by the browser.
 <2> Instantiate the new +WebSocket+ object with passing endpoint URI as constructor parameter.
 <3> Set event handlers for `open`, `message`, `close` events.
 <4> `e.data` property of the message event contains the received message.
@@ -168,7 +168,7 @@ NOTE: There is no limit to the number of established WebSocket connections a cli
 
 ****
 
-===== The WebSocket frame anatomy =====
+===== The WebSocket Frame Anatomy =====
 
 In this section we're going to explore how the WebSocket data transfer works. The WebSocket is not a stream based protocol like TCP - it's message based. The difference is that with TCP a program sends the bytes and has to ensure that the end of a message can be recognized.
 The WebSocket specification makes it easier because it puts a frame around everything. It's easy to do  from the JavaScript on the client, but it's harder to handle in the server side code because it needs to wrap everything in frames. The frame can look like this:
@@ -207,15 +207,15 @@ These bits are the reserved for future protocol changes and improvements. They m
 
 * `opcode` (4 bits)
 
++
 .The frame type is defined using opcode. Here most used opcodes:
 
 ** `0x00` This frame continues the payload from the last.
-** `0x01` This frame includes utf-8 text data.
+** `0x01` This frame includes UTF-8 text data.
 ** `0x02` This frame includes binary data.
 ** `0x08` This frame terminates the connection
 ** `0x09` This frame is a Ping.
 ** `0x10` This frame is a Pong.
-
 
 - `mask` (1 bit)
 
@@ -242,18 +242,26 @@ This key is used to _XOR_ the payload with.
 
 This indicates the actual masked data. The length of block is defined in the `payload_len` bits.
 
-[quote]
-____
-more TBD
-____
-
 ===== The Heartbeats =====
 
 Certain things like transparent and explicit proxy servers or a content-filtering hardware can terminate the idle connections or a remote side could go down. Only on  the next send your program can realize that something went wrong. With WebSockets the browser can send the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).
 
 Pings can be sent whenever required, but a pong may sent at server's discretion. If an endpoint receives a Ping frame and has not yet sent Pong frame(s) in response to the previous Ping frame(s), the endpoint can elect to send a Pong frame for only the most recently processed Ping frame. The Ping frame may contain the application data (can be up to 125 bytes) and Pong must have identical data in message body.
 
-There is no Javascript API to send Ping frames or receive Pongs http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames[frames]. This is either supported by your browser, or not. http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104[There is also no API] to enable, configure or detect whether the browser supports and is using Ping/Pong frames.
+There is no JavaScript API to send Ping frames or receive Pongs http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames[frames]. This is either supported by your browser, or not. http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104[There is also no API] to enable, configure or detect whether the browser supports and is using Ping/Pong frames.
+
+<vik>
+
+===== Data Frames =====
+
+As we explained earlier in this chapter, WebSockets data can be fragmented into multiple frames. The first frame that transmits the data has a opcode on it that indicates what sort of data is being transmitted:
+
+- Opcode `0x01` indicates UTF-8 encoded text data.
+- Opcode `0x02` indicates the binary data.
+
+Most people will transmit JSON over the wire in which case you want to chose the text opcode. When you emit binary data it will be represented in a browser specific `Blob` object.
+
+</vik>
 
 [quote]
 ____
@@ -262,6 +270,24 @@ _TODO_
 - Server-side API
 ____
 
+<vik>
+
+++++
+<remark>
+    This section is WIP
+</remark>
+++++
+
+=== Client-side frameworks ===
+
+==== Portal ====
+
+The Portal[https://github.com/flowersinthesand/portal] is a server agnostic JavaScript library that not just provides a socket for browser-based applications that need two-way communication with servers, but also aims to utilize a full duplex connection for modern web application development.
+
+==== Atmosphere.js ====
+
+Atmosphere.js[https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API]
+</vik>
 === WebSocket Use Cases
 
 WebSockets really shine with following applications:
@@ -277,12 +303,60 @@ For the "Save Sick Child" application we're going to use WebSockets to implement
 ==== Protocols Considerations for Enterprise Applications
 
 The downside: WebSockets specification gives you only the transport, but it doesn't include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from protocol modeling perspective.
+<vik>
 
-- SOAP, XML, XSD
-- REST, JSON, CSV
-- http://code.google.com/p/protobuf-js/[ProtoBuff for js], http://thrift.apache.org/[Apache Thrift]
+++++
+<remark>
+    This section is WIP
+</remark>
+++++
 
-_TODO_
+The first consideration in cross-platform communication is the message format The most common formats what widely used in enterprises are CSV, XML and JSON. They are both easy to create and parse and widely supported via many frameworks for serialization in most major development platforms. As good as XML and JSON are, they are still quite heavy since they are essentially transmitted as strings across the wire. The can be a waste of memory and bandwidth for both the client and server, especially for internal communications. The alternative is binary, which has traditionally been difficult for cross-platform communication.
+
+===== CSV =====
+
+CSV stands for "comma separated values". Essentially, the delimiter can be any character, not only comma. It depends on parser design and implementation. Another popular type of delimiter is `|` - "pipe" . Lets describe pros and cons of CSV message format.
+Pros:
+
+- This format is very compact. The overhead for service symbols is minimal. This major advantage of CSV what can help to reduce bandwidth.
+- Simple to create and parse. Using standard JavaScript `String.split` method CSV message can be turned into array of values.
+
+Cons:
+
+- Not suitable for storing complex data structures and hierarchies. In auction example application, we need transfer to client the auction item attributes for each the Auction. In this case we can't simple use general purpose `String.split` and have to design complex parser. The problem with customizing CSV format is that it involves overhead of maintaining more and more complex parsers.
+
+===== XML =====
+
+XML stands for "extensible markup language". XML was created to represent hierarchal data structures.
+
+Pros:
+
+- Long time XML advertised as human-readable format.
+- The most browsers have build-in XML readers and parsers
+- XML can be validated against XSD or DTD schema.
++
+XML schema is very useful mechanism. XML schema defines structure, content and semantic of XML document. Because of human-readability feature, XML schema used by non-developers to agree about an interchange format between different enterprise systems written event in different languages and technologies.
+
+Cons:
+
+- XML is very verbose because.
+- XML validation on the client is very complex task.
+
+_TBD_
+
+===== JSON =====
+
+JSON stands for JavaScript Object Notation, and it's a way of representing structured data that has native implementations of encoding and decoding in all modern browsers. JSON has picked up acceptance on the web for data serialization.
+
+_TBD_
+
+===== Google Protocol Buffers =====
+
+Google Protocol Buffers is a framework for data serialization. It is language-neutral, platform-neutral, extensible mechanism for serializing structured data. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams.
+
+_TBD_
+
+</vik>
 
 === WebSockets and Proxies
 
@@ -353,7 +427,9 @@ include::include/auctions_list_response.json[]
 <3> The +auctionId+ property helps the server-side code to route the message to the correct auction.
 
 +
-NOTE: In this simple scenario, the client's code doesn't send any explicit information to help the server to identify the client. As soon as the handshake completes successfully, the code that implements  `WebSocket` protocol provides the endpoint an active WebSocket session. The server has all required data about the client encapsulated in session object. This server-side object represents the conversation between two web socket endpoints.
+<vik>
+NOTE: As soon as the handshake completes successfully, the server side code that implements `WebSocket` protocol exposes WebSocket session object.  The session object encapsulates conversation between WebSocket endpoint (server - side) and remote endpoint (browser). Check documentation for your server side framework for details about how it handles and exposes the remote endpoints in API.
+</vik>
 +
 
 4. Each time when the user enters the bid price client side code sends following +bid+ message:
@@ -372,9 +448,9 @@ NOTE: In this simple scenario, the client's code doesn't send any explicit infor
 5. TBD `PriceUpdate` message
 6. TBD `AuctionResult` message
 
-==== Monitor the WebSockets traffic with Chrome Developers Tools
+==== Monitor the WebSockets traffic with Chrome Developers Tools ====
 
-Let's see whatever is described in the <<HANDSHAKE>> action with the help of Chrome Developer Tools, which provide the information about the initial handshake <<FIG8-4>>. This can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint.
+Let's see whatever is described in the <<HANDSHAKE>> action.  With the help of Chrome Developer Tools (<vik>You can open it by choosing +View > Developer > Developer Tools+) you can get the information about the initial handshake </vik> <<FIG8-4>>. This can be viewed in the +Network+ tab after selecting the path of the `WebSocket` endpoint.
 
 [[FIG8-4]]
 .Initial WebSockets handshake in Chrome DevTools
@@ -385,3 +461,24 @@ You can also click on +WebSockets+ on the bottom-right to show only the `WebSock
 [[FIG8-5]]
 .Monitoring WebSocket frames in Chrome Developer Tools
 image::images/fig_08_05.png[]
+
+For more gore details you can navigate your Google Chrome to secter URL - `chrome://net-internals`
+<vik>
+[[FIG8-6]]
+.Details of initial handshake in Chrome Net Internals
+image::images/fig_08_06.png[]
+
+[[FIG8-7]
+.Details of socket connection
+image::images/fig_08_07.png[]
+
+[[FIG8-7]]
+.Dev tools display only payload size but net internals display actual size of frame (include service metadata)
+image::images/fig_08_08.png[]
+
+==== Sniffing WebSockets frames with Wireshark ====
+
+_TBD_
+
+
+</vik>
