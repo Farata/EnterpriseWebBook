@@ -109,8 +109,8 @@ include::include/ws_api_example.js[]
 <1> Not all Web browsers support WebSockets natively as of yet. Check if the +WebSocket+ object is supported by the browser.
 <2> Instantiate the new +WebSocket+ object with passing endpoint URI as constructor parameter.
 <3> Set event handlers for `open`, `message`, `close` events.
-<4> `e.data` property of the message event contains the received message.
-<5> handle closing connection ...
+<4> <vik>A `MessageEvent` is sent to clients when data is received from the server and delivered to the listener indicated by the WebSocket object's `onmessage` handler. `e.data` property of the message event contains the received message.</vik>
+<5> handle closing connection (more details in <<CLOSSING>> section)  ...
 <6> ... and errors
 
 [[HANDSHAKE]]
@@ -258,12 +258,52 @@ As we explained earlier in this chapter, the WebSockets protocol allows the data
 - The opcode `0x01` indicates the UTF-8 encoded text data.
 - The opcode `0x02` indicates the binary data.
 
-The chances are that your application will transmit JSON over the wire in which case you want to chose the text opcode. When your code emits binary data it will be represented in a browser specific `Blob` object.
+<vik>
+When in your application you transmit JSON over the wire in what case the text opcode will be set for frames. When your code emits binary data it will be represented in a browser specific `Blob` object or `ArrayBuffer` object and send inside frame with the binary opcode.
+
+NOTE: You must choose the type you want to use for incoming binary data on the client before reading the data using `webSocket.binaryType = "blob"` or `webSocket.binaryType = "arraybuffer"`.
+
+For incoming data it's good idea  to investigate incoming data because opcodes not exposed to client side API and developer never know what type of data arrived.
+
+[source,javascript]
+----------------------------------------------------------------------
+webSocket.onmessage = function(messageEvent) {
+    if (typeof messageEvent.data === "string"){
+        console.log("received text data from the server: " + messageEvent.data);
+    } else if (messageEvent instance of Blob){
+        console.log("Blob data received")
+    }
+};
+----------------------------------------------------------------------
+
+[[CLOSSING]]
+===== Closing The Connection =====
+
+The connection is terminated by sending frame with the close opcode `0x08`.
+
+There the pattern to exchange close opcodes first and then let the server shut down. The client is supposed to give the server some time to close the connection before attempting to do that on its own. The close event can also signal why it terminated the connection.
+
+A `CloseEvent` is sent to clients using WebSockets when the connection is closed. This is delivered to the listener indicated by the WebSocket object's `onclose` handler. `CloseEvent` has 3 properties - code, reason, wasClean.
+
+.Legend
+[width="100%",cols="",options=""]
+|===
+|code    | This property represents close code provided by the server
+|reson   | A string indicating reason why server closed connection
+|wasClean| The property indicates that was or wasn't cleanly closed
+|===
+
+[source,javascript]
+----------------------------------------------------------------------
+webSocket.onclose = function(closeEvent) {
+    console.log("reason " + closeEvent.reason + "code " + closeEvent.code);
+};
+----------------------------------------------------------------------
+</vik>
 
 [quote]
 ____
 _TODO_
-- Client-side frameworks
 - Server-side API
 ____
 
@@ -314,11 +354,11 @@ CSV stands for Comma Separated Values although the delimiter can be any characte
 Pros:
 
 - This format is very compact. The overhead of the separator symbol is minimal.
-- It's simple to create and parse. The CSV message can be turned into array of values by using the standard JavaScript `String.split()` 
+- It's simple to create and parse. The CSV message can be turned into array of values by using the standard JavaScript `String.split()`
 
 Cons:
 
-- It's not suitable for storing complex data structures and hierarchies. In case of an auction application, we need transfer to client auction items' attributes for each auction. In this case we can't simple use general purpose `String.split()` and have to design and implement a more complex parser. 
+- It's not suitable for storing complex data structures and hierarchies. In case of an auction application, we need transfer to client auction items' attributes for each auction. In this case we can't simple use general purpose `String.split()` and have to design and implement a more complex parser.
 
 ===== XML =====
 
@@ -422,7 +462,6 @@ include::include/auctions_list_response.json[]
 +
 
 NOTE: As soon as the handshake completes successfully, the server side code that implements `WebSocket` protocol exposes the WebSocket session object.  The session object encapsulates conversation between the WebSocket endpoint (server - side) and remote endpoint (browser). Check the documentation for your server side framework for details about how it handles and exposes the remote endpoints in API.
-
 +
 
 4. Each time when the user enters the bid price client side code sends following +bid+ message:
@@ -455,7 +494,7 @@ You can also click on +WebSockets+ on the bottom-right to show only the `WebSock
 .Monitoring WebSocket frames in Chrome Developer Tools
 image::images/fig_08_05.png[]
 
-For more gore details you can navigate your Google Chrome to secter URL - `chrome://net-internals`
+For more gore details you can navigate your Google Chrome to secret URL - `chrome://net-internals`
 
 [[FIG8-6]]
 .Details of initial handshake in Chrome Net Internals
