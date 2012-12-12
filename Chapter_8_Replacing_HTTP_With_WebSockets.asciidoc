@@ -109,7 +109,7 @@ include::include/ws_api_example.js[]
 <1> Not all Web browsers support WebSockets natively as of yet. Check if the +WebSocket+ object is supported by the browser.
 <2> Instantiate the new +WebSocket+ object with passing endpoint URI as constructor parameter.
 <3> Set event handlers for `open`, `message`, `close` events.
-<4> <vik>A `MessageEvent` is sent to clients when data is received from the server and delivered to the listener indicated by the WebSocket object's `onmessage` handler. `e.data` property of the message event contains the received message.</vik>
+<4> The `MessageEvent` is sent to the clients when the data is received from the server and delivered to the listener indicated by the WebSocket object's `onmessage` handler. The `e.data` property of the message event contains the received message.
 <5> handle closing connection (more details in <<CLOSSING>> section)  ...
 <6> ... and errors
 
@@ -258,14 +258,13 @@ As we explained earlier in this chapter, the WebSockets protocol allows the data
 - The opcode `0x01` indicates the UTF-8 encoded text data.
 - The opcode `0x02` indicates the binary data.
 
-<vik>
-When in your application you transmit JSON over the wire in what case the text opcode will be set for frames. When your code emits binary data it will be represented in a browser specific `Blob` object or `ArrayBuffer` object and send inside frame with the binary opcode.
+When your application transmits JSON over the wire the text opcode is set for frames. When your code emits binary data it will be represented in a browser specific `Blob` object or an `ArrayBuffer` object and sent wrapped into a frame with the binary opcode.
 
-NOTE: You must choose the type you want to use for incoming binary data on the client before reading the data using `webSocket.binaryType = "blob"` or `webSocket.binaryType = "arraybuffer"`.
+NOTE: You must choose the type for the incoming binary data on the client using `webSocket.binaryType = "blob"` or `webSocket.binaryType = "arraybuffer"` before reading the data.
 
-For incoming data it's good idea  to investigate incoming data because opcodes not exposed to client side API and developer never know what type of data arrived.
+It's good idea to check the type of the incoming data because the opcodes are not exposed to the client.
 
-[source,javascript]
+[source, javascript]
 ----------------------------------------------------------------------
 webSocket.onmessage = function(messageEvent) {
     if (typeof messageEvent.data === "string"){
@@ -279,9 +278,9 @@ webSocket.onmessage = function(messageEvent) {
 [[CLOSSING]]
 ===== Closing The Connection =====
 
-The connection is terminated by sending frame with the close opcode `0x08`.
+The connection is terminated by sending the frame with the close opcode `0x08`.
 
-There the pattern to exchange close opcodes first and then let the server shut down. The client is supposed to give the server some time to close the connection before attempting to do that on its own. The close event can also signal why it terminated the connection.
+There is the pattern to exchange close opcodes first and then let the server shut down. The client is supposed to give the server some time to close the connection before attempting to do that on its own. The close event can also signal why it terminated the connection.
 
 A `CloseEvent` is sent to clients using WebSockets when the connection is closed. This is delivered to the listener indicated by the WebSocket object's `onclose` handler. `CloseEvent` has 3 properties - code, reason, wasClean.
 
@@ -299,7 +298,6 @@ webSocket.onclose = function(closeEvent) {
     console.log("reason " + closeEvent.reason + "code " + closeEvent.code);
 };
 ----------------------------------------------------------------------
-</vik>
 
 [quote]
 ____
