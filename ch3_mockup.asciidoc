@@ -308,88 +308,88 @@ Now let's examine the JavaScript code located in main.js. This code will self-in
 var ssc = (function() {
     // Encapsulated variables
     
-	    // Find login section elements                      //  <1>
-		var loginLink = document.getElementById("login-link");
-		var loginForm = document.getElementById("login-form");
-		var loginSubmit = document.getElementById('login-submit');
-		var logoutLink = document.getElementById('logout-link');
-		var profileLink = document.getElementById('profile-link');
-		var authorizedSection = document.getElementById("authorized");
-		
-		var userName = document.getElementById('username');
-		var userPassword = document.getElementById('password');
+    // Find login section elements                   //  <1>
+	var loginLink = document.getElementById("login-link");
+	var loginForm = document.getElementById("login-form");
+	var loginSubmit = document.getElementById('login-submit');
+	var logoutLink = document.getElementById('logout-link');
+	var profileLink = document.getElementById('profile-link');
+	var authorizedSection = document.getElementById("authorized");
+	
+	var userName = document.getElementById('username');
+	var userPassword = document.getElementById('password');
 
-		// Register event listeners                          // <2>
+	// Register event listeners                       // <2>
 
-		loginLink.addEventListener('click', showLoginForm, false);
-		loginSubmit.addEventListener('click', logIn, false);
-		logoutLink.addEventListener('click', logOut, false);
-		profileLink.addEventListener('click', getProfile, false);
-		
-		function showLoginForm() {
-			loginLink.style.display = "none";                // <3>
-			loginForm.style.display = "block";
-			loginSubmit.style.display = "block";
-		}
-		
-		function showAuthorizedSection() {
-			authorizedSection.style.display = "block";
-			loginForm.style.display = "none";
-			loginSubmit.style.display = "none";
-		}
+	loginLink.addEventListener('click', showLoginForm, false);
+	loginSubmit.addEventListener('click', logIn, false);
+	logoutLink.addEventListener('click', logOut, false);
+	profileLink.addEventListener('click', getProfile, false);
+	
+	function showLoginForm() {
+		loginLink.style.display = "none";             // <3>
+		loginForm.style.display = "block";
+		loginSubmit.style.display = "block";
+	}
+	
+	function showAuthorizedSection() {
+		authorizedSection.style.display = "block";
+		loginForm.style.display = "none";
+		loginSubmit.style.display = "none";
+	}
 
-		function logIn() {
-			//check credentials			
-			var userNameValue = userName.value;
-			var userNameValueLength = userName.value.length;
-			var userPasswordValue = userPassword.value;
-			var userPasswordLength = userPassword.value.length;
+	function logIn() {
+		//check credentials			
+		var userNameValue = userName.value;
+		var userNameValueLength = userName.value.length;
+		var userPasswordValue = userPassword.value;
+		var userPasswordLength = userPassword.value.length;
 
-			if (userNameValueLength == 0 || userPasswordLength == 0) {
-				if (userNameValueLength == 0) {
-					console.log("username can't be empty");
-				}
-				if (userPasswordLength == 0) {
-					console.log("password can't be empty");
-				}
-			} else if (userNameValue != 'admin' || 
-			                          userPasswordValue != '1234') {
-				console.log('username or password is invalid');
-
-			} else if (userNameValue == 'admin' && 
-			                          userPasswordValue == '1234') {
-
-				showAuthorizedSection();                     // <4>
+		if (userNameValueLength == 0 || userPasswordLength == 0) {
+			if (userNameValueLength == 0) {
+				console.log("username can't be empty");
 			}
-		}
+			if (userPasswordLength == 0) {
+				console.log("password can't be empty");
+			}
+		} else if (userNameValue != 'admin' || 
+		                          userPasswordValue != '1234') {
+			console.log('username or password is invalid');
 
-		function logOut() {
-			userName.value = '';
-			userPassword.value = '';
-			authorizedSection.style.display = "none";
-			loginLink.style.display = "block";
-		}
+		} else if (userNameValue == 'admin' && 
+		                          userPasswordValue == '1234') {
 
-		function getProfile() {
-			console.log('Profile link clicked');
+			showAuthorizedSection();                     // <4>
 		}
+	}
 
-	})();
+	function logOut() {
+		userName.value = '';
+		userPassword.value = '';
+		authorizedSection.style.display = "none";
+		loginLink.style.display = "block";
+	}
+
+	function getProfile() {
+		console.log('Profile link clicked');
+	}
+
+})();
 ----
 
-<1> First queries the DOM to get references to login-related HTML elements. 
+<1> First query the DOM to get references to login-related HTML elements. 
 
 <2> Register event listeners for the clickable login elements. 
 
 <3> To make a DOM element invisible set its `style.display="none"`. Hide the login button and show the login form having two input fields for entering the user id and the password.
 
-<4> If the user is admin and the password is 1234, hide the `loginForm` and make the top corner of the page look as in <<FIG3-8>>
+<4> If the user is _admin_ and the password is _1234_, hide the `loginForm` and make the top corner of the page look as in <<FIG3-8>>
 
 [[FIG3-8]]
 .After successful login
 image::images/fig_03_08.png[]	
 
-In the beginning of Chapter 2 we've recommended to put the `<script>` tag with your JavaScript at the end of your HTML file, which we did in our index.html above. Now move the line `<script src="assets/js/main.js"></script>` to the top of the `<body>` section and re-run index.html. The screen will look as in <<FIG3-7>>, but clicking on the Login won't display the login form as it should. Why? Because registering of the event listeners in the script main.js failed cause the DOM components  (`login-link`, `login-form` and others) were not created yet by the time this script was running. Open the Firebug or other debugging tool and you'll see an error on the console that will look similar to the following:
+In the beginning of Chapter 2 we've recommended to put the `<script>` tag with your JavaScript at the end of your HTML file, which we did in our index.html above. If you move the line `<script src="assets/js/main.js"></script>` to the top of the `<body>` section and re-run index.html the screen will look as in <<FIG3-7>>, but clicking on the Login won't display the login form as it should. Why? Because registering of the event listeners in the script main.js failed cause the DOM components  (`login-link`, `login-form` and others) were not created yet by the time this script was running. Open the Firebug or other debugging tool and you'll see an error on the console that will look similar to the following:
 
 __"TypeError: loginLink is null
 loginLink.addEventListener('click', showLoginForm, false);"__
@@ -443,21 +443,21 @@ have the dummy references `href="javascript:void(0)"` that don't redirect the us
 [source, html]
 ----
 <footer>
-	<section id="temp-project-name-container">
-		<b>project 03</b>: Footer Section | Using Icon Fonts
-	</section>
-	<section id="social-icons">
-		<a href="javascript:void(0)" title="Our Facebook page">
-		   <span aria-hidden="true" class="icon-facebook"></span></a>
-		<a href="javascript:void(0)" title="Our Google Plus page">
-		   <span aria-hidden="true" class="icon-gplus"></span></a>
-		<a href="javascript:void(0)" title="Our Twitter">
-		   <span aria-hidden="true" class="icon-twitter"></span></a> &nbsp; 
-		<a href="javascript:void(0)" title="RSS feed">
-		   <span aria-hidden="true" class="icon-feed"></span></a>
-		<a href="javascript:void(0)" title="Email us">
-		   <span aria-hidden="true" class="icon-mail"></span></a>
-	</section>
+ <section id="temp-project-name-container">
+	<b>project 03</b>: Footer Section | Using Icon Fonts
+ </section>
+ <section id="social-icons">
+	<a href="javascript:void(0)" title="Our Facebook page">
+	   <span aria-hidden="true" class="icon-facebook"></span></a>
+	<a href="javascript:void(0)" title="Our Google Plus page">
+	   <span aria-hidden="true" class="icon-gplus"></span></a>
+	<a href="javascript:void(0)" title="Our Twitter">
+	   <span aria-hidden="true" class="icon-twitter"></span></a> &nbsp; 
+	<a href="javascript:void(0)" title="RSS feed">
+	   <span aria-hidden="true" class="icon-feed"></span></a>
+	<a href="javascript:void(0)" title="Email us">
+	   <span aria-hidden="true" class="icon-mail"></span></a>
+ </section>
 </footer>
 ----
 
@@ -485,18 +485,21 @@ The section with the Donate button and the donation form will be located  in the
 
 
 [[FIG3-10]]
-.Initial view of the Donate section
+.The initial view of the Donate section
 image::images/fig_03_10.png[]
 
-Lorem Ipsum is a dummy text widely used in printing, typesetting, and Web design. It's used as a placeholder to indicate the text areas that should be replaced with a real content later on. You can read about it at http://www.lipsum.com/[http://www.lipsum.com] if interested. This is how the HTML fragment supporting <<FIG3-10>> looks like (no CSS is shown for brevity).
+Lorem Ipsum is a dummy text widely used in printing, typesetting, and Web design. It's used as a placeholder to indicate the text areas that should be filled with a real content later on. You can read about it at http://www.lipsum.com/[http://www.lipsum.com]. This is how the HTML fragment supporting <<FIG3-10>> looks like (no CSS is shown for brevity).
 
 [source, html]
 ----
 <div id="donation-address">
 	<p class="donation-address">
 		Lorem ipsum dolor sit amet, consectetur e magna aliqua.
-		Nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-		Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
+		Nostrud exercitation ullamco laboris nisi ut aliquip ex
+		ea commodo consequat.
+		Duis aute irure dolor in reprehenderit in voluptate velit 
+		esse cillum dolore eu fugiat nulla pariatur. 
+		Excepteur sint occaecat cupidatat non proident.
 	</p>
 	<button class="donate-button" id="donate-botton">
 		<span class="donate-botton-header">Donate Now</span>
@@ -507,90 +510,172 @@ Lorem Ipsum is a dummy text widely used in printing, typesetting, and Web design
 </div>
 ----
 
-Clicking the button Donate should reveal the form where the user should be able to enter his name, address and the donation amount. Since we are building a single-page application, we'll just change the content on the left revealing the form, and the button Donate will move to the right. <<FIG3-11>> shows how the top portion of our page will look like after the user clicks the Donate button.
+Clicking the button Donate should reveal the form where the user should be able to enter her name, address and the donation amount. We are building a single-page application, so instead of opening a popup window we'll just change the content on the left revealing the form, and move the button Donate to the right. <<FIG3-11>> shows how the top portion of our page will look like after the user clicks the Donate button.
 
 [[FIG3-11]]
 .After clicking on Donate button
 image::images/fig_03_11.png[]
 
-The HTML of the donation form shown on <<FIG3-11>> is shown below. WHen the user clicks on the Donate button the content of the form should be sent to PayPal for processing.
+The HTML of the donation form shown on <<FIG3-11>> is shown below. When the user clicks on the Donate button the content of the form should be sent to PayPal or any other payment processing system.
 
 [source, html]
 ----
 <div id="donate-form-container">
  <h3>Make a donation today</h3>
  <form name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post">
- 	<div class="donation-form-section">
- 		<label class="donation-heading">Please select or enter
- 			<br/> donation amount</label>
- 		<input type="radio" name = "amount" id= "d10" value = "10"/>
- 		<label for = "d10">10</label>
- 		<br/>
- 		<input type="radio" name = "amount" id = "d20" value="20" />
- 		<label for = "d20">20</label>
- 		<br/>
- 		<input type="radio" name = "amount" id="d50" checked="checked" value="50" />
- 		<label for="d50">50</label>
- 		<br/>
- 		<input type="radio" name = "amount" id="d100" value="100" />
- 		<label for="d100">100</label>
- 		<br/>
- 		<input type="radio" name = "amount" id="d200" value="200" />
- 		<label for="d200">200</label>
- 		<label class="donation-heading">Other amount</label>
- 		<input id="customAmount" name="amount" value="" 
- 		       type="text"  autocomplete="off" />
- 	</div>
- 	<div class="donation-form-section">
- 		<label class="donation-heading">Donor information</label>
- 		<input type="text" id="full_name" name="full_name" 
- 		       placeholder="full name *" required>
- 		<input type="email" id="email_addr" name="email_addr" 
- 		       placeholder="email *" required>
- 		<input type="text" id="street_address" name="street_address" 
- 		       placeholder="address">
- 		<input type="text" id="city" name="scty" placeholder="city">
- 		<input type="text" id="zip" name="zip" placeholder="zip/postal code">
- 		<select name="state">
- 			<option value="" selected="selected"> - State - </option>
- 			<option value="AL">Alabama</option>
- 			<option value="WY">Wyoming</option>
- 		</select>
- 		<select name="country">
- 			<option value="" selected="selected"> - Country - </option>
- 			<option value="United States">United States</option>
- 			<option value="Zimbabwe">Zimbabwe</option>
- 		</select>
- 	</div>
+  <div class="donation-form-section">
+	<label class="donation-heading">Please select or enter
+		<br/> donation amount</label>
+	<input type="radio" name = "amount" id= "d10" value = "10"/>
+	<label for = "d10">10</label>
+	<br/>
+	<input type="radio" name = "amount" id = "d20" value="20" />
+	<label for = "d20">20</label>
+	<br/>
+	<input type="radio" name = "amount" id="d50" checked="checked" value="50" />
+	<label for="d50">50</label>
+	<br/>
+	<input type="radio" name = "amount" id="d100" value="100" />
+	<label for="d100">100</label>
+	<br/>
+	<input type="radio" name = "amount" id="d200" value="200" />
+	<label for="d200">200</label>
+	<label class="donation-heading">Other amount</label>
+	<input id="customAmount" name="amount" value="" 
+	       type="text"  autocomplete="off" />
+  </div>
+  <div class="donation-form-section">
+	<label class="donation-heading">Donor information</label>
+	<input type="text" id="full_name" name="full_name" 
+	       placeholder="full name *" required>
+	<input type="email" id="email_addr" name="email_addr" 
+	       placeholder="email *" required>
+	<input type="text" id="street_address" name="street_address" 
+	       placeholder="address">
+	<input type="text" id="city" name="scty" placeholder="city">
+	<input type="text" id="zip" name="zip" placeholder="zip/postal code">
+	<select name="state">
+		<option value="" selected="selected"> - State - </option>
+		<option value="AL">Alabama</option>
+		<option value="WY">Wyoming</option>
+	</select>
+	<select name="country">
+		<option value="" selected="selected"> - Country - </option>
+		<option value="United States">United States</option>
+		<option value="Zimbabwe">Zimbabwe</option>
+	</select>
+  </div>
 
- 	<div class="donation-form-section make-payment">
- 		<h4>We accept Paypal payments</h4>
- 		<p>
- 			Your payment will processed securely by <b>PayPal</b>. 
- 			PayPal employ industry-leading encryption and fraud prevention tools.
- 			Your financial information is never divulged to us.
- 		</p>
+  <div class="donation-form-section make-payment">
+	<h4>We accept Paypal payments</h4>
+	<p>
+		Your payment will processed securely by <b>PayPal</b>. 
+		PayPal employ industry-leading encryption and fraud prevention tools.
+		Your financial information is never divulged to us.
+	</p>
 
- 		<button class="donate-button donate-button-submit">
- 			<span class="donate-botton-header">Donate Now</span>
- 			<br/>
- 			<span class="donate-2nd-line">Children can't wait</span>
- 		</button>
- 		<a id="donate-later-link" href="javascript:void(0);">I'll donate later 
- 		<span class="icon-cancel"></span></a>
- 	</div>
+	<button class="donate-button donate-button-submit">
+		<span class="donate-botton-header">Donate Now</span>
+		<br/>
+		<span class="donate-2nd-line">Children can't wait</span>
+	</button>
+	<a id="donate-later-link" href="javascript:void(0);">I'll donate later 
+	<span class="icon-cancel"></span></a>
+  </div>
  </form>
 </div>
 ----
 
+The JavaScript code supporting the UI transformatons related to the button Donate is shown below. It's the code snippet from the main.js from Aptana's project-04-donation. The click on the Donate button invokes the event handler `showDonationForm()`, which simply hides the `<div id="donation-address">` with Lorem Ipsum and displays the donation form in `<div id="donate-form-container">`. If the user clicks on "I'll donate later", the code toggle the visibility back.
+
+[source, javascript]
+----
+(function() {
+	var donateBotton = document.getElementById('donate-botton');
+	var donationAddress = document.getElementById('donation-address');
+	var donateFormContainer = document.getElementById('donate-form-container');
+	var customAmount = document.getElementById('customAmount');
+	var donateForm = document.forms['_xclick'];
+	var donateLaterLink = document.getElementById('donate-later-link');
+	var checkedInd = 2;
+
+	function showDonationForm() {		
+		donationAddress.style.display = "none";
+		donateFormContainer.style.display = "block";
+	}
+
+    // Register the event listeners 
+	donateBotton.addEventListener('click', showDonationForm, false);
+	customAmount.addEventListener('focus', onCustomAmountFocus, false);
+	donateLaterLink.addEventListener('click', donateLater, false);
+	customAmount.addEventListener('blur', onCustomAmountBlur, false);
+	
+	// Uncheck selected radio buttons if the custom amount was chosen
+
+	function onCustomAmountFocus() {
+		for (var i = 0; i < donateForm.length; i++) {
+			if (donateForm[i].type == 'radio') {
+				donateForm[i].onclick = function() {
+					customAmount.value = '';
+				}
+			}
+			if (donateForm[i].type == 'radio' && donateForm[i].checked == true) {
+				checkedInd = i;
+				donateForm[i].checked = false;
+			}
+		}
+	}
+	
+	function onCustomAmountBlur() {
+		var value = customAmount.value;
+		if (value == '') {
+		    // The user haven't entered other amount
+			donateForm[checkedInd].checked = true;
+		}
+	}
+	
+	function donateLater(){
+		donationAddress.style.display = "block";
+		donateFormContainer.style.display = "none";
+	}
+	
+})();
+----
+
+TIP: The code above contains an example of an inefficient code that assigns a click event handler to each radio button should the user click any radio button after visiting the Other Amount field. This was a Jerry's understanding of how to reset the value of the `customAmount` variable. Jerry was not familiar with the capture phase of the events that can intercept the click event on the radio buttons container's level and simply reset the value of `customAmount` regardless of which specific radio button is clicked.  Can you improve this code on your own?
 
 
 === Adding Video
 
+In this section we'll add a video player to our Save Sick Child application. The goal is to play a short animation encouraging kids to fight the disease. We've hired a professional animation artist Yuri who has started working on the animation. Meanwhile let's take care of embedding the video player showing any sample video file. 
 
-Let's run Aptana's project called project-05-html5-video. You'll see an embedded video player on the right, and you can play the video from the assets/media folder. Let's see how the index.html has changed comparing to its previous version.
+Lt's run the Aptana's project called project-05-html5-video to see it working, and after that we'll review the code. The new version of the Sick Save Child should look as in <<>FIG3-12>. The users will see an embedded video player on the right that can play the video located in the assets/media folder of the Aptana's project project-05-html5-video. 
 
-The first thing worth mentioning is that we started using a special JavaScript library called http://modernizr.com/[Modernizr]. This is a must have feature detection library that helps your application to figure out if the user's browser supports certain HTML5/CSS3 features. Note that the HTML code below includes two `<script>` sections - the Modernizr's JavaScript gets loaded first, while our own main.js is loaded at the end of the `<body>` section.
+[[FIG3-12]]
+.The video player is embeded 
+image::images/fig_03_12.png[]
+
+Let's see how our index.html has changed since its previous version. The bottom part of the main section includes the `<video>` tag. 
+
+[source, html]
+----
+<section id="main-bottom-section">
+ <div id="video-container">
+ 	<video controls="controls" poster="assets/media/intro.jpg" 
+ 	       width="390px" height="240" preload="metadata">
+ 	       
+ 		<source src="assets/media/intro.mp4" type="video/mp4">
+ 		<source src="assets/media/intro.webm" type="video/webm">
+ 		<p>Sorry, your browser doesn't support the video tag</p>
+ 	</video>
+
+ 		<h3>Video header goes here</h3>
+ 		<h5><a href="javascript:void(0);">More videos</a></h5>
+ </div>
+</section>
+----
+
+In this version of the index.html we started using a special JavaScript library called http://modernizr.com/[Modernizr]. This is a must have feature detection library that helps your application to figure out if the user's browser supports certain HTML5/CSS3 features. Note that the HTML code below includes two `<script>` sections - the Modernizr's JavaScript gets loaded first, while our own main.js is loaded at the end of the `<body>` section.
 
 
 ==== How Modernizr Works
