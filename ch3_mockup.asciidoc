@@ -649,24 +649,30 @@ TIP: The code above contains an example of an inefficient code that assigns a cl
 
 In this section we'll add a video player to our Save Sick Child application. The goal is to play a short animation encouraging kids to fight the disease. We've hired a professional animation artist Yuri who has started working on the animation. Meanwhile let's take care of embedding the video player showing any sample video file. 
 
-Lt's run the Aptana's project called project-05-html5-video to see it working, and after that we'll review the code. The new version of the Sick Save Child should look as in <<>FIG3-12>. The users will see an embedded video player on the right that can play the video located in the assets/media folder of the Aptana's project project-05-html5-video. 
+==== Adding the HTML5 Video Element 
+
+Let's run the Aptana's project called project-05-html5-video to see it working, and after that we'll review the code. The new version of the Sick Save Child should look as in <<>FIG3-12>. The users will see an embedded video player on the right that can play the video located in the assets/media folder of the Aptana's project project-05-html5-video. 
 
 [[FIG3-12]]
 .The video player is embeded 
 image::images/fig_03_12.png[]
 
-Let's see how our index.html has changed since its previous version. The bottom part of the main section includes the `<video>` tag. 
+Let's see how our index.html has changed since its previous version. The bottom part of the main section includes the `<video>` tag. In the past, the videos in Web pages were played predominantly by the browser's Flash Player plugin (even older popular plugins included RealPlayer, MediaPlayer, and QuickTime). For example, you could have used the HTML tag `<embed src="myvideo.swf" height="300" width="300">`and if the user's browser supported Flash Player, that's all you needed for basic video play. While there were plenty of open source video players, creation of the enterprise-grade video player for Flash videos became an important skill for some software developers. For example, HBO, an American cable network offers an advanced multi-featured video player embedded into http://www.hbogo.com[www.hbogo.com] for their subscribers. 
+
+But in today's world most of the modern mobile Web browsers don't support Flash Player, and the video content providers prefer broadcasting videos in formats that are supported by all the browsers and can be embedded into Web page using the standard HTML5 element `<video>` (see its current working draft is published at http://www.w3.org/TR/html5/the-video-element.html[http://www.w3.org/TR/html5/the-video-element.html]). 
+
+The following code fragment illustrates how we've embedded the video into the bottom portion of our Web page (index.html). It includes two `<source>` elements, which allows to provide alternative media resources. If the Web browser supports playing video specified in the first `<source>` element, it'll ignore the other versions of the media. For example, the code below offers two versions of the video file: intro.mp4 (in H.264/MPEG-4 format natively supported by Safari and Internet Explorer) and intro.webm (WebM format for Firefox, Chrome, and Opera). 
 
 [source, html]
 ----
 <section id="main-bottom-section">
  <div id="video-container">
- 	<video controls="controls" poster="assets/media/intro.jpg" 
+ 	<video controls poster="assets/media/intro.jpg" 
  	       width="390px" height="240" preload="metadata">
  	       
  		<source src="assets/media/intro.mp4" type="video/mp4">
  		<source src="assets/media/intro.webm" type="video/webm">
- 		<p>Sorry, your browser doesn't support the video tag</p>
+ 		<p>Sorry, your browser doesn't support video</p>
  	</video>
 
  		<h3>Video header goes here</h3>
@@ -674,6 +680,22 @@ Let's see how our index.html has changed since its previous version. The bottom 
  </div>
 </section>
 ----
+
+ The boolean property `controls` asks the Web browser to display the video player with controls (the play/pause buttons, the full screen mode, et al.) If you wouldn't use the property `controls` your JavaScript could would have to control the playback. The `poster` property of the `<video>` tag specifies the image to display as a placeholder for the video - this is the image you see on <<FIG3-12>>. In our case the `preload` valus is `metadata`, which means that we want the Web browser to preload just the first frame of the video its metadata. Should we used `preload="auto"`, the video would start loading in the background as soon as the Web page was loaded unless the user's browser doesn't allow it (e.g. Safari on iOS) for saving he bandwidth.
+
+All major Web browsers released in 2011 and later include their own embedded video players that support the `<video>` element. It's great that your code doesn't depend on the support of the Flash Player, but now video players look different depending on which browser the user has. 
+
+If neither .mp4 nor .webm files can be played, the content in the `<p>`  tag displays the fallback message "Sorry, your browser doesn't support video". If you need to support older Web browsers that don't support HTML5 video, but support Flash Player, you can replace this Sorry-message in the `<p>` tag with the `<object>` and `<embed>` tags that embed another media file that Flash Player understands.
+
+==== Embedding Youtube Videos
+
+
+
+
+=== Adding Geolocation Support
+
+
+
 
 In this version of the index.html we started using a special JavaScript library called http://modernizr.com/[Modernizr]. This is a must have feature detection library that helps your application to figure out if the user's browser supports certain HTML5/CSS3 features. Note that the HTML code below includes two `<script>` sections - the Modernizr's JavaScript gets loaded first, while our own main.js is loaded at the end of the `<body>` section.
 
@@ -694,21 +716,13 @@ Modernizr will also create a new JavaScript object `window.Modernizr` with lots 
 .window.Modernizr object
 image::images/fig_03_099.png[]
 
-So in your JavaScript you can test if certain features are supported or not. For example, if you are not sure that each user has a Web browser that supports HTML5 video, do a feature detection first, and then apply appropriate application logic in your JavaScript code, for example:
-
-[source, javascript]
-----
-if(Modernizr.video){
-   // use html5 video
-} else {
-   // use Flash Player
-}
-----
+So in your JavaScript you can test if certain features are supported or not. 
 
 What if the Modernizer detects that a certain feature is not supported yet by a user's older browser? You can include polyfils in your code that replicate the required functionality. You can write such a polyfill on your own or pick one from the collection that is located in http://www.dzone.com/links/r/javafx_for_tablets_amp_mobile.html[Modernizr's Github repository].
 
 TIP: Addy Osmani published http://www.dzone.com/links/r/javafx_for_tablets_amp_mobile.html[The Developer's Guide To Writing Cross-Browser JavaScript Polyfills]
 
 The Development version of Modernizr weighs 42Kb and can detect lots of features. But you can make it smaller by configuring the detection of only selected features. Just visit http://modernizr.com/[Modernizr] and press the red Production button that will allow to configure the build specifically for your application. For example, if you're just interested to detect the HTML5 video support, the size of the generated Modernizr library will be reduced to under 2Kb.
+
 
 
