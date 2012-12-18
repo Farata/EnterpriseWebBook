@@ -6,7 +6,7 @@ The proliferation mobile devices, Internet connectivity and Web applications req
 
 But todays business users are spoiled by nice looking consumers applications and more often than not new development starts with inviting a Web designer who should create a prototype of the future application.  We’ve seen excellent (from the UI perspective) functional specifications for boring financial applications made by professional designers.  Business users slowly but surely become first-class citizens! The trend is clear: developer’s art does not cut it anymore.  You need to hire a professional Web designer for your next Web application. The software developers are not overly familiar with the tools that Web designers are using. This chapter should raise the curtain on the designers role in creating the UI for a Web application. 
 
-Our Web designer, let's call him Jerry, is ready to start working on the _mockup_ (a.k.a. _wireframes_) - a set of images depicting various views of our Save Sick Child application. We expect him to deliver images with comments that would briefly explain what should change in a view if a user will make a certain action, e.g. clicks on the button. You can also think of a UI of an application as a set of states, and the user’s action result in your application’s transition from one state to the other. As nerds and mathematicians say
+Our Web designer, let's call him Jerry, is ready to start working on the _mockup_ (a.k.a. _wireframes_) - a set of images depicting various views of our Save Sick Child application. We expect him to deliver images with comments that would briefly explain what should change in a view if a user will make a certain action, e.g. clicks on the button. You can also think of a UI of an application as a set of states, and the user’s action result in your application transition from one state to the other. As nerds and mathematicians say
 UI of your application is a http://en.wikipedia.org/wiki/State_machine[finite state machine]", which at any given point of time is in one of the finite number of states, for example, in the view state Donate Form.
 
 === Mobile First?
@@ -767,13 +767,103 @@ Our brief introduction to embedding videos in HTML is over. Let' keep adding new
 
 === Adding Geolocation Support
 
-The goal of this section is to demonstrate the use of the HTML5 Geolocation API by adding a very practical feature - finding sick children based on their location. This way the users of the Save Sick Child can find the needy children in a particular geographical area. 
+HTML5 includes the Geolocation API that allows programmatically figure out the latitude and longitude of the user's device. Most of the people are accustomed to the non-Web GPS applications in cars or mobile devices that display maps and calculate distances based on the current coordinates of the user's device or motor vehicle. But why do we need the Geolocation API in a desktop Web application? 
 
+The goal of this section is to demonstrate a very practical feature - finding registered sick children based on the user's location. This way the users of the Save Sick Child can find the needy children in a particular geographical area. In this chapter you'll just learn the basics of HTML5 GeoLocation API, but we'll continue improving the location feature of the Save Sick Child in the next chapter.
+
+TIP: The World Wide Web Consortium has published proposed recommendation of the http://www.w3.org/TR/geolocation-API/[Geolocation API Specification].
+
+Does your old desktop computer have a GPS hardware? Most likely it doesn't. But its location can be calculated with varying degree of accuracy. If your desktop computer is connected to the network it has an IP address or your local Wi-Fi router may have an SSID given by the router vendor or your Internet provider so the location of your desktop computer is not a secret, unless you change the SSID of your Wi-Fi router. Highly populated areas have more Wi-Fi routers and cell towers so the accuracy increases. In any case, properly designed applications must to always ask the user's permission to use the current location of her computer or other connected device.
+
+NOTE: The GPS signals are not always available. There are various location services that help identifying the position of your device. For example, Goole, Apple, Microsoft, Skyhook and other companies use publicly broadcast Wi-Fi data from the wireless access point. Google Location Server uses Media Access Control (MAC) address to identify any device connected to the network.
+ 
+
+Every Web Browser has a global object `window`, which includes the `navigator` object containing the information about the user's browser. If the browser's `navigator` object includes the property `geolocation`, geolocation services are available. While the Geolocation API allows you to get just a coordinate of your device and report the accuracy of this location, most applications use this information with some user-friendly UI, for example, the mapping software. In this section our goal is to demonstrate the following:
+
+1. How to use Geolocation API
+2. How to integrate the Geolocation API with Google Maps.
+3. How to detect id the Web browser supports geolocation services
+
+==== Geolocation Basics
+
+The new Aptana project is called project-07-basic-geolocation, where we simply assume that the Web browser supports the Geolocation. The Save Sick Child page will get a new container in the middle of the bottom main section, where we are planning to display the map of the current user location. But for now we'll show there just the coordinates: latitude, longitude, and the accuracy. Initially, the map container is empty, but we'll populate it from the JavaScript code as soon as the position of the computer is located.
+
+[source, html]
+----
+<div id="map-container">
+			​
+</div>
+----
+
+The following code snippet from main.js makes a call to the `navigator.geolocation` object to get the current position of the user's computer. 
+
+[source, javascript]
+----
+var mapContainer = document.getElementById('map-container');          // <1>
+
+function successGeoData(position) {
+	var successMessage = "We found your position!";                   // <2>
+	successMessage += '\n Latitude = ' + position.coords.latitude;
+	successMessage += '\n Longitude = ' + position.coords.longitude;
+	successMessage += '\n Accuracy = ' + position.coords.accuracy + 
+	                                                      ' meters';			
+	console.log(successMessage);
+	
+	var successMessageHTML = successMessage.replace(/\n/g, '<br />');    
+	var currentContent = mapContainer.innerHTML;
+	mapContainer.innerHTML = currentContent + "<br />" 
+	                                   + successMessageHTML;          // <3>
+	
+}
+
+if (navigator.geolocation) {
+	var startMessage = 'Your browser supports geolocation API :)';
+	console.log(startMessage);
+	mapContainer.innerHTML = startMessage;
+	console.log('Checking your position...');
+	mapContainer.innerHTML = startMessage + '<br />Checking your position...';
+	
+	navigator.geolocation.getCurrentPosition(successGeoData, 
+	   failGeoData,                                                  // <4>
+	   {maximumAge : 60000,
+		enableHighAccuracy : true,                                    // <5>
+		timeout : 5000
+	   }
+	);
+
+} else {
+	mapContainer.innerHTML ='Your browser does not support geolocation';
+}
+----
+
+<1> Get a reference to the DOM element `map-container` to be used for showing the results.
+
+<2> The function handler to be called in case of the successful discovery of the computer's coordinates. If this function will be called it'll get a `position` object as an argument.  
+
+<3> Display the retrieved data on the Web page (see <<FIG3-15>>).
+
+<4> Invoke the method `getCurrentPosition()` passing it two callback function as arguments (for success and failure) and an object with optional parameters for this invocation. We've omitted the code of the function `failGeoData(error)` for brevity, but you can find it in the sample code accompanying the book.
+
+<5> Optional parameters: accept the cached value if not older than 60 seconds, retrieve the best possible results and don't wait for results for more that 5 seconds. You may not always want the best possible results to lower the response time and the power consumption. 
+
+If you run the project-07-basic-geolocation, the Browser will ask you first, "Would you like to share your location with 127.0.01?" Allow this sharing and you'll see a Web page, which will include the information about your computer's location similar to <<FIG3-15>>.    
+
+[[FIG3-15]]
+.The latitude and longitude are displayed
+image::images/fig_03_15.jpg[]
+
+TIP: If you want to monitor the position as it changes use `geolocation.watchPosition()`, which implements internal timer and checks the position. To stop monitoring position use `geolocation.clearWatch()`.
+
+
+==== Integrating with Google Maps
+
+Knowing the device coordinates is very important, but let's make the location information more presentable by feeding the device coordinates to https://developers.google.com/maps/[Google Maps API].
+
+
+
+==== Using Modernizr 
 
 In this version of the index.html we started using a special JavaScript library called http://modernizr.com/[Modernizr]. This is a must have feature detection library that helps your application to figure out if the user's browser supports certain HTML5/CSS3 features. Note that the HTML code below includes two `<script>` sections - the Modernizr's JavaScript gets loaded first, while our own main.js is loaded at the end of the `<body>` section.
-
-
-==== How Modernizr Works
 
 Modernizr is an open source JavaScript library that help your script to figure out if the latest HTML or CSS features are supported by the user's browser. Instead of maintaining complex cross-browser feature matrix to see if, say `border-radius` is supported, the Modernizer queries the `<html>` elements to see what's supported and what's not. 
 
