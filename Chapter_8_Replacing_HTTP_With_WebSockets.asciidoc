@@ -412,6 +412,84 @@ ____
 
 === Adding an Auction to Save Sick Child
 
+<vik>
+
+Enough theory. Lets see how we can see practical usage and leverage WebSocket in out "Save Sick Child" application.
+In this chapter we continue to use RequireJS as a framework that helps manage our JavaScript application components in a modular fashion. Using RequireJS, we're going to lazy load some modules if, and only if they ever get requested by the user.
+
+Because, this is all about development of user interface and client side applications we're not going to cover details of server side implementation. Main goal to show you how you can get data from server and what next to with it. For server side implementation you can consult with documentation of WebSocket server in your favorite programming language. You're from Java background (same as authors of this book), please refer sidebar about details WebSockets server API which is a part of upcoming Java EE 7 specification.
+
+****************************************************************************
+Sidebar: Java server-side details
+TODO: Setup of Java server
+****************************************************************************
+
+Lets see how our module looks like
+
+.Way To Give module (+js/modules/way-to-give.js+)
+[source,javascript]
+----------------------------------------------------------------------
+define([], function () {
+    var WayToGiveMod = function () {
+        return {
+            renderControls: function () { // <1>
+
+            },
+            startAuction: function () { // <2>
+            }
+        }
+    };
+    return WayToGiveMod;
+});
+----------------------------------------------------------------------
+
+<1> This function will lazy load auction application content and render it to main top section of the screen.
+<2> This function will define event listeners will start the auction.
+
+
+Once user click top menu button "Way to Give" we want to require.js load code of WebSocket-based auction application.
+Here is the code of `app.js` - the entry point of our Save Sick Child application.
+
+[source,javascript]
+----------------------------------------------------------------------
+require([], function() { // <1>
+    (function() {
+        var way_to_give = document.getElementById("way-to-give");
+        var module = null;                      // <2>
+        var handleClick = function(event) {
+                event.preventDefault();
+                if(module === "loading") {      // <3>
+                    return;                     // <4>
+                }
+                if(module !== null) {           // <5>
+                    module.startAuction();      // <6>
+                } else {
+                    module = "loading";         // <7>
+                    require(
+                    ["modules/way-to-give"], function(WayToGive) { // <8>
+                        module = new WayToGive();
+                        module.renderControls();                    // <9>
+                    });
+                }
+            }
+        way_to_give.addEventListener('click', handleClick, false); // <10>
+    })();
+});
+----------------------------------------------------------------------
+
+<1> Since the WayToGive/Auction module is probably going to be rarely used by the user, we don't want to loading it as part of the initial page load. We'll lazy-load it when the "Way To Give" link is clicked.
+<2> WayToGive module will start as null until loaded. It's not loaded until it's first needed.
+<3> Check to see if the WayToGive module is currently being lazily loaded.
+<4> Ignore this click - when the module finally loads, it will open the module.
+<5> Check to see if the module has been loaded.
+<6> If module has been loaded and UI has been rendered we can start Auction application
+<7> Set an intermediary value to the WayToGive module so that subsequent requests don't try to launch the module more than once.
+<8> Load module asynchronously and create instance of it.
+<9> Render UI component to the screen for first time.
+<10> Assign click event listener for <Way To Give> menu button.
+
+</vik>
+
 ==== Auction Messages Specification
 
 1. The client's code connects to the WebSockets endpoint on the server.
