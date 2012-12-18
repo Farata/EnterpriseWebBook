@@ -1,4 +1,4 @@
-== Chapter 8. Replacing HTTP with WebSockets
+== Replacing HTTP with WebSockets
 
 
 [quote, http://ietf.org/mail-archive/web/hybi/current/msg00784.html ]
@@ -412,19 +412,22 @@ ____
 
 === Adding an Auction to Save Sick Child
 
-<vik>
+We gave you just enough of a theory to whet your appetite for implementing WebSockets in our Save Sick Child application. The goal is to create an auction where people can bid and purchase various goods so the proceeds would go to sick children. Auctions require real-time communications - everyone interested in the particular auction item must be immediately notified if another bidder increased the price. So we'll use WebSockets as a means for bidding and notifications of the changes in the auction. 
 
-Enough theory. Lets see how we can see practical usage and leverage WebSocket in out "Save Sick Child" application.
-In this chapter we continue to use RequireJS as a framework that helps manage our JavaScript application components in a modular fashion. Using RequireJS, we're going to lazy load some modules if, and only if they ever get requested by the user.
+To start the auction, the user of the Save Sick Child application has to select the _Auction_ option under the menu _Way To Give_. We realize that only a small number of the users will decide to participate in the auction, which from the architectural point of view means that the code supporting the auction should be loaded _on demand_ only if the user chooses to visit the auction. This why we need to write this code as a loadable module, and the reader will get a practical example of how a Web application can be modularized. 
 
-Because, this is all about development of user interface and client side applications we're not going to cover details of server side implementation. Main goal to show you how you can get data from server and what next to with it. For server side implementation you can consult with documentation of WebSocket server in your favorite programming language. You're from Java background (same as authors of this book), please refer sidebar about details WebSockets server API which is a part of upcoming Java EE 7 specification.
+In this chapter we continue to use RequireJS explained in the previous chapter as a framework that helps manage our JavaScript application components in a modular fashion. Using RequireJS, we're going to lazy load some modules if and only if they ever get requested by the user.
+
+This is dedicated to the development of the user interface and client side of the Web applications hence we're not going to cover all the details of server side implementation, but will make our server side code available for download. We'll keep our server up and running so you can test the UI, but our main goal in this section is to show you how you can exchange the auction data with the server and process them on the client side. We use the current version of WebSockets support offered by the Java application server GlassFish 4, which is a reference implementation of the latest Java EE 7 specification. 
+
+Authors of this book are Java developers and we have provided a sidebar with the details WebSockets server API which is a part of the upcoming Java EE 7 specification. If you are not a Java developer, you may want to learn on your own which WebSocket servers exist for your favorite programming language or platform. But strictly speaking, if you are a front-end developer, you don't have to know how the WebSocket server works under the hood.
 
 ****************************************************************************
-Sidebar: Java server-side details
+Sidebar: WebSockets Server with Java EE 7 
 TODO: Setup of Java server
 ****************************************************************************
 
-Lets see how our module looks like
+In Chapter 8 you had a chance to see how a Web application can be sliced (see Aptana's project-15-dynamic-modules) into several modules using Require.js framework.  We'l take this project as a base and will create a new one: project16-websocket-auction adding to it the new modules supporting the auction. 
 
 .Way To Give module (+js/modules/way-to-give.js+)
 [source,javascript]
@@ -435,7 +438,7 @@ define([], function () {
             renderControls: function () { // <1>
 
             },
-            startAuction: function () { // <2>
+            startAuction: function () {   // <2>
             }
         }
     };
@@ -443,12 +446,12 @@ define([], function () {
 });
 ----------------------------------------------------------------------
 
-<1> This function will lazy load auction application content and render it to main top section of the screen.
-<2> This function will define event listeners will start the auction.
+<1> This function will lazy load the auction application content and render it to the top main section of the Web page.
+
+<2> This function will start the auction.
 
 
-Once user click top menu button "Way to Give" we want to require.js load code of WebSocket-based auction application.
-Here is the code of `app.js` - the entry point of our Save Sick Child application.
+Once the user clicks the menu Way to Give the framework require.js has to load code of WebSocket-based auction module. Here is the code of `app.js` - the entry point of our Save Sick Child application.
 
 [source,javascript]
 ----------------------------------------------------------------------
@@ -459,36 +462,40 @@ require([], function() { // <1>
         var handleClick = function(event) {
                 event.preventDefault();
                 if(module === "loading") {      // <3>
-                    return;                     // <4>
+                    return;                     
                 }
-                if(module !== null) {           // <5>
-                    module.startAuction();      // <6>
+                if(module !== null) {           
+                    module.startAuction();      // <4>
                 } else {
-                    module = "loading";         // <7>
+                    module = "loading";         // <5>
                     require(
-                    ["modules/way-to-give"], function(WayToGive) { // <8>
+                    ["modules/way-to-give"], function(WayToGive) { // <6>
                         module = new WayToGive();
-                        module.renderControls();                    // <9>
+                        module.renderControls();                   // <7>
                     });
                 }
             }
-        way_to_give.addEventListener('click', handleClick, false); // <10>
+        way_to_give.addEventListener('click', handleClick, false); // <8>
     })();
 });
 ----------------------------------------------------------------------
 
-<1> Since the WayToGive/Auction module is probably going to be rarely used by the user, we don't want to loading it as part of the initial page load. We'll lazy-load it when the "Way To Give" link is clicked.
-<2> WayToGive module will start as null until loaded. It's not loaded until it's first needed.
-<3> Check to see if the WayToGive module is currently being lazily loaded.
-<4> Ignore this click - when the module finally loads, it will open the module.
-<5> Check to see if the module has been loaded.
-<6> If module has been loaded and UI has been rendered we can start Auction application
-<7> Set an intermediary value to the WayToGive module so that subsequent requests don't try to launch the module more than once.
-<8> Load module asynchronously and create instance of it.
-<9> Render UI component to the screen for first time.
-<10> Assign click event listener for <Way To Give> menu button.
+<1> This function will lazy-loaded only if the user clicks on Way To Give menu.
 
-</vik>
+<2> WayToGive module will has a value if  `null` until loaded. 
+
+<3> If the user clicks while the `WayToGive` module is still being lazily loaded, simply ignore this click - when the module finally loads, it will open the module.
+
+<4> If the module has been loaded and UI has been rendered start Auction application.
+
+<5> Set an intermediary value to the WayToGive module so that subsequent requests don't try to launch the module more than once.
+
+<6> Load module asynchronously and instantiate it.
+
+<7> Render UI component to the screen for first time.
+
+<8> Register the click event listener for the Way To Give menu.
+
 
 ==== Auction Messages Specification
 
