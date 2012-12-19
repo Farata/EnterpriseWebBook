@@ -730,7 +730,7 @@ Another way to include videos in your Web application is by uploading them to Yo
 * You can enrich your Web application by incorporating extensive video libraries by using the https://developers.google.com/youtube/v3/[YouTube Data API]. You can create fine tuned searches retrieving channels, playlists, videos, manage subscriptions, and authorize user requests.
 * Your users can save the YouTube videos on their local drive using free Web Browsers add-ons like DownloadHelper extension for Firefox or a RealDownloader.  
 
-TIP: Youtube offers https://www.youtube.com/html5[ an Opt-In Trial of HTML5 video], which allows playing most of the videos (including the Flash Player ones) using HTML 5 video.
+TIP: Youtube offers https://www.youtube.com/html5[ an Opt-In Trial of HTML5 video], which allows playing most of the videos using HTML 5 video (even those recorded for Flash Player).
 
 Embedding a YouTube video into your HTML page is simple. Find the page with the video on YouTube and press the links Share and Embed located right under the video. Then select the size of your video player and HTTPS encryption if needed. When this is done, copy the generated `iFrame` section into your page.
 
@@ -799,10 +799,10 @@ The following code snippet from main.js makes a call to the `navigator.geolocati
 
 [source, javascript]
 ----
-var mapContainer = document.getElementById('map-container');          // <1>
+var mapContainer = document.getElementById('map-container');      // <1>
 
 function successGeoData(position) {
-	var successMessage = "We found your position!";                   // <2>
+	var successMessage = "We found your position!";               // <2>
 	successMessage += '\n Latitude = ' + position.coords.latitude;
 	successMessage += '\n Longitude = ' + position.coords.longitude;
 	successMessage += '\n Accuracy = ' + position.coords.accuracy + 
@@ -812,8 +812,29 @@ function successGeoData(position) {
 	var successMessageHTML = successMessage.replace(/\n/g, '<br />');    
 	var currentContent = mapContainer.innerHTML;
 	mapContainer.innerHTML = currentContent + "<br />" 
-	                                   + successMessageHTML;          // <3>
+	                                   + successMessageHTML;       // <3>
 	
+}
+
+function failGeoData(error) {                                       // <4>
+	console.log('error code = ' + error.code);
+	
+	switch(error.code) {
+		case error.POSITION_UNAVALABLE:
+			errorMessage = "Can't get the location";
+			break;
+		case error.PERMISSION_DENIED:
+			errorMessage = "The user doesn't want to share location";
+			break;
+		case error.TIMEOUT:
+			errorMessage = "Timeout - taking too long to get the user’s location";
+			break;
+		case error.UNKNOWN_ERROR:
+			errorMessage = "Unknown error: " + error.code;
+			break;
+	}
+	console.log(errorMessage);
+	mapContainer.innerHTML = errorMessage;	
 }
 
 if (navigator.geolocation) {
@@ -824,9 +845,9 @@ if (navigator.geolocation) {
 	mapContainer.innerHTML = startMessage + '<br />Checking your position...';
 	
 	navigator.geolocation.getCurrentPosition(successGeoData, 
-	   failGeoData,                                                  // <4>
+	   failGeoData,                                            // <5>
 	   {maximumAge : 60000,
-		enableHighAccuracy : true,                                    // <5>
+		enableHighAccuracy : true,                             // <6>
 		timeout : 5000
 	   }
 	);
@@ -842,23 +863,163 @@ if (navigator.geolocation) {
 
 <3> Display the retrieved data on the Web page (see <<FIG3-15>>).
 
-<4> Invoke the method `getCurrentPosition()` passing it two callback function as arguments (for success and failure) and an object with optional parameters for this invocation. We've omitted the code of the function `failGeoData(error)` for brevity, but you can find it in the sample code accompanying the book.
+<4> This is the error handler callback.
 
-<5> Optional parameters: accept the cached value if not older than 60 seconds, retrieve the best possible results and don't wait for results for more that 5 seconds. You may not always want the best possible results to lower the response time and the power consumption. 
+<5> Invoke the method `getCurrentPosition()` passing it two callback function as arguments (for success and failure) and an object with optional parameters for this invocation. 
 
-If you run the project-07-basic-geolocation, the Browser will ask you first, "Would you like to share your location with 127.0.01?" Allow this sharing and you'll see a Web page, which will include the information about your computer's location similar to <<FIG3-15>>.    
+<6> Optional parameters: accept the cached value if not older than 60 seconds, retrieve the best possible results and don't wait for results for more that 5 seconds. You may not always want the best possible results to lower the response time and the power consumption. 
+
+If you run the project-07-basic-geolocation, the Browser will ask you a question similar to "Would you like to share your location with 127.0.01?"  Allow this sharing and you'll see a Web page, which will include the information about your computer's location similar to <<FIG3-15>>.    
+
+TIP: If you don't see the question asking permission to share location, check the privacy settings of your Web browser - most likely you've allowed using your location some time in the past.
 
 [[FIG3-15]]
 .The latitude and longitude are displayed
 image::images/fig_03_15.jpg[]
 
-TIP: If you want to monitor the position as it changes use `geolocation.watchPosition()`, which implements internal timer and checks the position. To stop monitoring position use `geolocation.clearWatch()`.
+TIP: If you want to monitor the position as it changes (the device is moving) use `geolocation.watchPosition()`, which implements internal timer and checks the position. To stop monitoring position use `geolocation.clearWatch()`.
 
 
 ==== Integrating with Google Maps
 
-Knowing the device coordinates is very important, but let's make the location information more presentable by feeding the device coordinates to https://developers.google.com/maps/[Google Maps API].
+Knowing the device coordinates is very important, but let's make the location information more presentable by feeding the device coordinates to https://developers.google.com/maps/[Google Maps API]. In this version of Save Sick Child we'll replace the gray rectangle from <<>FIG3-15> with the Google maps container. We want the user to see a familiar map fragment with a pin pointing at the location of her Web browser. To follow our "Show and Tell" style let's see it working first. Run Aptana's project-08-geolocation-maps and you'll see a map with your current location as shown on  <<FIG3-16>>. 
 
+[[FIG3-16]]
+.Showing your current location
+image::images/fig_03_16.jpg[]
+
+Now comes the "Tell" part. First of all, take a look at the bottom of the index.html file. It loads Google's JavaScript library with their Map API (`sensor=false` means that we are not using a sensor like GPS locator):
+
+[source, html]
+----
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+----
+
+In the past Google required developed to obtain an API key and include it in the above URL. Although some Google's tutorials still mentions the API key, it's not a must.
+
+****
+
+NOTE: An alternative way of adding the `<script>` section to HTML page is by creating a script element. This gives you a flexibility of postponing the decision of which JavaScript to load. For example,
+
+[source, javascript]
+----
+var myScript=document.createElement("script");
+myScript.src="http://......somelibrary.js";
+document.body.appendChile(myScript);
+----
+
+****
+
+Our main.js will invoke the function for Google's library as needed. The code that find the location of your device is almost the same as in the section Geolocation Basics. We've replaced the call to with `geolocation.watchPosition()` so this program can modify the position if your computer, tablet, or a mobile phone is moving. We store the returned value of the `watchPosition()` in the variable `watcherID` in case if you decide to stop watching the position of the device by calling `clearWatch(watcherID)`.  Also, we lowered the value of the `maximumAge` option so the program will update the UI more frequently, which is important if you are running this program while in motion.
+
+[source, javascript]
+----
+(function() {
+
+ var locationUI = document.getElementById('location-ui');
+ var locationMap = document.getElementById('location-map');
+ var watcherID;
+
+ function successGeoData(position) {
+   var successMessage = "We found your position!";
+   var latitude = position.coords.latitude;
+   
+   var longitude = position.coords.longitude;
+   successMessage += '\n Latitude = ' + latitude;
+   successMessage += '\n Longtude = ' + longitude;
+   successMessage += '\n Accuracy = ' + position.coords.accuracy 
+                                      + ' meters';
+   console.log(successMessage);
+
+   // Turn the geolocation position into a LatLng object.            
+   var locationCoordinates = 
+          new google.maps.LatLng(latitude, longitude);      // <1>
+
+   var mapOptions = {
+   	center : locationCoordinates,
+   	zoom : 12,
+   	mapTypeId : google.maps.MapTypeId.ROADMAP,         //  <2>  
+   	mapTypeControlOptions : {
+   	  style : google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+   	  position : google.maps.ControlPosition.TOP_RIGHT
+   	}
+   };
+
+   // Create the map
+   var map = new google.maps.Map(locationMap, mapOptions);  // <3>
+
+   // set the marker and info window
+   var contentString = '<div id="info-window-content">' + 
+        'We have located you using HTML5 Geolocation.</div>';
+   
+   var infowindow = new google.maps.InfoWindow({            // <4>
+   	content : contentString,
+   	maxWidth : 160
+   });
+
+   var marker = new google.maps.Marker({                   //  <5>  
+   	position : locationCoordinates,
+   	map : map,
+   	title : "Your current location"
+
+   });
+   
+       google.maps.event.addListener(marker, 'click',      // <6>
+            function() {infowindow.open(map, marker);
+   
+       });
+
+       // When the map is loaded show the message and  
+       // remove event handler after the first "idle" event
+       google.maps.event.addListenerOnce(map, 'idle', function(){
+   	locationUI.innerHTML = "Your current location";
+   })
+ 
+ }
+
+  // error handler
+ function failGeoData(error) {
+ 	 clearWatch(watcherID);
+ 	//the error processing code is omitted for brevity
+ }
+
+ if (navigator.geolocation) {
+ 	var startMessage = 
+ 	    'Browser supports geolocation API. Checking your location...';
+ 	console.log(startMessage);
+ 	
+ 	var currentContent = locationUI.innerHTML;
+ 	locationUI.innerHTML = currentContent +' '+startMessage;
+
+ 	watcherID = navigator.geolocation.watchPosition(successGeoData,  // <7>
+ 	    failGeoData, {  
+ 		maximumAge : 1000,
+ 		enableHighAccuracy : true,
+ 		timeout : 5000
+ 	});
+ 	
+ } else {
+ 	console.log('browser does not support geolocation :(');
+ }
+})();
+
+----
+
+<1> Google API represents a point in geographical coordinates (latitude and longitude) as a `LatLng` object, which we instantiate here.
+
+<2> The object`google.maps.MapOptions` is an object that allows you to specify various parameters of the map to be created. In particular, the map type can be one of the following: `HYBRID, ROADMAP, SATTELITE, TERRAIN`. We've chosen the `ROADMAP`, which displays a normal street map. 
+
+<3>	The function constructor `google.maps.Map` takes two arguments: the HTML container where the map has to be rendered and the `MapOption` as parameters of the map.
+
+<4> Create an overlay box that will show the content describing the location (e.g. a restaurant name) on the map. You can do it programmatically by calling `InfoWindow.open()`.
+
+<5> Place a marker on the specified position on the map.
+
+<6> Show the overlay box when the use clicks  on the marker on the map.	
+
+<7> Invoke the method `watchPosition()` to find the current position of the user's computer. 
+
+This is a pretty basic example of the integrating GeoLocation with the mapping software. Google Maps API consists of dozens JavaScript objects and supports various events that allow you to beild interactive and engaging Web pages that include maps. Refer to the https://developers.google.com/maps/documentation/javascript/reference#MapOptions[Google Maps JavaScript API Reference] for the complete list of available parameters (properties) of all objects used in project-08-geolocation-maps and more. In Chapter 4 you'll see a more advanced example of using Google maps - we'll read the JSON data stream containing coordinates of sick children so the donors can find them based on the specified postal code.  
 
 
 ==== Using Modernizr 
