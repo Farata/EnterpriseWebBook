@@ -926,7 +926,7 @@ Our main.js will invoke the function for Google's library as needed. The code th
    
    var longitude = position.coords.longitude;
    successMessage += '\n Latitude = ' + latitude;
-   successMessage += '\n Longtude = ' + longitude;
+   successMessage += '\n Longitude = ' + longitude;
    successMessage += '\n Accuracy = ' + position.coords.accuracy 
                                       + ' meters';
    console.log(successMessage);
@@ -1019,34 +1019,102 @@ Our main.js will invoke the function for Google's library as needed. The code th
 
 <7> Invoke the method `watchPosition()` to find the current position of the user's computer. 
 
-This is a pretty basic example of the integrating GeoLocation with the mapping software. Google Maps API consists of dozens JavaScript objects and supports various events that allow you to beild interactive and engaging Web pages that include maps. Refer to the https://developers.google.com/maps/documentation/javascript/reference#MapOptions[Google Maps JavaScript API Reference] for the complete list of available parameters (properties) of all objects used in project-08-geolocation-maps and more. In Chapter 4 you'll see a more advanced example of using Google maps - we'll read the JSON data stream containing coordinates of sick children so the donors can find them based on the specified postal code.  
+This is a pretty basic example of the integrating GeoLocation with the mapping software. Google Maps API consists of dozens JavaScript objects and supports various events that allow you to build interactive and engaging Web pages that include maps. Refer to the https://developers.google.com/maps/documentation/javascript/reference#MapOptions[Google Maps JavaScript API Reference] for the complete list of available parameters (properties) of all objects used in project-08-geolocation-maps and more. In Chapter 4 you'll see a more advanced example of using Google maps - we'll read the JSON data stream containing coordinates of sick children so the donors can find them based on the specified postal code.  
 
 
-==== Using Modernizr 
+==== Browser Features Detection With Modernizr 
 
-In this version of the index.html we started using a special JavaScript library called http://modernizr.com/[Modernizr]. This is a must have feature detection library that helps your application to figure out if the user's browser supports certain HTML5/CSS3 features. Note that the HTML code below includes two `<script>` sections - the Modernizr's JavaScript gets loaded first, while our own main.js is loaded at the end of the `<body>` section.
+Now we'll learn how to use the detection features offered by a JavaScript library called http://modernizr.com/[Modernizr]. This is a must have feature detection library that helps your application to figure out if the user's browser supports certain HTML5/CSS3 features. Review the code of index.html from the Aptana's project-08-1-modernizr-geolocation-maps. Note that the index.html includes two `<script>` sections - the Modernizr's JavaScript gets loaded first, while our own main.js is loaded at the end of the `<body>` section.
 
-Modernizr is an open source JavaScript library that help your script to figure out if the latest HTML or CSS features are supported by the user's browser. Instead of maintaining complex cross-browser feature matrix to see if, say `border-radius` is supported, the Modernizer queries the `<html>` elements to see what's supported and what's not. 
+[source, html]
+----
+<!DOCTYPE html>
 
-Please note the following fragment from our HTML code: `<html class="no-js" lang="en">`.  For Modernizr to work, your HTML root element has to have the class named `"no-js"`. On page load, the Modernizr will replace the `no-js` class with extended version that lists all detected features, and those that are not supported will get a prefix `no-`. Re-running the above HTML code in Firebug replaced the value of the `class` property, and <<Fig 3-88>>  shows that this version of Firefox doesn't support touch events (`no-touch`), websockets (`no-websockets`), et al.  
+<html class="no-js" lang="en">
+	<head>
+		<meta charset="utf-8">
+		
+		<title>Save Sick Child | Home Page</title>
+		<link rel="stylesheet" href="assets/css/styles.css">
+		
+		<script src="js/libs/modernizr-2.5.3.min.js"></script>
+		
+	</head>
+	<body>
+       !--  Most of the HTML markup is omitted for brevity  --!
 
-[[FIG3-88]]
+		<script src="js/main.js"></script>
+	</body>
+</html>
+
+----
+
+Modernizr is an open source JavaScript library that helps your script to figure out if the required HTML or CSS features are supported by the user's browser. Instead of maintaining complex cross-browser feature matrix to see if, say `border-radius` is supported in the user's version of Firefox, the Modernizer queries the `<html>` elements to see what's supported and what's not. 
+
+Note the following fragment on the top of index.html: `<html class="no-js" lang="en">`.  For Modernizr to work, your HTML root element has to include the class named `"no-js"`. On page load, the Modernizr will replace the `no-js` class with its extended version that lists all detected features, and those that are not supported will get a prefix `no-`. Run index.html from project-08-1-modernizr-geolocation-maps in Firefox and you'll see in Firebug that the values of the `class` property of the `html` element are different now, and you can see from <<Fig3-17>>  that our version of Firefox doesn't support touch events (`no-touch`), flexbox (`no-flexbox`), et al.  
+
+[[FIG3-17]]
 .Modernizr changed the HTML's class property
-image::images/fig_03_088.png[]
+image::images/fig_03_17.png[]
 
-Modernizr will also create a new JavaScript object `window.Modernizr` with lots of boolean properties indicating if a certain feature is or is not supported (see <<FIG3-99>>).
+For example, there is a new way to do page layouts using co called CSS Flexible Box Layout Module. This feature is not widely supported yet, and as you can see from <<FIG3-17>>, our Web browser doesn't support it at the time of this writing. If the CSS file of your application will implement two class selectors `.flexbox` and `.no-flexbox` then the browsers that support flexible boxes will use the former and the older browsers - the latter. 
 
-[[FIG3-99]]
+When Modernizr loads it creates a new JavaScript object `window.Modernizr` with lots of boolean properties indicating if a certain feature is or is not supported (see <<FIG3-18>>).
+
+[[FIG3-18]]
 .window.Modernizr object
-image::images/fig_03_099.png[]
+image::images/fig_03_18.png[]
 
-So in your JavaScript you can test if certain features are supported or not. 
+Hence your JavaScript code can test if certain features are supported or not. 
 
-What if the Modernizer detects that a certain feature is not supported yet by a user's older browser? You can include polyfills in your code that replicate the required functionality. You can write such a polyfill on your own or pick one from the collection that is located in http://www.dzone.com/links/r/javafx_for_tablets_amp_mobile.html[Modernizr's Github repository].
+What if the Modernizer detects that a certain feature is not supported yet by a user's older browser? You can include polyfills in your code that replicate the required functionality. You can write such a polyfill on your own or pick one from the collection that is located at https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills[Modernizr's Github repository].
 
 TIP: Addy Osmani published http://www.dzone.com/links/r/javafx_for_tablets_amp_mobile.html[The Developer's Guide To Writing Cross-Browser JavaScript Polyfills]
 
 The Development version of Modernizr weighs 42Kb and can detect lots of features. But you can make it smaller by configuring the detection of only selected features. Just visit http://modernizr.com/[Modernizr] and press the red Production button that will allow to configure the build specifically for your application. For example, if you're just interested to detect the HTML5 video support, the size of the generated Modernizr library will be reduced to under 2Kb.
 
+Let's review the relevant code from project-08-1-modernizr-geolocation-maps that illustrate the use of Modernizr. In particular, Modernizr allows you to load one or the other JavaScript code based on the result of some tests.
+
+****
+
+NOTE:
+Actually, the Modernizr loader internally utilizes a tiny (under 2Kb) resource loader library http://yepnopejs.com/[yepnope.js], which can load both JavaScript and CSS. This library is integrated in Modernizr, but we just wanted to give a proper recognition to yepnope.js, which can be used as an independent resource loader too. 
+
+****
+
+[source, javascript]
+----
+(function() {
+  	
+  Modernizr.load({
+  	
+  	test: Modernizr.geolocation,
+  	  			
+  	yep: ['js/get-native-geo-data.js','https://www.google.com/jsapi'],
+
+  	nope: ['js/get-geo-data-by-ip.js','https://www.google.com/jsapi'],
+
+  	callback :  function () {  console.log('Your browser does not support this property')},
+
+  	complete : function () {
+  		google.load("maps", "3", {other_params: "sensor=false", 'callback':init});
+  	}
+  });
+})();
+----
+
+The code above invokes the function `load()`, which can take different arguments, but our example uses as an argument a specially prepared object with four properies: `test, yep, nope, complete`. The `load()` function will test the value of `Modernizr.geolocation` and if it's true, it'll load the scripts listed in the `yep` property. Otherwise it'll load the code listed in the `nope` array. The code in the get-native-geo-data.js gets the user's location the same way as it was done in the section Integrating with Google Maps. But the code in get-geo-data-by-ip.js is very simple for now:
+
+[source, javascript] 
+----
+function init(){
+	var locationMap = document.getElementById('location-map');
+	locationMap.innerHTML = "Your browser does not support HTML 5 geolocation API.";
+}
+----
+
+In the The code of the get-geo-data-by-ip.js can be a geolocation polyfill if it suits your needs. 
+
+Most likely your browser supports HTML5 geolocation API and you'll see the map created by the script get-native-geo-data.js. But if you want to test a non-supported geolocation (the nope branch)  either try this code in the older browser or change the test condition to look like this: `Modernizr.fakegeolocation,`.  
 
 
