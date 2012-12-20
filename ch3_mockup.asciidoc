@@ -827,7 +827,7 @@ function failGeoData(error) {                                       // <4>
 			errorMessage = "The user doesn't want to share location";
 			break;
 		case error.TIMEOUT:
-			errorMessage = "Timeout - taking too long to get the user’s location";
+			errorMessage = "Timeout -  Finding location takes too long";
 			break;
 		case error.UNKNOWN_ERROR:
 			errorMessage = "Unknown error: " + error.code;
@@ -1053,6 +1053,7 @@ Modernizr is an open source JavaScript library that helps your script to figure 
 
 Note the following fragment on the top of index.html: `<html class="no-js" lang="en">`.  For Modernizr to work, your HTML root element has to include the class named `"no-js"`. On page load, the Modernizr will replace the `no-js` class with its extended version that lists all detected features, and those that are not supported will get a prefix `no-`. Run index.html from project-08-1-modernizr-geolocation-maps in Firefox and you'll see in Firebug that the values of the `class` property of the `html` element are different now, and you can see from <<Fig3-17>>  that our version of Firefox doesn't support touch events (`no-touch`), flexbox (`no-flexbox`), et al.  
 
+
 [[FIG3-17]]
 .Modernizr changed the HTML's class property
 image::images/fig_03_17.png[]
@@ -1094,8 +1095,6 @@ Actually, the Modernizr loader internally utilizes a tiny (under 2Kb) resource l
 
   	nope: ['js/get-geo-data-by-ip.js','https://www.google.com/jsapi'],
 
-  	callback :  function () {  console.log('Your browser does not support this property')},
-
   	complete : function () {
   		google.load("maps", "3", {other_params: "sensor=false", 'callback':init});
   	}
@@ -1103,23 +1102,37 @@ Actually, the Modernizr loader internally utilizes a tiny (under 2Kb) resource l
 })();
 ----
 
-The code above invokes the function `load()`, which can take different arguments, but our example uses as an argument a specially prepared object with five properies: `test, yep, nope, callback, complete`. The `load()` function will test the value of `Modernizr.geolocation` and if it's true, it'll load the scripts listed in the `yep` property. Otherwise it'll load the code listed in the `nope` array. 
-The code in the get-native-geo-data.js gets the user's location the same way as it was done in the section Integrating with Google Maps. But the code in get-geo-data-by-ip.js is very simple for now:
+The code above invokes the function `load()`, which can take different arguments, but our example uses as an argument a specially prepared object with five properties: `test, yep, nope, complete`. The `load()` function will test the value of `Modernizr.geolocation` and if it's true, it'll load the scripts listed in the `yep` property. Otherwise it'll load the code listed in the `nope` array. The code in the get-native-geo-data.js gets the user's location the same way as it was done earlier in the section Integrating with Google Maps. 
+
+Now let's consider the "nope" case. The code of the get-geo-data-by-ip.js has to offer an alternative way of getting the location for the browsers that don't support HTML5 Geolocation API. We found the service offered by http://www.maxmind.com/[MaxMind, Inc.] that returns country, region, city, latitude and longitude, which can serve as a good illustration of how a workaround of a non-supported feature can be implemented. The code in get-geo-data-by-ip.js is very simple for now:
 
 [source, javascript] 
 ----
 function init(){
-	var locationMap = document.getElementById('location-map');
-	locationMap.innerHTML = "Your browser does not support HTML 5 geolocation API.";
+
+ var locationMap = document.getElementById('location-map');
+ locationMap.innerHTML = "Your browser does not support HTML 5 geolocation API.";
+
+ // The code to get the location by IP from http://j.maxmind.com/app/geoip.js 
+ // will go here. Then we'll pass the latitude and longitude values to 
+ // Google Map API for drawing the map.
+	
 }
+
 ----
 
-In the The code of the get-geo-data-by-ip.js can be a geolocation polyfill if it suits your needs. 
+Most likely your browser supports HTML5 geolocation API, and you'll see the map created by the script get-native-geo-data.js. But if you want to test a non-supported geolocation (the nope branch)  either try this code in the older browser or change the test condition to look like this: `Modernizr.fakegeolocation,`.  
 
-Most likely your browser supports HTML5 geolocation API and you'll see the map created by the script get-native-geo-data.js. But if you want to test a non-supported geolocation (the nope branch)  either try this code in the older browser or change the test condition to look like this: `Modernizr.fakegeolocation,`.  
-
-Google has several JavaScript APIs, for example, Maps, Search, Feeds, Earths et al. Any of these APIs can be loaded by  https://developers.google.com/loader/[Google AJAX Loader] `google.load()`. This is more generic way of loading any APIs comparing to loading maps from http://maps.googleapis.com/maps/api in the previous sectin on integrating geolocation and maps. The process of using Google AJAX Loader consists of two steps:
+Google has several JavaScript APIs, for example, Maps, Search, Feeds, Earths et al. Any of these APIs can be loaded by  https://developers.google.com/loader/[Google AJAX Loader] `google.load()`. This is more generic way of loading any APIs comparing to loading maps from http://maps.googleapis.com/maps/api in the previous section on integrating geolocation and maps. The process of loading of the Google code with Google AJAX Loader consists of two steps:
 
 1. Load Google's  common loader script from https://www.google.com/jsapi
 
-2. Load the concrete module API specifying its name, version and optional parameters. In our example we are loading the maps API of version 3 passing an object with two properties: `sensor=false` and the name of the callback fnction to invoke right after the mappng API completes loading: `'callback':init`.
+2. Load the concrete module API specifying its name, version and optional parameters. In our example we are loading the maps API of version 3 passing an object with two properties: `sensor=false` and the name of the callback function to invoke right after the mapping API completes loading: `'callback':init`.
+
+TIP: If you want to test your Web page in the specific old version of a particular Web browser, you can find their distributions at oldapps.com. For example, you can find all the old version of Firefox for http://mac.oldapps.com/firefox.php[Mac OS] and for http://www.oldapps.com/firefox.php[Windows].  
+
+
+==== Searching in Google Maps
+
+
+
