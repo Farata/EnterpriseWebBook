@@ -1103,7 +1103,8 @@ Actually, the Modernizr loader internally utilizes a tiny (under 2Kb) resource l
 })();
 ----
 
-The code above invokes the function `load()`, which can take different arguments, but our example uses as an argument a specially prepared object with four properies: `test, yep, nope, complete`. The `load()` function will test the value of `Modernizr.geolocation` and if it's true, it'll load the scripts listed in the `yep` property. Otherwise it'll load the code listed in the `nope` array. The code in the get-native-geo-data.js gets the user's location the same way as it was done in the section Integrating with Google Maps. But the code in get-geo-data-by-ip.js is very simple for now:
+The code above invokes the function `load()`, which can take different arguments, but our example uses as an argument a specially prepared object with five properies: `test, yep, nope, callback, complete`. The `load()` function will test the value of `Modernizr.geolocation` and if it's true, it'll load the scripts listed in the `yep` property. Otherwise it'll load the code listed in the `nope` array. 
+The code in the get-native-geo-data.js gets the user's location the same way as it was done in the section Integrating with Google Maps. But the code in get-geo-data-by-ip.js is very simple for now:
 
 [source, javascript] 
 ----
@@ -1117,4 +1118,8 @@ In the The code of the get-geo-data-by-ip.js can be a geolocation polyfill if it
 
 Most likely your browser supports HTML5 geolocation API and you'll see the map created by the script get-native-geo-data.js. But if you want to test a non-supported geolocation (the nope branch)  either try this code in the older browser or change the test condition to look like this: `Modernizr.fakegeolocation,`.  
 
+Google has several JavaScript APIs, for example, Maps, Search, Feeds, Earths et al. Any of these APIs can be loaded by  https://developers.google.com/loader/[Google AJAX Loader] `google.load()`. This is more generic way of loading any APIs comparing to loading maps from http://maps.googleapis.com/maps/api in the previous sectin on integrating geolocation and maps. The process of using Google AJAX Loader consists of two steps:
 
+1. Load Google's  common loader script from https://www.google.com/jsapi
+
+2. Load the concrete module API specifying its name, version and optional parameters. In our example we are loading the maps API of version 3 passing an object with two properties: `sensor=false` and the name of the callback fnction to invoke right after the mappng API completes loading: `'callback':init`.
