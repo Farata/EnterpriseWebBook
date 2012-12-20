@@ -412,22 +412,22 @@ ____
 
 === Adding an Auction to Save Sick Child
 
-We gave you just enough of a theory to whet your appetite for implementing WebSockets in our Save Sick Child application. The goal is to create an auction where people can bid and purchase various goods so the proceeds would go to sick children. Auctions require real-time communications - everyone interested in the particular auction item must be immediately notified if another bidder increased the price. So we'll use WebSockets as a means for bidding and notifications of the changes in the auction. 
+We gave you just enough of a theory to whet your appetite for implementing WebSockets in our Save Sick Child application. The goal is to create an auction where people can bid and purchase various goods so the proceeds would go to sick children. Auctions require real-time communications - everyone interested in the particular auction item must be immediately notified if another bidder increased the price. So we'll use WebSockets as a means for bidding and notifications of the changes in the auction.
 
-To start the auction, the user of the Save Sick Child application has to select the _Auction_ option under the menu _Way To Give_. We realize that only a small number of the users will decide to participate in the auction, which from the architectural point of view means that the code supporting the auction should be loaded _on demand_ only if the user chooses to visit the auction. This why we need to write this code as a loadable module, and the reader will get a practical example of how a Web application can be modularized. 
+To start the auction, the user of the Save Sick Child application has to select the _Auction_ option under the menu _Way To Give_. We realize that only a small number of the users will decide to participate in the auction, which from the architectural point of view means that the code supporting the auction should be loaded _on demand_ only if the user chooses to visit the auction. This why we need to write this code as a loadable module, and the reader will get a practical example of how a Web application can be modularized.
 
 In this chapter we continue to use RequireJS explained in the previous chapter as a framework that helps manage our JavaScript application components in a modular fashion. Using RequireJS, we're going to lazy load some modules if and only if they ever get requested by the user.
 
-This is dedicated to the development of the user interface and client side of the Web applications hence we're not going to cover all the details of server side implementation, but will make our server side code available for download. We'll keep our server up and running so you can test the UI, but our main goal in this section is to show you how you can exchange the auction data with the server and process them on the client side. We use the current version of WebSockets support offered by the Java application server GlassFish 4, which is a reference implementation of the latest Java EE 7 specification. 
+This is dedicated to the development of the user interface and client side of the Web applications hence we're not going to cover all the details of server side implementation, but will make our server side code available for download. We'll keep our server up and running so you can test the UI, but our main goal in this section is to show you how you can exchange the auction data with the server and process them on the client side. We use the current version of WebSockets support offered by the Java application server GlassFish 4, which is a reference implementation of the latest Java EE 7 specification.
 
 Authors of this book are Java developers and we have provided a sidebar with the details WebSockets server API which is a part of the upcoming Java EE 7 specification. If you are not a Java developer, you may want to learn on your own which WebSocket servers exist for your favorite programming language or platform. But strictly speaking, if you are a front-end developer, you don't have to know how the WebSocket server works under the hood.
 
 ****************************************************************************
-Sidebar: WebSockets Server with Java EE 7 
+Sidebar: WebSockets Server with Java EE 7
 TODO: Setup of Java server
 ****************************************************************************
 
-In Chapter 8 you had a chance to see how a Web application can be sliced (see Aptana's project-15-dynamic-modules) into several modules using Require.js framework.  We'l take this project as a base and will create a new one: project16-websocket-auction adding to it the new modules supporting the auction. 
+In Chapter 8 you had a chance to see how a Web application can be sliced (see Aptana's project-15-dynamic-modules) into several modules using Require.js framework.  We'll take this project as a base and will create a new one: project16-websocket-auction adding to it the new modules supporting the auction.
 
 .Way To Give module (+js/modules/way-to-give.js+)
 [source,javascript]
@@ -450,39 +450,36 @@ define([], function () {
 
 <2> This function will start the auction.
 
+<vik>
+Once the application starts, require.js loads only essential modules - login and donation <<FIG9-9>>.
 
-Once the user clicks the menu Way to Give the framework require.js has to load code of WebSocket-based auction module. Here is the code of `app.js` - the entry point of our Save Sick Child application.
+[[FIG9-9]]
+.Two modules are loaded during "Save Sick Child" application startup
+image::images/fig_09_09.png[]
+
+In Google Chrome Developer Tools Console we can see that login and donation modules are reporting about successful loading. In <<FIG9-10>> we can actually see that these modules perform fine.
+
+[[FIG9-10]]
+.Two modules are loaded during "Save Sick Child" application startup
+image::images/fig_09_10.png[]
+
+Now lets click WayToGive menu item. Make sure you keep an eye on Developer Tools Console <<FIG9-11>>. You will see how WayToGive module reports about its loading and rendering.
+
+[[FIG9-11]]
+.The auction controls are loaded and rendered
+image::images/fig_09_11.png[]
+
+</vik>
+Once the user clicks the menu Way to Give the framework require.js has to load code of WebSocket-based auction module. Here is the code of `app.js` - the entry point of our Save Sick Child application. <vik>The followed code snipped explains mechanics how we loading the module _on demand_ </vik>
 
 [source,javascript]
 ----------------------------------------------------------------------
-require([], function() { // <1>
-    (function() {
-        var way_to_give = document.getElementById("way-to-give");
-        var module = null;                      // <2>
-        var handleClick = function(event) {
-                event.preventDefault();
-                if(module === "loading") {      // <3>
-                    return;                     
-                }
-                if(module !== null) {           
-                    module.startAuction();      // <4>
-                } else {
-                    module = "loading";         // <5>
-                    require(
-                    ["modules/way-to-give"], function(WayToGive) { // <6>
-                        module = new WayToGive();
-                        module.renderControls();                   // <7>
-                    });
-                }
-            }
-        way_to_give.addEventListener('click', handleClick, false); // <8>
-    })();
-});
+include::include/loading_modules_on_demand.js[]
 ----------------------------------------------------------------------
 
 <1> This function will lazy-loaded only if the user clicks on Way To Give menu.
 
-<2> WayToGive module will has a value if  `null` until loaded. 
+<2> WayToGive module will has a value if `null` until loaded.
 
 <3> If the user clicks while the `WayToGive` module is still being lazily loaded, simply ignore this click - when the module finally loads, it will open the module.
 
@@ -496,6 +493,39 @@ require([], function() { // <1>
 
 <8> Register the click event listener for the Way To Give menu.
 
+<vik>
+After user interface elements rendered we can connect to WebSocket server and request list of all available auction items.
+
+[source,javascript]
+----------------------------------------------------------------------
+include::include/auction_set_ws_listeners.js[]
+----------------------------------------------------------------------
+
+<1> After establishing connection we're requesting list of available auctions. We'll see details of `getAuctionsList()` method in next snipped.
+
+[source,javascript]
+----------------------------------------------------------------------
+include::include/auction_ws_send_message.js[]
+----------------------------------------------------------------------
+<1> Forming the request message. Details of messages format could be found in +Auction Messages Specification+ section.
+<2> Checking WebSocket object state. If WebSocket is open (`readyState===1`) we can send message. If not we just simply logging this in console. In real world example you wand to
+
+Use can select a lot from combo box and see photos of it <<FIG9-12>> and <<FIG9-13>>
+
+[[FIG9-12]]
+.Console logs incoming message contains list of auction items
+image::images/fig_09_12.png[]
+
+
+[[FIG9-13]]
+.Using Network feature of Dev Tools we can monitor WebSocket frames.
+image::images/fig_09_13.png[]
+
+[[FIG9-14]]
+image::images/fig_09_14.png[]
+
+
+</vik>
 
 ==== Auction Messages Specification
 
@@ -565,29 +595,29 @@ NOTE: As soon as the handshake completes successfully, the server side code that
 
 ==== Monitor the WebSockets traffic with Chrome Developers Tools ====
 
-Let's see whatever is described in the <<HANDSHAKE>> action.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <<FIG8-4>>. This can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint.
+Let's see whatever is described in the <<HANDSHAKE>> action.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <<FIG9-4>>. This can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint.
 
-[[FIG8-4]]
+[[FIG9-4]]
 .Initial WebSockets handshake in Chrome DevTools
 image::images/fig_08_04.png[]
 
-You can also click on +WebSockets+ on the bottom-right to show only the `WebSocket` endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG8-5>>. The white colored rows represent incoming data, and the green rows - outgoing.
+You can also click on +WebSockets+ on the bottom-right to show only the `WebSocket` endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG9-5>>. The white colored rows represent incoming data, and the green rows - outgoing.
 
-[[FIG8-5]]
+[[FIG9-5]]
 .Monitoring WebSocket frames in Chrome Developer Tools
 image::images/fig_08_05.png[]
 
 For more gore details you can navigate your Google Chrome to secret URL - `chrome://net-internals`
 
-[[FIG8-6]]
+[[FIG9-6]]
 .Details of initial handshake in Chrome Net Internals
 image::images/fig_08_06.png[]
 
-[[FIG8-7]
+[[FIG9-7]
 .Details of the socket connection
 image::images/fig_08_07.png[]
 
-[[FIG8-8]]
+[[FIG9-8]]
 .Dev tools display not only the payload size but net internals display actual size of frames (include service metadata)
 image::images/fig_08_08.png[]
 
