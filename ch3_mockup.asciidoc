@@ -1096,7 +1096,8 @@ Actually, the Modernizr loader internally utilizes a tiny (under 2Kb) resource l
   	nope: ['js/get-geo-data-by-ip.js','https://www.google.com/jsapi'],
 
   	complete : function () {
-  		google.load("maps", "3", {other_params: "sensor=false", 'callback':init});
+  		google.load("maps", "3", 
+  		            {other_params: "sensor=false", 'callback':init});
   	}
   });
 })();
@@ -1104,14 +1105,14 @@ Actually, the Modernizr loader internally utilizes a tiny (under 2Kb) resource l
 
 The code above invokes the function `load()`, which can take different arguments, but our example uses as an argument a specially prepared object with five properties: `test, yep, nope, complete`. The `load()` function will test the value of `Modernizr.geolocation` and if it's true, it'll load the scripts listed in the `yep` property. Otherwise it'll load the code listed in the `nope` array. The code in the get-native-geo-data.js gets the user's location the same way as it was done earlier in the section Integrating with Google Maps. 
 
-Now let's consider the "nope" case. The code of the get-geo-data-by-ip.js has to offer an alternative way of getting the location for the browsers that don't support HTML5 Geolocation API. We found the service offered by http://www.maxmind.com/[MaxMind, Inc.] that returns country, region, city, latitude and longitude, which can serve as a good illustration of how a workaround of a non-supported feature can be implemented. The code in get-geo-data-by-ip.js is very simple for now:
+Now let's consider the "nope" case. The code of the get-geo-data-by-ip.js has to offer an alternative way of getting the location for the browsers that don't support HTML5 Geolocation API. We found the GeoIP JavaScript API offered by http://www.maxmind.com/[MaxMind, Inc.]. Their service returns country, region, city, latitude and longitude, which can serve as a good illustration of how a workaround of a non-supported feature can be implemented. The code in get-geo-data-by-ip.js is very simple for now.
 
-[source, javascript] 
+[source, javascript]
 ----
 function init(){
 
  var locationMap = document.getElementById('location-map');
- locationMap.innerHTML = "Your browser does not support HTML 5 geolocation API.";
+ locationMap.innerHTML="Your browser does not support HTML5 geolocation API.";
 
  // The code to get the location by IP from http://j.maxmind.com/app/geoip.js 
  // will go here. Then we'll pass the latitude and longitude values to 
@@ -1121,7 +1122,7 @@ function init(){
 
 ----
 
-Most likely your browser supports HTML5 geolocation API, and you'll see the map created by the script get-native-geo-data.js. But if you want to test a non-supported geolocation (the nope branch)  either try this code in the older browser or change the test condition to look like this: `Modernizr.fakegeolocation,`.  
+Most likely your browser supports HTML5 geolocation API, and you'll see the map created by the script get-native-geo-data.js. But if you want to test a non-supported geolocation (the nope branch)  either try this code in the older browser or change the test condition to look like this: `Modernizr.fakegeolocation,`.
 
 Google has several JavaScript APIs, for example, Maps, Search, Feeds, Earths et al. Any of these APIs can be loaded by  https://developers.google.com/loader/[Google AJAX Loader] `google.load()`. This is more generic way of loading any APIs comparing to loading maps from http://maps.googleapis.com/maps/api in the previous section on integrating geolocation and maps. The process of loading of the Google code with Google AJAX Loader consists of two steps:
 
@@ -1129,10 +1130,148 @@ Google has several JavaScript APIs, for example, Maps, Search, Feeds, Earths et 
 
 2. Load the concrete module API specifying its name, version and optional parameters. In our example we are loading the maps API of version 3 passing an object with two properties: `sensor=false` and the name of the callback function to invoke right after the mapping API completes loading: `'callback':init`.
 
-TIP: If you want to test your Web page in the specific old version of a particular Web browser, you can find their distributions at oldapps.com. For example, you can find all the old version of Firefox for http://mac.oldapps.com/firefox.php[Mac OS] and for http://www.oldapps.com/firefox.php[Windows].  
+TIP: If you want to test your Web page in the specific old version of a particular Web browser, you can find their distributions at oldapps.com. For example, you can find all the old version of Firefox for http://mac.oldapps.com/firefox.php[Mac OS] and for http://www.oldapps.com/firefox.php[Windows].
+
+==== Search an Multi-Markers With Google Maps
+
+We've prepared for you a couple of more examples just to showcase the features of Google Maps API. The working examples will be included in the code accompanying the book, and we'll provide very brief explanations below. 
+
+The Aptana's project-09-map-and-search is an example of address search using Google Maps API. <<FIG3-19>> shows a fragment of the Save Sick Child page after we've entered the address "26 Broadway ny ny" in the search field. You can do a search by city or a zip code too. This can be a useful feature if you'd want to allow the users search for sick children living in a particular geographical area so their donation would be directed to specific people.  
 
 
-==== Searching in Google Maps
+[[FIG3-19]]
+.Searching by Address
+image::images/fig_03_19.png[]
+
+Our implementation of the search is shown in the code fragment from main.js. It uses geocoding, which is a process of converting an address into geographic coordinates (latitude and longitude). If the address is found, the code places a marker on the map. 
+
+[source, javascript]
+----
+var geocoder = new google.maps.Geocoder();
+
+function getMapByAddress() {
+ var newaddress = document.getElementById('newaddress').value;
+
+ geocoder.geocode(                                    //  <1>                                            
+  {'address' : newaddress,
+  'country' : 'USA'
+  },
+
+  function(results, status) {                       //  <2>
+   console.log('status = ' + status);
+   
+   if (status == google.maps.GeocoderStatus.OK) {
+  	
+  	var latitude = results[0].geometry.location.lat();          // <3>
+  	var longitude = results[0].geometry.location.lng();
+
+  	var formattedAddress = results[0].formatted_address;
+  	console.log('latitude = ' + latitude + 
+  	            ' longitude = ' +  longitude);
+  	console.log('formatted_address = ' + formattedAddress);
+
+  	var message = '<b>Address</b>: ' + formattedAddress;	
+  	foundInfo.innerHTML = message;
+
+  	var locationCoordinates = 
+  	      new google.maps.LatLng(latitude, longitude);         // <4> 
+  	showMap(locationCoordinates, locationMap);                        
+
+   } else if (status == google.maps.GeocoderStatus.ZERO_RESULTS) { // <5>
+  	console.log('geocode was successful but returned no results. ' +
+  	 'This may occur if the geocode was passed a non-existent ' + 
+  	 'address or a latlng in a remote location.');
+
+   } else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+  	console.log('You are over our quota of requests.');
+
+   } else if (status == google.maps.GeocoderStatus.REQUEST_DENIED) {
+  	console.log('Your request was denied, ' + 
+  	'enerally because of lack of a sensor parameter.');
+
+   } else if (status == google.maps.GeocoderStatus.INVALID_REQUEST) {
+  	console.log('Invalid request. ' + 
+  	     'The query (address or latlng) is missing.');
+  }
+ });
+}
+----
+
+<1> Initiate request to the `Gecoder` object providing the `GeocodeRequest` object with the address and a function to process the results. Since the request to the Google server is asynchronous, the function is a callback.
+
+<2> When the callback will be invoked, it'll get an array with results.	
+
+<3> Get the latitude and longitude from the result.
+
+<4> Prepare the LatLng object and give it to the mapping API for rendering. 	
+
+<5> Process errors.	
 
 
+The Geocoding API is simple and free to use until your application reaches a certain number of requests. Refer to https://developers.google.com/maps/documentation/javascript/geocoding[Google Geocoding API documentation] for more details.
 
+Jerry has yet another cool idea: show multiple markers on the map reflecting several donation campaigns and charity events that are going on at various locations. If we display  this information on the Save Sick Child page more people may participate with their donations or other ways. We've just learned how to do an address search on the map, and if the application has an access to the data about charity events, we can display them as the markers on the map. Run the project-10-maps-multi-markers and you'll see a map with multiple markers as in <<FIG3-20>>
+
+[[FIG3-20]]
+.Multiple markers on the map
+image::images/fig_03_20.png[]
+
+The JavaScript fragment below displays the map with multiple markers. In this example the data is hard-coded in the array `charityEvents`, but in the next chapter we'll modify this example and will get the data from a file in a JSON form. The for-loop creates a marker for each of the event listed in the array `charityEvents`. Each element of this array is also an array containing the name of the city and state, the latitude and longitude, and the title of the charity event. You can have any other attributes of the charity events stored in such an array and display them when the user clicks on a particular marker in an overlay by calling `InfoWindow.open()`. 
+
+[source, javascript]
+----
+(function() {
+
+  var locationUI = document.getElementById('location-ui');
+  var locationMap = document.getElementById('location-map');
+
+  var charityEvents = [['Chicago, Il', 41.87, -87.62, 'Giving Hand'], 
+    ['New York, NY', 40.71, -74.00, 'Lawyers for Children'],
+    ['Dallas, TX', 32.80, -96.76, 'Mothers of Asthmatics '],
+    ['Miami, FL', 25.78, -80.22, 'Friends of Blind Kids'],
+    ['Miami, FL', 25.78, -80.22, 'A Place Called Home'],
+    ['Fargo, ND', 46.87, -96.78, 'Marathon for Survivors']
+  ];
+
+  var mapOptions = {
+  		center : new google.maps.LatLng(46.87, -96.78),
+  		zoom : 3,
+  		mapTypeId : google.maps.MapTypeId.ROADMAP,
+  		mapTypeControlOptions : {
+  			style : google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+  			position : google.maps.ControlPosition.TOP_RIGHT
+  		}
+  	};
+  	
+  var map = new google.maps.Map(locationMap, mapOptions);
+
+  var infowindow = new google.maps.InfoWindow();
+
+  var marker, i;
+
+  for ( i = 0; i < charityEvents.length; i++) {
+  	marker = new google.maps.Marker({
+  		position : new google.maps.LatLng(charityEvents[i][1], 
+  		                                  charityEvents[i][2]),
+  		map : map
+  	});
+
+  	google.maps.event.addListener(marker, 'click', (function(marker, i) {
+  		return function() {
+  		 var content = charityEvents[i][0] + '<br/>' + charityEvents[i][3];
+  		 infowindow.setContent(content);
+  		 infowindow.open(map, marker);
+  		}
+  	})(marker, i));
+  	
+  	google.maps.event.addListenerOnce(map, 'idle', function(){
+  		locationUI.innerHTML = "Donation campaigns and charity events.";
+  	})
+  }
+
+})();
+----
+
+=== Summary
+
+This chapter has described the process of mocking the future Web site on by our Web Designer Jerry, who went a lot further than creating a number of images with short descriptions. Jerry created a working prototype of the Save Sick Child page. The next phase of improving this prototype is to remove the hard-coded data from the code and place them into external files. The next chapter will cover the JSON data format and how to fill our single-page application with the data using a set of techniques called AJAX.  
