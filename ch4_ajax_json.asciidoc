@@ -11,21 +11,118 @@ While there could be different answers to these questions, we'll be using AJAX t
 
 If a user points her Web browser to one URL and then changes it to another, the new request will be sent to the new URL, and the new page will arrive and will be rendered by the browser. The URL may have been changed not because the user decided to enter a new one, but simply because the user selected a menu item that resulted in bringing a new Web page to the Web browser. This was pretty much the only way Web sites were designed in the 90th. 
 
-Back in 1999, Microsoft decided to create a Web version of Outlook - their popular eMail application. Their goal was to be able to modify the Input folder as the new emails arrive, but without refreshing the entire content of the Web page. They created an ActiveX control called XMLHTTP that lived inside Internet Explorer 5 and could make requests to the remote servers receiving data without the need to refresh the entire Web page. Such a Web Outlook client would would make periodic requests to the mail server, and if the new mail arrived the application would insert the new row on the top of the Inbox by direct change of the DOM object from JavaScript. 
+Back in 1999, Microsoft decided to create a Web version of Outlook - their popular eMail application. Their goal was to be able to modify the Input folder as the new emails arrive, but without refreshing the entire content of the Web page. They created an ActiveX control called `XMLHTTP` that lived inside Internet Explorer 5 and could make requests to the remote servers receiving data without the need to refresh the entire Web page. Such a Web Outlook client would would make periodic requests to the mail server, and if the new mail arrived the application would insert the new row on the top of the Inbox by direct change of the DOM object from JavaScript. 
 
-In early 2000th, other Web browsers adopted this model and created their own XMLHTTPRequest objects, that could asynchronously query remote servers. Google created their famous We client GMail and Map Web applications.  In 2005 Jesse James Garret wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, that last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn't sound as good as AJAX.
+In early 2000th, other Web browsers adopted this model and implemented their own versions of `XMLHTTPRequest`, and now it's http://www.w3.org/TR/XMLHttpRequest/[being standardized by W3C].  Google created their famous email client GMail and Map Web applications.  In 2005 Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, that last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn't sound as good as AJAX.
 
 Visit the http://www.google.com/finance[Google Finance] or http://finance.yahoo.com/[Yahoo! Finance] Web pages when the stock market is open, and you'll see how the price quotes or other financial indicators  are changing while the most of the content remains the same. This gives an illusion of the server pushing the data to your Web client. But most likely, it not a data push but rather periodic _polling_ of the server's data using AJAX. In the modern Web applications we expect to see more of the real server side data push using HTML5 WebSockets API, which is described in details in Chapter 9 of this book.
 
 
 === Why JSON
 
-JSON stands for JavaScript Object Notation. It's a more compact than XML way to represent the data. Besides, all modern Web Browsers understand and can parse JSON data. After learning the JavaScript object literals in Chapter 2, you'll see that the presenting the data in JSON notation is almost the same as writing JavaScript object literals.
+JSON stands for JavaScript Object Notation. It's a more compact than XML way to represent the data. Besides, all modern Web Browsers understand and can parse JSON data. After learning the JavaScript object literals in Chapter 2, you'll see that the presenting the data in JSON notation is almost the same as writing JavaScript object literals. 
 
 
-<<FIG4-1>> depicts a high level view of a typical Web application.
+<<FIG4-1>> depicts a high level view of a typical Web application. All of the code samples from Chapter 2 and Chapter 3 were where written in HTML, JavaScript and CSS. in this chapter will add to the mix the `XMLHttpRequest` object that will send and receive the JSON content wrapped into `HTTPRequest` and `HTTPResponse` objects.
 
 
 [[FIG2-14]]
 .Anatomy of a Web application
 image::images/fig_04_01.png[]
+
+
+=== How AJAX Works
+
+Imagine a single-page application that needs some data to refreshed in real time. For example, our Save Sick Chile application includes an online auction where people can bid and purchase some goods as a part of some charity event. If John from New York placed a bid on certain auction item, and some time later Mary from Chicago placed the higher bid on the same item, we want to make sure that John knows about it immediately, in real time.  This means that the server-side software that received Mary's bid has to push this data to all users who expressed their interest in the same item. 
+
+But the server has to send and the browser has to modify only the new price while the rest of the content of the Web page should remain the same. You can implement behavior using AJAX. But first, the bad news:
+you can't implement the real-time server side push with AJAX. You can only emulate this behavior by using polling techniques, when the `XMLHttpRequest` object sits inside your JavaScript code and periodically sends HTTP requests to the server asking if there were any changes in bids since the last request. 
+
+If, for instance, the last request was made at 10:20:00AM, the new bid was placed at 10:20:02AM, and the application makes a new request (and updates the browser's window) at 10:20:25AM, this means that the user will be notified about the price change with a three second delay. AJAX is still request-response based way of getting the server's data, and strictly speaking, doesn't offer a real real-time updates. Some people use the term _near real time_ notifications.
+
+Another bad news is that AJAX uses HTTP protocol for the data communication, which means that a substantial overhead in the form of `HTTPResponse` header will be added to the new price, and it can be as large as several hundred bytes. This is still better than sending the entire page to the Web browser, but HTTP adds a hefty overhead. 
+
+****
+
+NOTE: We'll implement such an auction in Chapter 9 using a lot more efficient protocol called WebSockets, which supports a real-time data push and adds only several extra bytes to the data load. 
+
+****
+
+Let's try to implement AJAX techniques by implementing a data retrieval. The process of making an AJAX request is well defined and consists of the following steps:
+
+
+* Create an instance of XMLHttpRequest object.
+
+* Initialize the request to your data source by invoking the method `open()`.
+
+*  Assign the a handler to the `onreadystatechange` attribute to process server's response.
+
+*  Make a request to the data source by calling `send()`. 
+
+*  In your handler function process the response when it arrives from the server.
+
+*  Modify the DOM elements based on the received data, if need be.
+
+
+In most of the books on AJAX you'll see browser-specific ways of instantiating the `XMLHttpRequest` object (a.k.a. XHR). Most likely you'll be developing your application using some JavaScript framework and all browser specifics in instantiating of the `XMLHttpRequest` will be hidden from you. Chapters 6 and 7 include such examples, but let's stick to the standard JavaScript way implemented by all modern browsers: 
+
+`var xhr = new XMLHttpRequest();`
+
+The next step is to initialize a request by invoking the method `open()`. You need to provide the HTTP method (`GET`, `POST` et al.), the URL of the data source. Optionally, you can provide three more arguments: a Boolean variable indicating if you want this request to be processed asynchronously (which is the default), and the user id and password if the authentication is required. Keep in mind, that the following method does not request the data yet.
+
+`xhr.open('GET', dataUrl);`
+
+XHR has an attribute `readyState`, and as soon as it changes the callback function assigned to the `onreadystatechange` will be invoked. This callback should contain your application specific code to analyze the response and process it accordingly. Assigning such a callback is pretty simple:
+
+`xhr.onreadystatechange = function(){...}`
+
+Inside such a callback function you'll be analyzing the value of the XHR's attribute `readyState`, which can have one of the following values:
+
+.States of the Request
+[width="80%",options="header"]
+|=============================================
+|Value | State | Description
+
+|0 |UNSENT | the open() was not called yet
+|1 |OPENED | open() was called, but send() was not
+|2 |HEADERS_RECEIVED | send() was called and headers are available
+|3 |LOADING | The downloading is in progress
+|4 |DONE | the operation complete
+
+|=============================================
+
+Finally, send the AJAX request for data. The method `send()` can be called with or without parameters depending on if you need to send the data to the server or not. In its simplest fore the method `send()` can be invoked as follows:
+
+` xhr.send();`
+
+
+
+
+
+[source, javascript]
+----
+function loadData(dataUrl) {
+  var xhr = new XMLHttpRequest();
+  xhr.overrideMimeType("application/json");
+  xhr.open('GET', dataUrl);
+
+  xhr.onreadystatechange = function() {
+  	if (xhr.readyState == 4) {
+  		if (xhr.status == 200) {
+  			var jsonData = xhr.responseText;
+
+  			//parse json data
+  			var campaignsData = JSON.parse(jsonData).campaigns;
+  			showCampaignsInfo(campaignsData);
+  		} else {
+  			console.log(xhr.statusText);
+  		}
+  	}
+  }
+  xhr.send();
+}
+
+var dataUrl = 'data/campaignsdata.json';
+loadData(dataUrl);
+----
+
