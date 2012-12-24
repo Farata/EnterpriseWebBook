@@ -2,8 +2,7 @@
 interface WebSocket : EventTarget {
   readonly attribute DOMString url;
 
-  // ready state
-  const unsigned short CONNECTING = 0;
+  const unsigned short CONNECTING = 0;          //<2>
   const unsigned short OPEN = 1;
   const unsigned short CLOSING = 2;
   const unsigned short CLOSED = 3;
@@ -11,7 +10,7 @@ interface WebSocket : EventTarget {
   readonly attribute unsigned long bufferedAmount;
 
   // networking
-  [TreatNonCallableAsNull] attribute Function? onopen;
+  [TreatNonCallableAsNull] attribute Function? onopen;      //<3>
   [TreatNonCallableAsNull] attribute Function? onerror;
   [TreatNonCallableAsNull] attribute Function? onclose;
   readonly attribute DOMString extensions;
@@ -21,7 +20,7 @@ interface WebSocket : EventTarget {
   // messaging
   [TreatNonCallableAsNull] attribute Function? onmessage;
            attribute DOMString binaryType;
-  void send(DOMString data);
+  void send(DOMString data);            // <4>
   void send(ArrayBufferView data);
   void send(Blob data);
 };
