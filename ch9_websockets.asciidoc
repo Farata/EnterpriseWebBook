@@ -1,19 +1,25 @@
 == Replacing HTTP with WebSockets
 
-
+<vik - this is quote. I want it untouched>
 [quote, http://ietf.org/mail-archive/web/hybi/current/msg00784.html ]
 ____
-Shaving off hundreds of bytes of HTTP overhead and reducing the latency from 150ms to 50 ms makes WebSocket worthwhile considering for any application.
+
+Reducing kilobytes of data to 2 bytes is more than "a little more byte
+efficient", and reducing latency from 150ms (TCP round trip to set up the
+connection plus a packet for the message) to 50ms (just the packet for the
+message) is far more than marginal. In fact, these two factors alone are
+enough to make WebSocket seriously interesting to Google.
 ____
+</vik>
 
 This chapter starts with introducing of existing legacy options for creating interactive Web applications. After that we're going to introduce Server-Sent Events (SSE) and WebSockets, which are included in HTML5 specification.
 
-We're going to implement monitoring of the fund-raising events and an interactive auction for our Save Sick Child application using WebSockets and  Server-Sent Events. We'll use Wireshark, a network monitoring tool, to see benefits of using WebSockets protocol.
+We're going to implement monitoring of the fund-raising events and an interactive auction for our Save Sick Child application using WebSockets and  Server-Sent Events. We'll use Wireshark, a network monitoring tool, and <vik>Google Chrome Developer Tools </vik> to see benefits of using WebSockets protocol.
 
-All server-side functionality supporting this chapter is written in Java, using the http://java.net/projects/tyrus[Project "Tyrus"] with http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/[latest Glassfish builds]. If you don't know Java, just treat this server side setup as a service that supports WebSockets. For Java developers interested in diving into the server-side, we'll provide the source code and brief comments as a part of the code samples that come with this book.
-
-TODO: Show the server-side data push with Server-Sent Events and WebSockets. Compare them.
-Do a brief overview of the http://socket.io/[Socket.IO] library. Comparing sending data using WebSockets data throughput with the HTTP data push will be demonstrated in Chapter 4.
+All server-side functionality supporting this chapter is written in Java, using <vik>Java API for WebSocket http://java.net/projects/tyrus[reference implementation] </vik> what will be part of upcoming Java EE 7 specification running on http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/[latest promoted builds Glassfish Application Server]. If you don't know Java, just treat this server side setup as a service that supports WebSockets. For Java developers interested in diving into the server-side, we'll provide the source code and brief comments as a part of the code samples that come with this book.
+<vik>
+We're going to show the server-side data push with Server-Sent Events and WebSockets and compare them.
+Also we will do brief overview of popular existing frameworks what can streamline you WebSockets application development</vik>
 
 === Near Realtime Applications With HTTP
 
@@ -21,11 +27,11 @@ The HTTP protocol is the lingua franca of today's Web  applications, where clien
 
 ==== Polling ====
 
-With _polling_, your client code sends requests to the server every N seconds. The response will have no data load if there were no updates on the server side as illustrated in Figure 8-1. Visualize a child seating on back seat of your car and asking, "have we arrived yet?" every minute. And you're politely replying "Not just yet" - compare it to an empty server response. There is no valuable payload for this kid, but she's still receiving some "metadata". HTTP polling does the same thing that generates verbose HTTP response headers sending empty payload. Let alone destructing the driver (think the server) from performing other responsibilities.
+With _polling_, your client code sends requests to the server every N seconds. The response will have no data load if there were no updates on the server side as illustrated in <<FIG9-1>>. Visualize a child seating on back seat of your car and asking, "have we arrived yet?" every minute. And you're politely replying "Not just yet" - compare it to an empty server response. There is no valuable payload for this kid, but she's still receiving some "metadata". HTTP polling does the same thing that generates verbose HTTP response headers sending empty payload. Let alone destructing the driver (think the server) from performing other responsibilities.
 
-image:images/fig_08_01.png[image]
-
-Figure 8-1 Polling
+[[FIG9-1]]
+.Polling
+image:images/fig_09_01.png[image]
 
 ==== Long Polling ====
 
@@ -35,9 +41,9 @@ We'll give you one more analogy to compare polling and long polling. Imagine a p
 
 From HTTP specification perspective this hack is legit: the long polling server behavior is indistinguishable from the slow server.  That is why this technique also referred as _Hanging GET_. If you see an online auction that automatically modifies the prices as people bid on the item it looks as if the server pushes the data to you. But most likely, this functionality was implemented using long polling, which is not a real server-side data push, but its emulation.
 
-image:images/fig_08_02.png[image]
-
-Figure 8-2 Long polling
+[[FIG9-2]]
+.Long Polling
+image:images/fig_09_02.png[image]
 
 TODO Compare pros and cons of long vs short polling
 
@@ -45,9 +51,9 @@ TODO Compare pros and cons of long vs short polling
 
 Client sends the request, server wait for events and  streams +multipart/chunked+ response, and then waits for the events. The server pushes the data to the client pretending that the response never ends. The response is continually appended by the server, usually with `<script>` what gets executed even after the HTTP DOM object is ready
 
-image:images/fig_08_03.png[image]
-
-Figure 8-3 HTTP streaming
+[[FIG9-3]]
+.HTTP Streaming
+image:images/fig_09_03.png[image]
 
 Polling and streaming can be used as a fall-back for legacy browsers that don't support the modern HTML5 APIs _Server-Sent Events_ and _WebSockets_.
 
@@ -69,8 +75,9 @@ Using SSE is a good technique for the use cases when the client doesn't need to 
 This technique is still HTTP-based, and it requires the server's support of a combination of HTTP 1.1 keep-alive connections and the `text/event-stream` content type. The overhead is minimal - instead of hundreds of bytes, the server sends only tens of bytes.
 
 === Introducing WebSockets
-
-WebSockets is a bi-directional full-duplex socket-based protocol. The idea behind WebSockets is straightforward:
+<vik>
+WebSockets is a bi-directional full-duplex socket-based protocol. According to http://tools.ietf.org/html/rfc6455[RFC 6455]  - Internet Engineering Task Force (IETF) standard document - the goal of WebSocket technology is to provide mechanism for web applications what need two-way communication with servers. This technology shouldn't rely on «HTTP-hacks» or on opening multiple connections using +XMLHttpRequest+ or `<iframe>` and long polling.
+The idea behind WebSockets is straightforward:
 
 - Establish a socket connection between the client and the server using HTTP for the initial handshake.
 - Switch the communication protocol from HTTP to direct socket-based protocol.
@@ -78,13 +85,14 @@ WebSockets is a bi-directional full-duplex socket-based protocol. The idea behin
 - Send messages independently. No request-response model. Both the server and the client can initiate data transmission which enables real server-push.
 - Accordingly, both the server and the client can initiate  disconnect.
 
+Also WebSocket protocol defines the new URI's:
+
+- `ws` what identifies a WebSocket server and resource name.
+- `wss` a WebSocket server and resource name and indicates that traffic over that connection is to be protected via TLS (including standard benefits of TLS such as data confidentiality and integrity and endpoint authentication).
+
+</vik>
+
 We will explain each of this statements later in this chapter while introducing WebSocket API.
-
-====  IETF RFC 6455 Protocol ====
-
-WebSocket introduces the new protocol URI's: `ws` and `wss` for secured web-socket connection.
-
-
 
 ==== WebSockets Interface ====
 
@@ -94,9 +102,12 @@ To define an abstract Web socket interface the expert group uses http://en.wikip
 ----------------------------------------------------------------------
 include::include/ws_interface.il[]
 ----------------------------------------------------------------------
-
-<1> The constructor requires an endpoint URI and optional sub-protocols name.
-
+<vik>
+<1> The constructor requires an endpoint URI and optional sub-protocols name. Because, the WebSocket protocol defines how data will be transmitted over the wire and fragmentation of data it can be used to transport existing application layer protocols like SOAP, XMPP and etc.
+<2> The WebSocket can be in four states.
+<3> There are callback function of WebSocket object what will be invoked by browsers engine once network related events would be fired
+<4> Using `send()` methods WebSocket object can send data to server. Data can be both text and binary.
+</vik>
 ===== Client-Side API =====
 
 After the introduction of the WebSockets interface lets see how the client's JavaScript can use it.
@@ -116,7 +127,7 @@ include::include/ws_api_example.js[]
 [[HANDSHAKE]]
 ===== WebSockets Handshake
 
-Handshake upgrades the connection from HTTP to the WebSockets protocol. It's an upgrade to a message based communication. We will discuss messages (a.k.a. frames) later in this chapter. Why upgrading from HTTP instead of starting with the TCP as a protocol in the first place? The reason is that the WebSockets operates on the same ports (80 and 443) as HTTP and HTTPS do. It's an advantage because all ports under 1024 are _privileged_, and they are  handled differently than non privileged ones.
+<vik>The WebSockets protocol consists of an opening handshake</vik>. Handshake upgrades the connection from HTTP to the WebSockets protocol. It's an upgrade to a message based communication. We will discuss messages (a.k.a. frames) later in this chapter. Why upgrading from HTTP instead of starting with the TCP as a protocol in the first place? The reason is that the WebSockets operates on the same ports (80 and 443) as HTTP and HTTPS do. It's an advantage because all ports under 1024 are _privileged_, and they are handled differently than non privileged ones.
 
 For instance, on Linux systems only the user with _root_ privileges can create a socket on such ports. WebSockets use the same port as HTTP/HTTPS and it make this much more interesting. Another example would be the Flash Player socket policy system that will attempt to connect to port 843 to get the authorization information.
 
@@ -170,7 +181,7 @@ NOTE: There is no limit to the number of established WebSocket connections a cli
 
 ===== The WebSocket Frame Anatomy =====
 
-In this section we're going to explore how the WebSocket data transfer works. The WebSocket is not a stream based protocol like TCP - it's message based. The difference is that with TCP a program sends the bytes and has to ensure that the end of a message can be recognized.
+<vik>The WebSocket handshake followed by basic message framing, layered over TCP.</vik> In this section we're going to explore how the WebSocket data transfer works. The WebSocket is not a stream based protocol like TCP - it's message based. The difference is that with TCP a program sends the bytes and has to ensure that the end of a message can be recognized.
 The WebSocket specification makes it easier because it puts a frame around everything. It's easy to do  from the JavaScript on the client, but it's harder to handle in the server side code because it needs to wrap everything in frames. The frame can look like this:
 
 ----------------------------------------------------------------------
@@ -299,18 +310,6 @@ webSocket.onclose = function(closeEvent) {
 };
 ----------------------------------------------------------------------
 
-[quote]
-____
-_TODO_
-- Server-side API
-____
-
-++++
-<remark>
-    This section is WIP
-</remark>
-++++
-
 === Client-side WebSockets frameworks ===
 
 ==== The Portal ====
@@ -323,7 +322,7 @@ Atmosphere.js[https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js
 
 === WebSocket Use Cases
 
-WebSockets really shine with following applications:
+<vik>Shaving off hundreds of bytes of HTTP overhead and reducing the latency makes WebSocket worthwhile considering for following applications:</vik>
 
 - Live trading/auctions/sports notifications
 - Controlling medical equipment over the web
@@ -337,13 +336,7 @@ For the "Save Sick Child" application we're going to use WebSockets to implement
 
 The downside: WebSockets specification gives you only the transport, but it doesn't include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from protocol modeling perspective.
 
-++++
-<remark>
-    This section is WIP
-</remark>
-++++
-
-Selecting a message format for the your application's data communications is important. The most common text formats are CSV, XML and JSON. They are easy to generate, parse,  and are widely supported by many frameworks in most major development platforms. While XML and JSON allow you to represent the data in a hierarchical and easily readable by humans form, they create a lot of overhead by wrapping up each data element into additional text identifiers. Sending such additional textual information places consumes a lot of extra bandwidth and may need additional wtring-to-type conversion on both the client and server's code. The binary format is an alternative way of sending data.
+Selecting a message format for the your application's data communications is important. The most common text formats are CSV, XML and JSON. They are easy to generate, parse,  and are widely supported by many frameworks in most major development platforms. While XML and JSON allow you to represent the data in a hierarchical and easily readable by humans form, they create a lot of overhead by wrapping up each data element into additional text identifiers. Sending such additional textual information places consumes a lot of extra bandwidth and may need additional string-to-type conversion on both the client and server's code. The binary format is an alternative way of sending data.
 
 ===== CSV =====
 
@@ -373,32 +366,45 @@ XML schema is very useful language feature as it defines structure, content and 
 Cons:
 
 - XML is very verbose. To send a name of a customer you'd need something like this: `<cust_name>Mary</cust_name>`
-- The XML validation on the client is a complex task.
+- The XML validation on the client is a complex task. <vik> As for now, there is no platform independent solution or API to perform validation programmatically based on XSD or DTD.
 
-_TBD_
+Great guide to the full spectrum of XML features and tools you can find in _XML in a Nutshell, 3rd Edition_ by Elliotte Rusty Harold and W. Scott Means.
+</vik>
 
 ===== JSON =====
 
 As explained in Chapter 4, JSON stands for JavaScript Object Notation, and it's a way of representing structured data, which can be encoded and decoded by all modern browsers. JSON is widely accepted by the Web community as a popular way of the data serialization.
 
-_TBD_
-
 ===== Google Protocol Buffers =====
 
 Google Protocol Buffers is a framework for data serialization. It's language and platform neutral, and offers an extensible mechanism for serializing the structured data. You define how you want your data to be structured once, then you can use special generated source code to easily write and read your structured data to and from a variety of data streams.
+<vik>
+Developer needs to specify how the serializable information to be structured by defining protocol buffer message types in +.proto+ files. Each protocol buffer message is a small logical record of information, containing a series of name-value pairs. This protocol buffer message file is language agnostic. The `protoc` utility compiles +proto+ files and produces language specific artifacts, e.g. +.java+, +.js+, etc files.
+
+Pros:
 
 _TBD_
 
+Cons:
+
+_TBD_
+
+</vik>
+
 === WebSockets and Proxies
 
+<vik>The WebSocket protocol itself is unaware of intermediary such proxy servers, firewalls, content filters. The proxy servers are commonly used for content caching, security and enterprise content filtering. </vik>
 HTTP always supported upgrades, but unfortunately many proxies seem to have ignored that part of the specification. The main reason for that probably is that until WebSockets came around no one was actually using the Upgrade flag.
+
+_TBD_
+
+If you want to get more details how WebSockets-enabled application works with proxies there is perfect research paper by Peter Lubbers http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/[WebSocket and proxy servers].
 
 === WebSockets and HTTP 2.0
 
 [quote, Chief Product Architect at Akamai, Stephen Ludin]
 ____
 "I use the metaphor of hammers and screwdrivers. Both tools are indispensable in my workshop...
-
 Use the right tool for the job.
 In the case of page and object delivery use SPDY.
 In the case of lightweight or streaming data delivery look to WebSocket."
@@ -406,9 +412,10 @@ In the case of lightweight or streaming data delivery look to WebSocket."
 source: https://blogs.akamai.com/2012/07/spdy-and-websocket-support-at-akamai.html
 ____
 
+_TBD_
+
 - http 2.0, spdy, websockets
 - framed protocols (describe frames)
-
 
 === Adding an Auction to Save Sick Child
 
@@ -423,8 +430,7 @@ This is dedicated to the development of the user interface and client side of th
 Authors of this book are Java developers and we have provided a sidebar with the details WebSockets server API which is a part of Java EE 7. If you are not a Java developer, you may want to learn on your own which WebSocket servers exist for your favorite programming language or platform. But strictly speaking, if you are a front-end developer, you don't have to know how the WebSocket server works under the hood.
 
 ****************************************************************************
-Sidebar: WebSockets Server with Java EE 7
-TODO: Setup of Java server
+include::include/ws_javaserver_sidebar.asciidoc[]
 ****************************************************************************
 
 In Chapter 8 you had a chance to see how a Web application can be sliced (see Aptana's project-15-dynamic-modules) into several modules using Require.js framework.  We'll take this project as a base and will create a new one: project16-websocket-auction adding to it the new modules supporting the auction.
@@ -472,7 +478,7 @@ Now click WayToGive menu item and keep an eye on the Developer Tools Console <<F
 .The auction controls are loaded and rendered
 image::images/fig_09_11.png[]
 
-Once the user clicks the menu Way to Give the framework require.js has to load code of WebSocket-based auction module. Here is the code of `app.js` - the entry point of our Save Sick Child application. The following code snipped illustrates the mechanics how we loading the module _on demand_. 
+Once the user clicks the menu Way to Give the framework require.js has to load code of WebSocket-based auction module. Here is the code of `app.js` - the entry point of our Save Sick Child application. The following code snipped illustrates the mechanics how we loading the module _on demand_.
 
 [source,javascript]
 ----------------------------------------------------------------------
@@ -509,9 +515,9 @@ include::include/auction_set_ws_listeners.js[]
 ----------------------------------------------------------------------
 include::include/auction_ws_send_message.js[]
 ----------------------------------------------------------------------
-<1> Forming the request message. Details of the message format could be found in +Auction Messages Specification+ section.
+<1> Forming the request message. Details of the message format could be found in <<Auction_Messages_Specification>> section.
 
-<2> Checking WebSocket object state. If WebSocket is open (`readyState===1`) we can send message. If not we just simply logging this in console. In real world example you wand to
+<2> Checking WebSocket object state. If WebSocket is open (`readyState===1`) we can send message. If not we just simply logging this in console. In real world situation if your users work on unstable networks such as cellular or 3G <vik> you definitely don't want to lose any bits of your data. It's good idea use local storage API to persist the data locally until application gets back online and resubmit the data. We're going to demonstrate this technique in further chapters when we're going to talk about mobile and hybrid applications.</vik>
 
 The user can select a lot from combo box and see photos of it <<FIG9-12>> and <<FIG9-13>>
 
@@ -526,7 +532,47 @@ image::images/fig_09_13.png[]
 [[FIG9-14]]
 image::images/fig_09_14.png[]
 
+==== Monitor the WebSockets traffic with Chrome Developers Tools ====
 
+Let's see whatever is described in the <<HANDSHAKE>> action.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <<FIG9-4>>. This can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint.
+
+[[FIG9-4]]
+.Initial WebSockets handshake in Chrome DevTools
+image::images/fig_09_04.png[]
+
+You can also click on +WebSockets+ on the bottom-right to show only the `WebSocket` endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG9-5>>. The white colored rows represent incoming data, and the green rows - outgoing.
+
+[[FIG9-5]]
+.Monitoring WebSocket frames in Chrome Developer Tools
+image::images/fig_09_05.png[]
+
+For more gore details you can navigate your Google Chrome to secret URL - `chrome://net-internals`
+
+[[FIG9-6]]
+.Details of initial handshake in Chrome Net Internals
+image::images/fig_09_06.png[]
+
+
+[[FIG9-7]
+.Details of the socket connection
+image::images/fig_09_07.png[]
+
+<vik>
+Now you can see, Developer Tools show length of payload data. On other hand, `chrome://net-internals` applet shows size of actual WebSocket frame. As we learned earlier in this chapter, overall size of frame slightly different from size of the payload. There are few bytes for frame header. Moreover, all outgoing messages should be masked and mask should be transfered to server (additional 32 bits = 4 bytes to frame size).
+
+[[FIG9-8]]
+.Dev tools and net-internals side by side
+image::images/fig_09_08.png[]
+
+</vik>
+
+==== Sniffing WebSockets frames with Wireshark ====
+
+<vik>
+Wireshark is powerful and comprehensive tool for analyzing network traffic.
+</vik>
+
+[[Auction_Messages_Specification]]
 ==== Auction Messages Specification
 
 1. The client's code connects to the WebSockets endpoint on the server.
@@ -589,39 +635,46 @@ NOTE: As soon as the handshake completes successfully, the server side code that
     "auctionId": "second"
 }
 ----------------------------------------------------------------------
++
 
-5. TBD `PriceUpdate` message
-6. TBD `AuctionResult` message
+This is outgoing message. When user clicks on "Bid!" button text from bid text box wrapped to Bid message. On the server, bid message data value compared with best bid value and if it's
++
 
-==== Monitor the WebSockets traffic with Chrome Developers Tools ====
+5. `PriceUpdate` message <vik>
++
 
-Let's see whatever is described in the <<HANDSHAKE>> action.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <<FIG9-4>>. This can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint.
+.PriceUpdate message
+[source,javascript]
+----------------------------------------------------------------------
+{
+    "type": "PRICE_UPDATE", //<1>
+    "data": "1300.0", //<2>
+    "auctionId": "second"
+}
+----------------------------------------------------------------------
 
-[[FIG9-4]]
-.Initial WebSockets handshake in Chrome DevTools
-image::images/fig_08_04.png[]
+<1> In case of one auction participant is placed bid bigger that other rest of participants will receive update ...
+<2> with updated best bid value.
++
 
-You can also click on +WebSockets+ on the bottom-right to show only the `WebSocket` endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG9-5>>. The white colored rows represent incoming data, and the green rows - outgoing.
+6. `AuctionResult` message
++
 
-[[FIG9-5]]
-.Monitoring WebSocket frames in Chrome Developer Tools
-image::images/fig_08_05.png[]
+.AuctionResult message
+[source,javascript]
+----------------------------------------------------------------------
+{
+    "type": "RESULT",
+    "data": "Congrats! You\u0027ve won Painting for $1300.0",
+    "auctionId": "first"
+}
+----------------------------------------------------------------------
++
 
-For more gore details you can navigate your Google Chrome to secret URL - `chrome://net-internals`
+After auction timeout, server broadcasts the message with auction results. In case of connected client is won the item message will contain congratulations. On the contrary, the client will get message that she isn't the winner. </vik>
 
-[[FIG9-6]]
-.Details of initial handshake in Chrome Net Internals
-image::images/fig_08_06.png[]
+=== Summary
 
-[[FIG9-7]
-.Details of the socket connection
-image::images/fig_08_07.png[]
+This chapter was covering new the WebSocket protocol. A smaller portion of this chapter was legacy options for real-time communication for web applications. We showed the benefits of using WebSocket protocol in applications and how can improve application performance by reducing latency and HTTP-headers overhead. We learned how to integrate WebSocket-based functionality to existing HTTP-based application. We learned how to use network monitoring capabilities of Google Chrome Developer Tools and Wireshark application for sniffing WebSocket traffic.
 
-[[FIG9-8]]
-.Dev tools display not only the payload size but net internals display actual size of frames (include service metadata)
-image::images/fig_08_08.png[]
-
-==== Sniffing WebSockets frames with Wireshark ====
-
-_TBD_
-
+</vik>
