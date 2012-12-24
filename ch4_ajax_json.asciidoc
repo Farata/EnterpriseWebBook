@@ -13,9 +13,9 @@ If a user points her Web browser to one URL and then changes it to another, the 
 
 Back in 1999, Microsoft decided to create a Web version of Outlook - their popular eMail application. Their goal was to be able to modify the Input folder as the new emails arrive, but without refreshing the entire content of the Web page. They created an ActiveX control called `XMLHTTP` that lived inside Internet Explorer 5 and could make requests to the remote servers receiving data without the need to refresh the entire Web page. Such a Web Outlook client would would make periodic requests to the mail server, and if the new mail arrived the application would insert the new row on the top of the Inbox by direct change of the DOM object from JavaScript. 
 
-In early 2000th, other Web browsers adopted this model and implemented their own versions of `XMLHTTPRequest`, and now it's http://www.w3.org/TR/XMLHttpRequest/[being standardized by W3C].  Google created their famous email client GMail and Map Web applications.  In 2005 Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, that last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn't sound as good as AJAX.
+In early 2000th, other Web browsers adopted this model and implemented their own versions of `XMLHTTPRequest`, and now it's http://www.w3.org/TR/XMLHttpRequest/[being standardized by W3C].  Google created their famous email client GMail and Map Web applications.  In 2005 Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, the last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn't sound as good as AJAX. 
 
-Visit the http://www.google.com/finance[Google Finance] or http://finance.yahoo.com/[Yahoo! Finance] Web pages when the stock market is open, and you'll see how the price quotes or other financial indicators  are changing while the most of the content remains the same. This gives an illusion of the server pushing the data to your Web client. But most likely, it not a data push but rather periodic _polling_ of the server's data using AJAX. In the modern Web applications we expect to see more of the real server side data push using HTML5 WebSockets API, which is described in details in Chapter 9 of this book.
+Visit the http://www.google.com/finance[Google Finance] or http://finance.yahoo.com/[Yahoo! Finance] Web pages when the stock market is open, and you'll see how the price quotes or other financial indicators  are changing while the most of the content remains the same. This gives an illusion of the server pushing the data to your Web client. But most likely, it not a data push but rather periodic _polling_ of the server's data using AJAX. In the modern Web applications we expect to see more of the real server side data push using HTML5 WebSockets API, which is described in details in Chapter 9 of this book. 
 
 
 === Why JSON
@@ -26,7 +26,7 @@ JSON stands for JavaScript Object Notation. It's a more compact than XML way to 
 <<FIG4-1>> depicts a high level view of a typical Web application. All of the code samples from Chapter 2 and Chapter 3 were where written in HTML, JavaScript and CSS. in this chapter will add to the mix the `XMLHttpRequest` object that will send and receive the JSON content wrapped into `HTTPRequest` and `HTTPResponse` objects.
 
 
-[[FIG2-14]]
+[[FIG4-1]]
 .Anatomy of a Web application
 image::images/fig_04_01.png[]
 
@@ -95,34 +95,107 @@ Finally, send the AJAX request for data. The method `send()` can be called with 
 
 ` xhr.send();`
 
+The complete cycle of the `readyState` transitions is depicted in <<FIG4-2>>
 
+[[FIG4-2]]
+.Transitions of the readyState attribute
+image::images/fig_04_02.png[]
 
-
+Let's spend a bit more time discussing the completion of the this cycle when server's response is received and the XHR's `readyState` is equal to 4. This means that we've got something back, which can be either the data we've expected or the error message. We need to handle both scenarios in the function assigned to the `onreadystatechange` attribute. This is a common way to do it in JavaScript without using frameworks:
 
 [source, javascript]
 ----
-function loadData(dataUrl) {
-  var xhr = new XMLHttpRequest();
-  xhr.overrideMimeType("application/json");
-  xhr.open('GET', dataUrl);
+xhr.onreadystatechange = function(){
 
+ if (xhr.readyState == 4) {
+
+   if((xhr.status >=200 && xhr.status <300) || xhr.status===304) {
+
+       // We got the data. Get the value from one of the response attributes
+       // e.g. xhr.responseText and process the data accordingly.
+
+   } else {
+      // We got an error. Process the error code and 
+      // display the content of the statusText attribute.
+   } 
+
+  }     
+};
+----
+
+First the code should check the http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP status code] received from server. W3C splits the HTTP codes into groups. The codes numbered as 1xx are informational, 2xx are successful codes, 3xx are about redirections, 4xx represent bad requests (like infamous 404 for Not Found), and 5xx for server errors. That's why the above code fragment checks for all 2xx codes and 304 - the data was not modified and taken from cache. 
+
+To see the first example where we are using AJAX in our Save Sick Child application run the Aptana's project-04-1-donation-ajax-html, where we've removed the countries and states from HTML and saved them in two separate files: data/us-states.html and data/countries.html. The user's of Save Sick Child page  won't find any visual differences, but the Countries and States dropdowns are now populated be the data located in these files. The file countries.html has 241 lines, and three of them are shown below:
+
+[source, html]
+----
+<option value="United States">United States</option>
+<option value="United Kingdom">United Kingdom</option>
+<option value="Afghanistan">Afghanistan</option>
+----
+
+Later in this chapter in the section on JSON we'll replace this file with its JSON version. The JavaScript code that reads countries and states from file and populates the dropdowns comes next. The content of these files is assigned to the `innerHTML` attribute of the given HTML `<select>` element. 
+
+[source, javascript]
+----
+function loadData(dataUrl, target) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', dataUrl, true);		
   xhr.onreadystatechange = function() {
   	if (xhr.readyState == 4) {
-  		if (xhr.status == 200) {
-  			var jsonData = xhr.responseText;
+           if((xhr.status >=200 && xhr.status <300) || 
+                                 xhr.status===304){
 
-  			//parse json data
-  			var campaignsData = JSON.parse(jsonData).campaigns;
-  			showCampaignsInfo(campaignsData);
-  		} else {
+  			target.innerHTML += xhr.responseText;
+  	  } else {
+
   			console.log(xhr.statusText);
-  		}
+  	  }
   	}
   }
   xhr.send();
 }
 
-var dataUrl = 'data/campaignsdata.json';
-loadData(dataUrl);
+// Load the countries and states using XHR
+loadData('data/us-states.html', statesList);
+loadData('data/countries.html', counriesList);
 ----
 
+****
+
+NOTE:
+The above code has an issue, which may not be so obvious, but can irritate the users of this application. The problem is that it doesn't handle errors. Yes, we print the error message on the developer's console, but the end user will never see them. If for some reason the data about countries or states won't arrive, the dropdowns will be empty, the donation form won't be valid and the users will become angry that they can't make a donation without knowing why. Proper error handling and reports are very important for any application so never ignore it. You should display a user-friendly error messages somewhere on the Web page. 
+****
+
+
+=== Using JSON 
+
+
+
+The beginning of the file countries.json is shown below:
+
+[source, javascript]
+----
+{
+"countrieslist": [
+	{
+		"name": "Afghanistan",
+		"code": "AF"
+	}, {
+		"name": "Åland Islands",
+		"code": "AX"
+	}, {
+		"name": "Albania",
+		"code": "AL"
+	}, 
+----
+This file is well formatted and readable by the human beings. But when you are ready to deploy your application in production, you want to compress this file so less bytes should travel over the wire to the user's browser. The server-side libraries that generate JSON will make the data sent to the client compact by removing the Tab and the new line characters. If you want to turn the pretty-print JSON into a more compact one-line format just use such Web sites as http://javascriptcompressor.com/[JavaScript Compressor] or http://www.freeformatter.com/json-formatter.html/[JSON Formatter]. When we ran the file countries.json through the compressor, its size decreased by one third. 
+
+To make sure that your JSON data is properly formatted validate it using http://jsonlint.com/[JSONLint]. If you paste an ugly one-line JSON data JSLint will reformat it into a readable form. JSONLint can also compress JSON if you provide its URL with the suffix `?reformat=compress`.
+
+
+
+
+=== Summary
+
+In this chapter you've learned about using AJAX as a means of communication of your Web browser with the servers. AJAX also deserves a credit for making the JavaScript language popular again by showing a very practical way of creating single-page Web applications.
