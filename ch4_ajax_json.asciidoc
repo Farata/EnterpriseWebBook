@@ -48,6 +48,8 @@ NOTE: We'll implement such an auction in Chapter 9 using a lot more efficient pr
 
 ****
 
+==== Retrieving Data From the Server
+
 Let's try to implement AJAX techniques by implementing a data retrieval. The process of making an AJAX request is well defined and consists of the following steps:
 
 
@@ -125,7 +127,7 @@ xhr.onreadystatechange = function(){
 
 First the code should check the http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP status code] received from server. W3C splits the HTTP codes into groups. The codes numbered as 1xx are informational, 2xx are successful codes, 3xx are about redirections, 4xx represent bad requests (like infamous 404 for Not Found), and 5xx for server errors. That's why the above code fragment checks for all 2xx codes and 304 - the data was not modified and taken from cache. 
 
-To see the first example where we are using AJAX in our Save Sick Child application run the Aptana's project-04-1-donation-ajax-html, where we've removed the countries and states from HTML and saved them in two separate files: data/us-states.html and data/countries.html. The user's of Save Sick Child page  won't find any visual differences, but the Countries and States dropdowns are now populated be the data located in these files. The file countries.html has 241 lines, and three of them are shown below:
+To see the first example where we are using AJAX in our Save Sick Child application run the Aptana's project-04-1-donation-ajax-html, where we've removed the countries and states from HTML and saved them in two separate files: data/us-states.html and data/countries.html. The user's of Save Sick Child page  won't find any visual differences, but the Countries and States dropdowns are now populated be the data located in these files. Later in this chapter in the section on JSON we'll replace this HTML file with its JSON version. These are the first three lines (out of 241) from the file countries.html:
 
 [source, html]
 ----
@@ -134,7 +136,7 @@ To see the first example where we are using AJAX in our Save Sick Child applicat
 <option value="Afghanistan">Afghanistan</option>
 ----
 
-Later in this chapter in the section on JSON we'll replace this file with its JSON version. The JavaScript code that reads countries and states from file and populates the dropdowns comes next. The content of these files is assigned to the `innerHTML` attribute of the given HTML `<select>` element. 
+The JavaScript code that reads countries and states from file and populates the dropdowns comes next. The content of these files is assigned to the `innerHTML` attribute of the given HTML `<select>` element. 
 
 [source, javascript]
 ----
@@ -163,8 +165,34 @@ loadData('data/countries.html', counriesList);
 
 ****
 
-NOTE: The above code has an issue, which may not be so obvious, but can irritate the users of this application. The problem is that it doesn't handle errors. Yes, we print the error message on the developer's console, but the end user will never see them. If for some reason the data about countries or states won't arrive, the dropdowns will be empty, the donation form won't be valid and the users will become angry that they can't make a donation without knowing why. Proper error handling and reports are very important for any application so never ignore it. You should display a user-friendly error messages somewhere on the Web page. 
+NOTE: The above code has an issue, which may not be so obvious, but can irritate users. The problem is that it doesn't handle errors. Yes, we print the error message on the developer's console, but the end user will never see them. If for some reason the data about countries or states won't arrive, the dropdowns will be empty, the donation form won't be valid and the users will become angry that they can't make a donation without knowing why. Proper error handling and reports are very important for any application so never ignore it. You should display a user-friendly error messages somewhere on the Web page. 
 ****
+
+The following code fragment shows how to add the received data to a certain area on the Web page.        This code creates an HTML paragraph `<p>` with the text returned by the server and then adds this paragraph to the `<div>` with the ID `main`:
+
+[source, javascript]
+----
+if (xhr.readyState == 4) {
+  if((xhr.status >=200 && xhr.status <300) || xhr.status===304){
+      var p = document.createElement("p");
+
+      p.appendChild(document.createTextNode(myRequest.responseText));
+      
+      document.getElementById("main").appendChild(p);
+  }
+}    
+----
+
+==== Sending Data to the Server 
+
+The next example to consider is when the Web client sends the data to the server using XMLHttpRequest object. The user of Save Sick Child fills out the Donate form and presses the button Donate. 
+
+
+==== AJAX: Good and Bad 
+
+AJAX techniques have their pros and cons. You saw how easy it is to create a Web page that doesn't have to refresh itself, but provide the users with the means of communicating with the server. This certainly improves the user's experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. Taken for granted auto-completion feature would not be possible in HTML/JavaScript application without the AJAX.
+
+On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. Since the AJAX brings most of the content dynamically, the search engines wouldn't rank your Web pages as high as it would do if the content was statically embedded in the HTML.
 
 
 === Using JSON 
@@ -192,8 +220,13 @@ This file is well formatted and readable by the human beings. But when you are r
 
 To make sure that your JSON data is properly formatted validate it using http://jsonlint.com/[JSONLint]. If you paste an ugly one-line JSON data JSLint will reformat it into a readable form. JSONLint can also compress JSON if you provide its URL with the suffix `?reformat=compress`.
 
+==== Processing JSON streams in Java
 
+In the Web browser we wanted to construct a JavaScript object from a JSON stream or turn the JavaScriot object into a JSON string. A similar task has to be performed on the server side. Our Save Sick Child application uses Java on the server side. There is a number of third-party Java libraries that can consume and generate JSON content. Besides the Java EE 7 specification made the first steps in prescribing how this process has to be standardized in any Java Application server.
 
+=== Loading Charity Events using AJAX and JSON
+
+The last example in Chapter 3 was about displaying various charity events on the Google map using multiple markers. But the data about these events were hard-coded in HTML file. After learning about AJAX and JSON it should not be too difficult to create a separate file with the information about charities in JSON format and load them using `XMLHTTPRequest` object.
 
 === Summary
 
