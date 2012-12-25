@@ -562,6 +562,47 @@ image::images/fig_09_08.png[]
 
 
 Wireshark is a powerful and comprehensive monitoring tool for analyzing the network traffic.
+<vik>
+You can download version for you operation system from http://www.wireshark.org[official web site]. To start capturing WebSocket traffic we need to select network interface from list and click "Start" <<FIG9-15>>. In our case we're going to select +loopback+ interface to capture traffic on _localhost_.
+
+[[FIG9-15]]
+.Wireshark application main view
+image::images/fig_09_15.png[]
+
+The Wireshark going to capture all network activity. That is why is good idea to setup filter so we can see only required data. We want to capture HTTP traffic and TCP traffic on port +8080+ because our WebSocket server uses that port <<FIG9-16>>. Enter `http && (tcp.port==8080)` in filter text box and click apply.
+
+[[FIG9-16]]
+.Filter setup
+image::images/fig_09_16.png[]
+
+Now Wireshark is ready to sniff traffic of our application. You can start the auction session, place the bids. After you're done with the auction you can return to Wireshark window and analyze what we got. You can see initial handshake (+GET+ request <<FIG9-17>> and +Upgrade+ response <<FIG9-18>>)
+
+[[FIG9-17]]
+.The +GET+ request for protocol upgrade
+image::images/fig_09_17.png[]
+
+[[FIG9-18]]
+.The +GET+ response with protocol upgrade
+image::images/fig_09_18.png[]
+
+After successful connection upgrade, Wireshark captured `http-alt` stream on 8080 port. This is our WebSocket connection. Right click on that row and select +Follow TCP Stream+ <<FIG9-19>>.
+
+[[FIG9-19]]
+.The +GET+ response with protocol upgrade
+image::images/fig_09_19.png[]
+
+On the next screen you can see details of WebSocket frame <<FIG9-20>>. We took this screenshot right after the auction application start. We can see here data with list of available auctions. The outgoing data marked with _red_ color and the incoming data marked with _blue_ color.
+
+[[FIG9-20]]
+.WebSocket frame
+image::images/fig_09_20.png[]
+
+We took next screenshot <<FIG9-21>> after the action has been finished. We can see here entire data what were sent over WebSocket connection.
+
+[[FIG9-20]]
+.Entire auction conversation
+image::images/fig_09_20.png[]
+</vik>
 
 
 [[Auction_Messages_Specification]]
