@@ -32,8 +32,6 @@ From HTTP specification perspective this hack is legit: the long polling server 
 .Long Polling
 image:images/fig_09_02.png[image]
 
-TODO Compare pros and cons of long vs short polling
-
 ==== HTTP Streaming ====
 
 Client sends the request, server wait for events and  streams +multipart/chunked+ response, and then waits for the events. The server pushes the data to the client pretending that the response never ends <<FIG9-3>>. The response is continually appended by the server, usually with `<script>` what gets executed even after the HTTP DOM object is ready
@@ -389,24 +387,34 @@ A developer needs to specify how the serializable information has to be structur
 
 Pros:
 
-_TBD_
+<vik>
+
+- The Protobuf uses compact binary format.
+- Google ships utilities for Java, Python and C++. Community contributes to the project with tooling for other languages.
+- The Protocol Buffers well documented.
+
+</vik>
 
 Cons:
 
-_TBD_
+<vik>
 
+- The binary format is not human readable.
+- The Protobuf can be a bit smaller, especially when a lot of numeric values are transferred, but JSON the more common protocol in the JavaScript space and better supported and easier to integrate in application.
+- This technology requires browser support for binary format. You can find current state of binary browser support http://caniuse.com/#search=binary
+</vik>
 
-=== WebSockets and Proxies
+=== WebSockets and Proxies ===
 
 The WebSocket protocol itself is unaware of intermediaries such as proxy servers, firewalls, content filters. The proxy servers are commonly used for content caching, security and enterprise content filtering.
 
 HTTP always supported  protocol upgrades, but many proxies seem to have ignored that part of the specification. Until the WebSockets came around no one was actually using the Upgrade attribute.
+<vik>
+The problem with proxy servers for web applications that have a long-lived connection like  WebSocket is proxy servers may choose to close streaming or idle WebSocket connections, because they appear to be trying to connect with an unresponsive HTTP server. Additionally, proxy servers may also buffer unencrypted HTTP responses. It can introduce unpredictable latency during response streaming.
+If you want to get more details how WebSockets-enabled application has to deal with proxies there is comprehensive research paper by Google's Peter Lubbers http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/[WebSocket and proxy servers].
+</vik>
 
-_TBD_
-
-If you want to get more details how WebSockets-enabled application works with proxies there is perfect research paper by Peter Lubbers http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/[WebSocket and proxy servers].
-
-=== Adding an Auction to Save Sick Child
+=== Adding an Auction to Save Sick Child ===
 
 We gave you just enough of a theory to whet your appetite for implementing WebSockets in our Save Sick Child application. The goal is to create an auction where people can bid and purchase various goods so the proceeds would go to sick children. Auctions require real-time communications - everyone interested in the particular auction item must be immediately notified if another bidder increased the price. So we'll use WebSockets as a means for bidding and notifications of the changes in the auction.
 
