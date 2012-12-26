@@ -20,7 +20,7 @@ Visit the http://www.google.com/finance[Google Finance] or http://finance.yahoo.
 
 === Why JSON
 
-JSON stands for JavaScript Object Notation. It's a more compact than XML way to represent the data. Besides, all modern Web Browsers understand and can parse JSON data. After learning the JavaScript object literals in Chapter 2, you'll see that the presenting the data in JSON notation is almost the same as writing JavaScript object literals. 
+http://www.json.org/js.html[JSON] stands for JavaScript Object Notation. It's a more compact than XML way to represent the data. Besides, all modern Web Browsers understand and can parse JSON data. After learning the JavaScript object literals in Chapter 2, you'll see that the presenting the data in JSON notation is almost the same as writing JavaScript object literals. 
 
 
 <<FIG4-1>> depicts a high level view of a typical Web application. All of the code samples from Chapter 2 and Chapter 3 were where written in HTML, JavaScript and CSS. in this chapter will add to the mix the `XMLHttpRequest` object that will send and receive the JSON content wrapped into `HTTPRequest` and `HTTPResponse` objects.
@@ -73,6 +73,8 @@ In most of the books on AJAX you'll see browser-specific ways of instantiating t
 The next step is to initialize a request by invoking the method `open()`. You need to provide the HTTP method (`GET`, `POST` et al.), the URL of the data source. Optionally, you can provide three more arguments: a Boolean variable indicating if you want this request to be processed asynchronously (which is the default), and the user id and password if the authentication is required. Keep in mind, that the following method does not request the data yet.
 
 `xhr.open('GET', dataUrl);`
+
+TIP: Always use HTTPS ptotocol if you need to send the user id and password. Using secure HTTP should be your preferred protocol in general (read more in Chapter 10).
 
 XHR has an attribute `readyState`, and as soon as it changes the callback function assigned to the `onreadystatechange` will be invoked. This callback should contain your application specific code to analyze the response and process it accordingly. Assigning such a callback is pretty simple:
 
@@ -190,13 +192,55 @@ The next example to consider is when the Web client sends the data to the server
 
 ==== AJAX: Good and Bad 
 
-AJAX techniques have their pros and cons. You saw how easy it is to create a Web page that doesn't have to refresh itself, but provide the users with the means of communicating with the server. This certainly improves the user's experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. Taken for granted auto-completion feature would not be possible in HTML/JavaScript application without the AJAX.
+AJAX techniques have their pros and cons. You saw how easy it was to create a Web page that didn't have to refresh itself, but provided the users with the means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. Taken for granted auto-completion feature would not be possible in HTML/JavaScript application without the AJAX.
 
 On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. Since the AJAX brings most of the content dynamically, the search engines wouldn't rank your Web pages as high as it would do if the content was statically embedded in the HTML.
 
 
 === Using JSON 
 
+When an application has a client and server tiers one of the important decision to be made is about the format of the data that go over the network. We are talking about the application-specific data. Someone has to decide how to represent the data about an Auction Item, Customer, Donation et al. The easiest way to represent text data is Comma Separated Format (CSV), but it's not easily readable by humans, hard to validate,  and recreation of JavaScript objects from CSV feed would require special programming. 
+
+Sending the data in XML form addresses the readability and validation issues, but it's very verbose. Every data element has to be surrounded by an opening and closing tag describing the data. Converting the XML data to/from JavaScript object requires special parsers, and you'd need to use one of the JavaScript libraries for cross-browser compatibility.
+
+In today's Web, JSON became the most popular data format. It's not as verbose as XML, and JSON's notation is almost the same as JavaScript object literals. It's easily readable by humans, and every ECMAScript 5 compliant browser includes a native JSON object: `window.JSON`. Even though the JSON formatted data look like JavaScript object literals, JSON is language independent. Here's an example of the data in the JSON format:
+
+[source, javascript]
+----
+{
+ "fname":"Alex",
+ "lname":"Smith",
+ "age":30,
+ "address": {
+     "street":"123 Main St.",
+     "city": "New York"}
+}
+----
+
+Anyone who knows JavaScript understands that this is an object that represents a person, which has a nested object that represents an address. Note the difference with JavaScript literals: the names of the properties are always strings and must be taken into quotes. Representing the same object in XML would need a lot more characters (e.g. `<fname>Alex</fname>` etc). There are some other important differences between JSON and XML. The structure of the XML document can be defined using DTD or XML Schema, which simplifies the data validation. On the other hand, JSON data have data types, for example the age attribute in the above example is a `Number`. JSON also supports arrays while XML doesn't. 
+
+For parsing JSON in JavaScript you use the method `JSON.parse()`, which takes a string and returns JavaScript object, for example:
+
+[source, javascript]
+----
+var customer=JSON.parse('{"fname":"Alex","lname":"Smith"}'); 
+
+console.log(“Your name is ” + customer.fname + “ “ + customer.lname);
+
+----
+
+For a reverse operation - turning an object into JSON string - do `JSON.stringify(custormer)`. The older browsers didn't have the `JSON` object, and there is an alternative way of parsing JSON is with the help of the script json2.js, which creates the JSON property on the global object. The json2.js is freely available on http://bit.ly/aUMLnL[Github]. In Chapter 3 you've learned about feature detection with Modernizr, and you can automate the loading of this script if needed. 
+
+[source, javascript]
+----
+Modernizr.load({
+    test: window.JSON,
+    nope: 'json2.js',
+    complete: function () {
+        var customer = JSON.parse('{"fname":"Alex","lname":"Smith"}');
+    }
+});
+----
 
 
 The beginning of the file countries.json is shown below:

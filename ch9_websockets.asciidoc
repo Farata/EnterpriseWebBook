@@ -1,8 +1,8 @@
 == Replacing HTTP with WebSockets
 
-This chapter starts with introducing of existing legacy options for creating interactive Web applications. After that we're going to introduce Server-Sent Events (SSE) and WebSockets, which are included in the HTML5 specification.
+This chapter is about moving away from the HTTP protocol in Web applications. That's right, we'll start with introducing existing "legacy" options for creating interactive Web applications, and then you'll learn how to use HTML5's Server-Sent Events (SSE) and WebSockets.
 
-We're going to implement monitoring of the fund-raising events and an interactive auction for our Save Sick Child application using WebSockets and  Server-Sent Events. We'll use Wireshark, a network monitoring tool, and Google Chrome Developer Tools to see benefits of using WebSockets protocol.
+We'll implement fund-raising events and an interactive auction for our Save Sick Child application using WebSockets and  Server-Sent Events. The goal is to let you see the advantages of changing the way the Web client communicates with the server, and to prove that this is better than a regular HTTP we'll monitod the network with  Wireshark and Google Chrome Developer Tools.
 
 All server-side functionality supporting this chapter is written in Java, using Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which will be the part of upcoming Java EE 7 specification running on http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/[latest promoted builds Glassfish Application Server]. If you don't know Java, just treat this server side setup as a service that supports WebSockets. For Java developers interested in diving into the server-side, we'll provide the source code and brief comments as a part of the code samples that come with this book.
 
@@ -70,29 +70,29 @@ enough to make WebSocket seriously interesting to Google.
 source: http://ietf.org/mail-archive/web/hybi/current/msg00784.html
 ____
 
-WebSockets is a bi-directional full-duplex socket-based protocol. According to http://tools.ietf.org/html/rfc6455[RFC 6455]  - the Internet Engineering Task Force (IETF) standard document - the goal of WebSocket technology is to provide mechanism for web applications what need two-way communications with servers. This technology shouldn't rely on HTTP hacks or on opening multiple connections using +XMLHttpRequest+ or `<iframe>` and long polling. The idea behind WebSockets is straightforward:
+WebSockets is a bi-directional full-duplex socket-based protocol. According to http://tools.ietf.org/html/rfc6455[RFC 6455]  - the Internet Engineering Task Force (IETF) standard document - the goal of WebSocket technology is to provide mechanism for web applications what need two-way communications with servers. This technology shouldn't rely on HTTP hacks or on opening multiple connections using +XMLHttpRequest+ or `<iframe>` and long polling. The idea behind WebSockets is not overly complicated:
 
 - Establish a socket connection between the client and the server using HTTP for the initial handshake.
-- Switch the communication protocol from HTTP to direct socket-based protocol.
+- Switch the communication protocol from HTTP to a socket-based protocol.
 - Send messages in both directions simultaneously (a.k.a. full duplex mode).
-- Send messages independently. This is not a request-response model. Both the server and the client can initiate data transmission which enables the real server-side push.
-- Both the server and the client can initiate  disconnect.
+- Send messages independently. This is not a request-response model as both the server and the client can initiate data transmission which enables the real server-side push.
+- Both the server and the client can initiate the disconnects too.
 
-<vik>You will get a better understanding of each of these statements after reading the section WebSocket API section later in this chapter.
-Also WebSocket protocol defines two new URI schemes `ws` and `wss` for unencrypted and encrypted connections respectively. The `ws` (WebSocket) URI scheme is similar to HTTP URI scheme and identifies that a WebSocket connection will be established using TCP/IP protocol without encryption. The`wss` (WebSocket Secure) URI scheme identifies that traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides benefits over TCP connection such as data confidentiality and integrity and endpoint authentication. Apart from the scheme name, the rest of the URI components are defined to use URI generic syntax. If you not familiar with URI scheme concept, you can read this article http://en.wikipedia.org/wiki/URI_scheme </vik>
+You will get a better understanding of each of these statements after reading the section WebSocket API later in this chapter. 
+
+The WebSocket protocol defines two new URI schemes `ws` and `wss` for unencrypted and encrypted connections respectively. The `ws` (WebSocket) URI scheme is similar to HTTP URI scheme and identifies that a WebSocket connection will be established using TCP/IP protocol without encryption. The`wss` (WebSocket Secure) URI scheme identifies that traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides benefits over TCP connection such as data confidentiality and integrity and the endpoint authentication. Apart from the scheme name, it uses a generic URI syntax. If you not familiar with URI scheme concept, read http://en.wikipedia.org/wiki/URI_scheme[the Wikipedia article "URI scheme"].
 
 ==== WebSockets Interface ====
 
-To define an abstract Web socket interface the expert group uses http://en.wikipedia.org/wiki/Interface_description_language[Interface Description Language].
+The W3C expert group uses http://en.wikipedia.org/wiki/Interface_description_language[Interface Description Language] to describe what the WebSocket interface should look like. This is how it looks:
 
 [source,java]
 ----------------------------------------------------------------------
 include::include/ws_interface.il[]
 ----------------------------------------------------------------------
 
-<1> The constructor requires an endpoint URI and optional sub-protocols name string.
-<vik>The WebSocket client can explicitly request the server that application layer protocol need to be used for conversation. It could be fully custom protocol or one of standard application layer protocols. In this case, it's possible to transfer existing standard protocols messages (such as SOAP, XMMP and etc) over the WebSocket connection.
-</vik>
+<1> The constructor requires an endpoint URI and optional sub-protocols name string. The WebSocket client can explicitly request the server that application layer protocol need to be used for conversation. It could be a fully custom protocol or one of standard application layer protocols. In this case, it's possible to transfer existing standard protocols messages (such as SOAP, XMMP and etc) over the WebSocket connection.
+
 
 <2> At any given time the WebSocket can be in one of four states.
 
@@ -304,27 +304,23 @@ webSocket.onclose = function(closeEvent) {
 };
 ----------------------------------------------------------------------
 
-<vik>
 
 === WebSocket frameworks ===
 
 ==== The Portal ====
 
-The Portal[https://github.com/flowersinthesand/portal] is a server agnostic JavaScript library that not just provides a socket for browser-based applications that need two-way communication with servers, but also aims to utilize a full duplex connection for modern web application development. It supports various transports (long polling, HTTP streaming, WebSocket).
+The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library that not only provides a socket connection for the browser-based applications that need two-way communication with servers, but also aims to utilize a full duplex connection for modern web application development. It supports various transports (long polling, HTTP streaming, WebSocket).
 
 ==== Atmosphere ====
 
-https://github.com/Atmosphere/atmosphere[Atmosphere] is portable WebSocket/Comet framework supporting Java, Groovy, Scala. The Atmosphere Framework contains client and server side components for building Asynchronous Web Application. The majority of popular frameworks are either supporting [Atmosphere] or supported natively by the framework. The Atmosphere Framework supports all majors Browsers and Servers. Clent side component - Atmosphere.js[https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API] - simplified development of applications what require fall back from WebSocket protocol to long polling or HTTP streaming.
+https://github.com/Atmosphere/atmosphere[Atmosphere] is a portable WebSocket/Comet framework supporting Java, Groovy, Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. The majority of popular frameworks are either supporting Atmosphere or supported natively by the framework. The Atmosphere Framework supports all majors Browsers and Servers. The clent side component - Atmosphere.js[https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API] - simplifies the development of Web applications that require a fall back from WebSocket protocol to long polling or HTTP streaming.
 
 ==== Native Applications ====
 
-WebSockets can be used not only in a Web browsers communications, but in any applications that uses networking.
-If you're developing native iOS or OSX applications you definitely want to check https://github.com/square/SocketRocket[SocketRocket] library developed by http://corner.squareup.com/[Square Engineering Team]. Square uses SocketRocket in their mobile payments application for iOS.
-If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices check https://github.com/AsyncHttpClient/async-http-client[AsyncHttpClient] framework.
+WebSockets can be used not only in for the Web, but in any applications that use networking. If you're developing native iOS or OSX applications check https://github.com/square/SocketRocket[the SocketRocket] library developed by http://corner.squareup.com/[Square Engineering Team]. Square uses SocketRocket in their mobile payments application for iOS. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.
 
-</vik>
 
-=== WebSocket Use Cases
+=== When Using WebSockets
 
 Since WebSocket protocol has literally no overhead it makes it worthwhile to consider for the following types of applications:
 
@@ -387,32 +383,24 @@ A developer needs to specify how the serializable information has to be structur
 
 Pros:
 
-<vik>
-
 - The Protobuf uses compact binary format.
 - Google ships utilities for Java, Python and C++. Community contributes to the project with tooling for other languages.
-- The Protocol Buffers well documented.
-
-</vik>
+- The Protocol Buffers are well documented.
 
 Cons:
 
-<vik>
-
 - The binary format is not human readable.
-- The Protobuf can be a bit smaller, especially when a lot of numeric values are transferred, but JSON the more common protocol in the JavaScript space and better supported and easier to integrate in application.
-- This technology requires browser support for binary format. You can find current state of binary browser support http://caniuse.com/#search=binary
-</vik>
+- The Protobuf can be a bit smaller, especially when a lot of numeric values are transferred, but JSON is more widely supported in the JavaScript space and is easier to integrate in the application.
+- Protobuf requires the browser to support the binary format, but not all of the do it just yet. You can find which browser support raw binary data at http://caniuse.com/#search=binary.
 
 === WebSockets and Proxies ===
 
 The WebSocket protocol itself is unaware of intermediaries such as proxy servers, firewalls, content filters. The proxy servers are commonly used for content caching, security and enterprise content filtering.
 
-HTTP always supported  protocol upgrades, but many proxies seem to have ignored that part of the specification. Until the WebSockets came around no one was actually using the Upgrade attribute.
-<vik>
-The problem with proxy servers for web applications that have a long-lived connection like  WebSocket is proxy servers may choose to close streaming or idle WebSocket connections, because they appear to be trying to connect with an unresponsive HTTP server. Additionally, proxy servers may also buffer unencrypted HTTP responses. It can introduce unpredictable latency during response streaming.
-If you want to get more details how WebSockets-enabled application has to deal with proxies there is comprehensive research paper by Google's Peter Lubbers http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/[WebSocket and proxy servers].
-</vik>
+HTTP always supported protocol upgrades, but many proxy servers seem to have ignored that part of the specification. Until the WebSockets came around the `Upgrade` attribute was not used. The problem with Web applications that use long-lived connection like WebSocket is that the proxy servers may choose to close streaming or idle WebSocket connections, because they appear to be trying to connect to the unresponsive HTTP server. Additionally, proxy servers may also buffer unencrypted HTTP responses. It can introduce unpredictable latency during response streaming.
+
+If you want to get more details on how a WebSockets-enabled application has to deal with proxies there is comprehensive research paper by Google's Peter Lubbers http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/[WebSocket and proxy servers].
+
 
 === Adding an Auction to Save Sick Child ===
 
@@ -554,7 +542,7 @@ image::images/fig_09_06.png[]
 .Details of the socket connection
 image::images/fig_09_07.png[]
 
-Google Developer Tools show just the length of payload data. But `chrome://net-internals` shows the actual size of the WebSocket frame too. <<FIG9-8>> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of frame is slightly different from size of the payload. There are few bytes for frame header. Moreover, all outgoing messages will be masked by the browser(see NOTE in <<FRAMES>> section). This frame's mask <vik>going to be transferred to the server as a part of frame itself. That creates additional 32 bits = 4 bytes overhead.</vik>
+Google Developer Tools show just the length of payload data. But `chrome://net-internals` shows the actual size of the WebSocket frame too. <<FIG9-8>> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of frame is slightly different from size of the payload. There are few bytes for frame header. Moreover, all outgoing messages will be masked by the browser(see NOTE in <<FRAMES>> section). This frame's mask is going to be transferred to the server as a part of the frame itself, which creates additional 32 bits = 4 bytes overhead.
 
 [[FIG9-8]]
 .Dev tools and net-internals side by side
@@ -563,21 +551,19 @@ image::images/fig_09_08.png[]
 
 ==== Sniffing WebSockets frames with Wireshark ====
 
-Wireshark is a powerful and comprehensive monitoring tool for analyzing the network traffic.
-<vik>
-You can download version for you operation system from http://www.wireshark.org[official web site]. To start capturing WebSocket traffic we need to select network interface from list and click "Start" <<FIG9-15>>. In our case we're going to select +loopback+ interface to capture traffic on _localhost_.
+Wireshark is a powerful and comprehensive monitoring tool for analyzing the network traffic.You can download it from http://www.wireshark.org[their web site]. To start capturing the WebSocket traffic you need to select the network interface from list and click "Start" <<FIG9-15>>. In our case we're going to select the  +loopback+ interface to capture traffic on _localhost_.
 
 [[FIG9-15]]
 .Wireshark application main view
 image::images/fig_09_15.png[]
 
-The Wireshark going to capture all network activity. That is why is good idea to setup filter so we can see only required data. We want to capture HTTP traffic and TCP traffic on port +8080+ because our WebSocket server uses that port <<FIG9-16>>. Enter `http && (tcp.dstport==8080)` in filter text box and click apply.
+Wireshark is going to capture all network activity. Set up the filter to see only the data you are interested in. We want to capture HTTP traffic and TCP traffic on port +8080+ because our WebSocket server (Oracle's GlassFish) runs on this port <<FIG9-16>>. Enter `http && (tcp.dstport==8080)` in the filter text box and click Apply.
 
 [[FIG9-16]]
 .Filter setup
 image::images/fig_09_16.png[]
 
-Now Wireshark is ready to sniff traffic of our application. You can start the auction session, place the bids. After you're done with the auction you can return to Wireshark window and analyze what we got. You can see initial handshake (+GET+ request <<FIG9-17>> and +Upgrade+ response <<FIG9-18>>)
+Now Wireshark is ready to sniff at the traffic of our application. You can start the auction session and place bids. After you're done with the auction you can return to Wireshark window and analyze what we got. You can see initial handshake (+GET+ request <<FIG9-17>> and +Upgrade+ response <<FIG9-18>>)
 
 [[FIG9-17]]
 .The +GET+ request for protocol upgrade
@@ -587,24 +573,23 @@ image::images/fig_09_17.png[]
 .The +GET+ response with protocol upgrade
 image::images/fig_09_18.png[]
 
-After successful connection upgrade, Wireshark captured `http-alt` stream on 8080 port. This is our WebSocket connection. Right click on that row and select +Follow TCP Stream+ <<FIG9-19>>.
+After the successful connection upgrade, Wireshark captured `http-alt` stream on 8080 port. This is our WebSocket connection. Right click on this row and select +Follow TCP Stream+ <<FIG9-19>>.
 
 [[FIG9-19]]
 .The +GET+ response with protocol upgrade
 image::images/fig_09_19.png[]
 
-On the next screen you can see details of WebSocket frame <<FIG9-20>>. We took this screenshot right after the auction application start. We can see here data with list of available auctions. The outgoing data marked with _red_ color and the incoming data marked with _blue_ color.
+On the next screen you can see the details of WebSocket frame <<FIG9-20>>. We took this screenshot right after the auction application started. You can see here the data with list of available auctions. The outgoing data marked with _red_ color and the incoming data marked with _blue_ color.
 
 [[FIG9-20]]
 .WebSocket frame
 image::images/fig_09_20.png[]
 
-We took next screenshot <<FIG9-21>> after the action has been finished. We can see here entire data what were sent over WebSocket connection.
+We took next screenshot <<FIG9-21>> after the action has been finished. We can see here entire data that were sent over WebSocket connection.
 
 [[FIG9-20]]
 .Entire auction conversation
 image::images/fig_09_20.png[]
-</vik>
 
 
 [[Auction_Messages_Specification]]
