@@ -244,7 +244,7 @@ In today's Web, JSON became the most popular data format. It's not as verbose as
 }
 ----
 
-Anyone who knows JavaScript understands that this is an object that represents a person, which has a nested object that represents an address. Note the difference with JavaScript literals: the names of the properties are always strings and must be taken into quotes. Representing the same object in XML would need a lot more characters (e.g. `<fname>Alex</fname>` etc). 
+Anyone who knows JavaScript understands that this is an object that represents a person, which has a nested object that represents an address. Note the difference with JavaScript literals: the names of the properties are always strings, and every string must be taken into quotes. Representing the same object in XML would need a lot more characters (e.g. `<fname>Alex</fname>` etc). 
 
 There are some other important differences between JSON and XML. The structure of the XML document can be defined using DTD or XML Schema, which simplifies the data validation, but requires additional programming and schema maintenance. On the other hand, JSON data have data types, for example the age attribute in the above example is not only a `Number`, but will be further evaluated by the JavaScript engine and will be stored as an integer. JSON also supports arrays while XML doesn't. 
 
@@ -297,6 +297,46 @@ Running Aptana's project project-04-2-donation-ajax-json reads the countries and
 This file is well formatted and readable by the human beings. But when you are ready to deploy your application in production, you want to compress this file so less bytes should travel over the wire to the user's browser. The server-side libraries that generate JSON will make the data sent to the client compact by removing the Tab and the new line characters. If you want to turn the pretty-print JSON into a more compact one-line format just use such Web sites as http://javascriptcompressor.com/[JavaScript Compressor] or http://www.freeformatter.com/json-formatter.html/[JSON Formatter]. When we ran the file countries.json through the compressor, its size decreased by one third. 
 
 To make sure that your JSON data is properly formatted validate it using http://jsonlint.com/[JSONLint]. If you paste an ugly one-line JSON data JSLint will reformat it into a readable form. JSONLint can also compress JSON if you provide this URL: http://jsonlint.com?reformat=compress.
+
+JSON supports arrays, and the next example shows you how the information about a customer can be presented in JSON format. A customer can have more than one phone, which are stored in an array. 
+
+[source, javascript]
+----
+<script >
+   var customerJson = '{"fname":"Alex",
+                        "lname":"Smith", 
+                        "phones":[
+                            "212-555-1212", 
+                            "565-493-0909"
+                        ]
+                       }';
+                           
+   var customer=JSON.parse(customerJson);
+
+   console.log("Parsed customer data: fname=" + customer.fname + 
+                      " lname=" + customer.lname +
+                      " home phone=" + customer.phones[0] + 
+                      " cell phone=" + customer.phones[1]); 
+</script>        
+----
+
+The code above creates an instance of the JavaScript object referenced by the variable `customer`. In this example the `phones` array just holds two strings. But you can store object in JSON array the same way as you'd do it in JavaScript object literal - just don't forget to put every property name in quotes. 
+
+[source, javascript]
+----
+var customerJson = '{"fname":"Alex",
+                     "lname":"Smith",
+                   "phones":[
+                        {"type":"home", "number":"212-555-1212"},
+                         {"type":"work","number":"565-493-0909"}]
+                    }';
+----
+
+
+
+=== Loading Charity Events using AJAX and JSON
+
+The last example in Chapter 3 was about displaying various charity events on the Google map using multiple markers. But the data about these events were hard-coded in HTML file. After getting familiar with AJAX and JSON it should not be too difficult to create a separate file with the information about charities in JSON format and load them using `XMLHTTPRequest` object.
 
 The next version of Save Sick Child is a modified version of the application that displayed Google map with multiple markers from Chapter 3. But this time we'll load the information about the charity events from the file campaigndata.json shown next.
 
@@ -363,7 +403,6 @@ function showCampaignsInfo(campaigns) {
 
 function loadData(dataUrl) {
  var xhr = new XMLHttpRequest();
- xhr.overrideMimeType("application/json");
  xhr.open('GET', dataUrl);
 
  xhr.onreadystatechange = function() {
@@ -390,19 +429,64 @@ var dataUrl = 'data/campaignsdata.json';
 loadData(dataUrl);
 ----
 
+TIP: Some older Web browsers may bring up a File Download popup window when the content type of the server's response is set to "application/json". Try to use the MIME type "text/html" instead, if you ran into this issue. 
+
+Large-scale Web applications could be integrated with some content management systems (CMS), which can be supplying content such as charity events, sales promotions, et al.  CMS servers can be introduced into the architecture of a Web application to separate the work on preparing the content from the application delivering it as shown in <<FIG4-4>> depicting a diagram of a with a Web application integrated with the CMS server. 
+
+[[FIG4-4]]
+.CMS in the picture 
+image::images/fig_04_04.png[]
+
+The content contributors and editors prepare the information on the charities and donation campaigns using a separate application, not the Save Sick Child page. The CMS server and the Web application server www.savesickchild.org may be located in the same or separate data centers. The server-side code of the Save Sick Child is making a call to a CMS server whenever the site visitor is requesting the information about charity events. If you get to pick a CMS for your future Web application make sure it offers data feed in JSON format. 
+
+Some time ago one of the authors of this book was helping Mercedes Benz USA in development of their consumer facing Web application where people could search, review and configure their next car. <<FIG4-5>> shows a snapshot taken from the mbusa.com. Three rectangular areas at the bottom were created by the Web designers to display today's deals and promotions. The up-to-date content for these areas was retrieved from a CMS server when the user visited mbusa.com. 
+
+[[FIG4-5]]
+.Current Mercedes deals from CMS 
+image::images/fig_04_05.png[]
 
 
+==== JSON in Java
 
-In the real world Web application that run nationwide charity events and donation campaigns couuld be integrated with some content management systems that would maintain the information about current events and make it available as JSON data feed. 
+If a Web browser receives JSON stream from the server the application needs to turn it into JavaScript objects. If a Web client needs to send the JavaScriot objects to the server they can be converted into JSON string. Similar tasks have to be performed on the server side. Our Save Sick Child application uses Java application server. There is a number of third-party Java libraries that can consume and generate JSON content. 
+
+There are several Java libraries to convert Java objects into their JSON representation and back,for example http://code.google.com/p/google-gson/[Google’s Gson], http://jackson.codehaus.org/[Jackson], http://code.google.com/p/json-simple/[json-simple]. 
+
+Google's Gson is probably the simplest one for use. It provides methods `toJson()` and `fromJson()` to convert Java objects to JSON and back. Gson allows pre-existing un-modifiable objects to be converted to and from JSON and Supports Java Generics. Gson works well with complex objects with deep inheritance hierarchies. 
+
+Let's say JavaScript sends to Java the following JSON string: 
+
+`{"fname": "Alex", "lname":"Smith","skillLevel": 11}`
+
+The Java code can turn it into an instance of the Customer object by calling the method `Gson.fromJson()`. Similarly, Java code can create a JSON string from an object instance. Both of these operations are illustrated below. 
+
+[source, javascript]
+----
+public Customer createCustomerFromJson(String jsonString){
+
+    Gson myGson = new Gson();
+    Customer cust = myGson.fromJson(jsonString, Customer.class);
+    return cust;
+}
+
+public String createJsonFromCustomer(Customer cust){
+	
+	Gson gson = new Gson();
+
+	return gson.toJson(cust, Customer.class);
+}
+----
+
+Of course, the declaration of the Java class `Customer` must exist in the in the classpath and don't forget to include gson.jar to your Java project.
+
+TIP: JSON data format is often used in non-JavaScript applications. For example, a Java server can exchange the JSON-formatted data with a .Net server.
 
 
-==== Processing JSON streams in Java
+****
 
-In the Web browser we wanted to construct a JavaScript object from a JSON stream or turn the JavaScriot object into a JSON string. A similar task has to be performed on the server side. Our Save Sick Child application uses Java on the server side. There is a number of third-party Java libraries that can consume and generate JSON content. Besides the Java EE 7 specification made the first steps in prescribing how this process has to be standardized in any Java Application server.
+NOTE: The upcoming Java EE 7 specification includes JSR 353, which defines a standardized way for parsing and generating JSON. JSR 353 defines the Java API from JSON Processing (JSON-P), which shouldn't be confused with another acronym JSON-P, which is JSON with Padding.
 
-=== Loading Charity Events using AJAX and JSON
-
-The last example in Chapter 3 was about displaying various charity events on the Google map using multiple markers. But the data about these events were hard-coded in HTML file. After learning about AJAX and JSON it should not be too difficult to create a separate file with the information about charities in JSON format and load them using `XMLHTTPRequest` object.
+****
 
 === Summary
 
