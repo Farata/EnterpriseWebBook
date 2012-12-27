@@ -1,8 +1,8 @@
-== Replacing HTTP with WebSockets
+== Upgrading HTTP to WebSockets
 
-This chapter is about moving away from the HTTP protocol in Web applications. That's right, we'll start with introducing existing "legacy" options for creating interactive Web applications, and then you'll learn how to use HTML5's Server-Sent Events (SSE) and WebSockets.
+This chapter is about moving away from the HTTP protocol in Web applications. We'll start with a brief overview of the existing "legacy" Web networking, and then you'll learn how to use HTML5's Server-Sent Events (SSE) and WebSockets.
 
-We'll implement fund-raising events and an interactive auction for our Save Sick Child application using WebSockets and  Server-Sent Events. The goal is to let you see the advantages of changing the way the Web client communicates with the server, and to prove that this is better than a regular HTTP we'll monitod the network with  Wireshark and Google Chrome Developer Tools.
+We'll implement fund-raising events and an interactive auction for our Save Sick Child application using WebSockets and  Server-Sent Events. The goal is to let you see the advantages of changing the way the Web client communicates with the server, and to prove that this is better than a regular HTTP we'll monitor the network with  Wireshark and Google Chrome Developer Tools.
 
 All server-side functionality supporting this chapter is written in Java, using Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which will be the part of upcoming Java EE 7 specification running on http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/[latest promoted builds Glassfish Application Server]. If you don't know Java, just treat this server side setup as a service that supports WebSockets. For Java developers interested in diving into the server-side, we'll provide the source code and brief comments as a part of the code samples that come with this book.
 
@@ -84,20 +84,20 @@ The WebSocket protocol defines two new URI schemes `ws` and `wss` for unencrypte
 
 ==== WebSockets Interface ====
 
-The W3C expert group uses http://en.wikipedia.org/wiki/Interface_description_language[Interface Description Language] to describe what the WebSocket interface should look like. This is how it looks:
+The W3C expert group uses http://en.wikipedia.org/wiki/Interface_description_language[Interface Description Language] to describe what the WebSocket interface should look like. This is how it was defined:
 
 [source,java]
 ----------------------------------------------------------------------
 include::include/ws_interface.il[]
 ----------------------------------------------------------------------
 
-<1> The constructor requires an endpoint URI and optional sub-protocols name string. <vik>A sub-protocol is application-level protocol layered over the WebSocket Protocol. The client-side application can explicitly indicate what sub-protocols are acceptable for conversation. That string will be send to server with initial handshake as `Sec-WebSocket-Protocol` +GET+ request header field. If the server supports one of requested protocols it selects at most one of acceptable protocols and echoes that value in the same header parameter `Sec-WebSocket-Protocol` in handshake response. Thereby the server indicates that it has selected that protocol. It could be a fully custom protocol or one of standard application level protocols. It's possible to transfer existing standard protocols messages (such as SOAP, XMPP and etc) over the WebSocket connection. We'll discuss handshake later in this chapter in <<HANDSHAKE>> section</vik>
+<1> The constructor requires an endpoint URI and optional sub-protocols names. A sub-protocol is an application-level protocol layered over the WebSocket Protocol. The client-side application can explicitly indicate which sub-protocols are acceptable for the conversation between the client and server. That string will be send to the server with the initial handshake as `Sec-WebSocket-Protocol` +GET+ request header field. If the server supports one of the requested protocols it selects at most one of acceptable protocols and echoes that value in the same header parameter `Sec-WebSocket-Protocol` in the handshake's response. Thereby the server indicates that it has selected that protocol. It could be a custom protocol or one of standard application level protocols. For example, it's possible to transfer the SOAP or XMPP messages over the WebSocket connection. We'll discuss the handshake in the <<HANDSHAKE>> section.
 
 <2> At any given time the WebSocket can be in one of four states.
 
 <3> These are the callback functions of WebSocket object that will be invoked by the browser once the appropriate network event is fired.
 
-<4> <vik>The property value contains name of used sub-protocol.</vik>
+<4> The property value contains name of used sub-protocol.
 
 <5> WebSocket object can send text or binary data to server using on of the `send()` methods.
 
@@ -310,11 +310,13 @@ webSocket.onclose = function(closeEvent) {
 
 === WebSocket frameworks ===
 
-Once you start working with vanilla WebSocket API you need implement bunch of things by you own. E.g. in case client's browser doesn't support WebSocket natively, you need to fall back to legacy protocols. In this case, it's good idea to look around and find existing frameworks that can help you. Frameworks always can save you time in development, allowing you to do more with less code. Here is couple frameworks that can save you time and streamline your WebSocket application development.
+Once you start working with vanilla WebSocket API you may need to do some additional coding on you own. For example, if the client's browser doesn't support WebSocket natively, you need to make sure your code falls back to legacy protocols. The good news is that there are frameworks that can help you with this task. Such frameworks save development time, allowing you to do more with less code. We've included brief reviews of two frameworks that can streamline your Web application development with WebSockets.
 
 ==== Atmosphere ====
-<vik>
-https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. Atmosphere transparently supports WebSockets, Server Side Events, Long-Polling, HTTP Streaming and JSONP. The client side component - https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] - simplifies the development of Web applications that require a fall back from WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and make your application portable among them. Atmosphere provides compatibility layer for all major Java application servers that allow to select best available on server transport.
+
+https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. Atmosphere transparently supports WebSockets, Server Side Events, Long-Polling, HTTP Streaming and JSONP. 
+
+The client side component - https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] - simplifies the development of Web applications that require a fall back from WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and make your application portable among them. Atmosphere provides compatibility layer for all major Java application servers that allow to select best available on server transport.
 
 ==== The Portal ====
 
@@ -346,16 +348,18 @@ portal.open("child-auction/auction").on({       // <2>
 
 <1> The Portal supports different transports and can fall back from WebSocket connection to streaming or long polling. Server have to support fall back as well but from client-side API there is no additional code required.
 
-<2> Connecting to WebSocket endpoint.
+<2> Connecting to the WebSocket endpoint.
 
-<3> The API event-based and very similar to W3C WebSocket API.
+<3> The Portal API is event-based. It's very similar to W3C WebSocket API.
 
-</vik>
 
-==== Native Applications ====
+*****
 
-WebSockets can be used not only in for the Web, but in any applications that use networking. If you're developing native iOS or OSX applications check https://github.com/square/SocketRocket[the SocketRocket] library developed by http://corner.squareup.com/[Square Engineering Team]. Square uses SocketRocket in their mobile payments application for iOS. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.
+NOTE: WebSockets can be used not only in for the Web, but in any applications that use networking. If you're developing native iOS or OSX applications check https://github.com/square/SocketRocket[the SocketRocket] library developed by http://corner.squareup.com/[Square Engineering Team]. 
 
+Square uses SocketRocket in their mobile payments application for iOS. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.
+
+*****
 
 === When Using WebSockets
 
@@ -419,25 +423,23 @@ Google Protocol Buffers is a language and platform-neutral extensible mechanism 
 A developer needs to specify how the serializable information has to be structured by defining the protocol buffer message types in the +.proto+ files. Each protocol buffer message is a small logical record of information, containing a series of the name/value pairs. This protocol buffer message file is language agnostic. The `protoc` utility compiles +proto+ files and produces language specific artifacts, e.g. +.java+, +.js+, etc files.
 
 Pros:
-<vik>
 
-- A message is encoded to the compact and optimized protocol buffer binary format. Details of encoding format can be found in https://developers.google.com/protocol-buffers/docs/encoding[Protocol Buffers documentation website]
-- Wide range of programming languages are supported by Google (Java, C++, Python) and by http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[community].
-- The Protocol Buffers are well documented.
+- The message is encoded into the compact and optimized binary format. Details of the encoding format can be found in https://developers.google.com/protocol-buffers/docs/encoding[Protocol Buffers documentation website].
+- Google supports Protocol Buffers for a wide range of programming languages (Java, C++, Python). The   http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[developer's community] supports it too.
+- The use of Protocol Buffers is well documented.
 
 Cons:
 
 - The binary format is not human readable.
-- The Protobuf can be a bit smaller, especially when a lot of numeric values are transferred https://developers.google.com/protocol-buffers/docs/encoding[by encoding algorithm], but JSON is natively supported by the JavaScript and doesn't require any additional parser implementation.
-- Protobuf requires the browser to support the binary format, but not all of the do it just yet. You can find which browser support raw binary data at http://caniuse.com/#search=binary.
+- Although Protobuf is compact, especially when a lot of numeric values are transferred https://developers.google.com/protocol-buffers/docs/encoding[by encoding algorithm], the JSON is natively supported by the JavaScript and doesn't require any additional parser implementation.
+- Protobuf requires the Web browser to support the binary format, but not all of them do it just yet. You can find which browser support raw binary data at http://caniuse.com/#search=binary.
 
-</vik>
 
 === WebSockets and Proxies ===
 
 The WebSocket protocol itself is unaware of intermediaries such as proxy servers, firewalls, content filters. The proxy servers are commonly used for content caching, security and enterprise content filtering.
 
-HTTP always supported protocol upgrades, but many proxy servers seem to have ignored that part of the specification. Until the WebSockets came around the `Upgrade` attribute was not used. The problem with Web applications that use long-lived connection like WebSocket is that the proxy servers may choose to close streaming or idle WebSocket connections, because they appear to be trying to connect to the unresponsive HTTP server.<vik> Additionally, proxy server may buffer unencrypted HTTP responses because proxy server may assume that an entire HTTP response is expected by the browser.</vik>
+HTTP always supported protocol upgrades, but many proxy servers seem to have ignored that part of the specification. Until the WebSockets came around the `Upgrade` attribute was not used. The problem with Web applications that use long-lived connection like WebSocket is that the proxy servers may choose to close streaming or idle WebSocket connections, because they appear to be trying to connect to the unresponsive HTTP server. Additionally, proxy servers may buffer unencrypted HTTP responses assuming that the browser needs to receive the HTTP response in its entirety.
 
 If you want to get more details on how a WebSockets-enabled application has to deal with proxies there is comprehensive research paper by Google's Peter Lubbers http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/[WebSocket and proxy servers].
 
