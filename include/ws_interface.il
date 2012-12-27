@@ -14,13 +14,13 @@ interface WebSocket : EventTarget {
   [TreatNonCallableAsNull] attribute Function? onerror;
   [TreatNonCallableAsNull] attribute Function? onclose;
   readonly attribute DOMString extensions;
-  readonly attribute DOMString protocol;
+  readonly attribute DOMString protocol;                    //<4>
   void close([Clamp] optional unsigned short code, optional DOMString reason);
 
   // messaging
   [TreatNonCallableAsNull] attribute Function? onmessage;
            attribute DOMString binaryType;
-  void send(DOMString data);            // <4>
+  void send(DOMString data);            // <5>
   void send(ArrayBufferView data);
   void send(Blob data);
 };

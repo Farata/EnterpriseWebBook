@@ -78,7 +78,7 @@ WebSockets is a bi-directional full-duplex socket-based protocol. According to h
 - Send messages independently. This is not a request-response model as both the server and the client can initiate data transmission which enables the real server-side push.
 - Both the server and the client can initiate the disconnects too.
 
-You will get a better understanding of each of these statements after reading the section WebSocket API later in this chapter. 
+You will get a better understanding of each of these statements after reading the section WebSocket API later in this chapter.
 
 The WebSocket protocol defines two new URI schemes `ws` and `wss` for unencrypted and encrypted connections respectively. The `ws` (WebSocket) URI scheme is similar to HTTP URI scheme and identifies that a WebSocket connection will be established using TCP/IP protocol without encryption. The`wss` (WebSocket Secure) URI scheme identifies that traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides benefits over TCP connection such as data confidentiality and integrity and the endpoint authentication. Apart from the scheme name, it uses a generic URI syntax. If you not familiar with URI scheme concept, read http://en.wikipedia.org/wiki/URI_scheme[the Wikipedia article "URI scheme"].
 
@@ -91,14 +91,16 @@ The W3C expert group uses http://en.wikipedia.org/wiki/Interface_description_lan
 include::include/ws_interface.il[]
 ----------------------------------------------------------------------
 
-<1> The constructor requires an endpoint URI and optional sub-protocols name string. The WebSocket client can explicitly request the server that application layer protocol need to be used for conversation. It could be a fully custom protocol or one of standard application layer protocols. In this case, it's possible to transfer existing standard protocols messages (such as SOAP, XMMP and etc) over the WebSocket connection.
-
+<1> The constructor requires an endpoint URI and optional sub-protocols name string. <vik>A sub-protocol is application-level protocol layered over the WebSocket Protocol. The client-side application can explicitly indicate what sub-protocols are acceptable for conversation. That string will be send to server with initial handshake as `Sec-WebSocket-Protocol` +GET+ request header field. If the server supports one of requested protocols it selects at most one of acceptable protocols and echoes that value in the same header parameter `Sec-WebSocket-Protocol` in handshake response. Thereby the server indicates that it has selected that
+protocol. It could be a fully custom protocol or one of standard application level protocols. It's possible to transfer existing standard protocols messages (such as SOAP, XMPP and etc) over the WebSocket connection. We'll discuss handshake later in this chapter in <<HANDSHAKE>> section</vik>
 
 <2> At any given time the WebSocket can be in one of four states.
 
 <3> These are the callback functions of WebSocket object that will be invoked by the browser once the appropriate network event is fired.
 
-<4> WebSocket object can send text or binary data to server using on of the `send()` methods.
+<4> <vik>The property value contains name of used sub-protocol.</vik>
+
+<5> WebSocket object can send text or binary data to server using on of the `send()` methods.
 
 ===== The Client-Side API =====
 
