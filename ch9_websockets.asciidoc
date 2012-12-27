@@ -91,8 +91,7 @@ The W3C expert group uses http://en.wikipedia.org/wiki/Interface_description_lan
 include::include/ws_interface.il[]
 ----------------------------------------------------------------------
 
-<1> The constructor requires an endpoint URI and optional sub-protocols name string. <vik>A sub-protocol is application-level protocol layered over the WebSocket Protocol. The client-side application can explicitly indicate what sub-protocols are acceptable for conversation. That string will be send to server with initial handshake as `Sec-WebSocket-Protocol` +GET+ request header field. If the server supports one of requested protocols it selects at most one of acceptable protocols and echoes that value in the same header parameter `Sec-WebSocket-Protocol` in handshake response. Thereby the server indicates that it has selected that
-protocol. It could be a fully custom protocol or one of standard application level protocols. It's possible to transfer existing standard protocols messages (such as SOAP, XMPP and etc) over the WebSocket connection. We'll discuss handshake later in this chapter in <<HANDSHAKE>> section</vik>
+<1> The constructor requires an endpoint URI and optional sub-protocols name string. <vik>A sub-protocol is application-level protocol layered over the WebSocket Protocol. The client-side application can explicitly indicate what sub-protocols are acceptable for conversation. That string will be send to server with initial handshake as `Sec-WebSocket-Protocol` +GET+ request header field. If the server supports one of requested protocols it selects at most one of acceptable protocols and echoes that value in the same header parameter `Sec-WebSocket-Protocol` in handshake response. Thereby the server indicates that it has selected that protocol. It could be a fully custom protocol or one of standard application level protocols. It's possible to transfer existing standard protocols messages (such as SOAP, XMPP and etc) over the WebSocket connection. We'll discuss handshake later in this chapter in <<HANDSHAKE>> section</vik>
 
 <2> At any given time the WebSocket can be in one of four states.
 
@@ -420,25 +419,27 @@ Google Protocol Buffers is a language and platform-neutral extensible mechanism 
 A developer needs to specify how the serializable information has to be structured by defining the protocol buffer message types in the +.proto+ files. Each protocol buffer message is a small logical record of information, containing a series of the name/value pairs. This protocol buffer message file is language agnostic. The `protoc` utility compiles +proto+ files and produces language specific artifacts, e.g. +.java+, +.js+, etc files.
 
 Pros:
+<vik>
 
-- The Protobuf uses compact binary format.
-- Google ships utilities for Java, Python and C++. Community contributes to the project with tooling for other languages.
+- A message is encoded to the compact and optimized protocol buffer binary format. Details of encoding format can be found in https://developers.google.com/protocol-buffers/docs/encoding[Protocol Buffers documentation website]
+- Wide range of programming languages are supported by Google (Java, C++, Python) and by http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[community].
 - The Protocol Buffers are well documented.
 
 Cons:
 
 - The binary format is not human readable.
-- The Protobuf can be a bit smaller, especially when a lot of numeric values are transferred, but JSON is more widely supported in the JavaScript space and is easier to integrate in the application.
+- The Protobuf can be a bit smaller, especially when a lot of numeric values are transferred https://developers.google.com/protocol-buffers/docs/encoding[by encoding algorithm], but JSON is natively supported by the JavaScript and doesn't require any additional parser implementation.
 - Protobuf requires the browser to support the binary format, but not all of the do it just yet. You can find which browser support raw binary data at http://caniuse.com/#search=binary.
+
+</vik>
 
 === WebSockets and Proxies ===
 
 The WebSocket protocol itself is unaware of intermediaries such as proxy servers, firewalls, content filters. The proxy servers are commonly used for content caching, security and enterprise content filtering.
 
-HTTP always supported protocol upgrades, but many proxy servers seem to have ignored that part of the specification. Until the WebSockets came around the `Upgrade` attribute was not used. The problem with Web applications that use long-lived connection like WebSocket is that the proxy servers may choose to close streaming or idle WebSocket connections, because they appear to be trying to connect to the unresponsive HTTP server. Additionally, proxy servers may also buffer unencrypted HTTP responses. It can introduce unpredictable latency during response streaming.
+HTTP always supported protocol upgrades, but many proxy servers seem to have ignored that part of the specification. Until the WebSockets came around the `Upgrade` attribute was not used. The problem with Web applications that use long-lived connection like WebSocket is that the proxy servers may choose to close streaming or idle WebSocket connections, because they appear to be trying to connect to the unresponsive HTTP server.<vik> Additionally, proxy server may buffer unencrypted HTTP responses because proxy server may assume that an entire HTTP response is expected by the browser.</vik>
 
 If you want to get more details on how a WebSockets-enabled application has to deal with proxies there is comprehensive research paper by Google's Peter Lubbers http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/[WebSocket and proxy servers].
-
 
 === Adding an Auction to Save Sick Child ===
 
