@@ -139,6 +139,7 @@ The protocol upgrade is initiated by the client request, which also transmits a 
     Origin: http://www.websocket.org
     Sec-WebSocket-Key: i9ri+AfOgSsKwUlmLjIkGA==
     Sec-WebSocket-Version: 13
+    Sec-WebSocket-Protocol: chat
 
 ----------------------------------------------------------------------
 
@@ -150,6 +151,7 @@ This client sends the +GET+ request for the protocol upgrade. The +Sec-WebSocket
     Upgrade: WebSocket
     Connection: Upgrade
     Sec-WebSocket-Accept: Qz9Mp4/YtIjPccdpbvFEm17G8bs=
+    Sec-WebSocket-Protocol: chat
     Access-Control-Allow-Origin: http://www.websocket.org
 
 ----------------------------------------------------------------------
@@ -309,13 +311,47 @@ webSocket.onclose = function(closeEvent) {
 
 === WebSocket frameworks ===
 
-==== The Portal ====
-
-The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library that not only provides a socket connection for the browser-based applications that need two-way communication with servers, but also aims to utilize a full duplex connection for modern web application development. It supports various transports (long polling, HTTP streaming, WebSocket).
+Once you start working with vanilla WebSocket API you need implement bunch of things by you own. E.g. in case client's browser doesn't support WebSocket natively, you need to fall back to legacy protocols. In this case, it's good idea to look around and find existing frameworks that can help you. Frameworks always can save you time in development, allowing you to do more with less code. Here is couple frameworks that can save you time and streamline your WebSocket application development.
 
 ==== Atmosphere ====
+<vik>
+https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. Atmosphere transparently supports WebSockets, Server Side Events, Long-Polling, HTTP Streaming and JSONP. The client side component - https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] - simplifies the development of Web applications that require a fall back from WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and make your application portable among them. Atmosphere provides compatibility layer for all major Java application servers that allow to select best available on server transport.
 
-https://github.com/Atmosphere/atmosphere[Atmosphere] is a portable WebSocket/Comet framework supporting Java, Groovy, Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. The majority of popular frameworks are either supporting Atmosphere or supported natively by the framework. The Atmosphere Framework supports all majors Browsers and Servers. The clent side component - Atmosphere.js[https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API] - simplifies the development of Web applications that require a fall back from WebSocket protocol to long polling or HTTP streaming.
+==== The Portal ====
+
+The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library. It aims to utilize a WebSocket for modern web application development and provides unified API for various transports (long polling, HTTP streaming, WebSocket).
+
+[source,javascript]
+----------------------------------------------------------------------
+portal.defaults.transports = ["ws", "sse", "stream", "longpoll"];    // <1>
+
+portal.open("child-auction/auction").on({       // <2>
+    connecting: function() {
+        console.log("The connection has been tried by '" + this.data("transport") + "'");
+    },
+    open: function() {                          // <3>
+        console.log("The connection has been opened");
+    },
+    close: function(reason) {
+        console.log("The connection has been closed due to '" + reason + "'");
+    },
+    message: function(data) {
+        handleIncommingData(data);
+    },
+    waiting: function(delay, attempts) {
+        console.log("The socket will try to reconnect after " + delay + " ms");
+        console.log("The total number of reconnection attempts is " + attempts);
+    }
+});
+----------------------------------------------------------------------
+
+<1> The Portal supports different transports and can fall back from WebSocket connection to streaming or long polling. Server have to support fall back as well but from client-side API there is no additional code required.
+
+<2> Connecting to WebSocket endpoint.
+
+<3> The API event-based and very similar to W3C WebSocket API.
+
+</vik>
 
 ==== Native Applications ====
 
