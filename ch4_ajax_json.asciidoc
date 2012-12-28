@@ -32,10 +32,12 @@ image::images/fig_04_01.png[]
 
 Back in the 90th, if a Web application would need some JavaScript code or data from the server, Web developers would wrap it into an HTML `<iFrame>` element and send it to the client, which would use the the https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/eval[`eval()`] function to execute it. Today, there is no need to do this if you just want to send the data - format it as a JSON object and use the JSON parser. 
 
+When a Web page is loaded the user doesn't know (and doesn't have to know) that the page content was brought from several servers that can be located thousands miles apart. More often than not, when the user enters the URL requesting an HTML document, the server side code can engage several servers to bring all the data requested by the user. Some of the data are retrieved by making calls to one or more Web Services. The legacy Web services were build using SOAP + XML, but  majority of today's Web services are build using lighter _RESTful architecture_, which is outside of the scope of this book, but we'll just say that JSON became a de facto standard data exchange format of the REST Web services. 
+
 
 === How AJAX Works
 
-Imagine a single-page application that needs some data to refreshed in real time. For example, our Save Sick Chile application includes an online auction where people can bid and purchase some goods as a part of some charity event. If John from New York placed a bid on certain auction item, and some time later Mary from Chicago placed the higher bid on the same item, we want to make sure that John knows about it immediately, in real time.  This means that the server-side software that received Mary's bid has to push this data to all users who expressed their interest in the same item. 
+Imagine a single-page application that needs some data to refreshed in real time. For example, our Save Sick Child application includes an online auction where people can bid and purchase some goods as a part of a charity event. If John from New York placed a bid on certain auction item, and some time later Mary from Chicago placed the higher bid on the same item, we want to make sure that John knows about it immediately, in real time.  This means that the server-side software that received Mary's bid has to push this data to all users who expressed their interest in the same item. 
 
 But the server has to send and the browser has to modify only the new price while the rest of the content of the Web page should remain the same. You can implement behavior using AJAX. But first, the bad news:
 you can't implement the real-time server side push with AJAX. You can only emulate this behavior by using polling techniques, when the `XMLHttpRequest` object sits inside your JavaScript code and periodically sends HTTP requests to the server asking if there were any changes in bids since the last request. 
@@ -294,9 +296,8 @@ Running Aptana's project project-04-2-donation-ajax-json reads the countries and
 	}, 
 ----
 
-This file is well formatted and readable by the human beings. But when you are ready to deploy your application in production, you want to compress this file so less bytes should travel over the wire to the user's browser. The server-side libraries that generate JSON will make the data sent to the client compact by removing the Tab and the new line characters. If you want to turn the pretty-print JSON into a more compact one-line format just use such Web sites as http://javascriptcompressor.com/[JavaScript Compressor] or http://www.freeformatter.com/json-formatter.html/[JSON Formatter]. When we ran the file countries.json through the compressor, its size decreased by one third. 
 
-To make sure that your JSON data is properly formatted validate it using http://jsonlint.com/[JSONLint]. If you paste an ugly one-line JSON data JSLint will reformat it into a readable form. JSONLint can also compress JSON if you provide this URL: http://jsonlint.com?reformat=compress.
+To make sure that your JSON data is properly formatted validate it using http://jsonlint.com/[JSONLint]. If you paste an ugly one-line JSON data JSLint will reformat it into a readable form. 
 
 JSON supports arrays, and the next example shows you how the information about a customer can be presented in JSON format. A customer can have more than one phone, which are stored in an array. 
 
@@ -446,11 +447,11 @@ Some time ago one of the authors of this book was helping Mercedes Benz USA in d
 image::images/fig_04_05.png[]
 
 
-==== JSON in Java
+=== JSON in Java
 
 If a Web browser receives JSON stream from the server the application needs to turn it into JavaScript objects. If a Web client needs to send the JavaScriot objects to the server they can be converted into JSON string. Similar tasks have to be performed on the server side. Our Save Sick Child application uses Java application server. There is a number of third-party Java libraries that can consume and generate JSON content. 
 
-There are several Java libraries to convert Java objects into their JSON representation and back,for example http://code.google.com/p/google-gson/[Google’s Gson], http://jackson.codehaus.org/[Jackson], http://code.google.com/p/json-simple/[json-simple]. 
+There are several Java libraries to convert Java objects into their JSON representation and back, for example http://code.google.com/p/google-gson/[Google’s Gson], http://jackson.codehaus.org/[Jackson], http://code.google.com/p/json-simple/[json-simple]. 
 
 Google's Gson is probably the simplest one for use. It provides methods `toJson()` and `fromJson()` to convert Java objects to JSON and back. Gson allows pre-existing un-modifiable objects to be converted to and from JSON and Supports Java Generics. Gson works well with complex objects with deep inheritance hierarchies. 
 
@@ -481,13 +482,36 @@ Of course, the declaration of the Java class `Customer` must exist in the in the
 
 TIP: JSON data format is often used in non-JavaScript applications. For example, a Java server can exchange the JSON-formatted data with a .Net server.
 
+****
+
+NOTE: The upcoming Java EE 7 specification includes JSR 353, which defines a standardized way for parsing and generating JSON. JSR 353 defines the Java API from JSON Processing (JSON-P), which shouldn't be confused with another acronym http://json-p.org/[JSON-P], which is JSON with Padding.
 
 ****
 
-NOTE: The upcoming Java EE 7 specification includes JSR 353, which defines a standardized way for parsing and generating JSON. JSR 353 defines the Java API from JSON Processing (JSON-P), which shouldn't be confused with another acronym JSON-P, which is JSON with Padding.
 
-****
+=== Compressing JSON
+
+JSON format is more compact than XML and is readable by the human beings. But when you are ready to deploy your application in production, you still want to compress the data so less bytes will travel over the wire to the user's browser. The server-side libraries that generate JSON will make the data sent to the client compact by removing the tab and the new line characters. 
+
+If you want to turn the pretty-print JSON into a more compact one-line format just use such Web sites as http://javascriptcompressor.com/[JavaScript Compressor] or http://www.freeformatter.com/json-formatter.html/[JSON Formatter]. For example, after running the 12Kb file countries.json through this compressor, its size was decreased to 9Kb. JSONLint can also compress JSON if you provide this URL: http://jsonlint.com?reformat=compress.
+
+Similarly to most of the content that is being sent to browsers by the Web servers, the JSON data should be compressed. http://en.wikipedia.org/wiki/Gzip[GZip] and http://en.wikipedia.org/wiki/DEFLATE[Deflate] are the two main compression methods used in today's Web. Both use the same compression algorithm _deflate_, but while with Deflate the compressed data are being streamed to the client, the GZip first compresses the entire file, calculates the size and adds some additional headers to the compressed data. So GZip may need some extra time and memory, but you are more protected from getting incomplete JSON, JavaScript or other content. Both Gzip and Deflate are easily configurable by major Web servers, but it's hard to say which one is better for your application - set up some tests with each of them and decide which one works faster or take less system resources, but don't compromise on reliability of the compressed content. 
+
+We prefer using GZip, which stands for GNU zip compression. On the server side you'd need to configure the gzip filters on your Web server. You need to refer to your Web server's documentation to find out how to configure gzipping, which is done by the MIME type. For example, you can request to gzip everything except images (you might want to do this if you're not sure if all browsers can properly uncompress certain MIME types). 
+
+For example, applying the GZip filter to the 9Kb countries.json will reduce its size to 3Kb, which means serious bandwidth savings especially in the Web applications with lots of concurrent users. This is even more important for the mobile Web clients, which may be operating in the areas with slower connections. The Web clients can set the HTTP request attribute `Accept-Encoding: gzip ` inviting the server to return gzipped content, and the Web server may compress the response if it does support it or unzipped content otherwise. If the server supports gzip, the HTTP response will have the attribute `Content-Encoding: gzip`, and the browser will know to unzip the response data before use. 
+
+Gzip is being used for compressing all types of content: HTML, CSS, JavaScript and more. If your server sends JSON content to the client setting the content type to `application/json` don't forget to include this MIME type in your server configuration for Gzip. 
+
+Web browsers support the gzipping too, and your application can set `Content-Ecoding: gzip` in HTTP request while sending the data from the Web client to the server. But Web clients usually don't send massive amounts of data to the server so the benefits of the compression on the client side may not be as big.
+
+=== Adding Charts to Save Sick Child
+
+Let's consider yet another use case for JSON in Save Sick Child. We want to display charts with statistics about the donations.  
+
+As per W3C, a http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides scripts with a resolution-dependent bitmap canvas, which can be used for rendering graphs, game graphics, or other visual images on the fly.
+
 
 === Summary
 
-In this chapter you've learned about using AJAX as a means of communication of your Web browser with the servers. AJAX also deserves a credit for making the JavaScript language popular again by showing a very practical way of creating single-page Web applications.
+In this chapter you've learned about using AJAX as a means of communications of your Web browser with the servers. AJAX also deserves a credit for making the JavaScript language popular again by showing a practical way of creating single-page Web applications. Over the years JSON became the standard way of presenting data on the Web. The current version of the Save Sick Child application cleanly separates the code from the data, and you know how to update the content of the Web page without the need to re-retrieve the entire page from the server. In the next chapter you'll get familiar with the test-driven way of developing Web applications with JavaScript.
