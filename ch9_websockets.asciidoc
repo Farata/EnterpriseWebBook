@@ -1,16 +1,16 @@
 == Upgrading HTTP to WebSockets
 
-This chapter is about moving away from the HTTP protocol in Web applications. We'll start with a brief overview of the existing "legacy" Web networking, and then you'll learn how to use HTML5's Server-Sent Events (SSE) and WebSockets.
+This chapter is about moving away from the HTTP protocol in some Web applications. It starts with a brief overview of the existing "legacy" Web networking, and then you'll learn why and how use HTML5's Server-Sent Events (SSE) and WebSockets in your Web networking.
 
-We'll implement fund-raising events and an interactive auction for our Save Sick Child application using WebSockets and  Server-Sent Events. The goal is to let you see the advantages of changing the way the Web client communicates with the server, and to prove that this is better than a regular HTTP we'll monitor the network with  Wireshark and Google Chrome Developer Tools.
+The new version of our Save Sick Child application will include the online auction utilizing WebSockets and Server-Sent Events. The goal is to let you see the advantages of changing the way the Web client communicates with the server, and to prove that this is better than a regular HTTP we'll monitor the network with Wireshark and Google Chrome Developer Tools.
 
-All server-side functionality supporting this chapter is written in Java, using Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which will be the part of upcoming Java EE 7 specification running on http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/[latest promoted builds Glassfish Application Server]. If you don't know Java, just treat this server side setup as a service that supports WebSockets. For Java developers interested in diving into the server-side, we'll provide the source code and brief comments as a part of the code samples that come with this book.
+All the server-side functionality supporting this chapter is written in Java, using Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which will be the part of upcoming Java EE 7 specification running on http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/[latest promoted builds Glassfish Application Server]. If you don't know Java, just treat this server side setup as a service that supports WebSockets. For Java developers interested in diving into the server-side, we'll provide the source code and brief comments as a part of the code samples that come with this book.
 
-We're going to show and compare the server-side data push with Server-Sent Events and WebSockets. Also we will do a brief overview of popular existing frameworks that can streamline you WebSockets application development.
+We'll show and compare the server-side data push with Server-Sent Events and WebSockets. Also we will do a brief overview of popular existing frameworks that can streamline you WebSockets application development.
 
 === Near Real Time Applications With HTTP
 
-The HTTP protocol is the lingua franca of today's Web  applications, where client-server communications are based on the request-response paradigm. On the low level, Web browsers establish a TCP/IP connection for each HTTP request-response session.  Every time when the browser needs to send data to server and get response back the browser re-establish the TCP/IP connection. So to implement interactiveness in your application currently, there are 3 basic options that developer has to use today to satisfy the real-time client-server communication requirements. Basically, that options provide hacks on top of half-duplex HTTP protocol to simulate real-time behavior. Lets discuss each of them.
+The HTTP protocol is the lingua franca of today's Web  applications, where client-server communications are based on the request-response paradigm. On the low level, Web browsers establish a TCP/IP connection for each HTTP request-response session.  Every time when the browser needs to send data to server and get response back the browser re-establish the TCP/IP connection. So to implement interactiveness in your application currently, there are 3 basic options that developers use today to satisfy the real-time client-server communication requirements: polling, long polling, and streaming. Basically, these options are hacks on top of half-duplex HTTP protocol to simulate real-time behavior. Lets discuss each of them.
 
 ==== Polling ====
 
@@ -97,9 +97,9 @@ include::include/ws_interface.il[]
 
 <3> These are the callback functions of WebSocket object that will be invoked by the browser once the appropriate network event is fired.
 
-<4> The property value contains name of sub-protocol <vik> used for conversation. This property populated by the browser after successful handshake with value from servers response parameter `Sec-WebSocket-Protocol` as described in <1>. </vik>
+<4> This property contains the name of sub-protocol used for the conversation. After the successful handshake this property populated by the browser with value from servers response parameter `Sec-WebSocket-Protocol` as described in <1>. 
 
-<5> WebSocket object can send text or binary data to server using on of the `send()` methods.
+<5> The WebSocket object can send text or binary data to server using on of the `send()` methods.
 
 ===== The Client-Side API =====
 
@@ -310,15 +310,14 @@ webSocket.onclose = function(closeEvent) {
 
 === WebSocket frameworks ===
 
-Once you start working with vanilla WebSocket API you may need to do some additional coding on you own. For example, if the client's browser doesn't support WebSocket natively, you need to make sure your code falls back to legacy protocols. The good news is that there are frameworks that can help you with this task. Such frameworks save development time, allowing you to do more with less code. We've included brief reviews of two frameworks that can streamline your Web application development with WebSockets.
-<vik>
-Mentioned below in next section frameworks try to solve common problem - leverage best available transport in browser or server and abstract developer form internals of used mechanism. Developer needs concentrate on application logic, program application against framework API and to "enjoy the ride". The rest hard work will be done by framework.
-</vik>
+Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on you own. For example, if the client's browser doesn't support WebSockets natively, you need to make sure your code falls back to the legacy HTTP protocol. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. We've included brief reviews of two frameworks that can streamline your Web application development with WebSockets.
+
+The frameworks mentioned below utilize the best supported transport in the Web browser and server while sparing the developer from knowing internals of the used mechanism. The developer can concentrate on programming the application logic making calls to frameworks API when the data transfer is needed. The rest will be done by framework.
+
 
 ==== The Portal ====
 
-<vik>We're going to start our frameworks review with library called +Portal+. </vik>
-The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library. It aims to utilize a WebSocket for modern web application development and provides unified API for various transports (long polling, HTTP streaming, WebSocket). <vik> Currently, once you decided to use WebSocket API for you next project, you need to remember about those unlucky users what still use, for example, Internet Explorer 8 and they don't have native WebSocket support there. At this case, your application should gracefully degrade and fall back to best available in browser communication technology. Writing code by hand to support all possible variants browsers and browser-specific technologies requires lot of time of testing and providing the compatibility fixes for different platforms. Let's see how +Portal+ library could help us.</vik>
+The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library. It aims to utilize a WebSocket for modern web application development and provides unified API for various transports (long polling, HTTP streaming, WebSocket). Currently, once you decided to use WebSocket API for your next project, you need to remember about those users who still use old browsers like Internet Explorer 8, which don't natively support WebSockets. In this case, your application should gracefully fall back to the best available networking alternative. Manually writing code to support all possible browsers and versions requires lots of time especially for testing and maintaining the code for different platforms. The +Portal+ library could help us as illustrated in the following brief code sample.
 
 .Simple asynchronous web application client with Portal
 [source,javascript]
@@ -345,26 +344,24 @@ portal.open("child-auction/auction").on({       // <2>
 });
 ----------------------------------------------------------------------
 
-<1> The Portal supports different transports and can fall back from WebSocket connection to streaming or long polling. Server have to support fall back as well but from client-side API there is no additional code required.
+<1> The Portal framework supports different transports and can fall back from WebSocket connection to streaming or long polling. The server also has to support some fall-back strategy, but no additional code required on the client side.
 
 <2> Connecting to the WebSocket endpoint.
 
-<3> The Portal API is event-based. It's very similar to W3C WebSocket API.
+<3> The Portal API is event-based similarly to W3C WebSocket API.
 
-<vik>As you can see from previous snippet, API is very similar to W3C WebSocket API we have seen in this chapter. +Portal+ unifies the client-side. With defining transports array, we don't have to worry about how to handle message what sent by server with different transport.
-The +Portal+ doesn't depend on any JavaScript libraries which and used by the next contestant framework - Atmosphere.</vik>
+The Portal framework generalizes the client-side programming. With defining the array of transports, you don't have to worry about how to handle message what sent by server with different transport.
+The Portal doesn't depend on any JavaScript libraries as opposed to the Atmosphere framework reviewed next.
 
 ==== Atmosphere ====
 
-<vik>Once you developed product - boxed application - and delivering it as web archive to your customers, you may want to support wide range of runtimes. Yes, your customers have WebSphere servers, JBoss server, WebLogic servers. Sad but true, "Write once - run everywhere" doesn't work as advertised. Currently, there are bunch of different implementation of server-side WebSocket framework. And each of them uses their own proprietary APIs. The upcoming Java EE 7 specification intends change situation for better or for worse. But there is framework what allows you to write portable web applications today.
-</vik>
-https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. Atmosphere transparently supports WebSockets, Server Side Events, Long-Polling, HTTP Streaming and JSONP.
+Once you developed a product - boxed application - and delivering it as web archive to your customers, you may want to support wide range of runtimes. Your customers may have such application servers as WebSphere, JBoss, or WebLogic servers, and  the promise "Write once - run everywhere" still remain promise. Currently, there is a plethora of different implementations of the server-side libraries supporting WebSockets, and each of them uses their own proprietary APIs. The upcoming Java EE 7 specification intends to change the situation. But Atmosphere is a framework that allows you to write portable Web applications today.
 
-The client side component - https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] - simplifies the development of Web applications that require a fall back from WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and make your application portable among them. Atmosphere provides compatibility layer for all major Java application servers that allow to select best available on server transport.
+https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. The Atmosphere transparently supports WebSockets, Server Side Events, long-polling, HTTP streaming and JSONP.
 
-<vik>
-As was mentioned earlier, the Atmosphere framework supports wide range of Java based server-side technologies via set of https://github.com/Atmosphere/atmosphere/wiki/Atmosphere-PlugIns-and-Extensions[extensions and plugins]. Even though, Atmosphere https://github.com/Atmosphere/atmosphere-jsr356[supports] upcoming Java API for WebSocket. So you can have best of 2 worlds - standard API and application portability.
-</vik>
+The client side component https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] simplifies the development of Web applications that require a fall back from the WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and makes your application portable among them. Atmosphere is a  compatibility layer that allows to select best available on server transport for all major Java application servers.
+
+The Atmosphere framework supports wide range of Java based server-side technologies via a set of https://github.com/Atmosphere/atmosphere/wiki/Atmosphere-PlugIns-and-Extensions[extensions and plugins]. The Atmosphere https://github.com/Atmosphere/atmosphere-jsr356[supports] upcoming Java API for WebSocket, so you can have best of two worlds - the standard API and application portability.
 
 *****
 
@@ -435,8 +432,7 @@ Google Protocol Buffers is a language and platform-neutral extensible mechanism 
 
 A developer needs to specify how the serializable information has to be structured by defining the protocol buffer message types in the +.proto+ files. Each protocol buffer message is a small logical record of information, containing a series of the name/value pairs. This protocol buffer message file is language agnostic. The `protoc` utility compiles +proto+ files and produces language specific artifacts, e.g. +.java+, +.js+, etc files.
 
-<vik>
-For example, let's create protocol buffer +proto+ file for our "Save Sick Child" what will represent a donation information.
+For example, you can create a protocol buffer +proto+ file for our Save Sick Child to represent the information about donors.
 
 [source,java]
 .Protocol Buffer for Donation message ( +donation.proto+ )
@@ -462,19 +458,19 @@ message Donor{                                              // <3>
 }
 ----------------------------------------------------------------------
 
-<1> The protobuf supports packages. You can organize you protobuf messages to prevent naming conflicts among different projects.
+<1> The protobuf supports packages to prevent naming conflicts among messages from different projects.
 
-<2> As you can see, here we're using Java specific protobuf option to define in what package generated code will reside.
+<2> Here we're using Java specific protobuf option to define in what package the generated code will reside.
 
-<3> Start define our custom message with `message` keyword.
+<3> Start defining our custom message with the `message` keyword.
 
-<4> Each message field can be `required`, `optional` or `repeated`. The `required` and `optional` modifier are self explanatory. During serialization / deserization process protobuf framework will check message for existence of fields and if required property will be missing will throw runtime exception. The `repeated` modifier is used to create dynamic sized arrays.
+<4> Each message field can be `required`, `optional` or `repeated`. The `required` and `optional` modifiers are self explanatory. During serialization-deserization process the protobuf framework will check the message for existence of fields, and if a required property is missing it will throw a runtime exception. The `repeated` modifier is used to create dynamically sized arrays.
 
 <5> The protobuf supports nested messages.
 
-<6> There are many standard types available as field types:  +string+, +int32+, +float+, +double+, and +bool+. You can also define custom type and set it as field type.
+<6> There are many standard field types available in protobuf:  +string+, +int32+, +float+, +double+, and +bool+. You can also define a custom type and use it as a field type.
 
-After you created +donation.proto+ file, we can use `protoc` compiler to generate Java classes form it.
+After creating the +donation.proto+ file, you can use `protoc` compiler to generate Java classes according to this file's definitions.
 
 [source,shell]
 ----------------------------------------------------------------------
@@ -493,11 +489,9 @@ protoc -I=. --java_out=src donation.proto           # <1>
 
 <1> The Java code will be generated in +src+ directory.
 
-<2> All required code for serialization / deserilization of +Donation+ message will be included in +Donation.java+. We're not going to publish this code here but you can always generate this code by yourself from provided above message code.
+<2> All required code for serialization-deserilization of +Donation+ message will be included in +Donation.java+. We're not going to publish the generated code here, but you can generate this code by yourself from the provided above message declaration.
 
-You can check protobuf compiler for you language in http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[protobuf wiki page]. If you want to make yourself familiar with protobuf technology check https://developers.google.com/protocol-buffers/docs[documentation] and https://developers.google.com/protocol-buffers/docs/tutorials[tutorials].
-Here some considerations about protobuf usage for your project.
-</vik>
+Check the availability of the protobuf compiler for your preferred language at the http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[protobuf wiki page]. To make yourself familiar with protobuf technology check https://developers.google.com/protocol-buffers/docs[documentation] and https://developers.google.com/protocol-buffers/docs/tutorials[tutorials]. Here some protobuf pros and cons protobuf:
 
 Pros:
 
