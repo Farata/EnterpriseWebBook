@@ -526,13 +526,13 @@ Let's review some code fragments from the Aptana's project-12-canvas-pie-chart-j
 </div>
 ----
 
-Run the project-12-canvas-pie-chart-json, and you'll see the chart with donation statistics by city as in <<FIG4-6>>.
+Run the project-12-canvas-pie-chart-json, and you'll see the chart with donation statistics by city as in <<FIG4-6>>. We haven't style our `<canvas>` element, but we could've added a background color, the border and other bells and whistles if required.
 
 [[FIG4-6]]
 .Adding a chart 
 image::images/fig_04_06.png[]
 
-The data to be used for drawing a pie chart in our canvas are stored in the file data/chartdata.json, but in a real-world the server side code can generate it based on the up-to-the-second donation data and send it to the client. FOr example, you could do it as was explained in the section Json in Java above. This is the content of our file chartdata.json:
+The data to be used for drawing a pie chart in our canvas are stored in the file data/chartdata.json, but in a real-world the server side code can generate it based on the up-to-the-second donation data and send it to the client. For example, you could do it as was explained in the section Json in Java above. This is the content of our file chartdata.json:
 
 [source, javascript]
 ----
@@ -540,31 +540,31 @@ The data to be used for drawing a pie chart in our canvas are stored in the file
   "ChartData": {
     "items": [
       {
-        "value": 48,
+        "donors": 48,
         "location":"Chicago, IL"
       },
       {
-        "value": 60,
+        "donors": 60,
         "location": "New York, NY"
       },
       {
-        "value": 90,
+        "donors": 90,
         "location":"Dallas, TX"
       },
       {
-        "value": 22,
+        "donors": 22,
         "location":"Miami, FL"
       },
       {
-        "value": 14,
+        "donors": 14,
         "location":"Fargo, ND"
       },
       {
-        "value": 44,
+        "donors": 44,
         "location":"Long Beach, NY"
       },
       {
-        "value": 24,
+        "donors": 24,
         "location":"Lynbrook, NY"
       }
     ]
@@ -591,12 +591,7 @@ function loadData(dataUrl, canvas) {
   			var data = [];                                        
   			var labels = [];
 
-  			for (var i = 0; i < chartData.items.length; i++) {
-  				data.push(chartData.items[i].value);              // <2>
-  				labels.push(chartData.items[i].location);
-  			}
-
-  			drawPieChart(canvas, data, labels, 50, 50, 50);       // <3>
+  			drawPieChart(canvas, chartData, 50, 50, 49);       // <2>
   			
   		} else {
   			console.log(xhr.statusText);
@@ -614,11 +609,182 @@ loadData('data/chartdata.json', document.getElementById("canvas"));
 
 <1> Parse JSON and create the ChartData Javascript object.
 
-<2> Create arrays of data and labels to be drawn on the chart
+<2> Pass the data to the `drawPieChart()` function that will draw the pie in the `canvas` element with the center coordinates x=50 and y=50 pixels. The top left corner of the canvas has coordinates (0,0). The radius of the pie will be 49 pixels. The code of the function that draws the pie on the canvas goes next.
 
-<3> Pass the data to a function that will draw the pie in the `canvas` element with the center coordinates x=50 and y=50 pixels. The top left corner of the canvas has coordinates (0,0). The radius of the pie is 49 pixels.
+[source, javascript]
+----
+function drawPieChart (canvas, chartData, centerX, centerY, pieRadius) {
+	var ctx;  // The context of canvas
+	var previousStop = 0;  // The end position of the slice
+	var totalDonors = 0;
+	
+	var totalCities = chartData.items.length;
+	
+    // Count total donors
+	for (var i = 0; i < totalCities; i++) {
+			totalDonors += chartData.items[i].donors;     // <1>
+	}
 
+	ctx = canvas.getContext("2d");                        // <2>
+	ctx.clearRect(0, 0, canvas.width, canvas.heigh);
 
+    var colorScheme = ["#2F69BF", "#A2BF2F", "#BF5A2F",   // <3>
+            "#BFA22F", "#772FBF", "#2F94BF", "#c3d4db"];
+                       	
+	for (var i = 0; i < totalCities; i++) {               // <4>  
+		
+		//draw the sector
+		ctx.fillStyle = colorScheme[i];
+		ctx.beginPath();
+		ctx.moveTo(centerX, centerY);
+		ctx.arc(centerX, centerY, pieRadius, previousStop, previousStop + 
+			(Math.PI * 2 * (chartData.items[i].donors/totalDonors)),false);
+		ctx.lineTo(centerX, centerY);
+		ctx.fill();
+		
+		// label's bullet
+		var labelY = 20 * i + 10;
+		var labelX = pieRadius*2 + 20;
+		
+		ctx.rect(labelX, labelY, 10, 10);
+		ctx.fillStyle = colorScheme[i];
+		ctx.fill();
+		
+		// label's text
+		ctx.font = "italic 12px sans-serif";
+		ctx.fillStyle = "#222";
+		var txt = chartData.items[i].location + " | " + 
+		                              chartData.items[i].donors;
+		ctx.fillText (txt, labelX + 18, labelY + 8);
+		
+		previousStop += Math.PI * 2 * (chartData.items[i].donors/totalDonors);
+	}
+}
+----
+
+<1> Count the total number of donors.
+
+<2>	Get the 2D context of the `<canvas>` element. This is the most crucial element to know for drawing on a canvas.
+
+<3>	The color scheme is just a set of colors to be used for painting each slice (sector) of the pie.
+
+<4> The for-loop paints one sector on each iteration. This code draws lines, arcs, rectangles, and adds text to the canvas. Describing the details of each method of the context object is out of scope of this book, but you can find the details of the context API in the http://www.w3.org/TR/2dcontext/[W3C documentation] available online.
+
+What if we want to make this chart dynamic and reflect the changes in donations every 5 minutes? If you're using `<canvas>`, you'll need to redraw each and every pixel of our canvas with the pie.	With SVG, each element of the drawing would be the DOM element so we could have redraw only those elements that have changed. If with canvas your script draws using pixels, the SVG drawings are done with vectors. 
+
+To implement the same donation statistics pie with the `<svg>` element, you'd need to replace the `<canvas>` element with the following markup:
+
+[source, html]
+----
+<div id="charts-container">
+	<svg id="svg-container" xmlns="http://www.w3.org/2000/svg">
+		
+	</svg>
+	<h3>Donation Stats</h3>
+	<p>
+		Lorem ipsum dolor sit amet, consectetur
+	</p>
+</div>
+----
+
+Running the Aptana's project-13-svg-pie-chart-json would show you pretty much the same pie as it uses the file chartdata.json with the same content, but the pie was produced differently. The code of the new version of the `drawPieChart()` is shown below. We won't discuss all the details of the drawing with SVG, but will highlight the a couple of important lines of code that illustrate the difference between drawing on `<canvas>` vs. `<svg>`.  
+
+[source, javascript]
+----
+function drawPieChart(chartContaner, chartData, centerX, centerY, 
+                          pieRadius, chartLegendX, chartLegendY) {
+	// the XML namespace for svg elements
+	var namespace = "http://www.w3.org/2000/svg";
+    var colorScheme = ["#2F69BF", "#A2BF2F", "#BF5A2F", "#BFA22F", 
+                      "#772FBF", "#2F94BF", "#c3d4db"];
+
+	var totalCities = chartData.items.length;
+	var totalDonors = 0;
+     
+     // Count total donors
+	for (var i = 0; i < totalCities; i++) {
+		totalDonors += chartData.items[i].donors;
+	}
+	
+	// Draw pie sectors
+	startAngle = 0;
+	for (var i = 0; i < totalCities; i++) {
+		// End of the sector = starting angle + sector size
+		var endAngle = startAngle + chartData.items[i].donors / totalDonors * Math.PI * 2;
+		var x1 = centerX + pieRadius * Math.sin(startAngle);
+		var y1 = centerY - pieRadius * Math.cos(startAngle);
+		var x2 = centerX + pieRadius * Math.sin(endAngle);
+		var y2 = centerY - pieRadius * Math.cos(endAngle);
+
+		// This is a flag for angles larger than than a half circle
+		// It is required by the SVG arc drawing component
+		var big = 0;
+		if (endAngle - startAngle > Math.PI) {
+			big = 1;
+		}
+
+		//Create the <svg:path> element
+		var path = document.createElementNS(namespace, "path");   // <1>
+        
+        // Start at circle center
+		var pathDetails = "M " + centerX + "," + centerY +       //  <2> 
+		// Draw line to (x1,y1)
+		" L " + x1 + "," + y1 + 
+		// Draw an arc of radius
+		" A " + pieRadius + "," + pieRadius + 
+		// Arc's details
+		" 0 " + big + " 1 " +
+		// Arc goes to to (x2,y2) 
+		x2 + "," + y2 + 
+		" Z";
+		// Close the path at (centerX, centerY)
+
+		// Attributes for the <svg:path> element
+		path.setAttribute("d", pathDetails);
+		// Sector fill color
+		path.setAttribute("fill", colorScheme[i]);
+
+		chartContaner.appendChild(path);                    // <3> 
+
+		// The next sector begins where this one ends
+		startAngle = endAngle;
+
+		// label's bullet
+		var labelBullet = document.createElementNS(namespace, "rect");
+		// Bullet's position
+		labelBullet.setAttribute("x", chartLegendX);
+		labelBullet.setAttribute("y", chartLegendY + 20 * i);
+		// Bullet's size
+		labelBullet.setAttribute("width", 10);
+		labelBullet.setAttribute("height", 10);
+		labelBullet.setAttribute("fill", colorScheme[i]);
+
+		chartContaner.appendChild(labelBullet);             // <3>
+
+		// Add the label text
+		var labelText = document.createElementNS(namespace, "text");
+		// lable position = bullet's width(10px) + padding(8px)
+		labelText.setAttribute("x", chartLegendX + 18);
+		labelText.setAttribute("y", chartLegendY + 20 * i + 10);
+		var txt = document.createTextNode(chartData.items[i].location +
+		" | "+chartData.items[i].donors);
+		
+		labelText.appendChild(txt);
+		chartContaner.appendChild(labelText);               //  <3>
+	}
+
+}
+----
+
+<1> Create the `<svg:path>` HTML element.
+
+<2> Fill the details of the `<svg:path>` element. Run the Aptana's project-13-svg-pie-chart-json to see the Save Sick Child page, then right-click on the pie chart and select Inspect Element (this is the name of the menu item in Firefox). <<FIG4-7>> shows the resulting content of our `<svg>` element. As you can see, it's not pixel based but a set of XML-like commands that drew the content of the chart. If you'll run the previous version of our application (project-12-canvas-pie-chart-json) and right-click on the chart, you will be able to save it as an image, but won't see the internals of the `<canvas>` element.
+
+<3> Internal elements of the path, bullets and text are added to the DOM and can be dynamically modified, if need be.	
+ 
+[[FIG4-7]]
+.The chart content in SVG
+image::images/fig_04_07.png[]
 
 
 === Summary
