@@ -509,17 +509,17 @@ Web browsers support the gzipping too, and your application can set `Content-Eco
 
 Let's consider yet another use case for JSON in Save Sick Child. We want to display charts with statistics about the donations.  By now, our application look not exactly as the original mockup from <<FIG3-2>>, but it's pretty close. There is an empty space in the left to the maps, and the charts showing donation statistics can fit right in. Now we need to decide how to draw the charts using nothing, but HTML5 elements. Note that we are not talking about displaying static images using the `<img>` element - the goal is to draw the images dynamically in the client's code. You can accomplish this goal using HTML5 elements `<canvas>` or `<svg>`. 
 
-As per W3C, the http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides scripts with a resolution-dependent bitmap canvas, which can be used for rendering graphs, game graphics, or other visual images on the fly without using any plugins like Flash Player or Silverlight. To put it simple, the `<canvas>` defines a rectangular area that consists of pixels, where your code can draw. 
+The http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides a bitmap canvas, where your  scripts which can draw graphs, game graphics, or other visual images on the fly without using any plugins like Flash Player or Silverlight. To put it simple, the `<canvas>` defines a rectangular area that consists of pixels, where your code can draw. Keep in mind that the DOM object can't peek inside the canvas and access specific pixels. So if you are planning to create an area with dynamically changed graphics you might want to consider using `<svg>`. 
 
-The http://www.w3.org/TR/SVG11/[`<svg>` element] supports Scalable Vector Graphics (SVG), which is the XML-based language for describing two-dimentional graphics. Your code has to provide commands to draw the lines, text, add add images if need be. 
+The http://www.w3.org/TR/SVG11/[`<svg>` element] supports Scalable Vector Graphics (SVG), which is the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images et al. 
 
-Let's review some code fragments from the Aptana's project-12-canvas-pie-chart-json. The HTML section defines `<canvas>` of 260x240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas " instead.
+Let's review some code fragments from the Aptana's project-12-canvas-pie-chart-json. The HTML section defines `<canvas>` of 260x240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your canvas element so your JavaScript code can access it.
 
 [source, html]
 ----
 <div id="charts-container">
     <canvas id="canvas" width="260" height="240">
-    	Your browser does not support HTML5 Canvas.
+    	Your browser does not support HTML5 Canvas
     </canvas>
     <h3>Donation Stats</h3>
     <p> Lorem ipsum dolor sit amet, consectetur</p>
@@ -532,9 +532,91 @@ Run the project-12-canvas-pie-chart-json, and you'll see the chart with donation
 .Adding a chart 
 image::images/fig_04_06.png[]
 
+The data to be used for drawing a pie chart in our canvas are stored in the file data/chartdata.json, but in a real-world the server side code can generate it based on the up-to-the-second donation data and send it to the client. FOr example, you could do it as was explained in the section Json in Java above. This is the content of our file chartdata.json:
 
+[source, javascript]
+----
+{
+  "ChartData": {
+    "items": [
+      {
+        "value": 48,
+        "location":"Chicago, IL"
+      },
+      {
+        "value": 60,
+        "location": "New York, NY"
+      },
+      {
+        "value": 90,
+        "location":"Dallas, TX"
+      },
+      {
+        "value": 22,
+        "location":"Miami, FL"
+      },
+      {
+        "value": 14,
+        "location":"Fargo, ND"
+      },
+      {
+        "value": 44,
+        "location":"Long Beach, NY"
+      },
+      {
+        "value": 24,
+        "location":"Lynbrook, NY"
+      }
+    ]
+  }
+}
+----
 
+Loading of the the charddata.json is done using AJAX techniques as explained earlier. Although in our example we're loading the chart immediately when the Save Sick Chile loads, the following code could be invoked only when the user requests to see the charts by clicking on some menu item on the page.
 
+[source, javascript]
+----
+function loadData(dataUrl, canvas) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', dataUrl, true);
+
+  xhr.onreadystatechange = function() {
+  	if (xhr.readyState == 4) {
+            if ((xhr.status >= 200 && xhr.status < 300) || 
+                                      xhr.status === 304) {
+  			var jsonData = xhr.responseText;
+
+  			var chartData = JSON.parse(jsonData).ChartData;       // <1>  
+ 
+  			var data = [];                                        
+  			var labels = [];
+
+  			for (var i = 0; i < chartData.items.length; i++) {
+  				data.push(chartData.items[i].value);              // <2>
+  				labels.push(chartData.items[i].location);
+  			}
+
+  			drawPieChart(canvas, data, labels, 50, 50, 50);       // <3>
+  			
+  		} else {
+  			console.log(xhr.statusText);
+  			tempContainer.innerHTML += '<p class="error">Error getting ' + 
+                               target.name + ": "+ xhr.statusText + 
+                               ",code: "+ xhr.status + "</p>";
+  		}
+  	}
+  }
+  xhr.send();
+}
+
+loadData('data/chartdata.json', document.getElementById("canvas"));
+----
+
+<1> Parse JSON and create the ChartData Javascript object.
+
+<2> Create arrays of data and labels to be drawn on the chart
+
+<3> Pass the data to a function that will draw the pie in the `canvas` element with the center coordinates x=50 and y=50 pixels. The top left corner of the canvas has coordinates (0,0). The radius of the pie is 49 pixels.
 
 
 
