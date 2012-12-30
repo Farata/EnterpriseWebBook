@@ -82,7 +82,7 @@ You will get a better understanding of each of these statements after reading th
 
 The WebSocket protocol defines two new URI schemes `ws` and `wss` for unencrypted and encrypted connections respectively. The `ws` (WebSocket) URI scheme is similar to HTTP URI scheme and identifies that a WebSocket connection will be established using TCP/IP protocol without encryption. The`wss` (WebSocket Secure) URI scheme identifies that traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides benefits over TCP connection such as data confidentiality and integrity and the endpoint authentication. Apart from the scheme name, it uses a generic URI syntax. If you not familiar with URI scheme concept, read http://en.wikipedia.org/wiki/URI_scheme[the Wikipedia article "URI scheme"].
 
-==== WebSockets Interface ====
+==== WebSocket Interface ====
 
 The W3C expert group uses http://en.wikipedia.org/wiki/Interface_description_language[Interface Description Language] to describe what the WebSocket interface should look like. This is how it was defined:
 
@@ -97,7 +97,7 @@ include::include/ws_interface.il[]
 
 <3> These are the callback functions of WebSocket object that will be invoked by the browser once the appropriate network event is fired.
 
-<4> The property value contains name of used sub-protocol.
+<4> The property value contains name of sub-protocol <vik> used for conversation. This property populated by the browser after successful handshake with value from servers response parameter `Sec-WebSocket-Protocol` as described in <1>. </vik>
 
 <5> WebSocket object can send text or binary data to server using on of the `send()` methods.
 
@@ -311,17 +311,16 @@ webSocket.onclose = function(closeEvent) {
 === WebSocket frameworks ===
 
 Once you start working with vanilla WebSocket API you may need to do some additional coding on you own. For example, if the client's browser doesn't support WebSocket natively, you need to make sure your code falls back to legacy protocols. The good news is that there are frameworks that can help you with this task. Such frameworks save development time, allowing you to do more with less code. We've included brief reviews of two frameworks that can streamline your Web application development with WebSockets.
-
-==== Atmosphere ====
-
-https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. Atmosphere transparently supports WebSockets, Server Side Events, Long-Polling, HTTP Streaming and JSONP. 
-
-The client side component - https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] - simplifies the development of Web applications that require a fall back from WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and make your application portable among them. Atmosphere provides compatibility layer for all major Java application servers that allow to select best available on server transport.
+<vik>
+Mentioned below in next section frameworks try to solve common problem - leverage best available transport in browser or server and abstract developer form internals of used mechanism. Developer needs concentrate on application logic, program application against framework API and to "enjoy the ride". The rest hard work will be done by framework.
+</vik>
 
 ==== The Portal ====
 
-The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library. It aims to utilize a WebSocket for modern web application development and provides unified API for various transports (long polling, HTTP streaming, WebSocket).
+<vik>We're going to start our frameworks review with library called +Portal+. </vik>
+The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library. It aims to utilize a WebSocket for modern web application development and provides unified API for various transports (long polling, HTTP streaming, WebSocket). <vik> Currently, once you decided to use WebSocket API for you next project, you need to remember about those unlucky users what still use, for example, Internet Explorer 8 and they don't have native WebSocket support there. At this case, your application should gracefully degrade and fall back to best available in browser communication technology. Writing code by hand to support all possible variants browsers and browser-specific technologies requires lot of time of testing and providing the compatibility fixes for different platforms. Let's see how +Portal+ library could help us.</vik>
 
+.Simple asynchronous web application client with Portal
 [source,javascript]
 ----------------------------------------------------------------------
 portal.defaults.transports = ["ws", "sse", "stream", "longpoll"];    // <1>
@@ -352,10 +351,24 @@ portal.open("child-auction/auction").on({       // <2>
 
 <3> The Portal API is event-based. It's very similar to W3C WebSocket API.
 
+<vik>As you can see from previous snippet, API is very similar to W3C WebSocket API we have seen in this chapter. +Portal+ unifies the client-side. With defining transports array, we don't have to worry about how to handle message what sent by server with different transport.
+The +Portal+ doesn't depend on any JavaScript libraries which and used by the next contestant framework - Atmosphere.</vik>
+
+==== Atmosphere ====
+
+<vik>Once you developed product - boxed application - and delivering it as web archive to your customers, you may want to support wide range of runtimes. Yes, your customers have WebSphere servers, JBoss server, WebLogic servers. Sad but true, "Write once - run everywhere" doesn't work as advertised. Currently, there are bunch of different implementation of server-side WebSocket framework. And each of them uses their own proprietary APIs. The upcoming Java EE 7 specification intends change situation for better or for worse. But there is framework what allows you to write portable web applications today.
+</vik>
+https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. Atmosphere transparently supports WebSockets, Server Side Events, Long-Polling, HTTP Streaming and JSONP.
+
+The client side component - https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] - simplifies the development of Web applications that require a fall back from WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and make your application portable among them. Atmosphere provides compatibility layer for all major Java application servers that allow to select best available on server transport.
+
+<vik>
+As was mentioned earlier, the Atmosphere framework supports wide range of Java based server-side technologies via set of https://github.com/Atmosphere/atmosphere/wiki/Atmosphere-PlugIns-and-Extensions[extensions and plugins]. Even though, Atmosphere https://github.com/Atmosphere/atmosphere-jsr356[supports] upcoming Java API for WebSocket. So you can have best of 2 worlds - standard API and application portability.
+</vik>
 
 *****
 
-NOTE: WebSockets can be used not only in for the Web, but in any applications that use networking. If you're developing native iOS or OSX applications check https://github.com/square/SocketRocket[the SocketRocket] library developed by http://corner.squareup.com/[Square Engineering Team]. 
+NOTE: WebSockets can be used not only in for the Web, but in any applications that use networking. If you're developing native iOS or OSX applications check https://github.com/square/SocketRocket[the SocketRocket] library developed by http://corner.squareup.com/[Square Engineering Team].
 
 Square uses SocketRocket in their mobile payments application for iOS. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.
 
@@ -421,6 +434,70 @@ As explained in Chapter 4, JSON stands for JavaScript Object Notation, and it's 
 Google Protocol Buffers is a language and platform-neutral extensible mechanism for structured data serialization. Once defined how you want your data to be structured, you can use special generated source code to easily write and read your structured data to and from a variety of data streams.
 
 A developer needs to specify how the serializable information has to be structured by defining the protocol buffer message types in the +.proto+ files. Each protocol buffer message is a small logical record of information, containing a series of the name/value pairs. This protocol buffer message file is language agnostic. The `protoc` utility compiles +proto+ files and produces language specific artifacts, e.g. +.java+, +.js+, etc files.
+
+<vik>
+For example, let's create protocol buffer +proto+ file for our "Save Sick Child" what will represent a donation information.
+
+[source,java]
+.Protocol Buffer for Donation message ( +donation.proto+ )
+----------------------------------------------------------------------
+package savesickchild;                                      // <1>
+
+option java_package = "org.savesickchild.web.donation";     // <2>
+
+message Donor{                                              // <3>
+    required string fullname = 1;
+    required string email = 2;                              // <4>
+    required string address = 3;
+    required string city = 4;
+    required string state = 5;
+    required int32 zip = 6;
+    required string country = 7;
+
+    message Donation{                                       // <5>
+        required Donor donor = 1;                           // <6>
+        required double amount = 2;
+        optional bool receipt_needed = 3;
+    }
+}
+----------------------------------------------------------------------
+
+<1> The protobuf supports packages. You can organize you protobuf messages to prevent naming conflicts among different projects.
+
+<2> As you can see, here we're using Java specific protobuf option to define in what package generated code will reside.
+
+<3> Start define our custom message with `message` keyword.
+
+<4> Each message field can be `required`, `optional` or `repeated`. The `required` and `optional` modifier are self explanatory. During serialization / deserization process protobuf framework will check message for existence of fields and if required property will be missing will throw runtime exception. The `repeated` modifier is used to create dynamic sized arrays.
+
+<5> The protobuf supports nested messages.
+
+<6> There are many standard types available as field types:  +string+, +int32+, +float+, +double+, and +bool+. You can also define custom type and set it as field type.
+
+After you created +donation.proto+ file, we can use `protoc` compiler to generate Java classes form it.
+
+[source,shell]
+----------------------------------------------------------------------
+protoc -I=. --java_out=src donation.proto           # <1>
+
+.
+├── donation.proto
+└── src
+    └── org
+        └── savesickchild
+            └── web
+                └── donation
+                    └── Donation.java               # <2>
+
+----------------------------------------------------------------------
+
+<1> The Java code will be generated in +src+ directory.
+
+<2> All required code for serialization / deserilization of +Donation+ message will be included in +Donation.java+. We're not going to publish this code here but you can always generate this code by yourself from provided above message code.
+
+You can check protobuf compiler for you language in http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[protobuf wiki page]. If you want to make yourself familiar with protobuf technology check https://developers.google.com/protocol-buffers/docs[documentation] and https://developers.google.com/protocol-buffers/docs/tutorials[tutorials].
+Here some considerations about protobuf usage for your project.
+</vik>
 
 Pros:
 
@@ -572,14 +649,14 @@ You can also click on +WebSockets+ on the bottom-right to show only the `WebSock
 .Monitoring WebSocket frames in Chrome Developer Tools
 image::images/fig_09_05.png[]
 
-For more gore details you can navigate your Google Chrome to the secret URL - `chrome://net-internals`, which is a very useful URL showing a lot of additional information (see <<FIG9-6>> and <<FIG9-7>>).
+For more gore details you can navigate your Google Chrome to the secret URL - `chrome://net-internals`, which is a very useful URL showing a lot of additional information (see <<FIG9-6>> and <<FIG9-7>> ).
 
 [[FIG9-6]]
 .Details of initial handshake in Chrome Net Internals
 image::images/fig_09_06.png[]
 
 
-[[FIG9-7]
+[[FIG9-7]]
 .Details of the socket connection
 image::images/fig_09_07.png[]
 
@@ -628,9 +705,9 @@ image::images/fig_09_20.png[]
 
 We took next screenshot <<FIG9-21>> after the action has been finished. We can see here entire data that were sent over WebSocket connection.
 
-[[FIG9-20]]
+[[FIG9-21]]
 .Entire auction conversation
-image::images/fig_09_20.png[]
+image::images/fig_09_21.png[]
 
 
 [[Auction_Messages_Specification]]
