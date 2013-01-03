@@ -1,20 +1,20 @@
 == Upgrading HTTP to WebSockets
 
-This chapter is about moving away from the HTTP protocol in some Web applications. It starts with a brief overview of the existing "legacy" Web networking, and then you'll learn why and how use HTML5's Server-Sent Events (SSE) and WebSockets in your Web networking.
+This chapter is about moving away from the HTTP protocol to more responsive HTML5 WebSockets. It starts with a brief overview of the existing legacy Web networking, and then you'll learn why and how to use HTML5's Server-Sent Events (SSE) and WebSockets.
 
-The new version of our Save Sick Child application will include the online auction utilizing WebSockets and Server-Sent Events. The goal is to let you see the advantages of changing the way the Web client communicates with the server, and to prove that this is better than a regular HTTP we'll monitor the network with Wireshark and Google Chrome Developer Tools.
+The new version of our Save Sick Child application will include the online auction utilizing WebSockets, and you'll see an example of using Server-Sent Events for broadcasting the up-to-the-minute donation information. The goal is to let you see the advantages of changing the way of client-server communications on the Web. You'll clearly see the advantages of Websockets over a regular HTTP by monitoring the network traffic with such tools as Wireshark and Google Chrome Developer Tools.
 
-All the server-side functionality supporting this chapter is written in Java, using Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which will be the part of upcoming Java EE 7 specification running on http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/[latest promoted builds Glassfish Application Server]. If you don't know Java, just treat this server side setup as a service that supports WebSockets. For Java developers interested in diving into the server-side, we'll provide the source code and brief comments as a part of the code samples that come with this book.
+All the server-side functionality supporting this chapter is written in Java, using Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which will be the part of upcoming Java EE 7 specification. We are using the http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/[latest available build of the Glassfish Application Server]. If you don't know Java, just treat this server-side setup as a service that supports WebSockets. For Java developers interested in diving into the server-side, we'll provide the source code and brief comments as a part of the code samples that come with this book.
 
-We'll show and compare the server-side data push with Server-Sent Events and WebSockets. Also we will do a brief overview of popular existing frameworks that can streamline you WebSockets application development.
+We'll show and compare the server-side data push done with Server-Sent Events and WebSockets. Also you'll see a brief overview of popular existing frameworks that can streamline your WebSockets application development.
 
 === Near Real Time Applications With HTTP
 
-The HTTP protocol is the lingua franca of today's Web  applications, where client-server communications are based on the request-response paradigm. On the low level, Web browsers establish a TCP/IP connection for each HTTP request-response session.  Every time when the browser needs to send data to server and get response back the browser re-establish the TCP/IP connection. So to implement interactiveness in your application currently, there are 3 basic options that developers use today to satisfy the real-time client-server communication requirements: polling, long polling, and streaming. Basically, these options are hacks on top of half-duplex HTTP protocol to simulate real-time behavior. Lets discuss each of them.
+The HTTP protocol is the lingua franca of today's Web  applications, where client-server communications are based on the request-response paradigm. On the low level, Web browsers establish a TCP/IP connection for each HTTP session. Currently there are 3 basic options that developers use for the browser-server communication: polling, long polling, and streaming. These options are hacks on the top of a half-duplex (a one way street) HTTP protocol to simulate real-time behavior. Lets discuss each of them.
 
 ==== Polling ====
 
-With _polling_, your client code sends requests to the server every N seconds. The response will have no data load if there were no updates on the server side as illustrated in <<FIG9-1>>. Visualize a child seating on back seat of your car and asking, "have we arrived yet?" every minute. And you're politely replying "Not just yet" - compare it to an empty server response. There is no valuable payload for this kid, but she's still receiving some "metadata". HTTP polling does the same thing that generates verbose HTTP response headers sending empty payload. Let alone destructing the driver (think the server) from performing other responsibilities.
+With _polling_, your client code sends requests to the server after based on some pre-configured interval (e.g. using JavaScript `setInterval()` function). SOme of the server's responses will be empty, if the requested data is not ready yet as illustrated in <<FIG9-1>>. For example, if you're running an online auctions and sends the request to see the updated bids, you won't receive any data back unless someone placed a new bid. Visualize a child seating on back seat of your car and asking every minute, "Have we arrived yet?" . And you're politely replying, "Not just yet" - this is similar to an empty server response. There is no valuable payload for this kid, but she's still receiving some "metadata". HTTP polling may result in receiving verbose HTTP response headers bearing no data load, let alone destructing the driver (think the server) from performing other responsibilities.
 
 [[FIG9-1]]
 .Polling
@@ -22,11 +22,11 @@ image:images/fig_09_01.png[image]
 
 ==== Long Polling ====
 
-_Long polling_ (illustrated in <<FIG9-2>> ) starts similarly to polling: the client sends HTTP request to server. But in this case instead of sending an empty response (as in case with polling), server waits till the data for the client becomes available. If the requested information is not available after the specified timeout, the server server sends an empty response to the client and closes the connection.
+_Long polling_ (see <<FIG9-2>> ) starts similarly to polling: the client sends the HTTP request to the server. But in this case instead of sending an empty response back, the server waits till the data for the client becomes available. If the requested information is not available within the specified time interval, the server sends an empty response to the client, closes, and re-establishes the connection.
 
-We'll give you one more analogy to compare polling and long polling. Imagine a party at the top floor of a building equipped with a smart elevator that goes up every minute and opens the door just in case if one of the guests wants to go down to smoke a cigarette. If no one enters the elevator, it goes to the ground level and in 60 seconds goes up again. This is the polling scenario. But if this elevator would go up, and waited till someone would actually decided to go down, then we could call it a long polling mode.
+We'll give you one more analogy to compare polling and long polling. Imagine a party at the top floor of a building equipped with a smart elevator that goes up every minute and opens the door just in case if one of the guests wants to go down to smoke a cigarette. If no one enters the elevator, it goes to the ground level and in 60 seconds goes up again. This is the polling scenario. But if this elevator would go up, and waited till someone would actually decide to go down, then we could call it a long polling mode.
 
-From HTTP specification perspective this hack is legit: the long polling server behavior is indistinguishable from the slow server.  That is why this technique also referred as _Hanging GET_. If you see an online auction that automatically modifies the prices as people bid on the item it looks as if the server pushes the data to you. But most likely, this functionality was implemented using long polling, which is not a real server-side data push, but its emulation.
+From the HTTP specification perspective this hack is legit: the long polling mode may seem as if we deal with the slow-responding server. That is why this technique also referred as _Hanging GET_. If you see an online auction that automatically modifies the prices as people bid on items it looks as if the server pushes the data to you. But the chances are, this functionality was implemented using long polling, which is not a real server-side data push, but its emulation.
 
 [[FIG9-2]]
 .Long Polling
@@ -34,30 +34,31 @@ image:images/fig_09_02.png[image]
 
 ==== HTTP Streaming ====
 
-Client sends the request, server wait for events and  streams +multipart/chunked+ response, and then waits for the events. The server pushes the data to the client pretending that the response never ends <<FIG9-3>>. The response is continually appended by the server, usually with `<script>` what gets executed even after the HTTP DOM object is ready
+The client sends the request for data. As soon as the server gets the data ready, it starts streaming (adding more and more data to the response object) without closing the connections. The server pushes the data to the client pretending that the response never ends <<FIG9-3>>. For example, requesting a video from Youtube.com results in streaming data (frame after frame) without closing the HTTP connection.
 
 [[FIG9-3]]
 .HTTP Streaming
 image:images/fig_09_03.png[image]
 
-Polling and streaming can be used as a fall-back for legacy browsers that don't support the modern HTML5 APIs _Server-Sent Events_ and _WebSockets_.
+Polling and streaming can be used as a fall-back for legacy browsers that don't support the HTML5 APIs _Server-Sent Events_ and _WebSockets_.
 
 === Server-Sent Events ===
 
-Before diving into WebSockets protocol lets get familiar with the standardized way of implementing  http://dev.w3.org/html5/eventsource/[Server-Sent Events]. W3C introduces API for the Web browsers and the +EventSource+ object. SSE allows to subscribe to remote server events arriving in the form of DOM events. The following code snippet shows the JavaScript code that can be used in a Web browser.
+Before diving into the WebSockets protocol lets get familiar with the standardized way of implementing  http://dev.w3.org/html5/eventsource/[Server-Sent Events]. W3C introduces API for Web browsers and the +EventSource+ object. SSE allows browsers to subscribe to the server events arriving in the form of DOM events. The following code snippet shows the JavaScript code that can be used in a Web browser.
 
 [source,javascript]
 -----------------------------------------------------
 include::include/sse_api_example.js[]
 -----------------------------------------------------
 
-<1> Create new +EventSource+ object. At this point the browser will sends the +GET+ request to the specified server-side endpoint to register itself on the server
-<2> Add handlers for the +open+ and +error+ events
-<3> Handle messages in +create+ events
-<4> Handle messages in +update+ events
+<1> Create a new +EventSource+ object. At this point the browser will send the +GET+ request to the specified server-side endpoint to register itself on the server.
+<2> Add handlers for the +open+ and +error+ events.
+<3> Handle messages in +create+ events.
+<4> Handle messages in +update+ events.
 
-Using SSE is a good technique for the use cases when the client doesn't need to send the data to the server. In the above example the server sends two types of events +create+ and +update+ to notify subscribed clients about changing information about donation data so connected clients can monitor fund-raising process. We can create as many named-events as we want.
-This technique is still HTTP-based, and it requires the server's support of a combination of HTTP 1.1 keep-alive connections and the `text/event-stream` content type. The overhead is minimal - instead of hundreds of bytes, the server sends only tens of bytes.
+Using SSE is a good technique for the use cases when the client doesn't need to send the data to the server. In the above example the server sends two types of custom events +create+ and +update+ to notify subscribed clients about updated donation data so the active clients can monitor the fund-raising process. We can create as many custom events as needed by the application.
+
+SSE is still HTTP-based, and it requires the server's support of the combination of HTTP 1.1 keep-alive connections and the `text/event-stream` content type in HTTP response. The overhead is minimal - instead of hundreds of bytes in request and response headers, the server sends only the responses when the data has changed.
 
 === Introducing WebSockets
 
@@ -70,17 +71,17 @@ enough to make WebSocket seriously interesting to Google.
 source: http://ietf.org/mail-archive/web/hybi/current/msg00784.html
 ____
 
-WebSockets is a bi-directional full-duplex socket-based protocol. According to http://tools.ietf.org/html/rfc6455[RFC 6455]  - the Internet Engineering Task Force (IETF) standard document - the goal of WebSocket technology is to provide mechanism for web applications what need two-way communications with servers. This technology shouldn't rely on HTTP hacks or on opening multiple connections using +XMLHttpRequest+ or `<iframe>` and long polling. The idea behind WebSockets is not overly complicated:
+WebSockets is a bi-directional full-duplex socket-based protocol. According to http://tools.ietf.org/html/rfc6455[RFC 6455]  - the Internet Engineering Task Force (IETF) standard document - the goal of WebSocket technology is to provide a mechanism for Web applications that need two-way communications with servers. This technology doesn't rely on HTTP hacks or on opening multiple connections using +XMLHttpRequest+ or `<iframe>` and long polling. The idea behind WebSockets is not overly complicated:
 
 - Establish a socket connection between the client and the server using HTTP for the initial handshake.
 - Switch the communication protocol from HTTP to a socket-based protocol.
 - Send messages in both directions simultaneously (a.k.a. full duplex mode).
-- Send messages independently. This is not a request-response model as both the server and the client can initiate data transmission which enables the real server-side push.
-- Both the server and the client can initiate the disconnects too.
+- Send messages independently. This is not a request-response model as both the server and the client can initiate the data transmission which enables the real server-side push.
+- Both the server and the client can initiate disconnects too.
 
 You will get a better understanding of each of these statements after reading the section WebSocket API later in this chapter.
 
-The WebSocket protocol defines two new URI schemes `ws` and `wss` for unencrypted and encrypted connections respectively. The `ws` (WebSocket) URI scheme is similar to HTTP URI scheme and identifies that a WebSocket connection will be established using TCP/IP protocol without encryption. The`wss` (WebSocket Secure) URI scheme identifies that traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides benefits over TCP connection such as data confidentiality and integrity and the endpoint authentication. Apart from the scheme name, it uses a generic URI syntax. If you not familiar with URI scheme concept, read http://en.wikipedia.org/wiki/URI_scheme[the Wikipedia article "URI scheme"].
+The WebSocket protocol defines two new http://en.wikipedia.org/wiki/URI_scheme[URI schemes] `ws` and `wss` for unencrypted and encrypted connections respectively. The `ws` (WebSocket) URI scheme is similar to HTTP URI scheme and identifies that a WebSocket connection will be established using TCP/IP protocol without encryption. The`wss` (WebSocket Secure) URI scheme identifies that the traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides such benefits over TCP connection as data confidentiality, integrity, and the endpoint authentication. Apart from the scheme name, WebSockets URI schemes use generic URI syntax. 
 
 ==== WebSocket Interface ====
 
@@ -95,11 +96,11 @@ include::include/ws_interface.il[]
 
 <2> At any given time the WebSocket can be in one of four states.
 
-<3> These are the callback functions of WebSocket object that will be invoked by the browser once the appropriate network event is fired.
+<3> These are the callback functions of WebSocket object that will be invoked by the browser once the appropriate network event is dispatched.
 
-<4> This property contains the name of sub-protocol used for the conversation. After the successful handshake this property populated by the browser with value from servers response parameter `Sec-WebSocket-Protocol` as described in <1>. 
+<4> This property contains the name of the sub-protocol used for the conversation. After the successful handshake this property populated by the browser with value from servers response parameter `Sec-WebSocket-Protocol` as described in <1>. 
 
-<5> The WebSocket object can send text or binary data to server using on of the `send()` methods.
+<5> The WebSocket object can send text or binary data to the server using on of the overloaded `send()` methods.
 
 ===== The Client-Side API =====
 
@@ -118,16 +119,16 @@ include::include/ws_api_example.js[]
 
 <4> The `MessageEvent` is dispatched  when the data is received from the server. This message will be delivered to the function assigned to the WebSocket object's `onmessage` property. The `e.data` property of the message event will contain the received message.
 
-<5> Handle closing connection (more details in <<CLOSSING>> section).
+<5> Handle closing connection (more details in <<CLOSING>> section).
 
 <6> Handle errors.
 
 [[HANDSHAKE]]
 ===== WebSockets Handshake
 
-Any network communications that uses WebSockets protocol starts with an opening handshake. The handshake upgrades the connection from HTTP to the WebSockets protocol. It's an upgrade to a message-based communications. We will discuss messages (a.k.a. frames) later in this chapter. Why upgrading from HTTP instead of starting with the TCP as a protocol in the first place? The reason is that the WebSockets operates on the same ports (80 and 443) as HTTP and HTTPS do. It's an important advantage that the browser's requests are routed through the same ports because arbitrary socket connections are not allowed by the enterprise firewalls for security or scalability reasons. Also, many corporate networks only allow certain ports outgoing. And HTTP/HTTPS ports are usually included in so called _white lists_.
+Any network communications that use WebSocket protocol start with an opening handshake. The handshake upgrades the connection from HTTP to the WebSockets protocol. It's an upgrade to a message-based communications. We will discuss messages (a.k.a. frames) later in this chapter. Why upgrade from HTTP instead of starting with the TCP as a protocol in the first place? The reason is that the WebSocket operates on the same ports (80 and 443) as HTTP and HTTPS do. It's an important advantage that the browser's requests are routed through the same ports because arbitrary socket connections may not be  allowed by the enterprise firewalls for security reasons. Also, many corporate networks only allow certain outgoing ports. And HTTP/HTTPS ports are usually included in so called _white lists_.
 
-The protocol upgrade is initiated by the client request, which also transmits a special key with the upgrade request. The server processes this request and send back a confirmation for the upgrade. This ensures that a WebSocket connection cannot be established with an endpoint that is not aware of the WebSockets protocol. Here is what the handshake looks can like in the client's request:
+The protocol upgrade is initiated by the client request, which also transmits a special key with the upgrade request. The server processes this request and sends back a confirmation for the upgrade. This ensures that a WebSocket connection can be established only with an endpoint that support WebSockets. Here is what the handshake can look like in the client's request:
 
 ----------------------------------------------------------------------
 
@@ -142,7 +143,7 @@ The protocol upgrade is initiated by the client request, which also transmits a 
 
 ----------------------------------------------------------------------
 
-This client sends the +GET+ request for the protocol upgrade. The +Sec-WebSocket_Key+ is just a set of random bytes. The server takes these bytes and appends to it a special Global Unique Identifier (GUID) string `258EAFA5-E914-47DA-95CA-C5AB0DC85B11`, then creates theSecure Hash Algorithm +SHA1+ hash from it followed by the _base64_ encoding. The resulting string of bytes needs to be used by both the server and the client, and it's unlikely that this string will be used by the network endpoints that do not understand the WebSockets protocol. Then this value would be copieded in the `Sec-WebSocket-Accept` header field. When the server has computed the value it can send the response back confirming the protocol upgrade.
+This client sends the +GET+ request for the protocol upgrade. The +Sec-WebSocket_Key+ is just a set of random bytes. The server takes these bytes and appends to this key a special Global Unique Identifier (GUID) string `258EAFA5-E914-47DA-95CA-C5AB0DC85B11`, then it creates the Secure Hash Algorithm +SHA1+ hash from it performs the _base64_ encoding. The resulting string of bytes needs to be used by both the server and the client, and this string won't be used by the network endpoints that do not understand the WebSockets protocol. Then this value would be copied in the `Sec-WebSocket-Accept` header field. The server computes the value and sends the response back confirming the protocol upgrade.
 
 ----------------------------------------------------------------------
 
@@ -155,23 +156,23 @@ This client sends the +GET+ request for the protocol upgrade. The +Sec-WebSocket
 
 ----------------------------------------------------------------------
 
-The WebSockets protocol uses the `400 Bad Request` error to signal the missing upgrade. The handshake can also include a protocol request and the WebSocket version information but you can't include arbitrary other headers. We can't transmit the authorization information. There are two ways around this. You can either transmit the authorization information as the first request (e.g. unique `clientId` can be passed as part of the HTTP response header or HTML wrapper) or put it into the URL as a query parameter during the initial handshake. Consider the following example.
+The WebSockets protocol uses the `400 Bad Request` HTTP error code to signal the unsuccessful upgrade. The handshake can also include a sub-protocol request and the WebSocket version information but you can't include arbitrary other headers. We can't transmit the authorization information. There are two ways around this. You can either transmit the authorization information as the first request (e.g. unique `clientId` can be passed as part of the HTTP request header or HTML wrapper) or put it into the URL as a query parameter during the initial handshake. Consider the following example:
 
 [source,javascript]
 ----------------------------------------------------------------------
-var clientId = AppContext.getClientId();                        // <1>
+var clientId = "Mary1989";                                   // <1>
 ws = new WebSocket("ws://www.websocket.org/echo/"+clientID); // <2>
 
 ----------------------------------------------------------------------
 
-<1> Here we're getting clientId value from the  `AppContext` singleton object.
-<2> We're connecting to the WebSockets endpoint with an extra URI parameter which will be stored on server for future interactions.
+<1> The client the `clientId` value (can be obtained from some LDAP server).
+<2> The client connects to the WebSockets endpoint with an extra URI parameter which will be stored on server for future interactions.
 
-Because WebSockets protocol creates a bi-directional (socket-to-socket) connection server has access to conversation session associated with the new web socket connection. This session can be associated with clientId and be stored on server.
+Because WebSockets protocol creates a bi-directional (socket-to-socket) connection, the server has access to the conversation session associated with such a connection. This session can be associated with clientId and be stored on server.
 
 ****
 
-NOTE: There is no limit to the number of established WebSocket connections a client can have with a single remote host.  Servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections or disconnect resource-hogging connections in case of high data load.
+NOTE: A client can have as any WebSocket connections with the server as needed.  But servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections or disconnect resource-hogging connections in case of high data load.
 
 ****
 
@@ -283,7 +284,7 @@ webSocket.onmessage = function(messageEvent) {
 };
 ----------------------------------------------------------------------
 
-[[CLOSSING]]
+[[CLOSING]]
 ===== Closing The Connection =====
 
 The connection is terminated by sending the frame with the close opcode `0x08`.
