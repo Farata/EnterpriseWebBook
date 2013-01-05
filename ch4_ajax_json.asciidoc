@@ -835,7 +835,10 @@ Your JavaScript can build the URL for the `myScriptTag.src` dynamically and pass
 myScriptTag.src = "http://xyz.com?city=Boston&callback=myDataHandler";
 ----
 
-Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com is intercepted and replaced by a malicious code. But it's not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data.
+Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com is intercepted and replaced by a malicious code. But it's not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data. 
+
+If you decide to use JSONP don't forget about error handling. Most likely you'll be using one of the JavaScript frameworks and they usually offer a standard mechanism for JSONP error handling, dealing with poorly formatted JSON responses, and recovery in cases of network failure. One of such libraries is called https://github.com/jaubourg/jquery-jsonp[jQuery-JSONP].
+
 
 ==== Beer and JSONP
 
@@ -874,12 +877,21 @@ Now let's request the same data, but in a JSONP format by adding to the URL a pa
 ----
 processBeer({"page":1,"pages":1,"total":7,"breweries":[{"id":1,"name":"(512) Brewing Company","url":"http://512brewing.com","created_at":"2010-12-07T02:53:38Z","updated_at":"2010-12-07T02:53:38Z"},{"id":2,"name":"21st Amendment Brewing","url":"http://21st-amendment.com","created_at":"2010-12-07T02:53:38Z","updated_at":"2010-12-07T02:53:38Z"}]})
 ----
-Since we haven't declared the function `processBeer()` yet, it won't be called. Let's fix it now.
+Since we haven't declared the function `processBeer()` yet, it won't be invoked. Let's fix it now. The function will check first if the received data contains the information about the breweries. If it does, the name of the very first brewery will be printed on the JavaScript console. Otherwise the console output will read "Retrieved data has no breweries info".
 
 [source, javascript]
 ----
 var processBeer=function (data){          
-    console.log("in the processBeer callback");
+              
+   // Uncomment the next line to emulate malicious data
+   // data="function evilFunction(){alert(' Bad function');}";
+     
+     if (data.breweries == undefined){
+      console.log("Retrieved data has no breweries info.");
+     } else{
+      console.log("In the processBeer callback. The first brewery is "
+                  + data.breweries[0].name);
+     }
   }
 
 var myScriptTag = document.createElement("script");
@@ -887,7 +899,6 @@ var myScriptTag = document.createElement("script");
 
 var bd = document.getElementsByTagName('body')[0];
 bd.appendChild(myScriptTag);
-
 ----
 
 <<FIG4-8>> is a screen snapshot taken in the Firebug when it reached the breakpoint placed inside the processBeer callback on the `console.log(in the processBeer callback")`. You can see the content of the `data` argument - the beer has arrived. 
