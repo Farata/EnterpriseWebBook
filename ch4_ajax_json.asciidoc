@@ -225,7 +225,7 @@ AJAX techniques have their pros and cons. You saw how easy it was to create a We
 
 On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. Since the AJAX brings most of the content dynamically, the search engines wouldn't rank your Web pages as high as it would do if the content was statically embedded in the HTML. Increasing the amount of AJAX interactions means that your application will have to send more of the JavaScript code to the Web browser, which increases the complexity of programming and decreases the scalability of your application. 
 
-AJAX applications are subject to _the same-origin policy_ (the same protocol, port, and host) allowing `XMLHttpRequest` make HTTP requests only to the domains where the Web application was loaded from. 
+AJAX applications are subject to _the same origin policy_ (the same protocol, port, and host) allowing `XMLHttpRequest` make HTTP requests only to the domains where the Web application was loaded from. 
 
 TIP: W3C has published a working draft of https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control[Cross-Origin Resource Sharing] (CORS) - a mechanism to enable client-side cross-origin requests.
 
@@ -387,7 +387,7 @@ Run the Aptana's project-11-maps-json-data and you'll see the map with the marke
 .Markers built from JSON data
 image::images/fig_04_03.png[]
 
-Note that this JSON file contains the object `campaigns` which includes the array of objects `items` representing charity events. `XMLHttpRequest` object loads the data and the `JSON` parses it assigning the `campaigns` object to the variable `campaignsData` that is used in showCampaignsInfo() with Google Maps API (we've omitted the mapping part for brevity). 
+Note that this JSON file contains the object `campaigns`, which includes the array of objects `items` representing charity events. `XMLHttpRequest` object loads the data and the `JSON` parses it assigning the `campaigns` object to the variable `campaignsData` that is used in showCampaignsInfo() with Google Maps API (we've omitted the mapping part for brevity). 
 
 [source, javascript]
 ----
@@ -755,7 +755,8 @@ function drawPieChart(chartContaner, chartData, centerX, centerY,
 		// Bullet's position
 		labelBullet.setAttribute("x", chartLegendX);
 		labelBullet.setAttribute("y", chartLegendY + 20 * i);
-		// Bullet's size
+		
+    // Bullet's size
 		labelBullet.setAttribute("width", 10);
 		labelBullet.setAttribute("height", 10);
 		labelBullet.setAttribute("fill", colorScheme[i]);
@@ -764,7 +765,8 @@ function drawPieChart(chartContaner, chartData, centerX, centerY,
 
 		// Add the label text
 		var labelText = document.createElementNS(namespace, "text");
-		// lable position = bullet's width(10px) + padding(8px)
+		
+    // label position = bullet's width(10px) + padding(8px)
 		labelText.setAttribute("x", chartLegendX + 18);
 		labelText.setAttribute("y", chartLegendY + 20 * i + 10);
 		var txt = document.createTextNode(chartData.items[i].location +
@@ -777,11 +779,15 @@ function drawPieChart(chartContaner, chartData, centerX, centerY,
 }
 ----
 
-<1> Create the `<svg:path>` HTML element.
+<1> Create the `<svg:path>` HTML element, which is the most important SVG element for drawing basic shapes.. It includes a series of commands that produce the required drawing. For example, _M 10 10_ means _movo to the coordinate 10,10_ and _L 20 30_ means _draw the line to the coordinate 20,30_. 
 
-<2> Fill the details of the `<svg:path>` element. Run the Aptana's project-13-svg-pie-chart-json to see the Save Sick Child page, then right-click on the pie chart and select Inspect Element (this is the name of the menu item in Firefox). <<FIG4-7>> shows the resulting content of our `<svg>` element. As you can see, it's not pixel based but a set of XML-like commands that drew the content of the chart. If you'll run the previous version of our application (project-12-canvas-pie-chart-json) and right-click on the chart, you will be able to save it as an image, but won't see the internals of the `<canvas>` element.
+<2> Fill the details of the `<svg:path>` element to draw the pie sector. 
 
-<3> Internal elements of the path, bullets and text are added to the DOM and can be dynamically modified, if need be.	
+Run the Aptana's project-13-svg-pie-chart-json to see the Save Sick Child page, then right-click on the pie chart and select Inspect Element (this is the name of the menu item in Firefox). <<FIG4-7>> shows the resulting content of our `<svg>` element. As you can see, it's not pixel based but a set of XML-like commands that drew the content of the chart. If you'll run the previous version of our application (project-12-canvas-pie-chart-json) and right-click on the chart, you will be able to save it as an image, but won't see the internals of the `<canvas>` element.
+
+<3> Adding the internal elements of the chart container to the DOM - path, bullets and text. These elements can be modified if needed without redrawing the entire content of the container.	
+
+TIP: in our code example we have written the path commands manually to process the data dynamically. But Web designers often use tools (http://www.adobe.com/products/illustrator.html[Adobe Illustrator], http://inkscape.org/[Incscape] et al.) to draw and then export images into an SVG format. In this case all paths will be encoded as `<svg:path>` automatically. 
  
 [[FIG4-7]]
 .The chart content in SVG
@@ -814,7 +820,7 @@ If all you need is just to retrieve the data from a different domain on page jus
 
 `<script src="http://xyz.com?callback=myDataHandler">` 
 
-But what if you need to dynamically make such requests either periodically (e.g. get all twits with a hashtag `#savisickchild` by sending an HTTP GET to request to `http://search.twitter.com/search.json?q=savesickchild&rpp=5&include_entities=true&with_twitter_user_id=true&result_type=mixed`) or when the user selected certain option on your Web page? You can achieve this by dynamically adding a `<script>` tag to the DOM object from your JavaScript code. Whenever the browser sees the new `<script>` element it executes it. Such script injection can be done like this:
+But what if you need to dynamically make such requests periodically (e.g. get all twits with a hashtag `#savisickchild` by sending an HTTP GET using Twitter API at `http://search.twitter.com/search.json?q=savesickchild&rpp=5&include_entities=true&with_twitter_user_id=true&result_type=mixed`)? You may also need to make requests to a different server when the user selected a certain option on your Web page. You can achieve this by dynamically adding a `<script>` tag to the DOM object from your JavaScript code. Whenever the browser sees the new `<script>` element it executes it. Such script injection can be done like this:
 
 [source, javascript]
 ----
@@ -829,8 +835,68 @@ Your JavaScript can build the URL for the `myScriptTag.src` dynamically and pass
 myScriptTag.src = "http://xyz.com?city=Boston&callback=myDataHandler";
 ----
 
-Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com may be intercepted and replaced by a malicious code. But it's not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data.
+Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com is intercepted and replaced by a malicious code. But it's not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data.
 
+==== Beer and JSONP
+
+In this section you'll see a small code example illustrating the data retrieval from publicly publicly available http://openbeerdatabase.com/[Open Beer DataBase], which exists to help software developers test their code that makes REST Web service calls and works with JSON and JSONP data. Our Save Sick Child page won't display beer bottles, but we want to show that in addition to the retrieval of the donations and charts data from one domain we can get the data from a third-party domain openbeerdatabase.com. 
+
+First, enter the URL `http://api.openbeerdatabase.com/v1/breweries.json` in the address bar of your Web browser, and it'll return the following JSON data (only 2 out of 7 breweries are shown for brevity):
+
+[source, javascript]
+----
+{
+   "page": 1,
+   "pages": 1,
+   "total": 7,
+   "breweries": [
+       {
+           "id": 1,
+           "name": "(512) Brewing Company",
+           "url": "http://512brewing.com",
+           "created_at": "2010-12-07T02:53:38Z",
+           "updated_at": "2010-12-07T02:53:38Z"
+       },
+       {
+           "id": 2,
+           "name": "21st Amendment Brewing",
+           "url": "http://21st-amendment.com",
+           "created_at": "2010-12-07T02:53:38Z",
+           "updated_at": "2010-12-07T02:53:38Z"
+       }
+   ]
+}
+----
+
+Now let's request the same data, but in a JSONP format by adding to the URL a parameter with a callback name `myDataHandler`. Entering in the browser `http://api.openbeerdatabase.com/v1/breweries.json?callback=processBeer` will return the following (it's a short version):
+
+[source, javascript]
+----
+processBeer({"page":1,"pages":1,"total":7,"breweries":[{"id":1,"name":"(512) Brewing Company","url":"http://512brewing.com","created_at":"2010-12-07T02:53:38Z","updated_at":"2010-12-07T02:53:38Z"},{"id":2,"name":"21st Amendment Brewing","url":"http://21st-amendment.com","created_at":"2010-12-07T02:53:38Z","updated_at":"2010-12-07T02:53:38Z"}]})
+----
+Since we haven't declared the function `processBeer()` yet, it won't be called. Let's fix it now.
+
+[source, javascript]
+----
+var processBeer=function (data){          
+    console.log("in the processBeer callback");
+  }
+
+var myScriptTag = document.createElement("script");
+  myScriptTag.src = "http://api.openbeerdatabase.com/v1/breweries.json?callback=processBeer";
+
+var bd = document.getElementsByTagName('body')[0];
+bd.appendChild(myScriptTag);
+
+----
+
+<<FIG4-8>> is a screen snapshot taken in the Firebug when it reached the breakpoint placed inside the processBeer callback on the `console.log(in the processBeer callback")`. You can see the content of the `data` argument - the beer has arrived. 
+
+[[FIG4-8]]
+.The beer has arrived
+image::images/fig_04_08.png[]
+
+TIP: As a training exercise, try to replace the data retrieval from the beer Web service with adding the data feed from Twitter based on certain hash tags. See if you can find the place in the Save Sick Child Web page to display (and periodically update) this Twitter stream. 
 
 === Summary
 
