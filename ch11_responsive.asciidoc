@@ -4,43 +4,57 @@ Up till now we've been writing and re-writing the desktop version of the Save Si
 
 Let's discuss different approaches to making the Web site for mobile devices. One of the approaches is having only one Web site for all devices. There are three choices:
 
-1. Develop separate version of native applications for each mobile device.
+1. Develop separate version of native applications for each mobile device. Developing of native mobile applications is not covered in this book.
 2. Develop one HTML5 Web application, but create several different UI layouts that will be applied automatically based on the screen size of the user's device.
-3. Develop a _hybrid application_, which is a Web application on steroids - it can invoke native API of the mobile device.
+3. Develop a _hybrid application_, which is a Web application on steroids - it can invoke native API of the mobile device. Chapter 14 is dedicated to hybrid applications.
 
-This book is not about developing native mobile applications, so we'll just mention their pros and cons. The second approach is what this chapter is about. This approach is is called _Responsive Design_, and we'll modify the design of the Save Sick Child site to introduce different layouts for the desktop, tablet, and smart phones. By the end of this chapter the site Save Sick Child will automatically change its layout based on the user's device without the losing any functionality. Chapter 14 is dedicated to hybrid applications.
-
+The chapter is about the second approach called _Responsive Design_, and we'll modify the design of the Save Sick Child site to introduce different layouts for the desktop, tablet, and smart phones. By the end of this chapter the site Save Sick Child will automatically change its layout based on the user's device without the losing functionality. 
 
 === One Code Base vs. Two
 
-People responsible for developing a Web application that can run on both desktop and mobile platforms usually start with making an important decision: HTML5 or native? This book is not about native applications - we'll only review the hybrid applications in Chapter 14. But even if a decision was made in the favor of Web platform, the next question is if the desktop and mobile clients will use the same code or not.  
+Run any of the versions of our Save Sick Child applications on your desktop and start dragging the right border of the browser's window to make it narrower. At some point you'll see only a part of the content - the layout of Save Sick Child is not responsive just yet. It defines fixed sizes for the page sections, which don't change event if the display area shrinks. 
 
-If you'll decide to go with separate versions of the Web applications, the Web server can be configured to perform redirection to the appropriate code. Web servers can do it based on the value of the `User-Agent` attribute of the HTTP request's header. For example, the mobile Web browsers of bbc.com deliver the content from different URLs and they look differently (see <<FIG11-1>> and <<FIG11-2>>). 
+Or enter the address of one of the http://savesickchild.org:8080/project-15-dynamic-content-modules/[Save Sick Child] projects in your mobile phone's browser. Either you'll see a partial content of the page or the entire page with illegible small fonts. At this point the only design of the Save Sick Child application doesn't look good on all devices. 
+
+How many versions of the UI do we need to create then? People responsible for developing a Web application that can run on both desktop and mobile platforms usually start with making an important decision: HTML5 or native?  But even if a decision was made in the favor of the Web platform, the next question is if the desktop and mobile clients will use the same code or not. 
+
+If a decision is made to go with separate versions of the Web applications, the Web server can be configured to perform the redirection to the appropriate code depending on the type of the user's device. Web servers can do it based on the value of the `User-Agent` attribute of the HTTP request header. For example, the mobile Web browsers trying to access of http://www.bbc.com/[BBC] (or any other Web page) report their `User-Agent` to the server differently from desktop computers  hence they recive different content delivered from a different URL. The snapshots <<FIG11-1>> and <<FIG11-2>> of the BBC main page were taken at the same time, but <<FIG11-1>> shows how the page looks on the desktop computer, while <<FIG11-2>> was taken from the iPhone. 
 
 [[FIG11-1]]
 .The desktop version of bbc.com
 image::images/fig_11_01.jpg[]
 
-The above version delivers more content that can be allocated nicely on the large desktop monitor or a tablet. But the mobile version minimizes substantially what's delivered to the client over potentially slower network to be displayed on a small screen.
+The <<FIG11-1>> page layout delivers more content that can be allocated nicely on the large desktop monitor or a tablet. But the mobile version on <<FIG11-2>> substantially limits what's delivered to the client, which is done not only because the screen is small, but the user may be accessing the page over the slower network.
 
 [[FIG11-2]]
 .The mobile version of bbc.com
 image::images/fig_11_02.png[]
 
-Have you ever tried to share the link of the Web site from your iPhone? It's so easy! Just press the button and enter the email of the person to share the site with. Go to bbc.com (it'll be redirected) on your iPhone and share this link with someone. That person will receive the link http://www.bbc.co.uk/mobile/i/[http://www.bbc.co.uk/mobile/i], and if she's visit this site from the desktop it won't look pretty - try to enter this URL in your desktop browser to see for yourself.
+Have you ever tried to share the link of the Web site from your iPhone? It's so easy! Just press the button and enter the email of the person to share the site with. Go to bbc.com from your iPhone or Android phone and share this link with someone. That person will receive the link http://www.bbc.co.uk/mobile/i/[http://www.bbc.co.uk/mobile/i], and if she's visit this site from the desktop it won't look pretty. It'll just show the wider version of what you see in <<FIG11-2>>. Try to enter this URL in your desktop browser to see for yourself.
 
-In this chapter we'll discuss how to design Web applications that have one code base for both the mobile and the desktop versions.  The Save Sick Child application will have the same code but will present itself differently on desktop and mobile devices using responsive design and _CSS media queries_. This is not necessarily the better approach to having separate versions as with the bbc.com, but we'll talk about pros and cons of both approaches. 
+Maintaining two different versions of the code requires more efforts than maintaining one: you need to have two sets of HTML, CSS, JavaScript, and images. Besides, most likely your Web application will use a  third-party JavaScript framework. At some point you may run into a bug and will need to upgrade the mobile version to use the latest version of, say jQuery framework. But the desktop version works just fine. In case of having two separate versions of the application you'll have to either upgrade jQuery and thoroughly test both mobile and desktop versions of Save Sick Child, or live with two different versions of the framework. 
 
-Maintaining two different versions of the code requires more efforts than maintaining one: you need to have two sets of HTML, CSS, JavaScript, and images. Besides, most likely your Web application will use a  third-party JavaScript framework. At some point you may run into a bug and need to upgrade the mobile version to use the latest version of such frameworks, say jQuery. But the desktop version works just fine. In case of having two separate versions of the application you'll have to either upgrade jQuery and thoroughly test both mobile and desktop versions of Save Sick Child, or live with two different versions of the framework. Responsive design allows to have one version of everything.
+Responsive design allows you to create one version of your Web application, which includes multiple sections of CSS controlling page layouts for different screen sizes. In this chapter we'll create yet another version of the  Save Sick Child application that will render its UI differently on desktop and mobile devices. All these version will share the same HTML and JavaScript code, but will include several versions of styling using _CSS media queries_. 
 
-On the other hand, with responsive design your users will be downloading unnecessary code - the CSS that include all versions of screen layouts and larger than needed images to be scaled by the Web browser.
+There is a number of Web sites that were built using responsive design. Visit the following Web sites from desktop and then from smart phones (or just lower the width of the desktop browser window) to experience this fluid design:
 
-Here comes the million dollar question, "When we talk about creating two different versions of the Web application, is it really two, twenty two, or maybe two hundred and twenty two?" How many different mobile devices are there today and will be there tomorrow?
+1. http://bostonglobe.com/[Boston Globe]
+2. http://mashable.com/[Mashable]
+3. http://cafeevoke.com/[Cafe Evoke]
+4. http://www.fork-cms.com/[Fork CMS]
+5. http://forefathersgroup.com/[Forefathers]
+
+
+Note that each of these Web pages displays the content on the desktop in three different layouts (often in three imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet mode (usually two columns layout), and then to the smartphone mode layout (the one column layout). 
+
+This sounds like a great solution, but keep in mind that your users will be downloading unnecessary code - the entire CSS file that include all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what's necessary for a particular device category.
+
+Now comes the million dollar question, "Do we need to create two different versions of the Web application or twenty two?  Why not two hundred and twenty two?" How many different mobile devices are there today and will be there tomorrow?
 
 
 ==== How many User Agents are there
 
-Let's spend a little more time discussing the HTTP header's attribute `User-Agent` that contains information about the user agent originating request. Should you decide to create several versions of the UI based on the value in the `User-Agent` field, you can refer to the Web site http://useragentstring.com[http://useragentstring.com]. It lists not two, but hundreds of strings representing possible content of the `User-Agent` attribute for lots of desktop and mobile devices. For example, <<FIG11-3>> shows how the `User-Agent` from the iPhone 5 string is reported and explained by useragentstring.com.
+The HTTP header's attribute `User-Agent` contains information about the user agent originating request. Should you decide to create several versions of the UI based on the value in the `User-Agent` field, you can refer to the Web site http://useragentstring.com[http://useragentstring.com]. It lists not two, but hundreds of strings representing possible content of the `User-Agent` attribute for lots of desktop and mobile devices. For example, <<FIG11-3>> shows how the `User-Agent` string from  iPhone5 is reported and explained by http://useragentstring.com/[useragentstring.com].
 
 
 [[FIG11-3]]
@@ -52,3 +66,4 @@ It's impossible to create different layout of your Web application for each user
 
 
 
+TIP: Dreamweaver CS6 automates creation of media queries 
