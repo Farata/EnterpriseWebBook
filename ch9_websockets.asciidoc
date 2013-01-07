@@ -179,8 +179,8 @@ NOTE: A client can have as any WebSocket connections with the server as needed. 
 [[FRAMES]]
 ===== The WebSocket Frame Anatomy =====
 
-The WebSocket handshake is followed by the message framing layered over TCP. In this section we're going to explore how the WebSocket data transfer works. The WebSocket is not a stream based protocol like TCP - it's message based. The difference is that with TCP a program sends the bytes and has to ensure that the end of a message can be recognized.
-The WebSocket specification makes it easier because it puts a frame around everything. It's easy to do  from the JavaScript on the client, but it's harder to handle in the server side code because it needs to wrap everything in frames. The frame can look like this:
+The WebSocket handshake is the first step to switching to the message framing protocol, which will be layered over TCP. In this section we're going to explore how the WebSocket data transfer works. The WebSocket is not a stream based protocol like TCP - it's message based. The difference is that with TCP a program sends stream of bytes, which has to have a specific indication that the data transfer ends.
+The WebSocket specification makes it easier because it puts a frame around every chunk of data, and the size of the frame is known. JavaScript can easily handle these frames on the client because each frame arrives packaged in the event object. But the server side has to work a little harder as it needs to wrap each piece of data into a frame before sending it to the client. A frame can look like this:
 
 ----------------------------------------------------------------------
 
@@ -208,21 +208,21 @@ The WebSocket specification makes it easier because it puts a frame around every
 
 - `FIN` (1 bit)
 
-This bit indicates if this frame is the final frame that makes up the message. Most of the time the message fits into a single frame and this bit will always be set.
+This bit indicates if this frame is the final in the message payload. If a message has under 127 bytes fits into a single frame and this bit will always be set.
 
 - `RSV1`, `RSV2`, `RSV3` (1 bit each)
 
-These bits are the reserved for future protocol changes and improvements. They must contain zeros as they are not being used at this time.
+These bits are reserved for future protocol changes and improvements. They must contain zeros as they are not being used at this time.
 
 * `opcode` (4 bits)
 
 +
-.The frame type is defined using opcode. Here most used opcodes:
+.The frame type is defined using opcode. Here are the most used opcodes:
 
-** `0x00` This frame continues the payload from the last.
+** `0x00` This frame continues the payload.
 ** `0x01` This frame includes UTF-8 text data.
-** `0x02` This frame includes binary data.
-** `0x08` This frame terminates the connection
+** `0x02` This frame includes the binary data.
+** `0x08` This frame terminates the connection.
 ** `0x09` This frame is a Ping.
 ** `0x10` This frame is a Pong.
 
@@ -232,7 +232,7 @@ This indicates if the frame is masked.
 
 ****
 
-NOTE: The client must mask all the frames being sent to the server. The server must close the connection upon receiving a frame that is not masked. The server must not mask any frames that it sends to the client.  The client must close a connection if it detects a masked frame. In that case of such error, client or server can send `Close` frame with 1002 status code - protocol error.
+NOTE: The client must mask all the frames being sent to the server. The server must close the connection upon receiving a frame that is not masked. The server must not mask any frames that it sends to the client.  The client must close a connection if it detects a masked frame. In that case of such error, client or server can send `Close` frame with 1002 status code - protocol error. All these actions are done automatically by Web browsers and Web server that support WebSockets.
 
 ****
 
@@ -247,38 +247,36 @@ The length of the payload. WebSocket frames come in the following length bracket
 
 This key is used to _XOR_ the payload with.
 
-* `payload`
+* `payload data`
 
-This indicates the actual masked data. The length of block is defined in the `payload_len` bits.
+This indicates the actual data. The length of block is defined in the `payload_len` field.
 
 ===== The Heartbeats =====
 
-Certain things like transparent and explicit proxy servers or a content-filtering hardware can terminate the idle connections or a remote side could go down. Only on  the next send your program can realize that something went wrong. With WebSockets the browser can send the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).
+Properly design distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so called _heartbeats_ - a small messages that simply ask the other party, "Are you there?". For example, proxy servers and content-filtering hardware can terminate idle connections or the server could simply go down. If a client doesn't send any requests, say for 20 seconds, but the server went down, the client will know about it only when it does the next `send()`. Heartbeats will keep the connection alive to ensure that it won't look idling. In the WebSockets jargon heartbeats are implemented with _ping and pong_ . The browser sends the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).
 
-Pings can be sent whenever required, but a pong may sent at server's discretion. If an endpoint receives a Ping frame and has not yet sent Pong frame(s) in response to the previous Ping frame(s), the endpoint can elect to send a Pong frame for only the most recently processed Ping frame. The Ping frame may contain the application data (can be up to 125 bytes) and Pong must have identical data in message body.
+The Web browser can ping the server when required, but a pong may sent at server's discretion. If the  endpoint receives a ping frame before responding the the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (can be up to 125 bytes) and pong must have identical data in its message body.
 
-There is no JavaScript API to send Ping frames or receive Pongs http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames[frames]. This is either supported by your browser, or not. http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104[There is also no API] to enable, configure or detect whether the browser supports and is using Ping/Pong frames.
+There is no JavaScript API to send pings or receive pong http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames[frames]. Pings and pongs may or may not be supported by the user's browser. http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104[There is also no API] to enable, configure or detect whether the browser supports pings and pongs.
 
 
 ===== Data Frames =====
 
-As we explained earlier in this chapter, the WebSockets protocol allows the data to be fragmented into multiple frames. If this happens, the first frame that transmits the data will be prepended with one of the following opcodes indicating the type of data being transmitted:
+Since the WebSockets protocol allows the data to be fragmented into multiple frames, the first frame that transmits the data will be prepended with one of the following opcodes indicating the type of data being transmitted:
 
 - The opcode `0x01` indicates the UTF-8 encoded text data.
 - The opcode `0x02` indicates the binary data.
 
-When your application transmits JSON over the wire the text opcode is set for frames. When your code emits binary data it will be represented in a browser specific `Blob` object or an `ArrayBuffer` object and sent wrapped into a frame with the binary opcode.
+When your application transmits JSON over the wire the opcode is set to be `0x01`. When your code emits binary data it will be represented in a browser specific `Blob` object or an `ArrayBuffer` object and sent wrapped into a frame with the opcode `0x02`.
 
-NOTE: You must choose the type for the incoming binary data on the client using `webSocket.binaryType = "blob"` or `webSocket.binaryType = "arraybuffer"` before reading the data.
-
-It's good idea to check the type of the incoming data because the opcodes are not exposed to the client.
+NOTE: You must choose the type for the incoming binary data on the client using `webSocket.binaryType = "blob"` or `webSocket.binaryType = "arraybuffer"` before reading the data. It's a good idea to check the type of the incoming data because the opcodes are not exposed to the client.
 
 [source, javascript]
 ----------------------------------------------------------------------
 webSocket.onmessage = function(messageEvent) {
     if (typeof messageEvent.data === "string"){
         console.log("received text data from the server: " + messageEvent.data);
-    } else if (messageEvent instance of Blob){
+    } else if (messageEvent.data instanceof Blob){
         console.log("Blob data received")
     }
 };
@@ -289,16 +287,16 @@ webSocket.onmessage = function(messageEvent) {
 
 The connection is terminated by sending the frame with the close opcode `0x08`.
 
-There is the pattern to exchange close opcodes first and then let the server shut down. The client is supposed to give the server some time to close the connection before attempting to do that on its own. The close event can also signal why it terminated the connection.
+There is the pattern to exchange close opcodes first and then let the server to shut down. The client is supposed to give the server some time to close the connection before attempting to do that on its own. The close event can also signal why it has terminated the connection.
 
-A `CloseEvent` is sent to clients using WebSockets when the connection is closed. This is delivered to the listener indicated by the WebSocket object's `onclose` handler. `CloseEvent` has 3 properties - code, reason, wasClean.
+A `CloseEvent` is sent to clients using WebSockets when the connection is closed. This is delivered to the listener indicated by the WebSocket object's `onclose` handler. `CloseEvent` has 3 properties - `code, reason, wasClean`.
 
 .Legend
 [width="100%",cols="",options=""]
 |===
-|code    | This property represents close code provided by the server
-|reason   | A string indicating reason why server closed connection
-|wasClean| The property indicates that was or wasn't cleanly closed
+|code    | This property represents the close code provided by the server.
+|reason   | A string indicating the reason of why the server closed the connection.
+|wasClean| The property indicates if the connection was cleanly closed.
 |===
 
 [source,javascript]
@@ -311,14 +309,14 @@ webSocket.onclose = function(closeEvent) {
 
 === WebSocket frameworks ===
 
-Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on you own. For example, if the client's browser doesn't support WebSockets natively, you need to make sure your code falls back to the legacy HTTP protocol. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. We've included brief reviews of two frameworks that can streamline your Web application development with WebSockets.
+Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on you own. For example, if the client's browser doesn't support WebSockets natively, you need to make sure that your code falls back to the legacy HTTP protocol. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. We've included brief reviews of two frameworks that can streamline your Web application development with WebSockets.
 
-The frameworks mentioned below utilize the best supported transport in the Web browser and server while sparing the developer from knowing internals of the used mechanism. The developer can concentrate on programming the application logic making calls to frameworks API when the data transfer is needed. The rest will be done by framework.
+The frameworks mentioned below try to utilize the best supported transport by the current Web browser and server while sparing the developer from knowing internals of the used mechanism. The developer can concentrate on programming the application logic making calls to frameworks API when the data transfer is needed. The rest will be done by framework.
 
 
 ==== The Portal ====
 
-The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library. It aims to utilize a WebSocket for modern web application development and provides unified API for various transports (long polling, HTTP streaming, WebSocket). Currently, once you decided to use WebSocket API for your next project, you need to remember about those users who still use old browsers like Internet Explorer 8, which don't natively support WebSockets. In this case, your application should gracefully fall back to the best available networking alternative. Manually writing code to support all possible browsers and versions requires lots of time especially for testing and maintaining the code for different platforms. The +Portal+ library could help us as illustrated in the following brief code sample.
+The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library. It aims to utilize a WebSocket protocol and provides a unified API for various transports (long polling, HTTP streaming, WebSocket). Currently, once you've decided to use WebSocket API for your next project, you need to remember about those users who still use old browsers like Internet Explorer 9 or older, which don't natively support WebSockets. In this case, your application should gracefully fall back to the best available networking alternative. Manually writing code to support all possible browsers and versions requires lots of time especially for testing and maintaining the code for different platforms. The +Portal+ library could help as illustrated in the following brief code sample.
 
 .Simple asynchronous web application client with Portal
 [source,javascript]
@@ -351,16 +349,17 @@ portal.open("child-auction/auction").on({       // <2>
 
 <3> The Portal API is event-based similarly to W3C WebSocket API.
 
-The Portal framework generalizes the client-side programming. With defining the array of transports, you don't have to worry about how to handle message what sent by server with different transport.
-The Portal doesn't depend on any JavaScript libraries as opposed to the Atmosphere framework reviewed next.
+The Portal framework generalizes the client-side programming. With defining an array of transports, you don't have to worry about how to handle message sent by server with different transport.
+The Portal doesn't depend on any JavaScript library. 
 
 ==== Atmosphere ====
 
-Once you developed a product - boxed application - and delivering it as web archive to your customers, you may want to support wide range of runtimes. Your customers may have such application servers as WebSphere, JBoss, or WebLogic servers, and  the promise "Write once - run everywhere" still remain promise. Currently, there is a plethora of different implementations of the server-side libraries supporting WebSockets, and each of them uses their own proprietary APIs. The upcoming Java EE 7 specification intends to change the situation. But Atmosphere is a framework that allows you to write portable Web applications today.
+A Web application that has to be deployed on several different servers (e.g. WebSphere, JBoss, WebLogic) 
+may need to support different WebSocket APIs. At the time of this writing, there is a plethora of different implementations of the server-side libraries supporting WebSockets, and each of them uses their own proprietary APIs. The upcoming Java EE 7 specification intends to change the situation. But Atmosphere is a framework that allows you to write portable Web applications today.
 
-https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. The Atmosphere transparently supports WebSockets, Server Side Events, long-polling, HTTP streaming and JSONP.
+https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. The Atmosphere transparently supports WebSockets, Server Side Events, long-polling, HTTP streaming, and JSONP.
 
-The client side component https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] simplifies the development of Web applications that require a fall back from the WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and makes your application portable among them. Atmosphere is a  compatibility layer that allows to select best available on server transport for all major Java application servers.
+The client side component https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] simplifies the development of Web applications that require a fall back from the WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and makes your application portable among them. Treat Atmosphere as a compatibility layer that allows to select best available on server transport for all major Java application servers.
 
 The Atmosphere framework supports wide range of Java based server-side technologies via a set of https://github.com/Atmosphere/atmosphere/wiki/Atmosphere-PlugIns-and-Extensions[extensions and plugins]. The Atmosphere https://github.com/Atmosphere/atmosphere-jsr356[supports] upcoming Java API for WebSocket, so you can have best of two worlds - the standard API and application portability.
 
@@ -368,13 +367,13 @@ The Atmosphere framework supports wide range of Java based server-side technolog
 
 NOTE: WebSockets can be used not only in for the Web, but in any applications that use networking. If you're developing native iOS or OSX applications check https://github.com/square/SocketRocket[the SocketRocket] library developed by http://corner.squareup.com/[Square Engineering Team].
 
-Square uses SocketRocket in their mobile payments application for iOS. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.
+Square uses SocketRocket in their mobile payments application. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.
 
 *****
 
 === When Using WebSockets
 
-Since WebSocket protocol has literally no overhead it makes it worthwhile to consider for the following types of applications:
+Since WebSocket protocol has literally no overhead it should be considered for the following types of applications:
 
 - Live trading/auctions/sports notifications
 - Controlling medical equipment over the web
@@ -382,28 +381,26 @@ Since WebSocket protocol has literally no overhead it makes it worthwhile to con
 - Multi-player online games
 - Real-time updates in social streams
 
-For the "Save Sick Child" application we're going to use WebSockets to implement an online auction communication layer. The goal is to let individuals and businesses purchase hand-made crafts and arts made by the children. All proceeds will go to help sick children.
+For the next version of Save Sick Child application we're going to use WebSockets to implement an online auction communication layer. The goal is to let individuals and businesses purchase hand-made crafts and arts made by children. All proceeds will go to help sick children.
 
-==== Protocols Considerations for Enterprise Applications
+Having said that WebSocket protocol is a great solution, it has the downside too: the WebSockets specification defines only the protocol for transporting frames, but it doesn't include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from protocol modeling perspective.
 
-The downside: WebSockets specification gives you only the transport, but it doesn't include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from protocol modeling perspective.
+Selecting a message format for your application's data communications is important. The most common text formats are CSV, XML, and JSON. They are easy to generate, parse, and are widely supported by many frameworks in the most development platforms. While XML and JSON allow you to represent the data in a hierarchical and easily readable by humans form, they create a lot of overhead by wrapping up each data element into additional text identifiers. Sending such additional textual information requires extra bandwidth and may need additional string-to-type conversion on both the client and server's application code. The binary format is an alternative way of sending data. Let's discuss the pros and cons of these message formats.
 
-Selecting a message format for the your application's data communications is important. The most common text formats are CSV, XML and JSON. They are easy to generate, parse,  and are widely supported by many frameworks in most major development platforms. While XML and JSON allow you to represent the data in a hierarchical and easily readable by humans form, they create a lot of overhead by wrapping up each data element into additional text identifiers. Sending such additional textual information places consumes a lot of extra bandwidth and may need additional string-to-type conversion on both the client and server's code. The binary format is an alternative way of sending data.
+==== CSV ====
 
-===== CSV =====
-
-CSV stands for Comma Separated Values although the delimiter can be any character, not only comma. It depends on parser design and implementation. Another popular type of delimiter is `|` - "pipe" . Lets describe pros and cons of the CSV message format.
+CSV stands for Comma Separated Values although the delimiter can be any character, not only the comma. This depends on the parser design and implementation. Another popular type of delimiter is `|` - "pipe" . 
 
 Pros:
 
 - This format is very compact. The overhead of the separator symbol is minimal.
-- It's simple to create and parse. The CSV message can be turned into array of values by using the standard JavaScript `String.split()`
+- It's simple to create and parse. The CSV message can be turned into array of values by using the standard JavaScript `String.split()`.
 
 Cons:
 
-- It's not suitable for storing complex data structures and hierarchies. In case of an auction application, we need transfer to client auction items' attributes for each auction. In this case we can't simple use general purpose `String.split()` and have to design and implement a more complex parser.
+- It's not suitable for storing complex data structures and hierarchies. In case of an auction application, we need transfer to client auction items' attributes for each auction. In this case we can't simply use `String.split()` and have to design and implement more complex parser.
 
-===== XML =====
+==== XML ====
 
 XML stands for Extensible Markup Language, and it nicely represents any hierarchal data structures.
 
@@ -413,7 +410,7 @@ Pros:
 - Most browsers have build-in XML readers and parsers.
 - XML data can be validated against XSD or DTD schema.
 +
-XML schema is very useful language feature as it defines structure, content and semantic of XML document. Because of its human-readability the XML schema can be used used by people who are not software developers and can be applied for integrating systems written in different programming languages.
+XML schema is very useful language feature as it defines the structure, content and semantic of XML document. Because of its human-readability the XML schema can be used used by people who are not software developers and can be applied for integrating systems written in different programming languages.
 
 Cons:
 
@@ -423,11 +420,11 @@ Cons:
 The book  _XML in a Nutshell, 3rd Edition_ by Elliotte Rusty Harold and W. Scott Means is a well-written book describing the full spectrum of XML features and tools.
 
 
-===== JSON =====
+==== JSON ====
 
-As explained in Chapter 4, JSON stands for JavaScript Object Notation, and it's a way of representing structured data, which can be encoded and decoded by all modern browsers. JSON is widely accepted by the Web community as a popular way of the data serialization.
+As explained in Chapter 4, JSON stands for JavaScript Object Notation, and it's a way of representing structured data, which can be encoded and decoded by all Web browsers. JSON is widely accepted by the Web community as a popular way of the data serialization.
 
-===== Google Protocol Buffers =====
+==== Google Protocol Buffers ====
 
 Google Protocol Buffers is a language and platform-neutral extensible mechanism for structured data serialization. Once defined how you want your data to be structured, you can use special generated source code to easily write and read your structured data to and from a variety of data streams.
 
@@ -496,14 +493,14 @@ Check the availability of the protobuf compiler for your preferred language at t
 
 Pros:
 
-- The message is encoded into the compact and optimized binary format. Details of the encoding format can be found in https://developers.google.com/protocol-buffers/docs/encoding[Protocol Buffers documentation website].
+- The message is encoded into a compact and optimized binary format. You can find the details of the encoding format at https://developers.google.com/protocol-buffers/docs/encoding[Protocol Buffers documentation website].
 - Google supports Protocol Buffers for a wide range of programming languages (Java, C++, Python). The   http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[developer's community] supports it too.
 - The use of Protocol Buffers is well documented.
 
 Cons:
 
 - The binary format is not human readable.
-- Although Protobuf is compact, especially when a lot of numeric values are transferred https://developers.google.com/protocol-buffers/docs/encoding[by encoding algorithm], the JSON is natively supported by the JavaScript and doesn't require any additional parser implementation.
+- Although Protobuf is compact, especially when a lot of numeric values are transferred https://developers.google.com/protocol-buffers/docs/encoding[by an encoding algorithm], the JSON is natively supported by the JavaScript and doesn't require any additional parser implementation.
 - Protobuf requires the Web browser to support the binary format, but not all of them do it just yet. You can find which browser support raw binary data at http://caniuse.com/#search=binary.
 
 
