@@ -5,7 +5,9 @@ Up till now we've been writing and re-writing the desktop version of the Save Si
 Let's discuss different approaches to making the Web site for mobile devices. One of the approaches is having only one Web site for all devices. There are three choices:
 
 1. Develop separate version of native applications for each mobile device. Developing of native mobile applications is not covered in this book.
+
 2. Develop one HTML5 Web application, but create several different UI layouts that will be applied automatically based on the screen size of the user's device.
+
 3. Develop a _hybrid application_, which is a Web application on steroids - it can invoke native API of the mobile device. Chapter 14 is dedicated to hybrid applications.
 
 The chapter is about the second approach called _Responsive Design_, and we'll modify the design of the Save Sick Child site to introduce different layouts for the desktop, tablet, and smart phones. By the end of this chapter the site Save Sick Child will automatically change its layout based on the user's device without the losing functionality. 
@@ -32,11 +34,11 @@ image::images/fig_11_02.png[]
 
 Have you ever tried to share the link of the Web site from your iPhone? It's so easy! Just press the button and enter the email of the person to share the site with. Go to bbc.com from your iPhone or Android phone and share this link with someone. That person will receive the link http://www.bbc.co.uk/mobile/i/[http://www.bbc.co.uk/mobile/i], and if she's visit this site from the desktop it won't look pretty. It'll just show the wider version of what you see in <<FIG11-2>>. Try to enter this URL in your desktop browser to see for yourself.
 
-Maintaining two different versions of the code requires more efforts than maintaining one: you need to have two sets of HTML, CSS, JavaScript, and images. Besides, most likely your Web application will use a  third-party JavaScript framework. At some point you may run into a bug and will need to upgrade the mobile version to use the latest version of, say jQuery framework. But the desktop version works just fine. In case of having two separate versions of the application you'll have to either upgrade jQuery and thoroughly test both mobile and desktop versions of Save Sick Child, or live with two different versions of the framework. 
+Maintaining two different versions of the application code requires more efforts than maintaining one: you need to have two sets of HTML, CSS, JavaScript, and images. Besides, most likely your Web application will use a  third-party JavaScript framework. At some point you may run into a bug and will need to upgrade the mobile version to use the latest version of, say jQuery framework. But the desktop version works just fine. In case of having two separate versions of the application you'll have to either upgrade jQuery and thoroughly test both mobile and desktop versions of Save Sick Child, or live with two different versions of the framework. 
 
-Responsive design allows you to create one version of your Web application, which includes multiple sections of CSS controlling page layouts for different screen sizes. In this chapter we'll create yet another version of the  Save Sick Child application that will render its UI differently on desktop and mobile devices. All these version will share the same HTML and JavaScript code, but will include several versions of styling using _CSS media queries_. 
+Responsive design allows you to create one version of the Web application, which includes multiple sections of CSS controlling page layouts for different screen sizes. In this chapter we'll create yet another version of the  Save Sick Child application that will render UI differently on desktop and mobile devices. All these version will share the same HTML and JavaScript code, but will include several versions of styling using _CSS media queries_. 
 
-There is a number of Web sites that were built using responsive design. Visit the following Web sites from desktop and then from smart phones (or just lower the width of the desktop browser window) to experience this fluid design:
+There is a number of Web sites that were built using responsive design. Visit the following Web sites first from the desktop computer and then from smart phones (or just lower the width of the desktop browser window) to experience such fluid responsive design:
 
 1. http://bostonglobe.com/[Boston Globe]
 2. http://mashable.com/[Mashable]
@@ -45,24 +47,37 @@ There is a number of Web sites that were built using responsive design. Visit th
 5. http://forefathersgroup.com/[Forefathers]
 
 
-Note that each of these Web pages displays the content on the desktop in three different layouts (often in three imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet mode (usually two columns layout), and then to the smartphone mode layout (the one column layout). 
+Note that each of these Web pages displays the content on the desktop in three different layouts (often in three imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet mode (usually two columns layout), and then to the smart phone mode layout (the one column layout). 
 
-This sounds like a great solution, but keep in mind that your users will be downloading unnecessary code - the entire CSS file that include all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what's necessary for a particular device category.
+This sounds like a great solution, but keep in mind that your users will be downloading unnecessary bytes - the entire CSS file that includes all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what's necessary for a particular device category.
 
 Now comes the million dollar question, "Do we need to create two different versions of the Web application or twenty two?  Why not two hundred and twenty two?" How many different mobile devices are there today and will be there tomorrow?
 
 
 ==== How many User Agents are there
 
-The HTTP header's attribute `User-Agent` contains information about the user agent originating request. Should you decide to create several versions of the UI based on the value in the `User-Agent` field, you can refer to the Web site http://useragentstring.com[http://useragentstring.com]. It lists not two, but hundreds of strings representing possible content of the `User-Agent` attribute for lots of desktop and mobile devices. For example, <<FIG11-3>> shows how the `User-Agent` string from  iPhone5 is reported and explained by http://useragentstring.com/[useragentstring.com].
+The HTTP header's attribute `User-Agent` contains information about the user agent originating request. Should you decide to create several versions of the UI based on the value in the `User-Agent` field, you can refer to the Web site http://useragentstring.com[http://useragentstring.com]. It lists not two, but hundreds of strings representing possible content of the `User-Agent` attribute for a variety of desktop and mobile devices. For example, <<FIG11-3>> shows how the `User-Agent` string from  iPhone5 is reported and explained by http://useragentstring.com/[useragentstring.com].
 
 
 [[FIG11-3]]
 .The User-Agent String from iPhone 5
 image::images/fig_11_03.png[]
 
-It's impossible to create different layout of your Web application for each user agent.
 
+It's impossible to create different layouts of a Web application for thousands of user agents. Grouping devices by screen sizes is a more practical approach for lowering the number of required UI layouts. This is where CSS _media queries_ come handy.
+
+=== CSS Media Queries
+   
+http://www.w3.org/TR/css3-mediaqueries/[Media Queries] is a W3C Recommendation that has been implemented in CSS2 and HTML4. The idea is to provide different stylesheet for different media. For example, you can specify different stylesheets in HTML for the screen and for printing:
+
+[source, html]
+----
+<link rel="stylesheet" href="assets/css/style.css" media="screen">
+
+<link rel="stylesheet" href="assets/css/style_pr.css" media="print">
+----
+
+In CSS a CSS file 
 
 
 
