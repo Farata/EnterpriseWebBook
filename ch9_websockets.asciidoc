@@ -92,7 +92,7 @@ The W3C expert group uses http://en.wikipedia.org/wiki/Interface_description_lan
 include::include/ws_interface.il[]
 ----------------------------------------------------------------------
 
-<1> The constructor requires an endpoint URI and optional sub-protocols names. A sub-protocol is an application-level protocol layered over the WebSocket Protocol. The client-side application can explicitly indicate which sub-protocols are acceptable for the conversation between the client and server. That string will be send to the server with the initial handshake as `Sec-WebSocket-Protocol` +GET+ request header field. If the server supports one of the requested protocols it selects at most one of acceptable protocols and echoes that value in the same header parameter `Sec-WebSocket-Protocol` in the handshake's response. Thereby the server indicates that it has selected that protocol. It could be a custom protocol or one of standard application level protocols. For example, it's possible to transfer the SOAP or XMPP messages over the WebSocket connection. We'll discuss the handshake in the <<HANDSHAKE>> section.
+<1> The constructor requires an endpoint URI and optional sub-protocols names. A sub-protocol is an application-level protocol layered over the WebSocket Protocol. The client-side application can explicitly indicate which sub-protocols are acceptable for the conversation between the client and server. That string will be send to the server with the initial handshake as `Sec-WebSocket-Protocol` +GET+ request header field. If the server supports one of the requested protocols it selects at most one of acceptable protocols and echoes that value in the same header parameter `Sec-WebSocket-Protocol` in the handshake's response. Thereby the server indicates that it has selected that protocol. It could be a custom protocol or one of standard application level protocols (see <<Auction_Messages_Specification>>). For example, it's possible to transfer the SOAP or XMPP messages over the WebSocket connection. We'll discuss the handshake in the <<HANDSHAKE>> section.
 
 <2> At any given time the WebSocket can be in one of four states.
 
@@ -514,21 +514,17 @@ If you want to get more details on how a WebSockets-enabled application has to d
 
 === Adding an Auction to Save Sick Child ===
 
-We gave you just enough of a theory to whet your appetite for implementing WebSockets in our Save Sick Child application. The goal is to create an auction where people can bid and purchase various goods so the proceeds would go to sick children. Auctions require real-time communications - everyone interested in the particular auction item must be immediately notified if another bidder increased the price. So we'll use WebSockets as a means for bidding and notifications of the changes in the auction.
+We gave you just enough of a theory to whet your appetite to start implementing WebSockets in our Save Sick Child application. The goal is to create an auction where people can bid and purchase various goods so the proceeds would go to sick children. Auctions require real-time communications - everyone interested in the particular auction item must be immediately notified if she was overbid or won. So we'll use WebSockets as a means for bidding and notifications of the changes in the auction.
 
-To start the auction, the user of the Save Sick Child application has to select the _Auction_ option under the menu _Way To Give_. We realize that only a small number of the users will decide to participate in the auction, which from the architectural point of view means that the code supporting the auction should be loaded _on demand_ only if the user chooses to visit the auction. This why we need to write this code as a loadable module, and the reader will get a practical example of how a Web application can be modularized.
+To start the auction, the user has to select the _Auction_ option under the menu _Way To Give_ (see <<FIG9-9>>). We realize that only a small number of users will decide to participate in the auction, which from the architectural point of view means that the code supporting the auction should be loaded _on demand_ only if the user chooses to visit the auction. This why we need to write this code as a loadable module, and the reader will get a practical example of how a Web application can be modularized.
 
-In this chapter we continue to use RequireJS explained in the previous chapter as a framework that helps manage our JavaScript application components in a modular fashion. Using RequireJS, we're going to lazy load some modules if and only if they ever get requested by the user.
+In this chapter we continue to use RequireJS (see Chapter 7) as a framework for modularization. Using RequireJS, we're going to lazy load some modules if and only if they get requested by the user.
 
-This is dedicated to the development of the user interface and client side of the Web applications hence we're not going to cover all the details of server side implementation, but will make our server side code available for download. We'll keep our server up and running so you can test the UI, but our main goal in this section is to show you how you can exchange the auction data with the server and process them on the client side. We use the current version of WebSockets support offered by the Java application server GlassFish 4, which is a reference implementation of the latest Java EE 7 specification.
+This book is about development of the user interface and client side of the Web applications hence we're not going to cover all the details of server side implementation, but will make our server side code available for download. We'll keep our server up and running so you can test the UI by visiting ....., but our main goal in this section is to show you how you can exchange the auction data with the server and process them on the client side using WebSockets. We'll use the Java application server GlassFish 4, which is a reference implementation of the latest Java EE 7 specification.
 
-Authors of this book are Java developers and we have provided a sidebar with the details WebSockets server API which is a part of Java EE 7. If you are not a Java developer, you may want to learn on your own which WebSocket servers exist for your favorite programming language or platform. But strictly speaking, if you are a front-end developer, you don't have to know how the WebSocket server works under the hood.
+TIP: Authors of this book are Java developers and we have recorded a screencast (see the readme.asciidoc  at https://github.com/Farata/EnterpriseWebBook for the URL) highlighting WebSockets server API. If you are not a Java developer, you may want to learn on your own which WebSocket servers exist for your favorite programming language or platform. 
 
-****************************************************************************
-include::include/ws_javaserver_sidebar.asciidoc[]
-****************************************************************************
-
-In Chapter 8 you had a chance to see how a Web application can be sliced (see Aptana's project-15-dynamic-modules) into several modules using Require.js framework.  We'll take this project as a base and will create a new one: project16-websocket-auction adding to it the new modules supporting the auction.
+In Chapter 7 you had a chance to see how a Web application can be sliced (see Aptana's project-15-dynamic-modules) into several modules using Require.js framework.  We'll take this project as a base and will create a new one: project-16-websocket-auction adding to it the new modules supporting the auction.
 
 .Way To Give module (+js/modules/way-to-give.js+)
 [source,javascript]
@@ -550,45 +546,45 @@ define([], function () {
 
 <1> This function will lazy load the auction application content and render it to the top main section of the Web page.
 
-<2> This function will start the auction.
+<2> The function `startAuction()` will start the auction.
 
-<3> The module stores the rendering state in this property.
+<3> The module stores the rendering state in the property `rendered`.
 
 
 Once the application starts, the require.js loads only essential modules - login and donation <<FIG9-9>>.
 
 [[FIG9-9]]
-.Two modules are loaded during the Save Sick Child application startup
+.Initially only two modules are loaded
 image::images/fig_09_09.png[]
 
-In Google Chrome Developer Tools Console we can see that login and donation modules are reporting about successful loading. In <<FIG9-10>> we can see that these modules perform fine.
+In Google Chrome Developer Tools console you can see that login and donation modules are reporting about successful loading. <<FIG9-10>> confirms that these modules perform fine - clicking on the button Donate reveals the form and clicking on the Login button makes the id/password fields visible.
 
 [[FIG9-10]]
 .Two modules are loaded during the Save Sick Child application startup
 image::images/fig_09_10.png[]
 
-Now click WayToGive menu item and keep an eye on the Developer Tools Console <<FIG9-11>>. You will see how the WayToGive module reports about its loading and rendering.
+Now click the Way To Give menu item and keep an eye on the Developer Tools console <<FIG9-11>>. You will see the way-to-give module reporting about its loading and rendering.
 
 [[FIG9-11]]
 .The auction controls are loaded and rendered
 image::images/fig_09_11.png[]
 
-Once the user clicks the menu Way to Give the framework require.js has to load code of WebSocket-based auction module. Here is the code of `app.js` - the entry point of our Save Sick Child application. The following code snipped illustrates the mechanics how we loading the module _on demand_.
+Once the user clicks the menu Way to Give the framework require.js has to load code of the WebSocket-based auction module. Here is the code snippet from the JavaScript file `app.js` - the entry point of our Save Sick Child application. This is how it loads the module _on demand_ (see Chapter 7 for the Require.js refresher).
 
 [source,javascript]
 ----------------------------------------------------------------------
 include::include/loading_modules_on_demand.js[]
 ----------------------------------------------------------------------
 
-<1> This function will lazy-loaded only if the user clicks on Way To Give menu.
+<1> This anonymous function will be lazy-loaded only if the user clicks on Way To Give menu.
 
-<2> WayToGive module will has a value if `null` until loaded.
+<2> The variable `wayToGiveModule` will have a value of `null` until loaded.
 
-<3> If the user clicks while the `WayToGive` module is still being lazily loaded, simply ignore this click - when the module finally loads, it will open the module.
+<3> If the user keeps clicking on the menu while the `way-to-give` module is still being loaded, simply ignore these clicks. 
 
 <4> If the module has been loaded and UI has been rendered start Auction application.
 
-<5> Set an intermediary value to the WayToGive module so that subsequent requests don't try to launch the module more than once.
+<5> Set an intermediary value to the `way-to-give` module so that subsequent requests don't try to launch the module more than once.
 
 <6> Load module asynchronously and instantiate it.
 
@@ -596,25 +592,24 @@ include::include/loading_modules_on_demand.js[]
 
 <8> Register the click event listener for the Way To Give menu.
 
-
-After the UI elements have rendered we can connect to the WebSocket server and request list of all available auction items.
+After the UI elements have rendered the client can connect to the WebSocket server and request the list of all available auction items.
 
 [source,javascript]
 ----------------------------------------------------------------------
 include::include/auction_set_ws_listeners.js[]
 ----------------------------------------------------------------------
 
-<1> After establishing connection we're requesting list of available auctions. We'll see details of `getAuctionsList()` method in next snipped.
+<1> After establishing the connection the code requests the list of available auctions. We'll see details of `getAuctionsList()` method in next snipped.
 
 [source,javascript]
 ----------------------------------------------------------------------
 include::include/auction_ws_send_message.js[]
 ----------------------------------------------------------------------
-<1> Forming the request message. Details of the message format could be found in <<Auction_Messages_Specification>> section.
+<1> Forming the request message. The details of the message format could be found in <<Auction_Messages_Specification>> section.
 
-<2> Checking the WebSocket object state. If WebSocket is open (`readyState===1`) the application can send a  message. If not, just simply log this on the console. In the real world situations if your users work on unstable networks such as cellular or 3G you definitely don't want to lose any bits of your data. It's a good idea to use local storage API to persist the data locally until application gets back online and resubmit the data.
+<2> Checking the WebSocket object state. If WebSocket is open (`readyState===1`) the application can send a message. If not, this code just simply logs the "offline" mesage on the console. In the real world you should always display this message on the user's UI. Also, if your users work on unstable networks such as cellular or 3G you definitely don't want to lose any bits of data. It's a good idea to use the local storage API (see Chapter 1) to persist the data locally until the application gets back online and resubmit the data.
 
-The user can select a lot from combo box and see photos of it <<FIG9-12>> and <<FIG9-13>>
+The user can select the auction lot from the combo box and see its images. <<FIG9-12>> shows what's displayed on the console, while <<FIG9-13>> and <<FIG9-14>> show the content of the Network tab for both images.
 
 [[FIG9-12]]
 .The console logs incoming message contains list of auction items.
@@ -629,13 +624,13 @@ image::images/fig_09_14.png[]
 
 ==== Monitor the WebSockets traffic with Chrome Developers Tools ====
 
-Let's see whatever is described in the <<HANDSHAKE>> action.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <<FIG9-4>>. This can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint.
+Let's review the practical use of the theory described in the <<HANDSHAKE>> section earlier.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <<FIG9-4>>. This can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint on the left panel.
 
 [[FIG9-4]]
 .Initial WebSockets handshake in Chrome DevTools
 image::images/fig_09_04.png[]
 
-You can also click on +WebSockets+ on the bottom-right to show only the `WebSocket` endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG9-5>>. The white colored rows represent incoming data, and the green rows - outgoing.
+You can also click on +WebSockets+ at the bottom-right to show only the `WebSocket` endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG9-5>>. The white colored rows represent incoming data, and the green (or gray on paper) rows - outgoing.
 
 [[FIG9-5]]
 .Monitoring WebSocket frames in Chrome Developer Tools
@@ -652,7 +647,7 @@ image::images/fig_09_06.png[]
 .Details of the socket connection
 image::images/fig_09_07.png[]
 
-Google Developer Tools show just the length of payload data. But `chrome://net-internals` shows the actual size of the WebSocket frame too. <<FIG9-8>> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of frame is slightly different from size of the payload. There are few bytes for frame header. Moreover, all outgoing messages will be masked by the browser(see NOTE in <<FRAMES>> section). This frame's mask is going to be transferred to the server as a part of the frame itself, which creates additional 32 bits = 4 bytes overhead.
+Google Developer Tools show just the length of the data. But `chrome://net-internals` shows the actual size of the WebSocket frame too. <<FIG9-8>> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of the frame is slightly different from the size of the payload. There are few more bytes for the frame header. Moreover, all outgoing messages will be masked by the browser (see the note in the <<FRAMES>> section). This frame's mask is going to be transferred to the server as a part of the frame itself, which creates additional 32 bits (4 bytes) overhead.
 
 [[FIG9-8]]
 .Dev tools and net-internals side by side
@@ -661,19 +656,19 @@ image::images/fig_09_08.png[]
 
 ==== Sniffing WebSockets frames with Wireshark ====
 
-Wireshark is a powerful and comprehensive monitoring tool for analyzing the network traffic.You can download it from http://www.wireshark.org[their web site]. To start capturing the WebSocket traffic you need to select the network interface from list and click "Start" <<FIG9-15>>. In our case we're going to select the  +loopback+ interface to capture traffic on _localhost_.
+Wireshark is a powerful and comprehensive monitoring tool for analyzing the network traffic.You can download it from http://www.wireshark.org[their web site]. To start capturing the WebSocket traffic traffic on _localhost_  select the +loopback+ network interface from the left panel and click "Start" (see <<FIG9-15>>). 
 
 [[FIG9-15]]
 .Wireshark application main view
 image::images/fig_09_15.png[]
 
-Wireshark is going to capture all network activity. Set up the filter to see only the data you are interested in. We want to capture HTTP traffic and TCP traffic on port +8080+ because our WebSocket server (Oracle's GlassFish) runs on this port <<FIG9-16>>. Enter `http && (tcp.dstport==8080)` in the filter text box and click Apply.
+Wireshark captures all network activity. Set up the filter to see only the data you are interested in. We want to capture HTTP and TCP traffic on the port +8080+ because our WebSocket server (Oracle's GlassFish) runs on this port <<FIG9-16>>. Enter `http && (tcp.dstport==8080)` in the filter text box and click Apply.
 
 [[FIG9-16]]
 .Filter setup
 image::images/fig_09_16.png[]
 
-Now Wireshark is ready to sniff at the traffic of our application. You can start the auction session and place bids. After you're done with the auction you can return to Wireshark window and analyze what we got. You can see initial handshake (+GET+ request <<FIG9-17>> and +Upgrade+ response <<FIG9-18>>)
+Now the Wireshark is ready to sniff at the traffic of our application. You can start the auction session and place bids. After you're done with the auction you can return to the Wireshark window and analyze what we got. You can see the initial handshake (+GET+ request on <<FIG9-17>> and the +Upgrade+ response on <<FIG9-18>>).
 
 [[FIG9-17]]
 .The +GET+ request for protocol upgrade
@@ -683,19 +678,19 @@ image::images/fig_09_17.png[]
 .The +GET+ response with protocol upgrade
 image::images/fig_09_18.png[]
 
-After the successful connection upgrade, Wireshark captured `http-alt` stream on 8080 port. This is our WebSocket connection. Right click on this row and select +Follow TCP Stream+ <<FIG9-19>>.
+After the successful connection upgrade, Wireshark captured the `http-alt` stream (this is how it reports the Websocket's traffic) on the 8080 port. Right click on this row and select +Follow TCP Stream+ <<FIG9-19>>.
 
 [[FIG9-19]]
 .The +GET+ response with protocol upgrade
 image::images/fig_09_19.png[]
 
-On the next screen you can see the details of WebSocket frame <<FIG9-20>>. We took this screenshot right after the auction application started. You can see here the data with list of available auctions. The outgoing data marked with _red_ color and the incoming data marked with _blue_ color.
+On the next screen you can see the details of WebSocket frame <<FIG9-20>>. We took this screenshot right after the auction application started. You can see here the data with the list of available auctions. The outgoing data is marked with _red_ color and the incoming data is shown in _blue_.
 
 [[FIG9-20]]
 .WebSocket frame
 image::images/fig_09_20.png[]
 
-We took next screenshot <<FIG9-21>> after the action has been finished. We can see here entire data that were sent over WebSocket connection.
+The screenshot <<FIG9-21>> was taken  after the auction has been closed. You can see here the entire data that were sent over the WebSocket connection.
 
 [[FIG9-21]]
 .Entire auction conversation
@@ -703,20 +698,22 @@ image::images/fig_09_21.png[]
 
 
 [[Auction_Messages_Specification]]
-==== Auction Messages Specification
+==== Save Sick Child Auction Protocol
+
+Since WebSockets is just a transport protocol, we need to come up with the application-level protocol of how the auction messages should be formatted in the client-server interaction. This is how we decided to do it:
 
 1. The client's code connects to the WebSockets endpoint on the server.
-2. The client's code sends `AUCTION_LIST` message to retrieve the list of currently running auctions.
+2. The client's code sends the `AUCTION_LIST` message to retrieve the list of currently running auctions.
 +
 
-.Request for list of available auctions
+.The AUCTION_LIST Request
 [source,javascript]
 ----------------------------------------------------------------------
 include::include/auctions_list_request.json[]
 ----------------------------------------------------------------------
-<1> type of message is `AUCTION_LIST`
-<2> empty data
-<3> We don't know exact auction id so we just send `-1`
+<1> The type of the message is `AUCTION_LIST`
+<2> This message doesn't send any data
+<3> This message doesn't request for any specific auction id,  so we just send `-1`.
 
 +
 Let's review the JSON object that will be arriving from the server as the auction's response.
@@ -750,10 +747,10 @@ include::include/auctions_list_response.json[]
 
 +
 
-NOTE: As soon as the handshake completes successfully, the server side code that implements `WebSocket` protocol exposes the WebSocket session object.  The session object encapsulates conversation between the WebSocket endpoint (server - side) and remote endpoint (browser). Check the documentation for your server side framework for details about how it handles and exposes the remote endpoints in API.
+NOTE: As soon as the handshake completes successfully, the server side code that implements `WebSocket` protocol exposes the WebSocket `Session` object.  The `Session` object encapsulates the conversation between the WebSocket endpoint (server - side) and remote endpoint (browser). Check the documentation for your server side framework for details about how it handles and exposes the remote endpoints in API.
 +
 
-4. Each time when the user enters the bid price client side code sends following +bid+ message:
+4. Each time when the user enters the bid price the client's code sends following +bid+ message:
 +
 
 .Bit message
@@ -767,13 +764,13 @@ NOTE: As soon as the handshake completes successfully, the server side code that
 ----------------------------------------------------------------------
 +
 
-This is outgoing message. When user clicks on "Bid!" button text from bid text box wrapped to Bid message. On the server, bid message data value compared with best bid value and if it's
+Above is the outgoing message. When user clicks on the "Bid!" button the value from the Bid text box is wrapped into the  `BID` message. On the server, when the new higher `BID` message arrives, the message `PRICE_UPDATE` has to be broadcast to all active clients. 
 +
 
-5. `PriceUpdate` message
+5. The `PRICE_UPDATE` message
 +
 
-.PriceUpdate message
+.The PRICE_UPDATE Message
 [source,javascript]
 ----------------------------------------------------------------------
 {
@@ -783,14 +780,14 @@ This is outgoing message. When user clicks on "Bid!" button text from bid text b
 }
 ----------------------------------------------------------------------
 
-<1> If some auction participant outbids others, the rest of participants will receive update.
+<1> If some auction participant outbids others, the rest of the participants will receive an update.
 <2> Such an update will contain the current highest bid.
 +
 
-6. `AuctionResult` message
+6. The `RESULT` message
 +
 
-.AuctionResult message
+.The RESULT Message
 [source,javascript]
 ----------------------------------------------------------------------
 {
@@ -801,10 +798,13 @@ This is outgoing message. When user clicks on "Bid!" button text from bid text b
 ----------------------------------------------------------------------
 +
 
-After the auction ends, the server broadcasts the message with auction results. If the wining user is online and connected to the auction server, the item message will contain congratulations.  Other participant will get the loose notifications.
+After the auction ends, the server broadcasts the message with the final auction results. If the wining user is online and connected to the auction server, she'll receive the message with congratulations.  Other participants will get the "Sorry, you didn't win" notification.
+
+This is pretty much it. The amount of code to implement the client's side of the auction is minimal. After the connection and upgrade are done, most of the processing is done in the message handler of the WebSocket object's `onmessage`.
+
 
 === Summary
 
-This chapter was about the WebSocket protocol. By now you should see the benefits of using WebSocket protocol in applications. In many cases WebSockets is an ultimate means for improving the application performance by reducing the network latency and removing the HTTP-headers overhead. We learned how to integrate WebSocket-based functionality into the existing HTTP-based application Save Sick Child.
+After reading this chapter you should see the benefits of using WebSocket protocol in Web applications. In many cases WebSockets is an ultimate means for improving the application performance by reducing the network latency and removing the HTTP-headers overhead. You've learned how to integrate the WebSocket-based functionality into the existing HTTP-based application Save Sick Child. There is no need to make the entire communication of the Web application over WebSockets. Use this powerful protocol when it's clearly improves the performance and responsiveness of your application.
 
-You've learned how to use the network monitoring capabilities of Google Chrome Developer Tools and Wireshark application by sniffing the WebSocket traffic. You can't underestimate the importance of monitoring tools, which are the best friends of Web developers.
+As a side benefit, you've learned how to use the network monitoring capabilities of Google Chrome Developer Tools and Wireshark application by sniffing the WebSocket traffic. You can't underestimate the importance of monitoring tools, which are the best friends of Web developers.

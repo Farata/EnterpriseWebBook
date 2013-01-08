@@ -12,7 +12,7 @@ Let's discuss different approaches to making the Web site for mobile devices. On
 
 The chapter is about the second approach called _Responsive Design_, and we'll modify the design of the Save Sick Child site to introduce different layouts for the desktop, tablet, and smart phones. By the end of this chapter the site Save Sick Child will automatically change its layout based on the user's device without the losing functionality. 
 
-=== One Code Base vs. Two
+=== One or Two Versions of Code?
 
 Run any of the versions of our Save Sick Child applications on your desktop and start dragging the right border of the browser's window to make it narrower. At some point you'll see only a part of the content - the layout of Save Sick Child is not responsive just yet. It defines fixed sizes for the page sections, which don't change event if the display area shrinks. 
 
@@ -20,7 +20,7 @@ Or enter the address of one of the http://savesickchild.org:8080/project-15-dyna
 
 How many versions of the UI do we need to create then? People responsible for developing a Web application that can run on both desktop and mobile platforms usually start with making an important decision: HTML5 or native?  But even if a decision was made in the favor of the Web platform, the next question is if the desktop and mobile clients will use the same code or not. 
 
-If a decision is made to go with separate versions of the Web applications, the Web server can be configured to perform the redirection to the appropriate code depending on the type of the user's device. Web servers can do it based on the value of the `User-Agent` attribute of the HTTP request header. For example, the mobile Web browsers trying to access of http://www.bbc.com/[BBC] (or any other Web page) report their `User-Agent` to the server differently from desktop computers  hence they recive different content delivered from a different URL. The snapshots <<FIG11-1>> and <<FIG11-2>> of the BBC main page were taken at the same time, but <<FIG11-1>> shows how the page looks on the desktop computer, while <<FIG11-2>> was taken from the iPhone. 
+If a decision is made to go with separate versions of the Web applications, the Web server can be configured to perform the redirection to the appropriate code depending on the type of the user's device. Web servers can do it based on the value of the `User-Agent` attribute of the HTTP request header. For example, the mobile Web browsers trying to access of http://www.bbc.com/[BBC] (or any other Web page) report their `User-Agent` to the server differently from desktop computers  hence they receive different content delivered from a different URL. The snapshots <<FIG11-1>> and <<FIG11-2>> of the BBC main page were taken at the same time, but <<FIG11-1>> shows how the page looks on the desktop computer, while <<FIG11-2>> was taken from the iPhone. 
 
 [[FIG11-1]]
 .The desktop version of bbc.com
@@ -64,21 +64,35 @@ The HTTP header's attribute `User-Agent` contains information about the user age
 image::images/fig_11_03.png[]
 
 
-It's impossible to create different layouts of a Web application for thousands of user agents. Grouping devices by screen sizes is a more practical approach for lowering the number of required UI layouts. This is where CSS _media queries_ come handy.
+It's impossible to create different layouts of a Web application for thousands of user agents. Grouping devices by screen sizes is a more practical approach for lowering the number of UI layouts supported by your application. This is where CSS _media queries_ come handy.  
 
 === CSS Media Queries
    
-http://www.w3.org/TR/css3-mediaqueries/[Media Queries] is a W3C Recommendation that has been implemented in CSS2 and HTML4. The idea is to provide different stylesheet for different media. For example, you can specify different stylesheets in HTML for the screen and for printing:
+http://www.w3.org/TR/css3-mediaqueries/[Media Queries] is a W3C Recommendation that has been implemented in CSS2 and HTML4. The idea is to provide different stylesheets for different media. For example, you can specify different stylesheets in HTML using the `media` for the regular screen and for the smaller ones (up to 640 pixel in width):
 
-[source, html]
+[source, html] 
 ----
 <link rel="stylesheet" href="assets/css/style.css" media="screen">
 
-<link rel="stylesheet" href="assets/css/style_pr.css" media="print">
+<link rel="stylesheet" href="assets/css/style_small.css" media="only screen and (max-width: 640px)">
 ----
 
-In CSS a CSS file 
+The other choice is to specify a section in a CSS file using the `@media` rule. For example, the following style will be applied to the HTML element with the `id=main-top-section` if the width of the display area is less than 640 pixels.
+
+[source, html]
+----
+@media only screen and (max-width: 640px) {
+
+  #main-top-section {
+		width: 100%;
+		float: none;
+ }
+}
+----
 
 
+=== Fluid grid
+
+Besides media queries, the other important concept used in responsive design is _fluid grids_. The concept of grid was used by Web designers for ages - a web page is divided by a number of imaginary rows and columns. But fluid grid, as the name implies, can change based on the screen sizes.
 
 TIP: Dreamweaver CS6 automates creation of media queries 
