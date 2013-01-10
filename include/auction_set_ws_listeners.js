@@ -1,10 +1,11 @@
  if(window.WebSocket) {
-   webSocket = new WebSocket("ws://localhost:8080/child-auction/auction");
+   webSocket = new WebSocket("ws://savesickchild.org:8080/project-16-websocket-auction//child-auction/auction");
    webSocket.onopen = function() {
      console.log("connection open...");         //<1>
      getAuctionsList();
    };
    webSocket.onclose = function(closeEvent) {
+      // notify user that connection was closed
      console.log("close code " + closeEvent.code);
    };
    webSocket.onmessage = function(messageEvent) {
@@ -14,6 +15,7 @@
      }
    };
    return webSocket.onerror = function() {
+    // notify user about connection error
      console.log("websocket error");
    };
  }
