@@ -48,7 +48,7 @@ There is a number of Web sites that were built using responsive design. Visit th
 5. http://forefathersgroup.com/[Forefathers]
 
 
-Note that each of these Web pages displays the content on the desktop in three different layouts (often in three imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet mode (usually two columns layout), and then to the smart phone mode layout (the one column layout). 
+Note that each of these Web pages displays the content on the desktop in three different layouts (often in three imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet or a large smartphone mode (usually two columns layout), and then to the phone mode layout (the one column layout). 
 
 This sounds like a great solution, but keep in mind that your users will be downloading unnecessary bytes - the entire CSS file that includes all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what's necessary for a particular device category.
 
@@ -75,51 +75,56 @@ Media queries allows to rearrange the sections (`<div>`'s') of the page based on
 
 === Back to mockups
 
-Jerry, our Web designer came up with another set of Balsamiq mockups for the Save Sick Child application. This time he had three different versions: desktop, tablet, and smart phone. As a matter of fact, Jerry provided more mockups - the user can hold both smartphones and tablets either in portrait or landscape mode.  <<FIG11-4>>, <<FIG11-5>>, and <<FIG11-6>> show the screenshots taken from Balsamiq Mockups for desktop, tablet, and smartphone layouts.
-
+Jerry, our Web designer came up with another set of Balsamiq mockups for the Save Sick Child application. This time he had four different versions: desktop, tablet, large phone, and small phone. As a matter of fact, Jerry provided more mockups - the user can hold both smartphones and tablets either in portrait or landscape mode.  <<FIG11-4>>, <<FIG11-5>>, and <<FIG11-6>>, <<FIG11-7>> show the screenshots taken from Balsamiq Mockups for desktop, tablet, large, and small phone layouts. <<FIG11-4>> shows the desktop mockup.
 
 
 [[FIG11-4]]
-.The tesktop layout
+.The Desktop layout
 image::images/fig_11_04.png[]
 
-Jerry gave us several version of the images - with and without the grid background. The use of the grid will be explained later in the section "Fluid Grids". 
+Jerry gave us several version of the images - with and without the grid background. The use of the grid will be explained later in the section "Fluid Grids". <<FIG11-5>> depicts the rendering on tablet devices that fall in a category of under 768px width screen in the portrait mode.
 
 [[FIG11-5]]
 .The tablet layout (portrait)
 image::images/fig_11_05.png[]
 
+Next comes the mockup for the large smart phones having the width of up to 640 pixels. <<FIG11-6>> shows two different images of the screen next to each other (the user would need to scroll to see the second image).
+
 [[FIG11-6]]
-.The phone layout (portrait)
+.The large phone layout (portrait)
 image::images/fig_11_06.png[]
 
+The mockup for the smaller phones with the width of under 480 pixels is shown on <<FIG11-7>>. The mockup looks wide, but it actually shows three views of the phone screen next to each other. The user would need to scroll vertically to see the middle or the right view. Physical screens are not too small - iPhone 3 falls into this category, but resolution-wise they are smaller.
 
+[[FIG11-7]]
+.The small phone layout (portrait)
+image::images/fig_11_07.png[]
 
+If need be, you can ask Jerry to create mocupts for the really devices with the width under 320 pixels, but we won't even try it here. Now we need to translate these mockups into working code. The first subject to learn is CSS media queries.  
 
 === CSS Media Queries
 
-http://www.w3.org/TR/css3-mediaqueries/[Media Queries] is a W3C Recommendation that has been introduced in CSS2 and HTML4. The idea is to provide different stylesheets for different media. For example, you can specify different stylesheets in HTML using the `media` for the regular screen and for the smaller ones (up to 640 pixel in width). 
-
-First, we'd like you to see the CSS media queries in action, and then we'll explain how this magic was done. Run Aptana's project titled Responsive_basic_media_queries, and it'll look as in <<FIG11-7>>. This is a desktop version for the desktops (or some tablets in the landscape mode). The section chart, map, and video divide the window into three imaginary columns.
-
-[[FIG11-7]]
-.The tesktop layout implemented
-image::images/fig_11_07.png[]
-
-Drag the right border of your desktop Web browser's window to the left to make it narrower. After reaching certain _breakpoint width_ (in our project it's 768 pixels) you'll see how the `<div>`'s' reallocate themselves into the two-column window shown on <<FIG11-8>>.
+First, let's see the CSS media queries in action, and then we'll explain how this magic was done. Run Aptana's project titled Responsive_basic_media_queries, and it'll look as in <<FIG11-8>>. This is a desktop version for the desktops (or some tablets in the landscape mode). The section chart, map, and video divide the window into three imaginary columns.
 
 [[FIG11-8]]
-.The tablet layout (portrait) implemented
+.The tesktop layout implemented
 image::images/fig_11_08.png[]
 
-Keep making the browser's window narrower, and when the width will pass another breakpoint (becomes less than 640 pixels), the window will re-arrange itself into one long column as in <<FIG11-9>>. This is how Jerry wants our Web application Save Sick Child to look on the smartphones. The users will have to use scrolling to see the lower portion of this window, but they don't loose any content.
+Drag the right border of your desktop Web browser's window to the left to make it narrower. After reaching certain _breakpoint width_ (in our project it's 768 pixels) you'll see how the `<div>`'s' reallocate themselves into the two-column window shown on <<FIG11-9>>.
 
 [[FIG11-9]]
-.The phone layout (portrait) implemented
+.The tablet layout (portrait) implemented
 image::images/fig_11_09.png[]
 
+Keep making the browser's window narrower, and when the width will pass another breakpoint (becomes less than 640 pixels), the window will re-arrange itself into one long column as in <<FIG11-10>>. The users will have to use scrolling to see the lower portion of this window, but they don't loose any content. 
 
+TODO: Jerry wanted this layout for smaller phones. Need to add a new media query to CSS.
 
+[[FIG11-10]]
+.The smaller phone layout (portrait) implemented
+image::images/fig_11_10.png[]
+
+http://www.w3.org/TR/css3-mediaqueries/[Media Queries] is a W3C Recommendation that has been introduced in CSS2 and HTML4. The idea is to provide different stylesheets for different media. For example, you can specify different stylesheets in HTML using the `media` for the regular screen and for the smaller ones (up to 640 pixel in width).
 
 [source, html]
 
@@ -142,18 +147,158 @@ The other choice is to specify a section in a CSS file using the `@media` rule. 
 }
 ----
 
+The fragment of the CSS file styles.css from the project Responsive_basic_media_queries is shown next. It starts with defining styles for windows having 1280px width (we use 1140 pixels to leave some space for padding and browser's chrome). This CSS mandates to change the page layouts if the screen size is or becomes below 768 or 640 pixels. Based on your Web designer's recommendations you can specify as many breakout sizes as needed. Say, in the future, everyone will have at lease 1900px wide monitor - you can provide a layout that would use five imaginary columns. This can be a good idea for online newspapers or magazines, but Save Sick Child is not a publication so we keep its maximum width within 1140px. Or you may decide to make a version of Save Sick Child available for LCDs of only 320px in width - create a new media query section in your CSS and apply fluid grids to make the content readable. 
+
+[source, html]
+----
+
+/* The main container width should to be 90% of viewport width but not wider than 1140px */
+#main-container {
+	width: 90%;
+	max-width: 1140px;            // <1> 
+	margin: 0 auto;
+}
+
+/* Background color of all elements was set just as an example */
+header {
+	background: #ccc;
+	width: 100%;
+	height: 80px;
+}
+
+#main-top-section {
+	background: #bbb;
+	width: 100%;
+	height: 300px;
+	position: relative;
+}
+
+#main-bottom-section {
+	width: 100%;
+}
+
+#video-container, #map-container, #charts-container {
+	width: 33.333%;                   // <2>
+	padding-bottom: 33.333%;
+	float: left;                      // <3> 
+	position: relative;
+}
+
+#video, #map, #charts {
+	background: #aaa;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	padding: 0.5em;
+}
+
+#map {
+	background: #999;
+}
+
+#charts {
+	background: #7d7d7d;
+}
+
+footer {
+	background: #555;
+	width: 100%;
+	height: 80px;
+	color: #fff;
+}
+
+/* media queries */
+
+@media only screen and (max-width: 768px) {    // <4>
+	#main-container {
+		width: 98%
+	}
+
+	#main {
+		background: #bbb;
+	}
+
+	#main-top-section, #main-bottom-section {
+		width: 50%;                           // <5> 
+		float: left;                          // <6> 
+	}
+
+	#main-top-section {
+		height: 100%;
+	}
+
+	#video-container, #map-container, #charts-container {
+		float: none;                         //   <7>
+		width: 100%;
+		padding-bottom: 70%;
+	}
+
+}
+
+@media only screen and (max-width: 640px) {   //  <8>
+
+	#main-top-section, #main-bottom-section {
+		width: 100%;                          //  <9>
+		float: none;                             
+	}
+
+	#main-top-section {
+		height: 400px;
+	}
+
+	#video, #map, #charts {
+		height: 60%;
+	}
+}
+----
+
+<1>  Setting the maximum width of the window on a desktop to 1140 pixels. It's safe to assume that any modern monitor supports the resolution of 1280px width (minus about 10% for padding and chrome).
+
+<2>  Allocate one third of the width for video, charts, and maps each.
+
+<3>  Float left instructs the browser to render each of these divs starting from the left and adding the next one to the right.
+
+<4>	 The media query controlling layouts for devices with viewports with the max width of 768px starts here.
+
+<5>  Split the width fifty-fifty between the HTML elements with ID's main-top-section and main-bottom-section. 
+
+<6> Allocate main-top-section and main-bottom-section next to each other (`float: left`) as in <<FIG11-9>>. To better understand how the CSS `float` property works, visualize a book page having an small image on the left with the text floating on the right (a text wrap) - this is what `float: left` can do on a Web page. 
+
+<7>  Turn the floating off so the charts, maps, and video containers will start one under another as in <<FIG11-9>>.
+
+<8>	 The media query controlling layouts for devices with viewports with the max width of 640px starts here.
+
+<9> Let the containers main-top-section, main-bottom-section take the entire width and be displayed one under another (no floating) as in <<FIG11-10>>.
+
+TIP: Internet Explorer 8 and older don't natively support media queries. Consider using Modernizr to detect support of this feature, and load the https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill[Media Queries Polyfill], if needed. 	
+
+.The Viewport Concept
+*****************************
+
+Mobile browsers use a concept of _viewport_, which is a virtual window where they render the Web page content. This virtual window can be wider than the actual width of the display of the user's mobile device. For example, by default iOS Safari and Opera Mobile render the page to the width of 980px, and then shrinks it down to the actual width (320px on old iPhones and 640px on iPhone 4 and 5). By using the meta tag `viewport` your Web page overrides this default and renders itself according to the actual device size.  All code samples in this chapter include the viewport meta tag in index.html. All mobile browsers support it even though it's not a part of the HTML standard yet.
+
+[source, html]
+---
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+---
+
+This meta tag tels the browser that the width of the virtual viewport should be the same as the width of the display. It'll will work fine if your responsive design includes a version of the page layout optimized for the width of the user's device. But if you'd be rendering a page that's narrower than the default width of the display (e.g. 500 pixels) setting the attribute `content="width=500"` would allow the mobile Web browser to scale the page to occupy the entire display real estate. Setting the initial scaling to 1.0 ensures that the page will be rendered as close to the physical device size as possible. If you don't want to allow the user scale the Web page, add the attribute `user-scalable=no` to the meta tag viewport. 
+
+WARNING: If you'll apply the initial scale to be 1.0, but to a Web page that was not build using responsive design principles, users will need to zoom or pan to see the entire page. 
+
+For details about configuring the viewport refer to https://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/UsingtheViewport/UsingtheViewport.html[Apple's] or http://dev.opera.com/articles/view/an-introduction-to-meta-viewport-and-viewport/[Opera's] documentation.
+
+*****************************
+
+Some of the important concepts to take away from this example are to switch from pixels to percentages when specifying width. In the next examples you'll see how to switch from using rigid `px` to more flexible `em` units. The CSS `float` property you can control positioning of different sections of your page as needed.  
+
+How many media queries is too many? It all depends on the Web page you're designing. In the sample CSS shown in this section above we've used the breakpoint of 768px to represent the width of the tablet in the portrait mode, and this is fine for the iPad. But several tablets (e.g. 10.1" Samsung Galaxy) have an 800px-wide viewport while Microsoft Surface Pro is 1080px wide. Don't try to create a pixel perfect layout using responsive design. Use common sense and remember, the more different media queries you provide the heavier your CSS file will become. But in mobile world you should try to create Web applications as slim as possible.     
 
 
-
-
-
-TIP: Internet Explorer 8 and older don't natively support media queries. Consider using Modernizr to detect support of this feature, and load the https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill[Media Queries Polyfill], if needed. 
-
-=== Fluid grids
+=== Fluid Grids
 
 Besides media queries, fluid grids is an important concept in the responsive design. Grids are used by Web designers for ages - a web page is divided by a number of imaginary rows and columns. But the fluid grid, as the name implies, is flexible and can scale based on the screen sizes.
 
+NOTE: Web designers use different approaches in styling with fluid grids. Some would allocate 12 columns for the desktops, 8 for the tablets, and 4 for phones. Jerry prefers to use 12 columns for all screen sizes playing with the width percentages for different layouts.   
 
-
-TIP: Dreamweaver CS6 automates creation of media queries 
+TIP: Adobe Dreamweaver CS6 automates creation of media queries.
