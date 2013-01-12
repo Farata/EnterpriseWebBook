@@ -325,10 +325,9 @@ http://www.adobe.com/products/dreamweaver.html[Adobe Dreamweaver CS6] automates 
 .Creating a Fluid Grid Layout in Dreamweaver
 image::images/fig_11_11.png[]
 
-Web designers use different approaches in styling with fluid grids. When you design a new page with Dreamweaver's Fluid Grid Layout it suggest you to allocate different number of columns for desktop, tablet and mobile, for example, it's default offer is to allocate 10 columns for the desktops, 8 for the tablets, and 5 for phones, which is perfectly solid approach. But our experienced Web designer Jerry prefers using 12 columns for all screen sizes playing with the width percentages for different layouts.  
+Web designers use different approaches in styling with fluid grids. When you design a new page with Dreamweaver's Fluid Grid Layout it suggest you to allocate different number of columns for desktop, tablet and mobile, for example, it's default offer is to allocate 12 columns for the desktops, 8 for the tablets, and 5 for phones, which is perfectly solid approach. But our Web designer Jerry prefers using 12 columns for all screen sizes playing with the width percentages for different layouts - you'll see how he does it in the project Responsive Donation Section later in this chapter.  
 
-
-Now imagine that you'll overlay the entire window with an invisible grid containing twelve equally sized columns. In this case each column will occupy 8.333% of the total width. Now, if you'd need to allocate to some HTML `<div>` or other component about 40% of the total width, you could do this by allocating five grid columns (8.333% * 5 = 41.665%). Accordingly, your CSS file can contain 12 classes that you can use in your page:
+Now imagine that you'll overlay the entire window with an invisible grid containing twelve equally sized columns. In this case each column will occupy 8.333% of the total width. Now, if you'd need to allocate to some HTML component about 40% of the total width, you could do this by allocating five grid columns (8.333% * 5 = 41.665%). Accordingly, your CSS file can contain 12 classes that you can use in your page:
 
 [source, html]
 ----
@@ -382,8 +381,275 @@ Now imagine that you'll overlay the entire window with an invisible grid contain
 }
 ----
 
+Now let's see the fluid grid in action. Run the Aptana's project Responsive Fluid Grid and you'll see the Web page that looks similar to <<FIG11-12>>. This example changes the grid layout if the viewport width changes. In particular, the following width breakpoints (this term here has nothing to do with debugging): 768px, 640px, and 480px.  
 
 
-
+[[FIG11-12]]
+.Fluid Grid on the wide screen
+image::images/fig_11_12.png[]
  
+If you'll start lowering the width of the browser's window, you'll see how the grid cells start squeezing, but the layout remains the same until the page size will become lower than one of the predefined breakpoints. Then another media query kicks in and the layout changes. For example, <<FIG11-13>> shows the fragment of the Web page when the width of the browser's window goes below 640px. The 12-, 6-, and 4-cell grids show all the cells vertically one under another. Only the 480px grids still have enough room to display their cells horizontally. But if you keep squeezing the window, all the grids will display their content in one column as long as the viewport width stays under 480px.
+
+[[FIG11-13]]
+.Fluid Grid on the viewport under 640px
+image::images/fig_11_13.png[]
+
+The fragment of the index.html from the Responsice Fluid Grid project goes next. For brevity, we've removed repetitive markup and marked such places with the comment "A fragment removed for brevity". This code fragment includes the 12-, 6-, and 4-column grids shown on top of <<FIG11-12>>.
+
+[source, html]
+----
+<head>
+	<meta charset="utf-8">
+	<title>Responsive fluid grid</title>
+	<meta name="description" content="Responsive fluid grid example">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+
+	<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div id="wrapper-container">
+
+  	<h1 class="temp-heading">Responsive fluid grid example</h1>
+  	<h4 class="temp-heading">Breakpoint-768: reset of element's float if viewport is 768px or smaller</h4>
+  	<div class="row breakpoint-768">
+  		<div class="one-column cell">
+  			<div class="test-cell-content">
+  				1
+  			</div>
+  		</div>
+  		<div class="one-column cell">
+  			<div class="test-cell-content">
+  				2
+  			</div>
+  		</div>
+  		<div class="one-column cell">
+  			<div class="test-cell-content">
+  				3
+  			</div>
+  		</div>
+          
+          <!--  A fragment removed for brevity -->
+
+  		<div class="one-column cell last-cell" >
+  			<div class="test-cell-content">
+  				12
+  			</div>
+  		</div>
+  	</div>
+
+  	<h4 class="temp-heading">Breakpoint-768: reset of element's float if viewport is 768px or smaller</h4>
+
+  	<div class="row breakpoint-768">
+  		<div class="two-column cell">
+  			<div class="test-cell-content">
+  				1
+  			</div>
+  		</div>
+  		<div class="two-column cell">
+  			<div class="test-cell-content">
+  				2
+  			</div>
+  		</div>
+            
+             <!--  A fragment removed for brevity -->
+
+  		<div class="two-column cell">
+  			<div class="test-cell-content">
+  				6
+  			</div>
+  		</div>
+  	</div>
+
+  	<h4 class="temp-heading">Breakpoint-640: reset of element's float if viewport is 640px or smaller</h4>
+
+  	<div class="row breakpoint-640">
+  		<div class="three-column cell">
+  			<div class="test-cell-content">
+  				1
+  			</div>
+  		</div>
+  		<div class="three-column cell">
+  			<div class="test-cell-content">
+  				2
+  			</div>
+  		</div>
+  		<div class="three-column cell">
+  			<div class="test-cell-content">
+  				3
+  			</div>
+  		</div>
+  		<div class="three-column cell">
+  			<div class="test-cell-content">
+  				4
+  			</div>
+  		</div>
+  	</div>
+----
+
+The entire content of the file styles.css from Responsive Fluid Grids project comes next, but the main point of interest are the sections with the fluid grid styles and media queries. 
+
+[source, html]
+----
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+ul li {
+	list-style: none;
+}
+
+.row:before, .row:after, .clearfix:before, .clearfix:after {
+	content: "";
+	display: table;
+}
+
+.row:after, .clearfix:after {
+	clear: both;
+}
+
+/* Start of fluid grid styles */
+
+.row {
+	padding: 0 0 0 0.5em;
+	background: #eee;
+}
+
+.breakpoint-480 .cell, .breakpoint-640 .cell, .breakpoint-768 .cell, .breakpoint-960 .cell, .no-breakpoint .cell {
+	float: left;
+	padding: 0 0.5em 0 0;
+}
+
+.one-column {
+	width: 8.333%;
+}
+
+.two-column {
+	width: 16.666%;
+}
+
+.three-column {
+	width: 24.999%;
+}
+
+.four-column {
+	width: 33.332%;
+}
+
+.five-column {
+	width: 41.665%;
+}
+
+.six-column {
+	width: 49.998%;
+}
+
+.seven-column {
+	width: 58.331%;
+}
+
+.eight-column {
+	width: 66.664%;
+}
+
+.nine-column {
+	width: 74.997%;
+}
+
+.ten-column {
+	width: 83.33%;
+}
+
+.eleven-column {
+	width: 91.663%;
+}
+
+.twelve-column {
+	width: 100%;
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.row.nested {
+	padding: 0;
+	margin-right: -0.5em
+}
+
+/* --------------- Media queries -------------- */
+
+@media only screen and (max-width: 960px) {
+	.breakpoint-960 .cell {
+		float: none;
+		width: 100%;
+		padding-bottom: 0.5em
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	.breakpoint-768 .cell {
+		float: none;
+		width: 100%;
+		padding-bottom: 0.5em
+	}
+}
+
+@media only screen and (max-width: 640px) {
+	.breakpoint-640 .cell {
+		float: none;
+		width: 100%;
+		padding-bottom: 0.5em
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.breakpoint-480 .cell {
+		float: none;
+		width: 100%;
+		padding-bottom: 0.5em
+	}
+}
+
+/*End of fluid grid styles*/
+
+#wrapper-container {
+	width: 95%;
+	max-width: 1140px;
+	margin: 0 auto;
+}
+
+.test-cell-content {
+	background: #bbb;
+	width: 100%;
+	height: 50px;
+	overflow: hidden;
+}
+
+h1.temp-heading, h2.temp-heading, h4.temp-heading {
+	font-size: 1.4em;
+	margin: 1em 0;
+	text-align: center
+}
+h4.temp-heading {
+	font-size: 1.1em;
+}
+
+p.temp-project-description {
+	margin: 2em 0;
+}
+----
 
