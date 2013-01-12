@@ -275,14 +275,14 @@ TIP: Internet Explorer 8 and older don't natively support media queries. Conside
 .The Viewport Concept
 *****************************
 
-Mobile browsers use a concept of _viewport_, which is a virtual window where they render the Web page content. This virtual window can be wider than the actual width of the display of the user's mobile device. For example, by default iOS Safari and Opera Mobile render the page to the width of 980px, and then shrinks it down to the actual width (320px on old iPhones and 640px on iPhone 4 and 5). By using the meta tag `viewport` your Web page overrides this default and renders itself according to the actual device size.  All code samples in this chapter include the viewport meta tag in index.html. All mobile browsers support it even though it's not a part of the HTML standard yet.
+Mobile browsers use a concept of _viewport_, which is a virtual window where they render the Web page content. This virtual window can be wider than the actual width of the display of the user's mobile device. For example, by default iOS Safari and Opera Mobile render the page to the width of 980px, and then shrinks it down to the actual width (320px on old iPhones and 640px on iPhone 4 and 5). By using the meta tag `viewport` your Web page overrides this default and renders itself according to the actual device size.  All code samples in this chapter include the `viewport` meta tag in index.html. All mobile browsers support it even though it's not a part of the HTML standard yet.
 
 [source, html]
 ---
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 ---
 
-This meta tag tels the browser that the width of the virtual viewport should be the same as the width of the display. It'll will work fine if your responsive design includes a version of the page layout optimized for the width of the user's device. But if you'd be rendering a page that's narrower than the default width of the display (e.g. 500 pixels) setting the attribute `content="width=500"` would allow the mobile Web browser to scale the page to occupy the entire display real estate. Setting the initial scaling to 1.0 ensures that the page will be rendered as close to the physical device size as possible. If you don't want to allow the user scale the Web page, add the attribute `user-scalable=no` to the meta tag viewport. 
+This meta tag tels the browser that the width of the virtual viewport should be the same as the width of the display. It'll will work fine if your responsive design includes a version of the page layout optimized for the width of the user's device. But if you'd be rendering a page that's narrower than the default width of the display (e.g. 500 pixels) setting the attribute `content="width=500"` would allow the mobile Web browser to scale the page to occupy the entire display real estate. Setting the initial scaling to 1.0 ensures that the page will be rendered as close to the physical device size as possible. If you don't want to allow the user scale the Web page, add the attribute `user-scalable=no` to the meta tag `viewport`. 
 
 WARNING: If you'll apply the initial scale to be 1.0, but to a Web page that was not build using responsive design principles, users will need to zoom or pan to see the entire page. 
 
@@ -290,15 +290,100 @@ For details about configuring the viewport refer to https://developer.apple.com/
 
 *****************************
 
-Some of the important concepts to take away from this example are to switch from pixels to percentages when specifying width. In the next examples you'll see how to switch from using rigid `px` to more flexible `em` units. The CSS `float` property you can control positioning of different sections of your page as needed.  
+Some of the important concepts to take away from this example are to switch from pixels to percentages when specifying width. In the next examples you'll see how to switch from using rigid `px` to more flexible `em` units. The CSS `float` property you can control relative (not absolute) positioning of your page components.  
 
-How many media queries is too many? It all depends on the Web page you're designing. In the sample CSS shown in this section above we've used the breakpoint of 768px to represent the width of the tablet in the portrait mode, and this is fine for the iPad. But several tablets (e.g. 10.1" Samsung Galaxy) have an 800px-wide viewport while Microsoft Surface Pro is 1080px wide. Don't try to create a pixel perfect layout using responsive design. Use common sense and remember, the more different media queries you provide the heavier your CSS file will become. But in mobile world you should try to create Web applications as slim as possible.     
+How many media queries is too many? It all depends on the Web page you're designing. In the sample CSS shown in this section above we've used the breakpoint of 768px to represent the width of the tablet in the portrait mode, and this is fine for the iPad. But several tablets (e.g. 10.1" Samsung Galaxy) have 800px-wide viewport while Microsoft Surface Pro is 1080px wide. Don't try to create a pixel perfect layout using responsive design. Use common sense and remember, the more different media queries you provide the heavier your CSS file will become. But in mobile world you should try to create Web applications as slim as possible.     
 
 
 === Fluid Grids
 
-Besides media queries, fluid grids is an important concept in the responsive design. Grids are used by Web designers for ages - a web page is divided by a number of imaginary rows and columns. But the fluid grid, as the name implies, is flexible and can scale based on the screen sizes.
+Fluid grids is a very important technique in the responsive design. Grids were used by Web designers for ages - a web page was divided by a number of imaginary rows and columns. But the fluid grid, as the name implies, is flexible and can scale based on the screen sizes.
 
-NOTE: Web designers use different approaches in styling with fluid grids. Some would allocate 12 columns for the desktops, 8 for the tablets, and 4 for phones. Jerry prefers to use 12 columns for all screen sizes playing with the width percentages for different layouts.   
+==== Moving Away From Absolute Sizing
 
-TIP: Adobe Dreamweaver CS6 automates creation of media queries.
+When a browser displays text it uses its default font size unless it was overruled by the `font-size` property. Typically, the default font size is 16 pixels. But instead of using the absolute font size, you can use the relative one by using so called _em_ units. The default browser's font size can be represented by 1em. Since the font size happens to be 16px then 1em is 16 px. 
+
+The absolute sizes are enemies of the responsive design Web sites, and specifying the sizes in em unit allows you to create Web pages with the pretty flexible and fluid content. The size can be calculated based on a formula offered by Ethan Markotte in his http://www.alistapart.com/articles/fluidgrids/[article on fluid grids]: `target/context=result`, which in case of fonts becomes `size-in-pixels/16 = size-in-em`. 
+
+For example, instead of specifying the size as 24px, you can set it to 1.5em: 24/16. In your CSS file you can write something like `padding-bottom: 1.5em`. This may seem not a big deal, but it is, because if everything is done in relative sizing, your page will look good and proportional regardless of the screen size and regardless of how big or small 24px may look on a particular screen.
+
+If we are talking about em units for representing font sizes, the font becomes _the context_, but what if you want to represent the width of an arbitrary HTML component in a browser's window or any other container? Then the width of your component becomes the `target` and the total width of the container becomes the `context`. We can still use the above formula, but will multiply the result by 100%. This way the width on an HTML component will be represented not in em, but in percentages relative to the total width of the container. 
+
+For example, if the total width of the browser's window is 768px, and we want to create a 120px-wide panel on the left, instead of specifying this width in pixels we'll use the formula and turn it into percentages.We want to calculate the target's width in percents of the available context (100%): 
+
+120 / 768 * 100% = 15.625% 
+
+Such approach makes the page design _fluid_. If someone decides to open this page on a 480px-wide screen, the panel will still take 15.625% of the screen rather than demanding 120 pixels, which would look substantially wider on a smaller viewport.
+
+==== Window as a Grid
+
+While designing your page you can overlay you entire Web page real estate with imaginary grid with any number of columns. Make it flexible though - the width of each column has to be specified in percentages.
+
+http://www.adobe.com/products/dreamweaver.html[Adobe Dreamweaver CS6] automates creation of media queries and it introduced Fluid Grid layout (see <<FIG11-11>>). It also allows you to quickly see how your design will look like on the tablet or phone (you can pick screen size too) with a click on the corresponding status bar button.
+
+[[FIG11-11]]
+.Creating a Fluid Grid Layout in Dreamweaver
+image::images/fig_11_11.png[]
+
+Web designers use different approaches in styling with fluid grids. When you design a new page with Dreamweaver's Fluid Grid Layout it suggest you to allocate different number of columns for desktop, tablet and mobile, for example, it's default offer is to allocate 10 columns for the desktops, 8 for the tablets, and 5 for phones, which is perfectly solid approach. But our experienced Web designer Jerry prefers using 12 columns for all screen sizes playing with the width percentages for different layouts.  
+
+
+Now imagine that you'll overlay the entire window with an invisible grid containing twelve equally sized columns. In this case each column will occupy 8.333% of the total width. Now, if you'd need to allocate to some HTML `<div>` or other component about 40% of the total width, you could do this by allocating five grid columns (8.333% * 5 = 41.665%). Accordingly, your CSS file can contain 12 classes that you can use in your page:
+
+[source, html]
+----
+.one-column {
+	width: 8.333%;
+}
+
+.two-column {
+	width: 16.666%;
+}
+
+.three-column {
+	width: 24.999%;
+}
+
+.four-column {
+	width: 33.332%;
+}
+
+.five-column {
+	width: 41.665%;
+}
+
+.six-column {
+	width: 49.998%;
+}
+
+.seven-column {
+	width: 58.331%;
+}
+
+.eight-column {
+	width: 66.664%;
+}
+
+.nine-column {
+	width: 74.997%;
+}
+
+.ten-column {
+	width: 83.33%;
+}
+
+.eleven-column {
+	width: 91.663%;
+}
+
+.twelve-column {
+	width: 100%;
+	float: left;
+}
+----
+
+
+
+
+ 
+
