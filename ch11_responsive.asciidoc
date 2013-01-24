@@ -10,16 +10,16 @@ Let's discuss different approaches to making the Web site for mobile devices. On
 
 3. Develop a _hybrid application_, which is a Web application on steroids - it can invoke native API of the mobile device. Chapter 14 is dedicated to hybrid applications.
 
-The chapter is about the second approach called _Responsive Design_. This term was coined by Ethan Marcotte is the article http://www.alistapart.com/articles/responsive-web-design/[Responsive Web Design]. The design of the Web page changed responding to the current display size. We'll modify the design of the Save Sick Child site to introduce different layouts for the desktop, tablet, and smart phones. By the end of this chapter the site Save Sick Child will automatically change its layout based on the user's device without the losing functionality. 
+The chapter is about the second approach called _Responsive Design_. This term was coined by Ethan Marcotte is the article http://www.alistapart.com/articles/responsive-web-design/[Responsive Web Design]. The design of the Web page changes responding (reacting) to the user's display size. We'll modify the design of the Save Sick Child site to introduce different layouts for the desktop, tablet, and smart phones. By the end of this chapter the site Save Sick Child will automatically change its layout based on the user's device without the losing functionality. 
 
 
 === One or Two Versions of Code?
 
-Run any of the versions of our Save Sick Child applications on your desktop and start dragging the right border of the browser's window to make it narrower. At some point you'll see only a part of the content - the layout of Save Sick Child is not responsive just yet. It defines fixed sizes for the page sections, which don't change event if the display area shrinks. 
+Run any of the versions of our Save Sick Child applications on your desktop and start dragging the right border of the browser's window to make it narrower. At some point you'll see only a part of the content - the layout of Save Sick Child was not meant to be responsive. It defined fixed sizes for the page sections, which didn't change even if the display area shrinks. 
 
-Or enter the address of one of the http://savesickchild.org:8080/project-15-dynamic-content-modules/[Save Sick Child] projects in your mobile phone's browser. Either you'll see a partial content of the page or the entire page with illegible small fonts. At this point the only design of the Save Sick Child application doesn't look good on all devices. 
+Enter the address of one of the http://savesickchild.org:8080/project-15-dynamic-content-modules/[Save Sick Child] projects in your mobile phone's browser. Either you'll see a partial content of the page or the entire page with illegible small fonts. Our design of the Save Sick Child application doesn't look good on all devices. 
 
-How many versions of the UI do we need to create then? People responsible for developing a Web application that can run on both desktop and mobile platforms usually start with making an important decision: HTML5 or native?  But even if a decision was made in the favor of the Web platform, the next question is if the desktop and mobile clients will use the same code or not. 
+How many versions of the UI do we need to create then? People responsible for developing a Web applications that can run on both desktop and mobile platforms usually start with making an important decision: HTML5 or native?  But even if a decision was made in the favor of the Web platform, the next question is if the desktop and mobile clients will use the same code or not. 
 
 If a decision is made to go with separate versions of the Web applications, the Web server can be configured to perform the redirection to the appropriate code depending on the type of the user's device. Web servers can do it based on the value of the `User-Agent` attribute of the HTTP request header. For example, the mobile Web browsers trying to access of http://www.bbc.com/[BBC] (or any other Web page) report their `User-Agent` to the server differently from desktop computers  hence they receive different content delivered from a different URL. The snapshots <<FIG11-1>> and <<FIG11-2>> of the BBC main page were taken at the same time, but <<FIG11-1>> shows how the page looks on the desktop computer, while <<FIG11-2>> was taken from the iPhone. 
 
@@ -118,7 +118,6 @@ image::images/fig_11_09.png[]
 
 Keep making the browser's window narrower, and when the width will pass another breakpoint (becomes less than 640 pixels), the window will re-arrange itself into one long column as in <<FIG11-10>>. The users will have to use scrolling to see the lower portion of this window, but they don't loose any content. 
 
-TODO: Jerry wanted this layout for smaller phones. Need to add a new media query to CSS.
 
 [[FIG11-10]]
 .The smaller phone layout (portrait) implemented
@@ -134,7 +133,7 @@ http://www.w3.org/TR/css3-mediaqueries/[Media Queries] is a W3C Recommendation t
 <link rel="stylesheet" href="assets/css/style_small.css" media="only screen and (max-width: 640px)">
 ----
 
-The other choice is to specify a section in a CSS file using the `@media` rule. For example, the following style will be applied to the HTML element with the `id=main-top-section` if the width of the display area is less than 640 pixels.
+The other choice is to specify a section in a CSS file using one or more `@media` rules. For example, the following style will be applied to the HTML element with the `id=main-top-section` if the width of the display area (screen) is less than 640 pixels. Screen is not the only media type that you can use with media queries. For example, you can use `print` for printed documents. For the up to date list of media types see the W3C Media Queries Recommendation.
 
 [source, html]
 ----
@@ -262,13 +261,13 @@ footer {
 
 <5>  Split the width fifty-fifty between the HTML elements with ID's main-top-section and main-bottom-section. 
 
-<6> Allocate main-top-section and main-bottom-section next to each other (`float: left`) as in <<FIG11-9>>. To better understand how the CSS `float` property works, visualize a book page having an small image on the left with the text floating on the right (a text wrap) - this is what `float: left` can do on a Web page. 
+<6> Allocate main-top-section and main-bottom-section next to each other (`float: left;`) as in <<FIG11-9>>. To better understand how the CSS `float` property works, visualize a book page having an small image on the left with the text floating on the right (a text wrap) - this is what `float: left;` can do on a Web page. 
 
 <7>  Turn the floating off so the charts, maps, and video containers will start one under another as in <<FIG11-9>>.
 
 <8>	 The media query controlling layouts for devices with viewports with the max width of 640px starts here.
 
-<9> Let the containers main-top-section, main-bottom-section take the entire width and be displayed one under another (no floating) as in <<FIG11-10>>.
+<9> Let the containers main-top-section, main-bottom-section take the entire width and be displayed one under another (`float: none;`) as in <<FIG11-10>>.
 
 TIP: Internet Explorer 8 and older don't natively support media queries. Consider using Modernizr to detect support of this feature, and load the https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill[Media Queries Polyfill], if needed. 	
 
@@ -292,7 +291,13 @@ For details about configuring the viewport refer to https://developer.apple.com/
 
 Some of the important concepts to take away from this example are to switch from pixels to percentages when specifying width. In the next examples you'll see how to switch from using rigid `px` to more flexible `em` units. The CSS `float` property you can control relative (not absolute) positioning of your page components.  
 
-How many media queries is too many? It all depends on the Web page you're designing. In the sample CSS shown in this section above we've used the breakpoint of 768px to represent the width of the tablet in the portrait mode, and this is fine for the iPad. But several tablets (e.g. 10.1" Samsung Galaxy) have 800px-wide viewport while Microsoft Surface Pro is 1080px wide. Don't try to create a pixel perfect layout using responsive design. Use common sense and remember, the more different media queries you provide the heavier your CSS file will become. But in mobile world you should try to create Web applications as slim as possible.     
+How many media queries is too many? It all depends on the Web page you're designing. In the sample CSS shown in this section above we've used the breakpoint of 768px to represent the width of the tablet in the portrait mode, and this is fine for the iPad. But several tablets (e.g. 10.1" Samsung Galaxy) have 800px-wide viewport while Microsoft Surface Pro is 1080px wide. 
+
+There is no general rule as to how many breakpoint is needed for a typical Web page. But if there is a vieport width when you change the layout of the page, create a breakpoint for this width. Just create a simple Lorem Ipsum prototype of your Web site and start changing its size. If you don't like how the content looks, you may need to create a breakpoint and define a media query for it.
+
+TIP: Use Google Chrome Developer Tools to find out the current width of the viewport. Just type in the console window.innerWidth and you'll see the width in pixels.
+
+Don't try to create a pixel perfect layout using responsive design. Use common sense and remember, the more different media queries you provide the heavier your CSS file will become. But in mobile world you should try to create Web applications as slim as possible.     
 
 
 === Fluid Grids
@@ -317,7 +322,7 @@ Such approach makes the page design _fluid_. If someone decides to open this pag
 
 ==== Window as a Grid
 
-While designing your page you can overlay you entire Web page real estate with imaginary grid with any number of columns. Make it flexible though - the width of each column has to be specified in percentages.
+While designing your page you can overlay any HTML container or the entire Web page real estate with imaginary grid with any number of columns. Make it flexible though - the width of each column has to be specified in percentages.
 
 http://www.adobe.com/products/dreamweaver.html[Adobe Dreamweaver CS6] automates creation of media queries and it introduced Fluid Grid layout (see <<FIG11-11>>). It also allows you to quickly see how your design will look like on the tablet or phone (you can pick screen size too) with a click on the corresponding status bar button.
 
@@ -325,7 +330,7 @@ http://www.adobe.com/products/dreamweaver.html[Adobe Dreamweaver CS6] automates 
 .Creating a Fluid Grid Layout in Dreamweaver
 image::images/fig_11_11.png[]
 
-Web designers use different approaches in styling with fluid grids. When you design a new page with Dreamweaver's Fluid Grid Layout it suggest you to allocate different number of columns for desktop, tablet and mobile, for example, it's default offer is to allocate 12 columns for the desktops, 8 for the tablets, and 5 for phones, which is perfectly solid approach. But our Web designer Jerry prefers using 12 columns for all screen sizes playing with the width percentages for different layouts - you'll see how he does it in the project Responsive Donation Section later in this chapter.  
+Web designers use different approaches in styling with fluid grids. When you design a new page with Dreamweaver's Fluid Grid Layout it suggests you to allocate different number of columns for desktop, tablet and mobile, for example, its default offer is to allocate 12 columns for the desktops, 8 for the tablets, and 5 for phones, which is perfectly solid approach. But our Web designer Jerry prefers using 12 columns for all screen sizes playing with the width percentages for different layouts - you'll see how he does it in the project Responsive Donation Section later in this chapter.  
 
 Now imagine that you'll overlay the entire window with an invisible grid containing twelve equally sized columns. In this case each column will occupy 8.333% of the total width. Now, if you'd need to allocate to some HTML component about 40% of the total width, you could do this by allocating five grid columns (8.333% * 5 = 41.665%). Accordingly, your CSS file can contain 12 classes that you can use in your page:
 
@@ -381,7 +386,7 @@ Now imagine that you'll overlay the entire window with an invisible grid contain
 }
 ----
 
-Now let's see the fluid grid in action. Run the Aptana's project Responsive Fluid Grid and you'll see the Web page that looks similar to <<FIG11-12>>. This example changes the grid layout if the viewport width changes. In particular, the following width breakpoints (this term here has nothing to do with debugging): 768px, 640px, and 480px.  
+Now let's see the fluid grid in action. Run the Aptana's project Responsive Fluid Grid and you'll see the Web page that looks similar to <<FIG11-12>>. This example changes the grid layout if the viewport width falls under one of the following width breakpoints: 768px, 640px, and 480px. In this context the term _breakpoints_ here has nothing to do with debugging - we just want the content of the Web page to be rearranged when the width of the viewport passes one of these values. 
 
 
 [[FIG11-12]]
@@ -394,7 +399,7 @@ If you'll start lowering the width of the browser's window, you'll see how the g
 .Fluid Grid on the viewport under 640px
 image::images/fig_11_13.png[]
 
-The fragment of the index.html from the Responsice Fluid Grid project goes next. For brevity, we've removed repetitive markup and marked such places with the comment "A fragment removed for brevity". This code fragment includes the 12-, 6-, and 4-column grids shown on top of <<FIG11-12>>.
+The fragment of the index.html from the Responsive Fluid Grid project goes next. For brevity, we've removed some repetitive markup and marked such places with the comment "A fragment removed for brevity". This code fragment includes the 12-, 6-, and 4-column grids shown on top of <<FIG11-12>>.
 
 [source, html]
 ----
@@ -411,83 +416,61 @@ The fragment of the index.html from the Responsice Fluid Grid project goes next.
   <div id="wrapper-container">
 
   	<h1 class="temp-heading">Responsive fluid grid example</h1>
-  	<h4 class="temp-heading">Breakpoint-768: reset of element's float if viewport is 768px or smaller</h4>
+  	<h4 class="temp-heading">Breakpoint-768: change float of HTML elements if viewport is 768px or smaller</h4>
   	<div class="row breakpoint-768">
   		<div class="one-column cell">
-  			<div class="test-cell-content">
   				1
-  			</div>
   		</div>
   		<div class="one-column cell">
-  			<div class="test-cell-content">
   				2
-  			</div>
   		</div>
   		<div class="one-column cell">
-  			<div class="test-cell-content">
   				3
-  			</div>
   		</div>
           
           <!--  A fragment removed for brevity -->
 
   		<div class="one-column cell last-cell" >
-  			<div class="test-cell-content">
   				12
-  			</div>
   		</div>
   	</div>
 
-  	<h4 class="temp-heading">Breakpoint-768: reset of element's float if viewport is 768px or smaller</h4>
+  	<h4 class="temp-heading">Breakpoint-768: change float of the 12-cell grid if viewport is 768px or smaller</h4>
 
   	<div class="row breakpoint-768">
   		<div class="two-column cell">
-  			<div class="test-cell-content">
   				1
-  			</div>
   		</div>
   		<div class="two-column cell">
-  			<div class="test-cell-content">
   				2
-  			</div>
   		</div>
             
              <!--  A fragment removed for brevity -->
 
   		<div class="two-column cell">
-  			<div class="test-cell-content">
   				6
-  			</div>
   		</div>
   	</div>
 
-  	<h4 class="temp-heading">Breakpoint-640: reset of element's float if viewport is 640px or smaller</h4>
+  	<h4 class="temp-heading">Breakpoint-768: change float of the 6-cell grid if viewport is 768px or smaller</h4>
 
   	<div class="row breakpoint-640">
   		<div class="three-column cell">
-  			<div class="test-cell-content">
   				1
-  			</div>
   		</div>
   		<div class="three-column cell">
-  			<div class="test-cell-content">
   				2
-  			</div>
   		</div>
   		<div class="three-column cell">
-  			<div class="test-cell-content">
   				3
-  			</div>
   		</div>
   		<div class="three-column cell">
-  			<div class="test-cell-content">
   				4
-  			</div>
   		</div>
   	</div>
 ----
 
-The entire content of the file styles.css from Responsive Fluid Grids project comes next, but the main point of interest are the sections with the fluid grid styles and media queries. 
+Note that some of the above HTML elements are styled with more than one class selector, for example `class="one-column cell"`. The entire content of the file styles.css from Responsive Fluid Grids project is shown next, and you can find the declarations of the class selectors `one-column` and `cell` there. Note the section with media queries in this file. 
 
 [source, html]
 ----
@@ -522,26 +505,27 @@ ul li {
 
 /* Start of fluid grid styles */
 
-.row {
+.row {                          //  <1>
 	padding: 0 0 0 0.5em;
 	background: #eee;
 }
 
-.breakpoint-480 .cell, .breakpoint-640 .cell, .breakpoint-768 .cell, .breakpoint-960 .cell, .no-breakpoint .cell {
+.breakpoint-480 .cell, .breakpoint-640 .cell, .breakpoint-768 .cell, 
+                       .breakpoint-960 .cell, .no-breakpoint .cell { //<2>
 	float: left;
 	padding: 0 0.5em 0 0;
 }
 
-.one-column {
-	width: 8.333%;
+.one-column {                      
+	width: 8.333%;    //  <3>
 }
 
 .two-column {
-	width: 16.666%;
+	width: 16.666%;   //  <4>
 }
 
 .three-column {
-	width: 24.999%;
+	width: 24.999%;   //   <5>
 }
 
 .four-column {
@@ -592,24 +576,16 @@ ul li {
 
 /* --------------- Media queries -------------- */
 
-@media only screen and (max-width: 960px) {
-	.breakpoint-960 .cell {
-		float: none;
-		width: 100%;
-		padding-bottom: 0.5em
-	}
-}
-
 @media only screen and (max-width: 768px) {
 	.breakpoint-768 .cell {
-		float: none;
-		width: 100%;
+		float: none;                         // <6>
+		width: 100%;                         // <7>
 		padding-bottom: 0.5em
 	}
 }
 
 @media only screen and (max-width: 640px) {
-	.breakpoint-640 .cell {
+	.breakpoint-640 .cell {                  // <8>
 		float: none;
 		width: 100%;
 		padding-bottom: 0.5em
@@ -632,12 +608,18 @@ ul li {
 	margin: 0 auto;
 }
 
-.test-cell-content {
-	background: #bbb;
-	width: 100%;
-	height: 50px;
-	overflow: hidden;
+/* --- .cell visualisation --- */
+.cell {
+	min-height: 50px;
+	text-align:center;
+	border-left: 1px solid #aaa;
+	vertical-align: middle;
+	line-height: 50px;
 }
+.cell .cell:first-child{ 
+	border-left:none;
+}
+/* --- .cell visualisation end --- */
 
 h1.temp-heading, h2.temp-heading, h4.temp-heading {
 	font-size: 1.4em;
@@ -653,3 +635,319 @@ p.temp-project-description {
 }
 ----
 
+<1> Styling grid rows, which  are containers for cells.
+
+<2> Defining common class selectors (floating and padding) for the cells located in the viewports of any width. Please note the property `float: left;` - it'll change in the media queries section.
+
+<3> Dividing 100% of the container's width by 12 columns results in allocating 8.333% of width per column. Each cell in the 12-column table in our HTML has the `one-column` class selector.
+
+<4> Check the HTML for the 6-column grid - each cell is styled as `two-column` and will occupy 16.666% of the container's width.
+
+<5> The HTML for the 4-column grid uses the `three-column` style for each cell that will use 24.999% of the container's width.
+
+<6> This media query turns off the floating if the viewport is 768px or less. This will reallocate the cells vertically.
+
+<7> The cell should occupy the entire width of the container as opposed to, say 8.333% in the 12-column grid.
+
+<8> The media query for 640px won't kick in until the viewport width goes below 640px. If you'll resize the browser window to make it below 768px but larger than 640px, note that the 4-column grid (styled as `breakpoint-640`) has not changed its layout just yet. 
+
+
+TIP: In some cases you may need to use a mix of fluid and fixed layouts, for example, you may need to include an image of a fixed size on your fluid Web page. In such cases you can use a fixed width on some of the elements, and if needed, consider using CSS tables (not to be confused with HTML tables). CSS tables http://caniuse.com/css-table[are supported] by all current browsers.
+
+Spend some time analyzing the content of index.html and styles.css files from the project named Responsive Fluid Grid. Try to modify the values in CSS and see how your changes affect the behavior of the fluid grid.In the next section we'll apply these techniques to our Save Sick Child application.
+
+TIP: Twitter has developed a framework called https://github.com/twitter/bootstrap/[Bootstrap], which supports http://twitter.github.com/bootstrap/scaffolding.html#fluidGridSystem[fluid grid system] and responsive design. 
+
+=== Making Save Sick Child Responsive
+
+First, run any of the previous versions of the Save Sick Child application to make sure it was not responsive. Just make the browser window narrower, and you won't see some of the page content on the right.
+We'll make the page responsive gradually - the first version will make the header responsive, then the donation section, and, finally the entire page will become fluid. Run the Aptana's project named Responsive Header and you'll see a page similar to <<FIG11-14>>.  
+
+[[FIG11-14]]
+.Responsive Header (width 580px+)
+image::images/fig_11_14.png[]
+
+Below is the fragment from index.html that's displays the logo image and the header's menus.
+
+[source, html]
+----
+<div id="wrapper-container">
+  <header class="row breakpoint-640">
+  	<h1 id="logo" class="four-column cell">
+  	    <img src="assets/img/logo.png" alt="Save Sick Child logo"/></h1>
+  	<nav class="eight-column cell">
+  		<ul>
+  			<li>
+  				<a href="javascript:void(0)">Who We Are</a>
+  			</li>
+  			<li>
+  				<a href="javascript:void(0)">What We Do</a>
+  			</li>
+  			<li>
+  				<a href="javascript:void(0)">Where We Work</a>
+  			</li>
+  			<li>
+  				<a href="javascript:void(0)">Way To Give</a>
+  			</li>
+  		</ul>
+  	</nav>
+----
+
+Initially, this code uses the `four-column` style (`width: 33.332%;` of the container) for the logo and `eight-column` (`66.664%`) for the `<nav>` element. When the size of the viewport changes, the appropriate media query takes  effect. Note the `breakpoint-640` class selector in the `<header>` tag above. Jerry, our Web designer, decided that 640 pixels is not enough to display the logo and the four links from the `<nav>` section in one row. Besides, he wanted to fine tune the width of other elements too. This is how the media query for the 640px viewport looks like this:
+
+[source, html]
+----
+@media only screen and (max-width: 640px) {
+	.breakpoint-640 .cell {
+		float: none;
+		width: 100%;
+		padding-bottom: 0.5em
+	}
+
+	header {
+		margin-top: 1em;
+	}
+	#login {
+		top: 1em;
+	}
+	#logo.four-column {
+		width: 40%;
+	}
+	nav {
+		width: 100%;
+		margin-top: 0.8em
+	}
+	nav ul li {
+		width: 24.5%;
+		margin-left: 0.5%
+	}
+	nav li a {
+		text-align: center;
+		font-size: 0.6em;
+	}
+	#login-link-text {
+		display: none;
+	}
+	a#login-submit {
+		padding: 0.2em 0.5em
+	}
+	#login input {
+		width: 9em;
+	}
+}
+----
+
+As you see, if the `cell` has to be styled inside `breakdown-640`, the float gets turned off (`float: none;`) and each of the navigation items has to take 100% of the container's width. The `logo`, `login`, and `nav` elements will change too. There is no exact science here - Jerry figured out all these values empirically.
+
+Start slowly changing the width of the viewport, and you'll see how the layout changes. 
+The styles.css of this project has media queries for different viewport sizes. For example, when the page width is below 580 pixels, but more than 480 pixels it'll look as in <<FIG11-15>>.
+
+[[FIG11-15]]
+.Responsive Header 2 (width between 480 and 580px )
+image::images/fig_11_15.png[]
+
+When the width shrinks to 480px, the header looks as in <<FIG11-16>>.
+
+[[FIG11-16]]
+.Responsive Header (width below 480px)
+image::images/fig_11_16.png[]
+
+The next version of the Aptana project to try is called Responsive Donation. This version make the donation section fluid. The donation section contains the Lorem Ipsum text and the form, which is revealed when the user clicks the button Donate. First, let's look at the HTML. The index.html contains the following fragment (some of the content that irrelevant for layout was removed for better readability):
+
+[source, html]
+----
+
+<div id="main-content" role="main">
+ <section id="main-top-section" class="row breakpoint-480">
+   <div id="donation-address" class="seven-column cell">
+   	<p class="donation-address">
+   		Lorem ipsum dolor sit amet		</p>
+   	<button class="donate-button" id="donate-button">
+   		<span class="donate-button-header">Donate Now</span>
+   	</button>
+
+   </div>
+   <div id="donate-form-container">
+   	<h3>Make a donation today</h3>
+   	<form name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+
+   	  <div class="row nested breakpoint-960">
+   	  	<div class="six-column cell">
+   	  	  <div class="row nested">
+   	  	  	<div id="donation-amount" class="five-column left">
+   	  	  		<label class="donation-heading">Donation amount</label>
+   	  	  		<input type="radio" name="amount" id="d10" value="10"/>
+   	  	  		<label for="d10">10</label>
+   	  	  	</div>
+   	  	  	<div id="donor-info" class="five-column left">
+----
+
+The donation section is located in the `main-top-section` of the page. Jerry wanted to keep the image of the boy visible for as long as possible on the narrower viewports. The top section of the Save Sick Child has two backgrounds: the flowers (bg-2.png) and the boy (child-1.png). This is how they are specified in the style.css:
+
+[source, html]
+----
+#main-top-section {
+	background: url(../img/child-1.png) no-repeat right bottom, 
+	            url(../img/bg-2.png) no-repeat 20% bottom;
+}
+----
+
+If the viewport is wide enough, both backgrounds will be shown. What's wide enough? Jerry figured it out after experimenting. The `seven-column` style prescribes to allocate more than a half (58.331%) of the viewport width for the `donation-address` section and `six-column` (49.998%) for the donation form.  For example <<FIG11-17>> shows how the donation section will look when the viewport width is 570px.
+
+[[FIG11-17]]
+.Responsive Donate Section: 570px
+image::images/fig_11_17.png[]
+
+But when the width become less then 480px, there is no room for two background images, and only the flowers will remain on the page background. The media query for 480px viewport is shown next - note that the background in the main top section has only one image now: bg2.png. Floating is off to show the navigation menu vertically as in <<FIG11-18>>.
+
+[source, html]
+----
+@media only screen and (max-width: 480px) {
+	.breakpoint-480 .cell {
+		float: none;
+		width: 100%;
+		padding-bottom: 0.5em
+	}
+	#logo {
+		padding-bottom: 11em
+	}
+	nav ul li {
+		float: none;
+		width: 100%;
+		margin-left: 0;
+		margin-bottom: 0.5%;
+	}
+	#main-top-section {
+		background: url(../img/bg-2.png) no-repeat 20% bottom;
+	}
+	.donate-button {
+		width: 14em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.donate-button-header {
+		font-size: 1.1em;
+	}
+	.donate-2nd-line {
+		font-size: 0.9em;
+	}
+	#donate-later-link {
+		display: block;
+		width: 11em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	#make-payment p {
+		width: 100%;
+	}
+	#donation-amount.five-column {
+		width: 50%
+	}
+	#donor-info.six-column {
+		width: 50%
+	}
+	#donate-form-container select, input[type=text], input[type=email] {
+		width: 90%;
+	}
+}
+----
+
+[[FIG11-18]]
+.Responsive Donate Section under 480px
+image::images/fig_11_18.png[]
+
+The Aptana project Responsive Final includes the charts, maps, and video. Each of these sections uses `four-column` style, which is defined in styles.css as 33.332% of the container's width. 
+
+[source, html]
+----
+<section id="main-bottom-section" class="row breakpoint-768">
+
+	<div id="charts-container" class="four-column cell">
+		<svg id="svg-container"  xmlns="http://www.w3.org/2000/svg">
+
+		</svg>
+		<h3>Donation Stats</h3>
+		<h5>Lorem ipsum dolor sit amet, consect.</h5>
+	</div>
+	<div id="map-container" class="four-column cell">
+		<div id="location-map"></div>
+		<div id="location-ui"></div>
+	</div>
+	<div id="video-container" class="four-column cell last">
+		<div id="video-wrapper">
+			<video id="movie" controls="controls" poster="assets/media/intro.jpg" 
+			                                                preload="metadata">
+				<source src="assets/media/intro.mp4" type="video/mp4">
+				<source src="assets/media/intro.webm" type="video/webm">
+				<p>Sorry, your browser doesn't support the video element</p>
+			</video>
+		</div>
+		<h3>Video header goes here</h3>
+		<h5><a href="javascript:void(0);">More video link</a></h5>
+	</div>
+</section>
+----
+
+The id of this section is still `main-bottom-section`, and it's shown at the bottom of the page on wide viewports. Now take another look at the image <<FIG11-9>>. Jerry wants to display these three sections at the right hand side for tablets in the portrait mode, and it's shown on <<FIG11-19>>. 
+
+[[FIG11-19]]
+.The Portrait Mode on Tablets 
+image::images/fig_11_19.png[]
+
+The relevant code from the style.css is shown below.The top and bottom sections get about a half of the width each, and the floating is turned off so the browser would allocate charts, maps, and video vertically.
+
+[source, html]
+----
+@media only screen and (max-width: 768px) {
+	.breakpoint-768 .cell {
+		float: none;
+		width: 100%;
+		padding-bottom: 0.5em;
+	}
+
+	#main-bottom-section, #main-top-section {
+		width: 49%;
+	}
+----
+
+If you'll keep narrowing the viewport, the project Responsive Final will show the page with the layout similar to <<FIG11-10>>. While reading the code of this project, visit the main.js file. There is some work done in the JavaScript too, which listens to the resize event for the charts container. 
+
+[source, javascript]
+----
+window.addEventListener("resize", windowResizeHandler);
+function windowResizeHandler() {
+	drawPieChart(document.getElementById('svg-container'), 
+	                 donorsDataCache, labelsDataCache);
+}
+----
+
+Whenever the size changes, it invokes the function drawPieChart() that recalculates the width of the SVG container (it uses the `clientWidth` property of the `HTMLElement` ) and re-draws the chart accordingly.
+
+Finally, the media on the Save Sick Child page is represented by the Youtube video. This is a pretty basic example of the responsive media, but the style below will allocate the 100% of the available container's width, and the height of the video will be automatically calculated to the proportional size.
+
+[source, html]
+----
+video {
+	width: 100% !important;
+	height: auto !important;
+}
+----
+
+The `!important` part disables regular cascading rules and ensures that these values will be applied overriding more specific width or height declarations, if any.
+
+=== Summary 
+
+
+Authors of this book have different opinions about the merits of responsive design. One of us simply stated, "I haven't seen complex single-code-base applications that work well on Android, iPhone, and desktop browsers". The other responded "We need to compromise". With browser plugins like Flash Player or Silverlight you can choose pixel-perfect design. Just set a pre-requisite: the user must have a 1024x768 viewport minus chrome and margins. But if you'll need to make this application work on highly fragmented Android market, on all iPhones, Blackberies, desktops, and other devices, ask yourself a simple question, "Do we have money to hire two or three teams for developing and supporting several versions of the application for different devices or we'd rather compromise, and push the HTML5-based product out the door?" 
+
+Each enterprise project has a limited budget, and if you'll agree to compromise and move away from the pixel-perfect world accepting the fact that the Donate button will look a little bit different on different devices, go with the responsive design principles and have one code base. You'll provide different CSS sections that will automatically apply different layouts based on the viewport size, and the HTML markup and JavaScript will be the same. This approach has drawbacks because some portions of unnecessary CSS will be loaded to the user's device, but this still can be a practical business solution. 
+
+On the other hand, using the same code and design for different platforms works perfectly only for  publishing information and not for all Web applications. If you need to publish the information using different layout managers, responsive design is a good fit. Mobile applications could be compiled either into the native code or into some byte code that performs close to the native one. But the UI could be different based on the available screen real estate and use touch interface.
+
+If you'll take any framework that works on both desktop and mobile devices, you'll get two sets of controls and the need to maintain two different source code bases. Not using mobile JavaScript frameworks limits the number of user-friendly UI controls, Besides frameworks spare you from dealing with browsers incompatibilities.
+
+In this chapter you've seen how the Save Sick Child application (not a publishing site) was built with responsive design principles. We have several areas (`<div>'s`) and one of them include a donation form (we could have added the responsive `<div>` with the online auction too). On the wide screen we  displayed three  of these `<div>'s`  horizontally and two underneath, on the narrow screen each of these sections could scaled down and displayed one under another. 
+
+But using responsive design for styles application that must run on a tablets or mobile devices will require Jerry-the-designer to work in tandem with the User Experience specialist so that UI will have larger controls and fonts, minimize the need of manual data entry. And don't forget that half of the mobile screen could be covered by a virtual keyboard, and if you ignore this, the user will have to work with your UI via a keyhole, and even our fluid  `<div>'s` may not fit. 
+
+In the next two chapters we'll be working on yet another version of Save Sick Child. First, it's going to be done with the jQuery Mobile framework and then with Sencha Touch.
