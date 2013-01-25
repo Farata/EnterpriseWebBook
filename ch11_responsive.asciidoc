@@ -295,9 +295,11 @@ How many media queries is too many? It all depends on the Web page you're design
 
 There is no general rule as to how many breakpoint is needed for a typical Web page. But if there is a vieport width when you change the layout of the page, create a breakpoint for this width. Just create a simple Lorem Ipsum prototype of your Web site and start changing its size. If you don't like how the content looks, you may need to create a breakpoint and define a media query for it.
 
-TIP: Use Google Chrome Developer Tools to find out the current width of the viewport. Just type in the console window.innerWidth and you'll see the width in pixels.
+TIP: Use Google Chrome Developer Tools to find out the current width of the viewport. Just type in the console `window.innerWidth` and you'll see the width in pixels.
 
-Don't try to create a pixel perfect layout using responsive design. Use common sense and remember, the more different media queries you provide the heavier your CSS file will become. But in mobile world you should try to create Web applications as slim as possible.     
+Don't try to create a pixel perfect layout using responsive design. Use common sense and remember, the more different media queries you provide the heavier your CSS file will become. But in mobile world you should try to create Web applications as slim as possible.  
+
+Warning: Be prepared to see inconsistencies among the desktop browsers in measuring the width of the viewport. Our tests showed that WebKit-based browsers add about 15px to the width, supposedly accounting for the width of the scrollbar. So if you have a media query that has to change the layout at 768px, it'll change it at about 783px. Do more testing on different viewports and adjust your CSS as needed.  
 
 
 === Fluid Grids
@@ -910,6 +912,10 @@ The relevant code from the style.css is shown below.The top and bottom sections 
 	}
 ----
 
+==== Fluid Media
+
+If you responsive Web page contains images or videos, you want to make them fluid too - they should react to the current size of the containers they are in. Our page has a chart image and a video - both of them are made flexible, but we use different techniques.
+
 If you'll keep narrowing the viewport, the project Responsive Final will show the page with the layout similar to <<FIG11-10>>. While reading the code of this project, visit the main.js file. There is some work done in the JavaScript too, which listens to the resize event for the charts container. 
 
 [source, javascript]
@@ -923,7 +929,7 @@ function windowResizeHandler() {
 
 Whenever the size changes, it invokes the function drawPieChart() that recalculates the width of the SVG container (it uses the `clientWidth` property of the `HTMLElement` ) and re-draws the chart accordingly.
 
-Finally, the media on the Save Sick Child page is represented by the Youtube video. This is a pretty basic example of the responsive media, but the style below will allocate the 100% of the available container's width, and the height of the video will be automatically calculated to the proportional size.
+The video is flexible too, and it's done a lot simpler. We do not specify the fixed size of the video, but use a CSS property `width` instructing the browser to allocate the 100% of the available container's width. The height of the video must be  be automatically calculated to keep the proportional size. 
 
 [source, html]
 ----
@@ -933,7 +939,7 @@ video {
 }
 ----
 
-The `!important` part disables regular cascading rules and ensures that these values will be applied overriding more specific width or height declarations, if any.
+The `!important` part disables regular cascading rules and ensures that these values will be applied overriding more specific width or height declarations, if any. If you prefer not always use the entire width of the container for the video, you can use the `max-width: 100%;`, which will display the video that fits in the container at its original size. If a video is larger than the container, the browser will resize it to fit inside the container. 
 
 === Summary 
 
