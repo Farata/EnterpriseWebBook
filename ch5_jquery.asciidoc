@@ -2,31 +2,31 @@
 
 Up till now we've been using HTML, JavaScript and CSS to create the Save Sick Child Web application.  In this chapter we'll introduce a more productive way of developing for the Web by using the framework called jQuery.  There are dozens of JavaScript libraries, but in this book we'll use just the two of them: jQuery and Ext JS. Their mobile counterparts are called jQuery Mobile and Sencha Touch. 
 
-http://jquery.com/[jQuery] is probably the most popular JavaScript library. It's simple to use and doesn't require you to dramatically change the way you program for the Web. jQuery offers you a helping hand with the tasks that most of the Web developers need to deal with, for example, finding DOM elements, processing browser's events, dealing with browser incompatibility et al. Since jQuery is an extensible framework, lots and lots of plugins were created by developers from around the world, and all of them are available for free. If you can't find the plugin that fits your need - create one yourself.
+http://jquery.com/[jQuery] is probably the most popular JavaScript library. It's simple to use and doesn't require you to dramatically change the way you program for the Web. jQuery offers you a helping hand with the tasks that most of the Web developers need to deal with, for example, finding and manipulating DOM elements, processing browser's events, and dealing with browser incompatibility. Since jQuery is an extensible framework, lots and lots of plugins were created by developers from around the world, and all of them are available for free. If you can't find the plugin that fits your need - create one yourself.
 
 Besides jQuery and jQuery Mobile there is a http://jqueryui.com/[jQuery UI library], which is a set of user interface interactions, effects, widgets, and themes built on top of the jQuery. You can find in jQuery UI such widgets as Datepicker, Accordion, Slider, Tabs, Autocomplete and more. jQuery UI will also help you with adding to your Web page various interactions (e.g. drag and drop)  and effects (e.g. adding CSS classes or animations). jQuery UI is built on top of jQuery core library and can't be used independently. 
 
 In this chapter we'll cover the basics of jQuery and then re-write the Save Sick Child application using JQuery.
 
-=== jQuery Primer
+=== jQuery Intro
 
 
 At the time of this writing the current version of jQuery is 1.9. You can download one of two distributions of jQuery framework. The gzipped minified version of jQuery weighs 33Kb (it's 93Kb if unzipped), and this is all you need unless you are planning to develop jQuery plugins, in which case get a larger development version - it's about 270Kb. We've downloaded it from jquery.com and included it in the `<script>` tag in our HTML code samples so you can run them even if the Internet connection is not available. 
 
-But instead of deploying jQuery framework on your servers as a part of your application, you should use a common Content Delivery Network (CDN) URL in your HTML as shown below. Since jQuery is an extremely popular library, many Web sites use it. If more than one Web page would get it from the same CDN, the Web browser would cache it locally and reuse it rather than downloading a separate copy from different servers for every Web application that uses jQuery. The http://jquery.com/download/[Download page of jquery.com] offers three CDN: Google, Microsoft, and MediaTemple. For example, if you don't need to use HTTPS protocol with your application the MediaTemple's CDN suffice:
+But instead of deploying jQuery framework on your servers as a part of your application, you should use a common Content Delivery Network (CDN) URL in your HTML as shown below. Since jQuery is an extremely popular library, many Web sites use it. If more than one Web page would get it from the same CDN, the Web browser would cache it locally and reuse it rather than downloading a separate copy from different servers for every Web application that uses jQuery. The http://jquery.com/download/[download page of jquery.com] offers three CDN: Google, Microsoft, and MediaTemple. For example, if you don't need to use HTTPS protocol with your application the MediaTemple's CDN suffice:
 
 [source, html]
 ----
 <script src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
 ----
 
-After covering JQuery basics, we are going to continue demonstrating a series of Aptana projects gradually increasing their complexity. The goal of this chapter is to re-write the Save Sick Child application using jQuery. We won't add any new functionality to this application - we want to show that the developers can be more productive in achieving the same result.
+After covering JQuery basics, we are going to continue reviewing the code of a series of Aptana projects representing same old Save Sick Child application, but this  using jQuery. We won't add any new functionality to this application - we want to show that the developers can be more productive in achieving the same result.
 
 Some people will say that anyone who knows HTML can learn jQuery, but this is not so. Understanding of JavaScript is required. If you've read and understood the content from Chapter 2 - you're ready to learn jQuery.  The jQuery programming starts with with invoking the jQuery constructor named `jQuery()`. But people are using the shorter version of this constructor that's represented by a $ sign: `$()`. This `$` property is the only object that jQuery will create in the global namespace. Everything else will be encapsulated inside the `$` object.  
 
 As you remember, JavaScript functions do not require you to invoke them with exactly the same number of parameters as they were declared with. Hence, when you invoke jQuery constructor you can pass different things to it. You can pass a String as an argument or another function, and jQuery constructor will invoke different code based on the argument type. For example, if you'll pass it a String, jQuery will assume that it's a CSS selector, and the caller wants to find element(s) in the DOM that match this selector. Basically, you may think of it this way - whenever you want jQuery do something for you, invoke `$()` passing it your request.
 
-You'll need to get used to yet another feature of jQuery - function chaining. Each function returns an object, and you don't have to declare a variable to hold this object. You can just write something like `funcA().funcB();` This means that the function `funcB()` will be called as a method on the object, returned by the `funcA()`. 
+You'll need to get used to yet another feature of jQuery - method chaining. Each function returns an object, and you don't have to declare a variable to hold this object. You can just write something like `funcA().funcB();` This means that the method `funcB()` will be called on the object, returned by the `funcA()`. 
 
 ==== Hello World
 
@@ -56,9 +56,11 @@ Let's start using jQuery rather then talking about it. The "Hello World" program
 
 ----
 
-<1> If the script passes a function to jQuery, it's getting invoked when the DOM object is ready - the `document.ready` event is dispatched. Keep in mind that it's not the same as invoking a function handler `window.onload`, which is called after all windows resources (not just the DOM object) are completely  loaded. 
+<1> If the script passes a function to jQuery, it's getting invoked when the DOM object is ready - the jQuery's `ready()` function gets invoked . Keep in mind that it's not the same as invoking a function handler `window.onload`, which is called after all windows resources (not just the DOM object) are completely  loaded (read more in the jQuery Events section). 
 
-<2> If the script passes a String to jQuery, it assumes that it's a CSS selector and finds the appropriate collection of HTML elements (it'll return the reference to just one `<body>` in this case).
+<2> If the script passes a String to jQuery, such Strolling is being treated as a CSS selector, and jQuery tries to find the matching collection of HTML elements (it'll return the reference to just one `<body>` in the Hello World script). This line also demonstrates the method chaining - the `append()` method is called on the object returned by `$("body")`. 
+
+=== Selectors	
 
 Finding HTML elements based on the CSS selectors is very easy and you can specify one or more selectors in the same query. For example:
 
@@ -73,10 +75,93 @@ $("#login-link")  // find the elements with id=login-link
 $("#map-container #video-container");  
 ----
 
-==== jQuery Events
+If a selector returns a number of elements, you can further zoom in on the required element by applying  so called filters. 
 
 
-==== AJAX with jQuery
+=== Events
+
+Adding events processing with jQuery is simple, and your code will be following the same pattern: find the element in DOM using selector or filter, and then attach the appropriate function that handles the required event. We'll show you a handful of code sample of how to do it, but you can find the description of all methods that deal with events in the http://api.jquery.com/category/events/[jQuery API documentation]. 
+
+Our Hello World example used a short version of passing the handler function to the `ready()` function:
+`$(function());`
+
+This is the same as using the following syntax:
+
+`$(document).ready(function());`
+
+For the Hello World example this was all that mattered - we just needed to have the DOM object to be able to append the `<h1>` element to it. But this would not be the right solution if the code needs to be executed only after all page resources have been loaded. In such case the code could have been re-written to utilize the DOM's `window.load` event, which in jQuery looks as follows:
+
+[source, javascript]
+----
+$(window).load(function(){
+		$("body").append("<h1>Hello World!</h1>"); 
+});
+----
+
+If the user interacts with your Web page using the mouse , the events handlers can be added using a similar procedure. For example, if you want the header in our Hello World example to process click events, find the reference to this header and attach the `click()` handler to it. Adding the following to the `<script>` section of Hello World will append the text each time the user clicks on the header.
+
+[source, javascript]
+----
+$("h1").click(function(){
+    $("body").append("Hey, you clicked on the header!");				
+})
+----
+
+If you'd like to process double-clicks - replace the `click()` invocation with `dblclick()`. jQuery has handlers for about a dozen mouse events, which are wrapper methods to the corresponding JavaScript events that are dispatched when mouse entering or leaving the area, the mouse pointer goes up/down, or the focus moves in or out of an input field. 
+
+==== Binding Events With The Method on()
+
+The event methods can be attached just by passing a handler function as it was done in the above examples, or to process the event or by using the `on()` method. In the section Working on Save Sick Child you'll see lots of example, where the `on()` method is used. The one liner below assigns the function handler named `showLoginForm` to the `click` event of the element with the id `login-link`. We've included ' the commented out pure-JavaScript version of the code (see project-02-login in Chapter 3) that has the same functionality:
+
+[source, javascript]
+----
+    // var loginLink = document.getElementById("login-link");
+    // loginLink.addEventListener('click', showLoginForm, false);
+	
+	$('#login-link').on('click', showLoginForm);
+----
+
+
+The `on()` method allows you to assign the same handler function to more than one event. For example, to invoke the `showLoginForm` function when the user clicks or moves the mouse over the HTML element you could written  `on('click mouseover', showLoginForm)`. 
+
+The method `off()` is used for removing the event handler and the event won't be processed anymore. For example, if you want to turn off the login link's ability to process `click` event, simply write this:
+
+[source, javascript]
+----	
+	$('#login-link').off('click', showLoginForm);
+----
+
+==== Delegated Events
+
+The method `on()` can be called with passing an optional selector as an argument. Since we haven't used it in the example from the previous section, the event was triggered only when reached the element with an id `login-link`. Now imagine an HTML container that has child elements, e.g. a calculator implemented as a `<div id="calculator">` containing buttons. The following code would assign a click handler *to each* button stlyled with a class `.digitButton`:
+
+[source, javascript]
+----
+$("div#calculator .digitButton").on("click", function(){...});
+----
+
+But instead of assigning an event handler to each button, you can assign an event handler to the container and specify additional selector that child elements may be found by. The following code assigns the event handler function *to only one* object - the `div#calculator` instructing this container to invoke the event handler when any of its children matching `.digitButton` is clicked. 
+
+[source, javascript]
+----
+$("div#calculator").on("click", ".digitButton",function(){...});
+----
+
+Since most of the events bubble, when the button is clicked, the event bubbles up and reaches the container's level, whose click handler will do the processing. The work on processing clicks for digit buttons is delegated to the container. 
+
+Another good use case for delegating event processing to a container is a financial application that displays the data in an HTML table containing hundreds of rows. Instead of assigning event hundreds event handlers (one per table row), assign one to the table. There is one extra benefit to using delegation in this case - if the application can dynamically add new rows to this table (say, the order execution data), there is no need to explicitly assign event handlers to them - the container will do the processing for both old and new rows.
+
+****
+
+NOTE: Starting from jQuery 1.7, the method `on()` is a recommended replacement of the methods `bind()`, `unbind()`, `delegate()`, and `undelegate()` that are still being used in earlier versions of jQuery.  If you decide to develop your application with jQuery and its mobile version with jQuery Mobile, you need to be aware that the latter may not implement the latest code of the core jQuery.  Using `on()` is safe though, because at the time of this writing jQuery Mobile 1.2 supports all the features of jQuery 1.8.2. In Chapter 11, you'll see how using the responsive design principles can help you to reuse the same code on both desktop and mobile devices.
+
+****
+
+
+TODO: custom events
+
+
+=== AJAX with jQuery
 
 
 === Working on Save Sick Child 
