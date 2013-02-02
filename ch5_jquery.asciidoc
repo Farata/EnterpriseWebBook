@@ -60,7 +60,7 @@ Let's start using jQuery rather then talking about it. The "Hello World" program
 
 <2> If the script passes a String to jQuery, such Strolling is being treated as a CSS selector, and jQuery tries to find the matching collection of HTML elements (it'll return the reference to just one `<body>` in the Hello World script). This line also demonstrates the method chaining - the `append()` method is called on the object returned by `$("body")`. 
 
-=== Selectors and FIlters	
+=== Selectors and Filters	
 
 Finding HTML elements based on the CSS selectors is very easy and you can specify one or more selectors in the same query. For example:
 
@@ -77,7 +77,7 @@ $("#map-container #video-container");
 
 If a selector returns a number of elements, you can further zoom in on the required element by applying  so called filters. 
  
-TODO: Filters
+TODO: Filters, each()
 
 
 === Events
@@ -177,11 +177,30 @@ TODO: custom events
 
 === AJAX with jQuery
 
-.
+Making AJAX server requests is also easier with jQuery than with  pure JavaScript. All the complexity of `$.ajax()` method is hidden from the developers. By invoking `ajax()` you can exchange the data with the server and load JavaScript. In its simplest form, this method takes just the URL of the remote resource to which request is sent. Such invocation will use defaults that should be set in advance by invoking the method `ajaxSetup()`. 
+
+But you can combine specifying parameters of the AJAX call and making the `ajax()` call. Just provide as an argument a configuration object that defines the URL, the function handlers for success and failures, and some other parameters like a function to call right before the AJAX request is made or if the data should be cached by the browser. The template for calling jQuery `ajax()` may look as shown below.
+
+[source, javascript]
+----
+$.ajax({ 
+ 		url: 'myData.json',
+ 		type: 'GET',
+ 		dataType: 'json'
+	}).done(function (data) {...})
+	  .fail(function (jqXHR, textStatus) {...});
+----
+
+This example takes a JavaScript object that defines the URL, the types of the request and the expected data. Using chaining, you can attach the methods `done()` and `fail()`, which have to specify the function handlers to be invoked in case of success and failure.
+
 
 === Working on Save Sick Child 
 
-In this section we'll review code samples from several Aptana projects that are jQuery re-writes of the corresponding pure-JavaScript projects from Chapter 3. We are not going to add any new functionality - the goal is to demonstrate that jQuery allows you to achieve the same results with writing less code. For example, the file main.js from project-02-jQuery-Login is 33% less in size than project-02-login. jQuery is brief. For example, the next code shows how three lines of code in JavaScript can be replaced with one - the jQuery function `toggle()` will toggle the visibility of login-link, login-form, and login-submit'.
+In this section we'll review code samples from several Aptana projects that are jQuery re-writes of the corresponding pure-JavaScript projects from Chapter 3. We are not going to add any new functionality - the goal is to demonstrate that jQuery allows you to achieve the same results with writing less code. 
+
+==== Login and Donate
+
+For example, the file main.js from project-02-jQuery-Login is 33% less in size than project-02-login. jQuery is brief. For example, the next code shows how three lines of code in JavaScript can be replaced with one - the jQuery function `toggle()` will toggle the visibility of `login-link`, `login-form`, and `login-submit`.
 
 [source, javascript]
 ----
@@ -198,7 +217,7 @@ $('#login-link, #login-form, #login-submit').toggle();
 }
 ----
 
-The code of the Donation section also becomes slimmer with jQuery. For example, the following section from  the JavaScript version will be gone:
+The code of the Donation section also becomes slimmer with jQuery. For example, the following section from the JavaScript version of the application is removed:
 
 [source, javascript]
 ----
@@ -210,7 +229,7 @@ var donateForm = document.forms['_xclick'];
 var donateLaterLink = document.getElementById('donate-later-link');
 ----
 
-The jQuery method chaining allows combining in one line finding DOM objects and acting upon them. The following is the entire code of the main.js from project-01-01-make-donation, which includes the initial version of the code of Login and Donate sections of Save Sick Child.
+The jQuery method chaining allows combining (in one line) finding DOM objects and acting upon them. The following is the entire code of the main.js from project-01-01-make-donation, which includes the initial version of the code of Login and Donate sections of Save Sick Child.
 
 [source, javascript]
 ----
@@ -218,91 +237,129 @@ The jQuery method chaining allows combining in one line finding DOM objects and 
 
 $(function() {
 
-	function showLoginForm() {
-		$('#login-link, #login-form, #login-submit').toggle();
-	}
+  function showLoginForm() {
+  	$('#login-link, #login-form, #login-submit').toggle();
+  }
 
-	$('#login-link').on('click', showLoginForm);
+  $('#login-link').on('click', showLoginForm);
 
-	function showAuthorizedSection() {
-		$('#authorized, #login-form, #login-submit').toggle();
-	}
+  function showAuthorizedSection() {
+  	$('#authorized, #login-form, #login-submit').toggle();
+  }
 
-	function logIn() {
-		var userNameValue = $('#username').val();
-		var userNameValueLength = userNameValue.length;
-		var userPasswordValue = $('#password').val();
-		var userPasswordLength = userPasswordValue.length;
+  function logIn() {
+  	var userNameValue = $('#username').val();
+  	var userNameValueLength = userNameValue.length;
+  	var userPasswordValue = $('#password').val();
+  	var userPasswordLength = userPasswordValue.length;
 
-		//check credentials
-		if (userNameValueLength == 0 || userPasswordLength == 0) {
-			if (userNameValueLength == 0) {
-				console.log('username is empty');
-			}
-			if (userPasswordLength == 0) {
-				console.log('password is empty');
-			}
-		} else if (userNameValue != 'admin' || userPasswordValue != '1234') {
-			console.log('username or password is invalid');
-		} else if (userNameValue == 'admin' && userPasswordValue == '1234') {
-			showAuthorizedSection();
-		}
-	}
+  	//check credentials
+  	if (userNameValueLength == 0 || userPasswordLength == 0) {
+  		if (userNameValueLength == 0) {
+  			console.log('username is empty');
+  		}
+  		if (userPasswordLength == 0) {
+  			console.log('password is empty');
+  		}
+  	} else if (userNameValue != 'admin' || userPasswordValue != '1234') {
+  		console.log('username or password is invalid');
+  	} else if (userNameValue == 'admin' && userPasswordValue == '1234') {
+  		showAuthorizedSection();
+  	}
+  }
 
-	$('#login-submit').on('click', logIn);
+  $('#login-submit').on('click', logIn);
 
-	function logOut() {
-		$('#username, #password').val('')
-		$('#authorized, #login-link').toggle();
-	}
+  function logOut() {
+  	$('#username, #password').val('')
+  	$('#authorized, #login-link').toggle();
+  }
 
-	$('#logout-link').on('click', logOut);
+  $('#logout-link').on('click', logOut);
 
-	$('#profile-link').on('click', function() {
-		console.log('Profile link was clicked');
-	});
+  $('#profile-link').on('click', function() {
+  	console.log('Profile link was clicked');
+  });
 });
 
 /* --------- make donation module start -------------- */
 $(function() {		
-		var checkedInd = 2;  // initially checked radiobutton
-				
-		function showHideDonationForm() {
-			$('#donation-address, #donate-form-container').toggle();
-		}
-		$('#donate-button').on('click', showHideDonationForm);
-	
-		$('#donate-form-container').on('click', resetOtherAmount);
-		function resetOtherAmount(event) {
-			if (event.target.type == "radio") {
-				$('#otherAmount').val('');
-			}
-		}
+  var checkedInd = 2;  // initially checked radiobutton
+  		
+  function showHideDonationForm() {
+  	$('#donation-address, #donate-form-container').toggle();
+  }
+  $('#donate-button').on('click', showHideDonationForm);
 
-		//uncheck selected radio buttons if other amount was chosen	
-		function onOtherAmountFocus() {
-			var radioButtons = $('form[name="_xclick"] input:radio');
-			if ($('#otherAmount').val() == '') {
-				checkedInd = radioButtons.index(radioButtons.filter(':checked'));
-			}
-			$('form[name="_xclick"] input:radio').prop('checked', false);  // <1>
-		}
-		
-		function onOtherAmountBlur() {
-			if ($('#otherAmount').val() == '') {
-				$('form[name="_xclick"] input:radio:eq(' + checkedInd + ')')
-				                     .prop("checked", true);   		    // <2>
-			}
-		}
-		$('#otherAmount').on({focus:onOtherAmountFocus, blur:onOtherAmountBlur});  // <3>
+  $('#donate-form-container').on('click', resetOtherAmount);
+  function resetOtherAmount(event) {
+  	if (event.target.type == "radio") {
+  		$('#otherAmount').val('');
+  	}
+  }
 
-		$('#donate-later-link').on('click', showHideDonationForm);
-	
+  //uncheck selected radio buttons if other amount was chosen	
+  function onOtherAmountFocus() {
+  	var radioButtons = $('form[name="_xclick"] input:radio');
+  	if ($('#otherAmount').val() == '') {
+  		checkedInd = radioButtons.index(radioButtons.filter(':checked'));
+  	}
+  	$('form[name="_xclick"] input:radio').prop('checked', false);  // <1>
+  }
+  
+  function onOtherAmountBlur() {
+  	if ($('#otherAmount').val() == '') {
+  		$('form[name="_xclick"] input:radio:eq(' + checkedInd + ')')
+  		                     .prop("checked", true);   	 // <2>
+  	}
+  }
+  $('#otherAmount')
+      .on({focus:onOtherAmountFocus, blur:onOtherAmountBlur});  // <3>
+
+  $('#donate-later-link').on('click', showHideDonationForm);
 });
 ----
 
 <1> This one liner finds all elements of the form named `_xclick`, and immediately applies the jQuery filter to remove from this collection any elements except radiobuttons. Then it unchecks all of them by setting the property `checked` to `false`.  This has to be done if the user places the focus inside the  "Other amount" field.
 
-<2> If the user leaves the "Other amount" return the check the previously selected radiobutton again. The ``eq` filter picks the radiobutton whose number is equal to the value of the variable `checkedInd`.  
+<2> If the user leaves the "Other amount" return the check the previously selected radiobutton again. The `eq` filter picks the radiobutton whose number is equal to the value of the variable `checkedInd`.  
 
 <3> A single invocation of the `on()` method registers two event handlers: one for the `focus` and one for the `blur` event.
+
+TODO: Add an effect to the Donate button click
+
+==== States and Countries with AJAX
+
+The Aptna project 
+
+[source, javascript]
+----
+function loadData(dataUrl, rootElement, target) {
+	$.ajax({ 
+ 		url: dataUrl,
+ 		type: 'GET',
+ 		cache: false,
+ 		dataType: 'json'
+	}).done(function (data) {			
+		var optionsHTML = '';	
+		$.each(data[rootElement], function(index) {
+				optionsHTML+='<option value="'+data[rootElement][index].code+'">' +
+				               data[rootElement][index].name+'</option>'
+			});	
+			var targetCurrentHTML = target.html();						
+		var targetNewHTML = targetCurrentHTML + optionsHTML;
+		target.html(targetNewHTML);   		
+	}).fail(function (jqXHR, textStatus) {
+		console.log('Error status code:' + jqXHR.status);
+		if (textStatus === 'parsererror') {
+             console.log('Requested JSON parse was failed.');
+         } else if (textStatus === 'abort') {
+             console.log('Ajax request was aborted.');
+         }
+	});
+}
+
+// Load the State and Country comboboxes
+loadData('data/us-states-list.json', 'usstateslist', $('#state'));
+loadData('data/counries-list.json', 'countrieslist', $('#counriesList'));
+----
