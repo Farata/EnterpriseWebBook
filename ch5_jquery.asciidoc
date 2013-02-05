@@ -1,12 +1,12 @@
 == Save Sick Child with JQuery 
 
-Up till now we've been using HTML, JavaScript and CSS to create the Save Sick Child Web application.  In this chapter we'll introduce a more productive way of developing for the Web by using the framework called jQuery.  There are dozens of JavaScript libraries, but in this book we'll use just the two of them: jQuery and Ext JS. Their mobile counterparts are called jQuery Mobile and Sencha Touch. 
+Up till now we've been using HTML, JavaScript and CSS to create the Save Sick Child Web application.  In the real world, developers try to be more productive by using JavaScript libraries and MVC frameworks. Libraries do not dictate how to structure the code of your application - they offer you components that allow to write less code. MVC frameworks force you to organize your code in layers implementing the Model-View-Controller design pattern.  There are more than a dozen MVC JavaScript frameworks that are being used by professional developers: http://backbonejs.org/[Backbone.js], http://www.sencha.com/products/extjs[ExtJS], AngularJS, http://emberjs.com/[Ember.js], http://knockoutjs.com/[Knockout] just to name a few. In this chapter we'll introduce the JavaScript library called jQuery. Chapter 6 is about the JavaScript framework ExtJS. Their mobile counterparts are called jQuery Mobile and Sencha Touch (see Chapter 12 and 13). 
 
-http://jquery.com/[jQuery] is probably the most popular JavaScript library. It's simple to use and doesn't require you to dramatically change the way you program for the Web. jQuery offers you a helping hand with the tasks that most of the Web developers need to deal with, for example, finding and manipulating DOM elements, processing browser's events, and dealing with browser incompatibility. Since jQuery is an extensible framework, lots and lots of plugins were created by developers from around the world, and all of them are available for free. If you can't find the plugin that fits your need - create one yourself.
+http://jquery.com/[jQuery] is the most popular JavaScript library. More than 60% of top Web sites use jQuery (visit http://trends.builtwith.com/javascript/top[http://trends.builtwith.com/javascript/top] for the current statistics). jQuery is simple to use and doesn't require you to dramatically change the way you program for the Web. jQuery offers you a helping hand with the tasks that most of the Web developers need to deal with, for example, finding and manipulating DOM elements, processing browser's events, and dealing with browser incompatibility. Since jQuery is an extensible framework, lots and lots of plugins were created by developers from around the world, and all of them are available for free. If you can't find the plugin that fits your need - create one yourself.
 
 Besides jQuery and jQuery Mobile there is a http://jqueryui.com/[jQuery UI library], which is a set of user interface interactions, effects, widgets, and themes built on top of the jQuery. You can find in jQuery UI such widgets as Datepicker, Accordion, Slider, Tabs, Autocomplete and more. jQuery UI will also help you with adding to your Web page various interactions (e.g. drag and drop)  and effects (e.g. adding CSS classes or animations). jQuery UI is built on top of jQuery core library and can't be used independently. 
 
-In this chapter we'll cover the basics of jQuery and then re-write the Save Sick Child application using JQuery.
+In this chapter we'll briefly cover the basics of jQuery. Our goal is not to provide you with a detailed jQuery primer - there are jQuery books and http://api.jquery.com/[the online API Documentation] that provide a comprehensive explanation of jQuery. But we'll give you just enough of the information to  understand how jQuery can be used. In the section Working on Save Sick Child we'll review the code of several versions of this application highlighting the benefits of using JQuery library.  
 
 === jQuery Intro
 
@@ -72,12 +72,59 @@ $(".donate-button"); // find the elements with the class donate-button
 $("#login-link")  // find the elements with id=login-link
 
 // find elements with id=map-container and id=video-container 
-$("#map-container #video-container");  
+$("#map-container #video-container"); 
+
+// Find an HTML input element that has a value attribute of 200
+$('input[value="200"]');
+
+// Find an HTML input element that has a value attribute of 200
+// and change the text of its next sibling to "two hundred"
+"$('input[value="200"]').next().text("two hundred");
+
 ----
 
-If a selector returns a number of elements, you can further zoom in on the required element by applying  so called filters. 
- 
-TODO: Filters, each()
+There is a handy online site http://jsfiddle.net/[JSFiddle] for performing quick testing of code fragments of HTML, CSS, JavaScript, and popular frameworks. This Web page has a sidebar of the left and four large panels on the right. Three of these panels are for entering or copy/pasting: HTML, CSS, and JavaScript, and the forth panel is for showing the results of applying this code (see <<FIG5-1>>).
+
+[[FIG5-1]]
+.Testing jQuery using JSFiddle 
+image::images/fig_05_1.png[]   
+
+Copy/paste the fragments from the HTML and CSS written for the Donate section of the Save Sick Child page into the top panels, and press the button Run on JSFiddle's toolbar, you'll see our donate form where each radiobutton has a label in the form of digits (10, 20, 50, 100, 200). Now select jQuery 1.9.0 from the dropdown at the top left and copy paste the jQuery code fragment you'd like to test into the JavaScript panel locate under the HTML one. As you see on <<FIG5-1>>, we've pasted `$('input[value="200"]').next().text("two hundred");`. After pressing the button Run the jQuery script was executed and the label of the last radiobutton has been replaced from "200" to "two hundred". JSFiddle's tutorial is located at http://doc.jsfiddle.net/tutorial.html[http://doc.jsfiddle.net/tutorial.html]. 
+
+
+TIP: If you chained a method, e.g. an event handler, to the HTML element returned by a selector, your can use `$(this)` from inside such a handler to get a reference to this HTML element.
+
+If jQuery selector returns a number of HTML elements, you can further narrow down this collection by applying so-called filters.jQuery has such filters as `eq()`, `has()`, `first()` and more.
+
+For example, applying the selector `$('label');`to the Donate section HTML fragment shown in <<FIG5-1>> would return a set of HTML elements `<label>`. Say we want to change the background of the label "20" to be red. This is the third label in the HTML from <<FIG5-1>>, and the `eq(n)` filter selects the element at the zero-based index `n` within the matched set.
+
+You can apply this filter using the following syntax: `$('label:eq(2)');`. But jQuery documentation suggest to use the syntax `$('label').eq(2);` http://api.jquery.com/eq-selector/[for better performance].
+
+Using method chaining we'll apply the filter  `eq(2)` to the set of lables returned by the selector `$('label')` and then and then change the styling of the remaining HTML element(s) using the `css()` method that can do all CSS manipulations. This is how the entire expression will look like:
+
+[source, javascript]
+----
+$('label').eq(2).css('background-color', 'red'); 
+----
+
+Test this script in HSFiddle or in the code of one of the Save Sick Child projects from this chapter. The background of the label "20" will be red. If you wanted to change the CSS of the first label in this set, the filter expressions could look as `$('label:first')` or, for the better performance, you should do it like this:
+
+[source, javascript]
+----
+$('label').filter(":first").css('background-color', 'red'); 
+----
+
+If you display data in HTML table, you may want to change the background color of every even or odd row `<tr>`,  and jQuery offers you the filters `even()` and `odd()`, for example:
+
+[source, javascript]
+----
+$('tr').filter(":even").css('background-color', 'grey');
+----
+
+Visit jQuery API documentation for the complete list of http://api.jquery.com/category/selectors/basic-filter-selectors/[basic] and http://api.jquery.com/category/traversing/filtering/[traversing filters]. 
+
+
+TODO: each()
 
 
 === Events
@@ -104,16 +151,16 @@ If the user interacts with your Web page using the mouse , the events handlers c
 
 [source, javascript]
 ----
-$("h1").click(function(){
+$("h1").click(function(event){
     $("body").append("Hey, you clicked on the header!");				
 })
 ----
 
-If you'd like to process double-clicks - replace the `click()` invocation with `dblclick()`. jQuery has handlers for about a dozen mouse events, which are wrapper methods to the corresponding JavaScript events that are dispatched when mouse entering or leaving the area, the mouse pointer goes up/down, or the focus moves in or out of an input field. 
+If you'd like to process double-clicks - replace the `click()` invocation with `dblclick()`. jQuery has handlers for about a dozen mouse events, which are wrapper methods to the corresponding JavaScript events that are dispatched when mouse entering or leaving the area, the mouse pointer goes up/down, or the focus moves in or out of an input field. The shorthand methods `click()` and `dblclick()` (and several others) internally use the method `on()`, which you can and should use in your code too.  
 
 ==== Binding Events With The Method on()
 
-The event methods can be attached just by passing a handler function as it was done in the above examples, or to process the event or by using the `on()` method. In the section Working on Save Sick Child you'll see lots of example, where the `on()` method is used. The one liner below assigns the function handler named `showLoginForm` to the `click` event of the element with the id `login-link`. We've included ' the commented out pure-JavaScript version of the code (see project-02-login in Chapter 3) that has the same functionality:
+The event methods can be attached just by passing a handler function as it was done in the above examples, or to process the event or by using the `on()` method, which allows you to specify the native event name and the event handler as its arguments. In the section Working on Save Sick Child you'll see lots of examples, where the `on()` method is used. The one liner below assigns the function handler named `showLoginForm` to the `click` event of the element with the id `login-link`. The following code snippets includes the commented out pure-JavaScript version of the code (see project-02-login in Chapter 3) that has the same functionality:
 
 [source, javascript]
 ----
@@ -149,7 +196,7 @@ But instead of assigning an event handler to each button, you can assign an even
 $("div#calculator").on("click", ".digitButton",function(){...});
 ----
 
-Since most of the events bubble, when the button is clicked, the event bubbles up and reaches the container's level, whose click handler will do the processing. The work on processing clicks for digit buttons is delegated to the container. 
+When the button is clicked, the event bubbles up and reaches the container's level, whose click handler will do the processing. The work on processing clicks for digit buttons is delegated to the container. 
 
 Another good use case for delegating event processing to a container is a financial application that displays the data in an HTML table containing hundreds of rows. Instead of assigning event hundreds event handlers (one per table row), assign one to the table. There is one extra benefit to using delegation in this case - if the application can dynamically add new rows to this table (say, the order execution data), there is no need to explicitly assign event handlers to them - the container will do the processing for both old and new rows.
 
@@ -177,9 +224,9 @@ TODO: custom events
 
 === AJAX with jQuery
 
-Making AJAX server requests is also easier with jQuery than with  pure JavaScript. All the complexity of `$.ajax()` method is hidden from the developers. By invoking `ajax()` you can exchange the data with the server and load JavaScript. In its simplest form, this method takes just the URL of the remote resource to which request is sent. Such invocation will use defaults that should be set in advance by invoking the method `ajaxSetup()`. 
+Making AJAX requests to the server is also easier with jQuery than with pure JavaScript. All the complexity of `$.ajax()` method is hidden from the developers. By invoking `ajax()` you can exchange the data with the server and load the JavaScript code. In its simplest form, this method takes just the URL of the remote resource to which the request is sent. Such invocation will use defaults that should be set in advance by invoking the method `ajaxSetup()`. 
 
-But you can combine specifying parameters of the AJAX call and making the `ajax()` call. Just provide as an argument a configuration object that defines the URL, the function handlers for success and failures, and some other parameters like a function to call right before the AJAX request is made or if the data should be cached by the browser. The template for calling jQuery `ajax()` may look as shown below.
+But you can combine specifying parameters of the AJAX call and making the `ajax()` call. Just provide as an argument a configuration object that defines the URL, the function handlers for success and failures, and some other parameters like a function to call right before the AJAX request (`beforeSend`) or caching instructions for the browser (`cache`). The template for calling jQuery `ajax()` may look as shown below.
 
 [source, javascript]
 ----
@@ -188,10 +235,15 @@ $.ajax({
  		type: 'GET',
  		dataType: 'json'
 	}).done(function (data) {...})
-	  .fail(function (jqXHR, textStatus) {...});
+	  .fail(function (jqXHR, textStatus) {...
+	});
 ----
 
-This example takes a JavaScript object that defines the URL, the types of the request and the expected data. Using chaining, you can attach the methods `done()` and `fail()`, which have to specify the function handlers to be invoked in case of success and failure.
+This example takes a JavaScript object that defines three properties: the URL, the type of the request,  and the expected data type. Using chaining, you can attach the methods `done()` and `fail()`, which have to specify the function handlers to be invoked in case of success and failure. You may attach yet another _promised callback_ methods like `always()` and `then()`. Remember the asynchronous nature of the AJAX calls, which means that the `ajax()` method  will be finished before the `done()` or `fail()` callbacks will be invoked.  
+
+If you'll specify JSON as a value of the `dataType` property, the result will be parsed automatically by jQuery - there is no need to call `JSON.parse()` as it was done in Chapter 4. jQuery object has a utility  method `parseJSON()`, but you don't have to invoke it to process return of the `ajax()` call.
+
+In the above example the type of the AJAX request was `GET`. But you can use `POST` too. In this case you'll need to prepare valid JSON data to be sent to the server. In this case the configuration object that you provide as an argument to the method `ajax()` has to include the property `data` containing valid JSON.
 
 
 === Working on Save Sick Child 
@@ -200,16 +252,19 @@ In this section we'll review code samples from several Aptana projects that are 
 
 ==== Login and Donate
 
-For example, the file main.js from project-02-jQuery-Login is 33% less in size than project-02-login. jQuery is brief. For example, the next code shows how three lines of code in JavaScript can be replaced with one - the jQuery function `toggle()` will toggle the visibility of `login-link`, `login-form`, and `login-submit`.
+For example, the file main.js from project-02-jQuery-Login is 33% less in size than project-02-login. jQuery is brief. For example, the next code shows how six lines of code in JavaScript can be replaced with one - the jQuery function `toggle()` will toggle the visibility of `login-link`, `login-form`, and `login-submit`.
 
 [source, javascript]
 ----
 function showLoginForm() {
 
 // The JavaScript way
-//loginLink.style.display = "none";
-//loginForm.style.display = "block";
-//loginSubmit.style.display = "block";
+// var loginLink = document.getElementById("login-link");
+// var loginForm = document.getElementById("login-form");
+// var loginSubmit = document.getElementById('login-submit');
+// loginLink.style.display = "none";
+// loginForm.style.display = "block";
+// loginSubmit.style.display = "block";
 
 
 // The jQuery way
@@ -229,7 +284,7 @@ var donateForm = document.forms['_xclick'];
 var donateLaterLink = document.getElementById('donate-later-link');
 ----
 
-The jQuery method chaining allows combining (in one line) finding DOM objects and acting upon them. The following is the entire code of the main.js from project-01-01-make-donation, which includes the initial version of the code of Login and Donate sections of Save Sick Child.
+The jQuery method chaining allows combining (in one line) finding DOM objects and acting upon them. The following is the entire code of the main.js from project-02-01-jQuery-make-donation, which includes the initial version of the code of Login and Donate sections of Save Sick Child.
 
 [source, javascript]
 ----
@@ -286,12 +341,18 @@ $(function() {
 $(function() {		
   var checkedInd = 2;  // initially checked radiobutton
   		
+  
+  // Show/hide the donation form if the user clicks
+  // on the button Donate or the Donate Later
   function showHideDonationForm() {
   	$('#donation-address, #donate-form-container').toggle();
   }
   $('#donate-button').on('click', showHideDonationForm);
+  $('#donate-later-link').on('click', showHideDonationForm);
+  // End of show/hide section
 
   $('#donate-form-container').on('click', resetOtherAmount);
+  
   function resetOtherAmount(event) {
   	if (event.target.type == "radio") {
   		$('#otherAmount').val('');
@@ -316,7 +377,6 @@ $(function() {
   $('#otherAmount')
       .on({focus:onOtherAmountFocus, blur:onOtherAmountBlur});  // <3>
 
-  $('#donate-later-link').on('click', showHideDonationForm);
 });
 ----
 
@@ -326,37 +386,61 @@ $(function() {
 
 <3> A single invocation of the `on()` method registers two event handlers: one for the `focus` and one for the `blur` event.
 
-TODO: Add an effect to the Donate button click
+jQuery includes http://api.jquery.com/category/effects/[a number of effects] that make the user experience more engaging. Let's use one of them called `fadeToggle()`. In the code above there is a section that toggles visibility of the Donate form. If the user clicks on the Donate button, the form becomes visible (see <<FIG3-11>>). If the user clicks on the link "I'll donate later", the form becomes hidden as in <<FIG3-10>>. The jQuery method `toggle()` does its job, but the change happens abruptly. The effect `fadeToggle()` allows to introduce slower fading which improves the user experience, at least to our taste. 
+
+If the code would hide/show just one component, the code change would be trivial - replacing `toggle()` with `fadeToggle('slow')` would do the trick.  But in our case, the toggle changes visibility of two `<div>'s`: `donation-address` and `donation-form-container`, which should happen in a certain order. The code below is a replacement of the show/hide section in the main.js to introduce the fading effect.
+
+[source, javascript]
+----
+function showHideDonationForm(first, next) {
+        first.fadeToggle('slow', function() {
+                next.fadeToggle('slow');
+        });
+}
+
+var donAddress = $('#donation-address');
+var donForm = $('#donate-form-container');		
+
+$('#donate-button').on('click', function() {
+        showHideDonationForm(donAddress, donForm)});
+
+$('#donate-later-link').on('click', function() {
+        showHideDonationForm(donForm, donAddress)});	
+----
+
+If you want to see the difference, first run the Aptana's project-02-01-jQuery-make-donation and click on the Donate button (no effects), and then run project-04-jQuery-donation-ajax-json, which has the fading effect.
+
 
 ==== States and Countries with AJAX
 
-The Aptna project 
+The Aptana project named project-04-jQuery-donation-ajax-json demonstrates how to premaking the AJAX call to retrieve the JSON data about countries and states, which are required to populate the respective comboboxes in the donation form.
 
 [source, javascript]
 ----
 function loadData(dataUrl, rootElement, target) {
-	$.ajax({ 
- 		url: dataUrl,
- 		type: 'GET',
- 		cache: false,
- 		dataType: 'json'
-	}).done(function (data) {			
-		var optionsHTML = '';	
-		$.each(data[rootElement], function(index) {
-				optionsHTML+='<option value="'+data[rootElement][index].code+'">' +
-				               data[rootElement][index].name+'</option>'
-			});	
-			var targetCurrentHTML = target.html();						
-		var targetNewHTML = targetCurrentHTML + optionsHTML;
-		target.html(targetNewHTML);   		
-	}).fail(function (jqXHR, textStatus) {
-		console.log('Error status code:' + jqXHR.status);
-		if (textStatus === 'parsererror') {
-             console.log('Requested JSON parse was failed.');
-         } else if (textStatus === 'abort') {
-             console.log('Ajax request was aborted.');
-         }
-	});
+  $.ajax({ 
+  	url: dataUrl,
+  	type: 'GET',
+  	cache: false,
+  	dataType: 'json'
+  }).done(function (data) {			
+  	var optionsHTML = '';	
+  	$.each(data[rootElement], function(index) {
+  		optionsHTML+='<option value="'+data[rootElement][index].code+'">' +
+  			               data[rootElement][index].name+'</option>'
+  	});
+
+  	var targetCurrentHTML = target.html();						
+  	var targetNewHTML = targetCurrentHTML + optionsHTML;
+  	target.html(targetNewHTML);   		
+  }).fail(function (jqXHR, textStatus) {
+  	console.log('Error status code:' + jqXHR.status);
+  	if (textStatus === 'parsererror') {
+           console.log('Requested JSON parse was failed.');
+       } else if (textStatus === 'abort') {
+           console.log('Ajax request was aborted.');
+       }
+  });
 }
 
 // Load the State and Country comboboxes
