@@ -1,4 +1,4 @@
 ## Contributing
 ---
 
-We are not going to accept and merge any pull requests till further notice
+Feel free to send your pull requests unless you want to fix English grammar. 
