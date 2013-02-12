@@ -29,9 +29,20 @@ TIP: You can provide a fallback URL by adding one extra line that will load jQue
 
 After covering JQuery basics, we are going to continue reviewing the code of a series of Aptana projects representing same old Save Sick Child application, but this  using jQuery. We won't add any new functionality to this application - we want to show that the developers can be more productive in achieving the same result.
 
-Some people will say that anyone who knows HTML can learn jQuery, but this is not so. Understanding of JavaScript is required. If you've read and understood the content from Chapter 2 - you're ready to learn jQuery.  The jQuery programming starts with with invoking the jQuery constructor named `jQuery()`. But people are using the shorter version of this constructor that's represented by a $ sign: `$()`. This `$` property is the only object that jQuery will create in the global namespace. Everything else will be encapsulated inside the `$` object.  
+Some people will say that anyone who knows HTML can easiy learn jQuery, but this is not so. Understanding of JavaScript is required. If you've read and understood the content from Chapter 2 - you're ready to learn jQuery.  The jQuery programming starts with with invoking the jQuery constructor named `jQuery()`. But people are using the shorter version of this constructor that's represented by a $ sign: `$()`. This `$` property is the only object that jQuery will create in the global namespace. Everything else will be encapsulated inside the `$` object.  
 
-TIP: While it's easier to write `$()` than `jQuery()`, keep in mind that if you decide to use in your application another library in addition to jQuery, with the chances are higher to run into a conflict of having another `$` than another `jQuery` in the global name space. Be careful of your find yourself in the "Another day, another $" position. 
+****
+
+NOTE: While it's easier to write `$()` than `jQuery()`, keep in mind that if you decide to use in your application another library in addition to jQuery, with the chances are higher to run into a conflict of having another `$` than another `jQuery` in the global name space. To make sure you won't find yourself in the "Another day, another $" position, put your code inside a closure, passing it `JQuery`. The following code allows you to safely use the `$` object:
+
+[source, javascript]
+----
+(function($){
+   // Your code goes here	
+})(jQuery);
+----
+
+****
 
 As you remember, JavaScript functions do not require you to invoke them with exactly the same number of parameters as they were declared with. Hence, when you invoke jQuery constructor you can pass different things to it. You can pass a String as an argument or another function, and jQuery constructor will invoke different code based on the argument type. For example, if you'll pass it a String, jQuery will assume that it's a CSS selector, and the caller wants to find element(s) in the DOM that match this selector. Basically, you may think of it this way - whenever you want jQuery do something for you, invoke `$()` passing it your request.
 
@@ -103,8 +114,7 @@ $(label.donation-heading);
 "$('input[value="200"]').next().text("two hundred");
 
 ----
-TIP: If jQuery returns a set of elements that match the selector's expression, you can access its using array notation: `var theSecondDiv = $('div')[1]`.
-
+TIP: If jQuery returns a set of elements that match the selector's expression, you can access its elements using array notation: `var theSecondDiv = $('div')[1]`. If you want to iterate through the entire set use jQuery method http://api.jquery.com/each/[`$(selector).each()`]. For example, if you want to perform some function on each paragraph of an HTML document, you can do it a follows: `$("p").each(function(){...})`. 
 
 There is a handy online site http://jsfiddle.net/[JSFiddle] for performing quick testing of code fragments of HTML, CSS, JavaScript, and popular frameworks. This Web page has a sidebar of the left and four large panels on the right. Three of these panels are for entering or copy/pasting: HTML, CSS, and JavaScript, and the forth panel is for showing the results of applying this code (see <<FIG5-1>>).
 
@@ -146,8 +156,6 @@ $('tr').filter(":even").css('background-color', 'grey');
 
 Visit jQuery API documentation for the complete list of http://api.jquery.com/category/selectors/[selectors] and http://api.jquery.com/category/traversing/filtering/[traversing filters]. 
 
-
-TODO: each()
 
 
 === Events
@@ -669,7 +677,7 @@ TODO: add the code sample from SSC
 
 === Plugins 
 
-There are thousands of third-party jQuery plugins available in the http://plugins.jquery.com/[jQuery Plugin Registry]. Below are some of the useful plugins:
+jQuery plugins are reusable components that know how to do a certain thing, for example validate a form or display images as a slide show. There are thousands of third-party jQuery plugins available in the http://plugins.jquery.com/[jQuery Plugin Registry]. Below are some of the useful plugins:
 
 
 * http://www.jtable.org/[jTable] - AJAX-based tables (grids) for CRUD applications. This is a must have if you use jQuery for enterprise Web development
@@ -678,10 +686,12 @@ There are thousands of third-party jQuery plugins available in the http://plugin
 * http://www.egrappler.com/a-stylo-modern-jquery-accordion-akordeon/[EGrappler] - a stylish Akordeon (collapsible panel)
 * http://paweldecowski.github.com/jQuery-CreditCardValidator/ [Credit Card Validator] - detects and validates credit card numbers
 * https://github.com/filamentgroup/responsive-carousel/[Responsive Carousel] - a slider to display images in a carousel fashion
-* http://www.oesmith.co.uk/morris.js/[morris.js] - a pluging for charting
+* http://www.oesmith.co.uk/morris.js/[morris.js] - a plugin for charting
 * http://www.welancers.com/jquery-map-marker-plugin/[Map Marker] - puts multiple markers on maps using Google MAP API V3.
 
 TIP: The https://github.com/tuupola/jquery_lazyload[Lazy Load plugin] delays loading of images, which are outside of viewports.
+
+The chances are that you will be able to find a plugin written by someone that fits your needs. jQuery plugins are usually freely available and their source code is plain JavaScript, so you can tweak it a litlle too if need be.  
 
 ==== Validating the Donate Form With Plugin 
 
@@ -773,6 +783,9 @@ image::images/fig_05_06.png[]
 ==== TODO Adding Image Slider
 
 Before including a jQuery plugin to your application spend some time testing it - check its size and compare its performance with competing plugins. 
+
+
+NOTE: If you can't find a plugin that fits your needs or have specific custom logic that needs to be used or reused in your application.  Should you decide to write a plugin on your own, refer to the http://docs.jquery.com/Plugins/Authoring[Plugins/Authoring] document.
 
 
 === Summary
