@@ -133,7 +133,49 @@ xhr.onreadystatechange = function(){
 
 First the code should check the http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP status code] received from server. W3C splits the HTTP codes into groups. The codes numbered as 1xx are informational, 2xx are successful codes, 3xx are about redirections, 4xx represent bad requests (like infamous 404 for Not Found), and 5xx for server errors. That's why the above code fragment checks for all 2xx codes and 304 - the data was not modified and taken from cache. 
 
-To see the first example where we are using AJAX in our Save Sick Child application run the Aptana's project-04-1-donation-ajax-html, where we've removed the countries and states from HTML and saved them in two separate files: data/us-states.html and data/countries.html. The user's of Save Sick Child page  won't find any visual differences, but the Countries and States dropdowns are now populated be the data located in these files. Later in this chapter in the section on JSON we'll replace this HTML file with its JSON version. These are the first three lines (out of 241) from the file countries.html:
+NOTE: If your application needs to post the data to the server, you need to open the connection to the server with the `POST` parameter. You'll also need to set the HTTP header attribute `Content-type` to either `multipart/form-data` for large-size binary data or to  `application/x-www-form-urlencoded` (for forms and small-size alphanumeric data).  Then prepare the data object and invoke the method `send()`:
+
+[source, javascript]
+----
+var data="This is some data";
+xhr.open('POST', dataUrl, true);
+xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+...
+xhr.send(data);
+----
+
+==== AJAX: Good and Bad 
+
+AJAX techniques have their pros and cons. You saw how easy it was to create a Web page that didn't have to refresh itself, but provided the users with the means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. Taken for granted auto-completion feature would not be possible in HTML/JavaScript application without the AJAX.
+
+On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. Since the AJAX brings most of the content dynamically, the search engines wouldn't rank your Web pages as high as it would do if the content was statically embedded in the HTML. Increasing the amount of AJAX interactions means that your application will have to send more of the JavaScript code to the Web browser, which increases the complexity of programming and decreases the scalability of your application. 
+
+TIP: Using HTML5 History API (see Chapter 1) will help you in teaching the old dog (the browser's Back button) new tricks.
+
+AJAX applications are subject to _the same origin policy_ (the same protocol, port, and host) allowing `XMLHttpRequest` make HTTP requests only to the domains where the Web application was loaded from. 
+
+TIP: W3C has published a working draft of https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control[Cross-Origin Resource Sharing] (CORS) - a mechanism to enable client-side cross-origin requests.
+
+
+==== Populating States and Countries from HTML Files
+
+To see the first example where we are using AJAX in our Save Sick Child application run the Aptana's project-04-1-donation-ajax-html, where we've removed the hard-coded data about countries and states from HTML and saved them in two separate files: data/us-states.html and data/countries.html. In this project the file index.html has two empty comboboxes (`<select>` elements):
+
+[source, html]
+----
+  <select name="state" id="state">
+    <option value="" selected="selected"> - State - </option>
+    <!-- AJAX will load the rest of content -->
+  </select>
+  <select name="country" id="counriesList">
+    <option value="" selected="selected"> - Country - </option>
+    <!-- AJAX will load the rest of content -->
+  </select>
+----
+
+
+The resulting Save Sick Child page will look the same as the last sample from the previous chapter, but the Countries and States dropdowns are now populated be the data located in these files. Later in this chapter in the section on JSON we'll replace this HTML file with its JSON version. These are the first three lines (out of 241) from the file countries.html:
 
 [source, html]
 ----
@@ -196,8 +238,6 @@ footer p.error {
 
 ****
 
-
-
 The following code fragment shows how to add the received data to a certain area on the Web page.        
 This code creates an HTML paragraph `<p>` with the text returned by the server and then adds this paragraph to the `<div>` with the ID `main`:
 
@@ -214,22 +254,6 @@ if (xhr.readyState == 4) {
 }    
 ----
 
-==== Sending Data to the Server 
-
-The next example to consider is when the Web client sends the data to the server using XMLHttpRequest object. The user of Save Sick Child fills out the Donate form and presses the button Donate. 
-
-
-==== AJAX: Good and Bad 
-
-AJAX techniques have their pros and cons. You saw how easy it was to create a Web page that didn't have to refresh itself, but provided the users with the means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. Taken for granted auto-completion feature would not be possible in HTML/JavaScript application without the AJAX.
-
-On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. Since the AJAX brings most of the content dynamically, the search engines wouldn't rank your Web pages as high as it would do if the content was statically embedded in the HTML. Increasing the amount of AJAX interactions means that your application will have to send more of the JavaScript code to the Web browser, which increases the complexity of programming and decreases the scalability of your application. 
-
-TIP: Using HTML5 History API (see Chapter 1) will help you in teaching the old dog (the browser's Back button) new tricks.
-
-AJAX applications are subject to _the same origin policy_ (the same protocol, port, and host) allowing `XMLHttpRequest` make HTTP requests only to the domains where the Web application was loaded from. 
-
-TIP: W3C has published a working draft of https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control[Cross-Origin Resource Sharing] (CORS) - a mechanism to enable client-side cross-origin requests.
 
 === Using JSON 
 
@@ -283,7 +307,12 @@ Usually, JSON-related articles and blogs are quick to remind you about the evil 
 
 Protecting your application code from being infected by means of `eval()` can be done outside of your application code. Replacing HTTP with secure HTTPS protocol helps a lot in this regard. Some Web applications  eliminate the possibility of cross-origin scripting by routing all requests to third-party data sources via proxying such requests through your trusted servers. But proxying all requests through your server may present scalability issues - imagine if thousands of concurrent users will be routed through your server - so do some serious load testing before making this architectural decision.
 
-Running Aptana's project project-04-2-donation-ajax-json reads the countries and states from the files countries.json and us_states.json respectively. The beginning of the file countries.json is shown below:
+TIP: There are several JSON tools useful for developers. To make sure that your JSON data is valid and properly formatted use using http://jsonlint.com/[JSONLint]. If you paste an ugly one-line JSON data JSLint will reformat it into a readable form. There is also an add-on JSONView, available both for https://addons.mozilla.org/en-US/firefox/addon/jsonview/[Firefox] and for https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc[Chrome] browsers.  With JSONView the JSON objects are displayed in a pretty formatted collapsible format. If there are errors in the JSON document they will be reported. At the time of this writing Chrome's version of JSONView does a better job in  reporting errors.
+
+
+==== Populating States and Countries from JSON Files
+
+Earlier in this chapter you've seen an example of populating states and countries in the donate form from HTML files. Now you'll see how to retrieve the JSON data by making an AJAX call. Running Aptana's project project-04-2-donation-ajax-json reads the countries and states from the files countries.json and us_states.json respectively. The beginning of the file countries.json is shown below:
 
 [source, javascript]
 ----
@@ -301,8 +330,48 @@ Running Aptana's project project-04-2-donation-ajax-json reads the countries and
 	}, 
 ----
 
+The JavaScript code that populates the countries and states comboboxes comes next. Note the difference in creating the `<option>` tags from JSON vs. HTML.  In case of HTML, the received data were added to the `<select>` element as is: `target.innerHTML += xhr.responseText;` In JSON files the data were not wrapped in to the `<option>` tags,  hence it's done programmatically. 
 
-TIP: There are several JSON tools useful for developers. To make sure that your JSON data is valid and properly formatted use using http://jsonlint.com/[JSONLint]. If you paste an ugly one-line JSON data JSLint will reformat it into a readable form. There is also an add-on JSONView, available both for https://addons.mozilla.org/en-US/firefox/addon/jsonview/[Firefox] and for https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc[Chrome] browsers.  With JSONView the JSON objects are displayed in a pretty formatted collapsible format. If there are errors in the JSON document they will be reported. At the time of this writing Chrome's version of JSONView does a better job in  reporting errors.
+[source, javascript]
+----
+function loadData(dataUrl, rootElement, target) {
+  var xhr = new XMLHttpRequest();
+  xhr.overrideMimeType("application/json");
+  xhr.open('GET', dataUrl, true);
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4) {
+      if (xhr.status == 200) {
+        
+        //parse jsoon data
+        var jsonData = JSON.parse(xhr.responseText);
+        
+        var optionsHTML = ''
+        for(var i= 0; i < jsonData[rootElement].length; i++){
+          optionsHTML+='<option value="'+jsonData[rootElement][i].code+'">'
+                     + jsonData[rootElement][i].name+'</option>'
+        }
+        
+        var targetCurrentHtml = target.innerHTML;
+        target.innerHTML = targetCurrentHtml + optionsHTML;
+        
+      } else {
+        console.log(xhr.statusText);
+        
+        // Show the error on the Web page
+        tempContainer.innerHTML += '<p class="error">Error getting ' + 
+          target.name + ": "+ xhr.statusText + ",code: "+ xhr.status + "</p>";
+      }
+    }
+  }
+  xhr.send();
+}
+
+loadData('data/us-states.json', 'usstateslist', statesList);
+loadData('data/countries.json', 'countrieslist', counriesList);
+----
+
+==== Arrays in JSON
 
 JSON supports arrays, and the next example shows you how the information about a customer can be presented in JSON format. A customer can have more than one phone, which are stored in an array. 
 
@@ -340,7 +409,7 @@ var customerJson = '{"fname":"Alex",
 
 
 
-=== Loading Charity Events using AJAX and JSON
+==== Loading Charity Events using AJAX and JSON
 
 The last example in Chapter 3 was about displaying various charity events on the Google map using multiple markers. But the data about these events were hard-coded in HTML file. After getting familiar with AJAX and JSON it should not be too difficult to create a separate file with the information about charities in JSON format and load them using `XMLHTTPRequest` object.
 
