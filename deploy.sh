@@ -14,18 +14,20 @@ DIR=temp-enterprisewebbook-site
 rm -rf $DIR
 
 # Clone the current repo into temp folder
-# git clone git@github.com:Farata/EnterpriseWebBook.git $DIR
-git clone git@github.com:gAmUssA/EnterpriseWebBook.git $DIR
+git clone -b gh-pages git@github.com:Farata/EnterpriseWebBook.git $DIR
+#git clone git@github.com:gAmUssA/EnterpriseWebBook.git $DIR
 
 # Move working directory into temp folder
 cd $DIR
 
 # Checkout and track the gh-pages branch
-echo "switching to gh-pages branch..."
-git checkout -t origin/gh-pages
+# echo "switching to gh-pages branch..."
+# git checkout -t origin/gh-pages
 
 # Delete everything
 rm -rf *
+
+echo "enterprisewebbook.com" > CNAME
 
 # Copy website files from real repo
 cp -R ../out/index.html .
