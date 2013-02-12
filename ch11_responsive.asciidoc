@@ -755,7 +755,7 @@ The styles.css of this project has media queries for different viewport sizes. F
 .Responsive Header 2 (width between 480 and 580px )
 image::images/fig_11_15.png[]
 
-When the width shrinks to 480px, the header looks as in <<FIG11-16>>.
+When the width shrinks to 480px, the header looks as in <<FIG11-16>>. Once again, we are not tying the design to the specific device, but rather to a viewport width. The iPhone 4 will render this page using the layout shown at <<>FIG11-16>, but iPhone 5 will use the layout from <<FIG11-15>>. You can't go by a device type.
 
 [[FIG11-16]]
 .Responsive Header (width below 480px)
@@ -934,7 +934,7 @@ function windowResizeHandler() {
 }
 ----
 
-Whenever the size changes, it invokes the function drawPieChart() that recalculates the width of the SVG container (it uses the `clientWidth` property of the `HTMLElement` ) and re-draws the chart accordingly.
+Whenever the size changes, it invokes the function `drawPieChart()` that recalculates the width of the SVG container (it uses the `clientWidth` property of the `HTMLElement` ) and re-draws the chart accordingly.
 
 The video is flexible too, and it's done a lot simpler. We do not specify the fixed size of the video, but use a CSS property `width` instructing the browser to allocate the 100% of the available container's width.The height of the video must be  be automatically calculated to keep the proportional size. 
 
@@ -948,7 +948,28 @@ video {
 
 The `!important` part disables regular cascading rules and ensures that these values will be applied overriding more specific width or height declarations, if any. If you prefer not always use the entire width of the container for the video, you can use the `max-width: 100%;`, which will display the video that fits in the container at its original size. If a video is larger than the container, the browser will resize it to fit inside the container. 
 
+While the landing Web page of your application simply includes links to the required images, the rest of the images should be loaded from the server by making AJAX requests with passing parameter regarding the viewport size. This way the server's software can either resize images dynamically and include them as base-64 encoded strings or use pre-created properly sized images depending on the viewport dimensions.
+
+TIP: While using base-64 encoding increases the total size of the image in bytes, it allows you to group together multiple images to minimize the number of network calls the browser needs to make to retrieve these images separately. The other way to combine multiple images into one is CSS sprites.
+
+Regardless of what the width and height of the image is, use tools to reduce image sizes in bytes. Some of such tools are http://tinypng.org/[TinyPNG] or http://www.smushit.com/ysmush.it/[Smush.it]. If you use _lossy_ tools, some of the image data will be lost during compression, but in many cases the difference between the original and compressed image is invisible.
+
 Besides making images responsive, keep in mind that some people have mobile devices with high resolution retina displays. The problem is that to make an image look good on such displays its size has to be large, which increases its loading time. There is no common recipe for doing the image size optimization properly - plan to spend an extra time just to preparing the images for your application. 
+
+There is a living W3C document titled http://picture.responsiveimages.org/[An HTML extension for adaptive images] that will provide developers with a means to declare multiple sources for an image. The proposed  HTML element `<picture>` will allow to specify different images for different media (see http://responsiveimages.org/demos/[demos]), for example:
+
+[source, html]
+----
+<picture width="500" height="500">
+   <source media="(min-width: 45em)" src="large.jpg">
+   <source media="(min-width: 18em)" src="med.jpg">
+   <source src="small.jpg">
+   <img src="small.jpg" alt="">
+</picture>
+----
+
+
+
 
 === Summary 
 

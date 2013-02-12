@@ -6,12 +6,12 @@ http://jquery.com/[jQuery] is the most popular JavaScript library. More than 60%
 
 Besides jQuery and jQuery Mobile there is a http://jqueryui.com/[jQuery UI library], which is a set of user interface interactions, effects, widgets, and themes built on top of the jQuery. You can find in jQuery UI such widgets as Datepicker, Accordion, Slider, Tabs, Autocomplete and more. jQuery UI will also help you with adding to your Web page various interactions (e.g. drag and drop)  and effects (e.g. adding CSS classes or animations). jQuery UI is built on top of jQuery core library and can't be used independently. 
 
-In this chapter we'll briefly cover the basics of jQuery. Our goal is not to provide you with a detailed jQuery primer - there are jQuery books and http://api.jquery.com/[the online API Documentation] that provide a comprehensive explanation of jQuery. But we'll give you just enough of the information to  understand how jQuery can be used. In the section Working on Save Sick Child we'll review the code of several versions of this application highlighting the benefits of using JQuery library.  
+In this chapter we'll briefly cover the basics of jQuery library. Our goal is not to provide you with a detailed jQuery primer - there are jQuery books and http://api.jquery.com/[the online API Documentation] that provide a comprehensive explanation of jQuery. But we'll give you just enough of the information to  understand how jQuery can be used. In the section Working on Save Sick Child we'll review the code of several versions of this application highlighting the benefits of using JQuery library.  
 
 === jQuery Intro
 
 
-At the time of this writing the current version of jQuery is 1.9.1 You can download one of two distributions of jQuery framework. The gzipped minified version of jQuery weighs 33Kb (it's 93Kb if unzipped), and this is all you need unless you are planning to develop jQuery plugins, in which case get a larger development version - it's about 270Kb. We've downloaded it from jquery.com and included it in the `<script>` tag in our HTML code samples so you can run them even if the Internet connection is not available. 
+At the time of this writing the current version of jQuery is 1.9.1 You can download one of two distributions of jQuery library. The gzipped minified version of jQuery weighs 33Kb (it's 93Kb if unzipped), and this is all you need unless you are planning to develop jQuery plugins, in which case get a larger development version - it's about 270Kb. We've downloaded it from jquery.com and included it in the `<script>` tag in our HTML code samples so you can run them even if the Internet connection is not available. 
 
 But instead of deploying jQuery framework on your servers as a part of your application, you should use a common Content Delivery Network (CDN) URL in your HTML as shown below. Since jQuery is an extremely popular library, many Web sites use it. If more than one Web page would get it from the same CDN, the Web browser would cache it locally and reuse it rather than downloading a separate copy from different servers for every Web application that uses jQuery. The http://jquery.com/download/[download page of jquery.com] offers three CDN: Google, Microsoft, and MediaTemple. For example, if you don't need to use HTTPS protocol with your application the MediaTemple's CDN suffice:
 
@@ -20,13 +20,27 @@ But instead of deploying jQuery framework on your servers as a part of your appl
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 ----
 
+TIP: You can provide a fallback URL by adding one extra line that will load jQuery from an alternative location should your CDN fails:
+
+[source, html]
+----
+<script> window.jQuery || document.write('<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>')</script>
+----
+
 After covering JQuery basics, we are going to continue reviewing the code of a series of Aptana projects representing same old Save Sick Child application, but this  using jQuery. We won't add any new functionality to this application - we want to show that the developers can be more productive in achieving the same result.
 
 Some people will say that anyone who knows HTML can learn jQuery, but this is not so. Understanding of JavaScript is required. If you've read and understood the content from Chapter 2 - you're ready to learn jQuery.  The jQuery programming starts with with invoking the jQuery constructor named `jQuery()`. But people are using the shorter version of this constructor that's represented by a $ sign: `$()`. This `$` property is the only object that jQuery will create in the global namespace. Everything else will be encapsulated inside the `$` object.  
 
+TIP: While it's easier to write `$()` than `jQuery()`, keep in mind that if you decide to use in your application another library in addition to jQuery, with the chances are higher to run into a conflict of having another `$` than another `jQuery` in the global name space. Be careful of your find yourself in the "Another day, another $" position. 
+
 As you remember, JavaScript functions do not require you to invoke them with exactly the same number of parameters as they were declared with. Hence, when you invoke jQuery constructor you can pass different things to it. You can pass a String as an argument or another function, and jQuery constructor will invoke different code based on the argument type. For example, if you'll pass it a String, jQuery will assume that it's a CSS selector, and the caller wants to find element(s) in the DOM that match this selector. Basically, you may think of it this way - whenever you want jQuery do something for you, invoke `$()` passing it your request.
 
 You'll need to get used to yet another feature of jQuery - method chaining. Each function returns an object, and you don't have to declare a variable to hold this object. You can just write something like `funcA().funcB();` This means that the method `funcB()` will be called on the object, returned by the `funcA()`. 
+
+WARNING: While method chaining is often presented as a great feature allowing to do more with less typing, 
+it may complicate debugging of your code. Imagine that `funcA()` returned null for whatever reason. The entire chain (the `funcB()` in our example) that was attached to `funcA()` won't be working properly, and you'll need to unchain these methods to find the problem.
+
+Also, if you need to get an access to a DOM object more than once, save the reference in a variable and reuse it rather than invoking the same selector method in several chains. 
 
 ==== Hello World
 
@@ -37,32 +51,30 @@ The "Hello World" program is always a good start to learn any new software, and 
 ----
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		
-		<title>Hello jQuery</title>		
-	</head>
-	<body>
-		<script src="js/libs/jquery-1.9.1.min.js"></script>
-		<script>
-			$(function(){                                      // <1>
-				$("body").append("<h1>Hello World!</h1>");     // <2>
-				
-			});	
-		</script>
-	</body>
+  <head>
+  	<meta charset="utf-8">
+  	
+  	<title>Hello jQuery</title>		
+  </head>
+  <body>
+  	<script src="js/libs/jquery-1.9.1.min.js"></script>
+  	<script>
+  		$(function(){                                    // <1>
+  			$("body").append("<h1>Hello World!</h1>");   // <2>
+  			
+  		});	
+  	</script>
+  </body>
 </html>
-
-
 ----
 
-<1> If the script passes a function to jQuery, it's getting invoked when the DOM object is ready - the jQuery's `ready()` function gets invoked . Keep in mind that it's not the same as invoking a function handler `window.onload`, which is called after all windows resources (not just the DOM object) are completely  loaded (read more in the jQuery Events section). 
+<1> If the script passes a function as an argument to jQuery, such a function is called when the DOM object is ready - the jQuery's `ready()` function gets invoked . Keep in mind that it's not the same as invoking a function handler `window.onload`, which is called after all windows resources (not just the DOM object) are completely  loaded (read more in the jQuery Events section). 
 
 <2> If the script passes a String to jQuery, such Strolling is being treated as a CSS selector, and jQuery tries to find the matching collection of HTML elements (it'll return the reference to just one `<body>` in the Hello World script). This line also demonstrates the method chaining - the `append()` method is called on the object returned by `$("body")`. 
 
 === Selectors and Filters	
 
-Finding HTML elements based on the CSS selectors is very easy and you can specify one or more selectors in the same query. For example:
+Probably the most frequently used routine in a JavaScript code that's part of the HTML page is finding DOM elements and making some manipulations with them, and this is where the jQuery's power is. Finding HTML elements based on the CSS selectors is very easy and concise. You can specify one or more selectors in the same query. Below is a code snippet with a number of random samples of selectors. Going through this code and reading comments will help you to understand how to use jQuery selectors.
 
 [source, javascript]
 ----
@@ -77,11 +89,22 @@ $("#map-container #video-container");
 // Find an HTML input element that has a value attribute of 200
 $('input[value="200"]');
 
+// Find all <p> elements that are nested somewhere inside <div> 
+$('div p');
+
+// Find all <p> elements that are direct children (located directly inside) <div>
+$('div>p');
+
+// Find all <label> elements that are styled with the class donation-heading
+$(label.donation-heading);
+
 // Find an HTML input element that has a value attribute of 200
 // and change the text of its next sibling to "two hundred"
 "$('input[value="200"]').next().text("two hundred");
 
 ----
+TIP: If jQuery returns a set of elements that match the selector's expression, you can access its using array notation: `var theSecondDiv = $('div')[1]`.
+
 
 There is a handy online site http://jsfiddle.net/[JSFiddle] for performing quick testing of code fragments of HTML, CSS, JavaScript, and popular frameworks. This Web page has a sidebar of the left and four large panels on the right. Three of these panels are for entering or copy/pasting: HTML, CSS, and JavaScript, and the forth panel is for showing the results of applying this code (see <<FIG5-1>>).
 
@@ -121,7 +144,7 @@ If you display data in HTML table, you may want to change the background color o
 $('tr').filter(":even").css('background-color', 'grey');
 ----
 
-Visit jQuery API documentation for the complete list of http://api.jquery.com/category/selectors/basic-filter-selectors/[basic] and http://api.jquery.com/category/traversing/filtering/[traversing filters]. 
+Visit jQuery API documentation for the complete list of http://api.jquery.com/category/selectors/[selectors] and http://api.jquery.com/category/traversing/filtering/[traversing filters]. 
 
 
 TODO: each()
@@ -129,7 +152,7 @@ TODO: each()
 
 === Events
 
-Adding events processing with jQuery is simple, and your code will be following the same pattern: find the element in DOM using selector or filter, and then attach the appropriate function that handles the required event. We'll show you a handful of code sample of how to do it, but you can find the description of all methods that deal with events in the http://api.jquery.com/category/events/[jQuery API documentation]. 
+Adding events processing with jQuery is simple, and your code will be following the same pattern: find the element in DOM using selector or filter, and then attach the appropriate function that handles the event. We'll show you a handful of code sample of how to do it, but you can find the description of all methods that deal with events in the http://api.jquery.com/category/events/[jQuery API documentation]. 
 
 Our Hello World example used a short version of passing the handler function to the `ready()` function:
 `$(function());`
@@ -258,6 +281,8 @@ The method http://api.jquery.com/load/[`load()`] makes an AJAX call from an HTML
  $('#counriesList').load('data/countries.html', function(response, status, xhr){...});
 ----
 
+TIP: You can use the function `load()` to load SVG images asynchronously.
+
 The global method http://api.jquery.com/jQuery.get/[`get()`] allows you to specifically issue an HTTP `GET` request. Similarly to the `ajax()` invocation, you can chain the `done(),` `fail()`, and `always()` methods to `get()`, for example: 
 
 [source, javascript]
@@ -268,7 +293,7 @@ $.get('ssc/getDonors?city=Miami', function(){alert("Got the donors");})
 ;
 ----
 
-The global method `post()` makes an HTTP `POST` request to the server. You must specify at least one argument - the URL on the server, and, optionally, the data to be passed, the callback to be invoke on the request completion, and the type of data expected from the server.Similarly to the `ajax()` invocation, you can chain the `done(),` `fail()`, and `always()` methods to `post()`. The following example makes a `POST` request to the server passing an object with the new donor information.
+The global method `post()` makes an HTTP `POST` request to the server. You must specify at least one argument - the URL on the server, and, optionally, the data to be passed, the callback to be invoked on the request completion, and the type of data expected from the server. Similarly to the `ajax()` invocation, you can chain the `done(),` `fail()`, and `always()` methods to `post()`. The following example makes a `POST` request to the server passing an object with the new donor information.
 
 [source, javascript]
 ----
@@ -285,7 +310,15 @@ $.getJSON('data/us-states-list.json', function (data) {
           .fail(function(){alert("Request for us states failed");});
 ----
 
+The method http://api.jquery.com/serialize/[`serialize()`] is used when you need to submit to the server a filled out HTML `<form>`. This method presents the form data as a text sting in a standard URL-encoded notation. Typically, the code finds a required form using jQuery selector and then calls `serialize()` on this object. But you can invoke `serialize()` not only on the entire form, but on selected form elements too. Belows is a sample code that finds the form and serializes it.  
 
+[source, javascript]
+$('form').submit(function() {
+  alert($(this).serialize());
+  return false;
+}); 
+
+Later in this chapter in the section Submitting Donate Form you'll see a code that uses `serialize()` method.
 
 
 === Save Sick Child With jQuery
@@ -565,13 +598,183 @@ Now let's create an error situation to test the `$.ajax().fail()` chain. Just ch
 .The file counries.json is not found: 404
 image::images/fig_05_04.png[]
 
-=== Plugins 
+==== Submitting Donate Form
 
-Validating forms is done simply with http://docs.jquery.com/Plugins/Validation/validate[validate] plugin.
+Our Save Sick Child application submits the donation form to Paypal.com. The file index.html from Aptana's project project-04-jQuery-donation-ajax-json contains the form with `id="donate-form"`. The fragment of this form is shown below.  
+
+[source, html]
+----
+<form id="donate-form" name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+	<input type="hidden" name="cmd" value="_xclick">
+	<input type="hidden" name="business" value="email-registered-in-paypal@site-url.com">
+	<input type="hidden" name="item_name" value="Donation">
+	<input type="hidden" name="currency_code" value="USD">
+	<div class="donation-form-section">
+		<label class="donation-heading">Please select or enter
+			<br/>
+			donation amount</label>
+		<input type="radio" name = "amount" id="d10" value = "10"/>
+		<label for = "d10">10</label>
+       ...
+
+	</div>
+	<div class="donation-form-section">
+		<label class="donation-heading">Donor information</label>
+		<input type="text" id="full_name" name="full_name" 
+		                         placeholder="full name *" required>
+		<input type="email" id="email_addr" name="email_addr" 
+		                             placeholder="email *" required>
+        ...
+	</div>
+	<div class="donation-form-section make-payment">
+		<h4>We accept Paypal payments</h4>
+		<p>
+			Your payment will processed securely by <b>PayPal</b>.
+		</p>
+        ...
+		<button class="donate-button donate-button-submit"></button>
+        ...	
+    </div>
+</form>
+----
+
+If you simply want to submit this form to the URL listed in its `action` property when the user clicks on the button submit, there is nothing else that has to be done. This already works and Paypal's login page opens up in the browser. But if you wanted to seamlessly integrate your page with Paypal or any other third-party service, a preferred way is not to send the user to the third-party Web site, but do it without leaving your Web application.  We won't be implementing such integration with Paypal here, but technically it would be possible to pass the user's credentials and bank information to charge the donor of Save Sick Child without even opening the Paypal Web page in the browser. To do this, you'd need to submit the form using AJAX and Paypal API with processing the results of this transaction using the standardAJAX techniques.    
+
+To post the form to a specified URL using jQuery AJAX we'll serialize the data from the form on `submit` event. The code fragment from main.js finds the form with ID `donate-form` and chains to it the `submit()` method passing to it a callback that will prepare the data and make an AJAX call. We are using the method `submit()` instead of attaching an event handler to process clicks on the button donate for a good reason - the method `submit()` will be invoked not only on the Submit button click event, but when the user presses the Enter key while the cursor is in one of the form's input fields.
 
 [source, javascript]
 ----
-$(function($) {
-    $("#myform").validate();
+$('#donate-form').submit(function() {
+  var formData = $(this).serialize();
+  console.log("The Donation form is serialized:" + formData);
+  // Make an AJAX call here and pass the data to the server
+    
+  return false;
 });
 ----
+
+Run project project-04-jQuery-donation-ajax-json and open Firebug. Then fill out the donation form as shown in <<FIG5-5>>:
+
+[[FIG5-5]]
+.Donation Form
+image::images/fig_05_05.png[]
+
+Now press the Enter key and you'll see the output in the Firebug's console with the serialized form data that will look like this:
+
+_"The Donation form is serialized: cmd=_xclick&business=email-registered-in-paypal%40site-url.com&item_name=Donation&currency_code=USD&amount=50&amount=&full_name=Alex+Smith&
+email_addr=asmith%40gmail.com&street_address=123+Broadway&scty=New+York&zip=10013&
+state=NY&country=US"_
+
+TODO: add the code sample from SSC
+
+=== Plugins 
+
+There are thousands of third-party jQuery plugins available in the http://plugins.jquery.com/[jQuery Plugin Registry]. Below are some of the useful plugins:
+
+
+* http://www.jtable.org/[jTable] - AJAX-based tables (grids) for CRUD applications. This is a must have if you use jQuery for enterprise Web development
+* http://jquery.malsup.com/form/[jQuery Form] - an HTML form that supports AJAX
+* http://sebnitu.github.com/HorizontalNav/[HorisontalNav] - a navigational bar with tabs that uses the full width of its container
+* http://www.egrappler.com/a-stylo-modern-jquery-accordion-akordeon/[EGrappler] - a stylish Akordeon (collapsible panel)
+* http://paweldecowski.github.com/jQuery-CreditCardValidator/ [Credit Card Validator] - detects and validates credit card numbers
+* https://github.com/filamentgroup/responsive-carousel/[Responsive Carousel] - a slider to display images in a carousel fashion
+* http://www.oesmith.co.uk/morris.js/[morris.js] - a pluging for charting
+* http://www.welancers.com/jquery-map-marker-plugin/[Map Marker] - puts multiple markers on maps using Google MAP API V3.
+
+TIP: The https://github.com/tuupola/jquery_lazyload[Lazy Load plugin] delays loading of images, which are outside of viewports.
+
+==== Validating the Donate Form With Plugin 
+
+The Aptana's project-14-jQuery-validate illustrates the use of the jQuery http://docs.jquery.com/Plugins/Validation[validate] plugin, which allows you to specify the rules to be checked when the user tries to submit the form. If the value is not valid, your custom message is displayed. We've included this plugin in index.html of project-14-jQuery-validate:
+
+[source, html]
+----
+<script src="js/plugins/jquery.validate.min.js"></script>
+----
+
+To validate a form with this plugin, you need to invoke a jQuery selector finding the form and then call the method `validate()` on this object - this is a simplest way of using this plugin.  But to have more control over the validation process you need to pass the object with validation options:  
+
+[source, javascript]
+----
+    $("#myform").validate({// validation options go here});
+----
+
+The file main.js includes the code to validate the Donation form. The validation options can include many options described in the plugin documentation. Our code sample uses the following options:
+
+* the `highlight` and `unhighlight` callbacks
+* the HTML element to be used for displaying errors
+* the name of the CSS class to style the error messages
+* the validation rules
+
+The code fragment below displays error messages in the HTML element `<div id="validationSummary"></div>`  that's placed above the form in index.html. The Validator plugin provides the number of invalid form entries by invoking `validator.numberOfInvalids()`, and our code displays this number unless it's equal to zero. 
+
+[source, javascript]
+----
+var validator = $('form[name="_xclick"]').validate({
+	
+	highlight : function(target, errorClass) {                    // <1>
+		$(target).addClass("invalidElement");
+		$("#validationSummary").text(validator.numberOfInvalids() +
+		                                       " field(s) are invalid");
+		$("#validationSummary").show();
+	},
+
+	unhighlight : function(target, errorClass) {                 // <2>
+		$(target).removeClass("invalidElement");
+
+		var errors = validator.numberOfInvalids();
+		$("#validationSummary").text( errors + " field(s) are invalid");
+
+		if(errors == 0) {
+			$("#validationSummary").hide();
+		}			
+	},
+
+	rules : {                                                   // <3>
+		full_name : {
+			required : true,
+			minlength : 2
+		},
+		email_addr : {
+			required : true,
+			email : true
+		},
+		zip : {
+			 digits:true
+		}
+	},
+
+		messages : {                                            // <4>   
+			 full_name: {
+                required: "Name is required",
+              	minlength: "Name should have at least 2 letters"
+            },
+			email_addr : {
+				required : "Email is required",
+			}
+		}
+});
+----
+
+<1> When the invalid field will be highlighted, this function will be invoked. It changes the styling of the input field and updates the error count to display in the validation summary `<div>` on top  of the form.
+
+<2> When the error is fixed, the corrected field will be unhighlighted, and this function will be invoked. It revokes the error styling of the input field and updates the error count. If the error count is zero, the validation summary `<div>` becomes hidden.
+
+<3> Set the custom validation rules for selected form fields
+
+<4>	Set the custom error messages to be displayed if the user enters invalid data.
+
+<<FIG5-6>> shows the above code in action. After entering a one-character name and missing an email the user will see the corresponding error messages. These messages won't be shown until the user submits the form. But as soon as the user will fix any of them (e.g. enter one more letter in the name) the form will be immediately re-validated and the error messages will be removed as soon as the user fix the error.
+
+[[FIG5-6]]
+.Validator's Error Messages
+image::images/fig_05_06.png[]
+
+==== TODO Adding Image Slider
+
+Before including a jQuery plugin to your application spend some time testing it - check its size and compare its performance with competing plugins. 
+
+
+=== Summary
+
+In this chapter you became familiar with an excellent JavaScript library called jQuery, which became the de-facto standard library in millions Web applications. Its simplicity and extensibility via the mechanism of plugins made it a must have in almost every Web page. Even if your organization standardizes decides on a more complex and feature-rich JavaScript framework, the chances are that you may find a handy jQuery plugin that fill complement "the main" framework and made it into the code of your application. There is nothing wrong with this and you shouldn't be in the position of "either jQuery or XYZ" - they can coexist in your Web application.
