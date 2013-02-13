@@ -6634,6 +6634,592 @@ Set the custom error messages to be displayed if the user enters invalid data.
 </div>
 </div>
 <div class="sect1">
+<h2 id="_save_sick_child_with_ext_js">Save Sick Child With Ext JS</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>In the previous chapter you&#8217;ve got familiar with the JavaScript library. Now we&#8217;ll introduce you to a more complex product - a JavaScript framework <a href="http://www.sencha.com/products/extjs">Ext JS</a> from Sencha. This is one of the One of the most feature-complete frameworks available on the market, and you should give it a very serious consideration while deciding on the tooling for your next enterprise HTML5 application.</p></div>
+<div class="paragraph"><p>The learning curve of this framework is steeper than with jQuery though, and this chapter is split into three sections. First, you&#8217;ll go through a detailed Ext JS primer, then we&#8217;ll develop a new version of the Save Sick Child application with Ext JS, and finally, you&#8217;ll see how to improve the productivity of development with Ext JS and Java using the open source code generator called Clear Data Builder (CDB).</p></div>
+<div class="sect2">
+<h3 id="_ext_js_primer">Ext JS Primer</h3>
+<div class="paragraph"><p>TBD</p></div>
+</div>
+<div class="sect2">
+<h3 id="_developing_save_sick_chiled_with_ext_js">Developing Save Sick Chiled With Ext JS</h3>
+<div class="paragraph"><p>TBD</p></div>
+</div>
+<div class="sect2">
+<h3 id="_productive_enterprise_web_development_with_ext_js_and_cdb">Productive Enterprise Web Development with Ext JS and CDB</h3>
+<div class="paragraph"><p>The authors of this book work for <a href="http://faratasystems.com">Farata Systems</a>, which has developed an open source freely available software Clear Toolkit for Ext JS, and the code generator and Eclipse IDE plugin CDB comes with it. CDB is a productivity tool that was created specifically for the applications that need to retrieve, manipulate, and save the data in some persistent storage. Such applications are known as <em>CRUD applications</em> because they perform Create-Retrieve-Update-Delete operations with data. If the server side of your Web application is developed in Java, with CDB you can easily generate a CRUD application, where Ext JS front end communicates the Java back end. In this section you will learn how jump start development of such CRUD Web applications.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/icons/important.png" alt="Important">
+</td>
+<td class="content">Familiarity with core Java concepts like classes, constructors, getters and setters, and annotations is required for understanding of the materials of this section.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>The phrase <em>to be more productive</em> means to write less code while producing the results faster. This is what CDB is for, and you&#8217;ll see it helps you to integrate the client side with the back end using the RPC style and how to implements data pagination for your application.</p></div>
+<div class="sect3">
+<h4 id="_part_one_ext_js_mvc_application_scaffolding">Part One: Ext JS MVC Application Scaffolding</h4>
+<div class="paragraph"><p>In this part we&#8217;ll cover the following topics:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+What is Clear Toolkit for Ext JS
+</p>
+</li>
+<li>
+<p>
+How to create an Ext JS MVC front end for a Java-based project
+</p>
+</li>
+<li>
+<p>
+How to deploy and run your first Ext JS and Java application on Apache Tomcat server
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Clear Toolkit for Ext JS includes the following:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Clear Data Builder - an Eclipse plugin that supports code generation Ext JS MVC artifacts based on the code written in Java. CDB comes with wizards to start new project with plain Java or with popular frameworks like Hibernate, Spring, MyBatis.
+</p>
+</li>
+<li>
+<p>
+Clear JS - a set of JavaScript components that extends Ext JS standard components. In particular, it includes a <span class="monospaced">ChangeObject</span> that traces the modifications of any item in a store.
+</p>
+</li>
+<li>
+<p>
+Clear Runtime - Java components that implements server side part of ChangeObject, DirectOptions an others.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>CDB distribution available as plug-in for a popular among Java developers Eclipse IDE. The current update site of CDB is located <a href="http://cleartoolkit.com/downloads/plugins/extjs/cleardatabuilder/4.1.4/">here</a>.  The current version is 4.1.4. You can install this plug-in via the <span class="monospaced">Install New Software</span> menu in Eclipse IDE. The <a href="#FIG6-1-CDB">[FIG6-1-CDB]</a> shows "Clear Data Builder for Ext JS feature" in the list of Installed Software in your Eclipse IDE, which means that CDB is installed.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/icons/important.png" alt="Important">
+</td>
+<td class="content">You have to have work with "Eclipse IDE for Java EE Developers", which includes plugins for automation of the Web application development.</td>
+</tr></table>
+</div>
+<div class="imageblock" id="FIG6-1-CDB">
+<div class="content">
+<img src="images/fig_06_01cdb.png" alt="image">
+</div>
+<div class="title">Figure 58. Verifying CDB installation</div>
+</div>
+<div class="paragraph"><p>Clear Data Builder comes with a set of prepared examples that demonstrate the integration with popular Java frameworks - MyBatis, Hibernate, and Spring. There is also a plain Java project example that doesn&#8217;t use any persistence frameworks. Let&#8217;s start with the creation of the new project by selecting Eclipse  menu File &#8594; New &#8594; Other &#8594; Clear. You&#8217;ll see a window similar to <a href="#FIG6-2-CDB">[FIG6-2-CDB]</a>.</p></div>
+<div class="imageblock" id="FIG6-2-CDB">
+<div class="content">
+<img src="images/fig_06_02cdb.png" alt="image">
+</div>
+<div class="title">Figure 59. New CDB Project Wizard</div>
+</div>
+<div class="paragraph"><p>Name the new project <span class="monospaced">episode_1_intro</span>. CDB supports different ways of linking the Ext JS framework to the application. CDB automatically copies the Ext JS framework under the Web server (Apache Tomcat in our case). We&#8217;re going to use this local Ext JS URL, but you can specify any folder in your machine and CDB will copy the Ext JS file from there into your project. You can also  use Ext JS from the Sencha&#8217;s CDN, if you don&#8217;t want to store these libraries inside your project. Besides, using a common CDN will allow Web browser to reuse the cached version of Ext JS.</p></div>
+<div class="paragraph"><p>For this project we are not going to use any server-side persistence frameworks like MyBatis or Hibernate. Just click the button Finish, and you&#8217;ll see some some initial CDB messages on the Eclipse console. When CDB runs for the first time it creates in your project&#8217;s <span class="monospaced">WebContent</span> folder the directory structure recommended by Sencha for MVC applications.  It also generates <span class="monospaced">index.html</span> for this application, which contains the link to the entry point of our Ext JS application.</p></div>
+<div class="paragraph"><p>CDB generates an empty project with one sample controller and one view - <span class="monospaced">Viewport.js</span>. To run this application, you need to add the newly generated Dynamic Web Project to Tomcat and start the server (right-click on the Tomcat in the Servers view of Eclipse IDE).</p></div>
+<div class="imageblock" id="FIG6-3-CDB">
+<div class="content">
+<img src="images/fig_06_03cdb.png" alt="image">
+</div>
+<div class="title">Figure 60. Adding web project to Tomcat</div>
+</div>
+<div class="paragraph"><p>Open this application in your Web browser at <span class="monospaced">http://localhost:8080/episode_1_intro</span> . Voila! In less than  a couple of minutes we&#8217;ve created a new Dynamic Web Project with the Ext JS framework and one fancy button as shown on <a href="#FIG6-4-CDB">[FIG6-4-CDB]</a>.</p></div>
+<div class="imageblock" id="FIG6-4-CDB">
+<div class="content">
+<img src="images/fig_06_04cdb.png" alt="image">
+</div>
+<div class="title">Figure 61. Running scaffolded application</div>
+</div>
+<div class="paragraph"><p>The next step is to make something useful out of this basic application.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_part_two_generating_a_crud_application">Part Two: Generating a CRUD application</h4>
+<div class="paragraph"><p>The Part Two of the CDB section covers the process of creation of a simple CRUD application that uses Ext JS and Java. We&#8217;ll go through the following steps:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Create a plain old Java object (POJO) and the corresponding <span class="monospaced">Ext.data.Model</span>
+</p>
+</li>
+<li>
+<p>
+Create a Java service and populate <span class="monospaced">Ext.data.Store</span> with data from service
+</p>
+</li>
+<li>
+<p>
+Use the auto-generated Ext JS application
+</p>
+</li>
+<li>
+<p>
+Extend the auto-generated CRUD methods
+</p>
+</li>
+<li>
+<p>
+Use <span class="monospaced">ChangeObject</span> to track the data changes
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Now let&#8217;s use CDB to create a CRUD application. You&#8217;ll learn how turn a POJO into an Ext JS model, namely:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+how to populate the Ext JS store from a remote service
+</p>
+</li>
+<li>
+<p>
+how to use automatically generated UI for that application
+</p>
+</li>
+<li>
+<p>
+how to extend the UI
+</p>
+</li>
+<li>
+<p>
+what the <span class="monospaced">ChangeObject</span> class is for
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>First, we&#8217;ll extend the application from Part One - the CRUD application needs a Java POJO.  To start, create a Java class <span class="monospaced">Person</span> in the package <span class="monospaced">dto</span>. Then add to this class the properties (as well as getters and setters) <span class="monospaced">firstName</span>, <span class="monospaced">lastName</span>, <span class="monospaced">address</span>, <span class="monospaced">ssn</span> and <span class="monospaced">phone</span> and <span class="monospaced">id</span>. Add the class  constructor that initializes these properties as shown in the code listing below.</p></div>
+<div class="listingblock">
+<a id="LISTING_1"></a>
+<div class="title">Person data transfer object</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">package</span></span> dto<span style="color: #990000">;</span>
+
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> com<span style="color: #990000">.</span>farata<span style="color: #990000">.</span>dto2extjs<span style="color: #990000">.</span>annotations<span style="color: #990000">.</span>JSClass<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> com<span style="color: #990000">.</span>farata<span style="color: #990000">.</span>dto2extjs<span style="color: #990000">.</span>annotations<span style="color: #990000">.</span>JSGeneratedId<span style="color: #990000">;</span>
+
+@JSClass
+<span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #0000FF">class</span></span> <span style="color: #008080">Person</span> <span style="color: #FF0000">{</span>
+
+  @JSGeneratedId
+  <span style="font-weight: bold"><span style="color: #0000FF">private</span></span> <span style="color: #008080">Integer</span> id<span style="color: #990000">;</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">private</span></span> <span style="color: #008080">String</span> firstName<span style="color: #990000">;</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">private</span></span> <span style="color: #008080">String</span> lastName<span style="color: #990000">;</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">private</span></span> <span style="color: #008080">String</span> phone<span style="color: #990000">;</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">private</span></span> <span style="color: #008080">String</span> ssn<span style="color: #990000">;</span>
+
+  <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #000000">Person</span></span><span style="color: #990000">(</span><span style="color: #008080">Integer</span> id<span style="color: #990000">,</span> <span style="color: #008080">String</span> firstName<span style="color: #990000">,</span> <span style="color: #008080">String</span> lastName<span style="color: #990000">,</span>
+                                    <span style="color: #008080">String</span> phone<span style="color: #990000">,</span> <span style="color: #008080">String</span> ssn<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">();</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>id <span style="color: #990000">=</span> id<span style="color: #990000">;</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>firstName <span style="color: #990000">=</span> firstName<span style="color: #990000">;</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>lastName <span style="color: #990000">=</span> lastName<span style="color: #990000">;</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>phone <span style="color: #990000">=</span> phone<span style="color: #990000">;</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>ssn <span style="color: #990000">=</span> ssn<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// Getters and Setters are omitted for brevity</span></span>
+<span style="color: #FF0000">}</span>
+</tt></pre></div></div>
+<div class="paragraph"><p>You may also add a <span class="monospaced">toString()</span> method to the class. Now you&#8217;ll need the same corresponding Ext JS model for  the Java class <span class="monospaced">Person</span>. Just annotate this class with the annotation <span class="monospaced">@JSClass</span> to have CDB generate the Ext JS model.</p></div>
+<div class="paragraph"><p>The next step is to annotate the <span class="monospaced">id</span> field with the CDB annotation <span class="monospaced">@JSGeneratedId</span>. This annotation  instructs CDB to threat this field as an auto generated id. Let&#8217;s examine the directory of Ext JS MVC application to see what&#8217;s inside the model folder. In the JavaScript section there is the folder dto which corresponds to the Java <span class="monospaced">dto</span> package where the <span class="monospaced">PersonModel</span> resides as illustrated on <a href="#FIG6-5-CDB">[FIG6-5-CDB]</a>.</p></div>
+<div class="imageblock" id="FIG6-5-CDB">
+<div class="content">
+<img src="images/fig_06_05cdb.png" alt="image">
+</div>
+<div class="title">Figure 62. Generated from Java class Ext JS model</div>
+</div>
+<div class="paragraph"><p>Clear Data Builder generated two files as recommended by the <a href="http://martinfowler.com/dslCatalog/generationGap.html">Generation Gap pattern</a>, which is about keeping the generated and handwritten parts separate by putting them in different classes linked by inheritance. Let&#8217;s open the person model. In our case the <span class="monospaced">PersonModel.js</span> is extended from the generated <span class="monospaced">_PersonModel.js</span>. Should we need to customize this class, we&#8217;ll do it inside the <span class="monospaced">Person.js</span>, but this underscore-prefixed file will be regenerated each and every time when we change something in our model. CDB follows this pattern for all generated artifacts - Java services, Ext JS models and stores. This model contains all the fields from our Person DTO.</p></div>
+<div class="paragraph"><p>Now we need to create a Java service to populate the Ext JS store with the data. Let&#8217;s create a Java  interface <span class="monospaced">PersonService</span> in the package <span class="monospaced">service</span>. This service will to return the list of <span class="monospaced">Person</span> objects. This interface contains one method -<span class="monospaced">List&lt;Person&gt; getPersons()</span>.</p></div>
+<div class="paragraph"><p>To have CDB to expose this service as a remote object, we&#8217;ll use the annotation called <span class="monospaced">@JSService</span>.  Another annotation <span class="monospaced">@JSGenetareStore</span> will instruct CDB to generate the store. In this case CDB will create the <em>destination-aware store</em>. This means that store will know from where to populate its content. All configurations of the store&#8217;s proxies will be handled by the code generator. With <span class="monospaced">@JSFillMethod</span> annotation we will identify our main read method (the "R" from CRUD).</p></div>
+<div class="paragraph"><p>Also it would be nice to have some sort of a sample UI to test the service - the annotation <span class="monospaced">@JSGenerateSample</span> will help here. CDB will examine the interface <span class="monospaced">PersonService</span>, and based on these annotations will generate all Ext JS MVC artifacts (models, views, controller) and the sample application.</p></div>
+<div class="listingblock">
+<a id="LISTING_2"></a>
+<div class="title">PersonService interface annotated with CDB annotations</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>@JSService
+<span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #0000FF">interface</span></span> <span style="color: #008080">PersonService</span> <span style="color: #FF0000">{</span>
+    @JSGenerateStore
+    @JSFillMethod
+    @JSGenerateSample
+    <span style="color: #008080">List&lt;Person&gt;</span> <span style="font-weight: bold"><span style="color: #000000">getPersons</span></span><span style="color: #990000">();</span>
+<span style="color: #FF0000">}</span></tt></pre></div></div>
+<div class="paragraph"><p>When the code generation is complete, you&#8217;ll get the implementation for the service - <span class="monospaced">PersonServiceImpl</span>. The store folder inside the application folder (<span class="monospaced">WebContent\app</span>) has the Ext JS store, which is bound to the previously generated <span class="monospaced">PersonModel</span>. In this case, CDB generated store that binds to the remote service.</p></div>
+<div class="imageblock" id="FIG6-6-CDB">
+<div class="content">
+<img src="images/fig_06_06cdb.png" alt="image">
+</div>
+<div class="title">Figure 63. Structure of store and model folders</div>
+</div>
+<div class="paragraph"><p>All this intermediate translation from the JavaScript to Java and from Java to JavaScript is done by DirectJNgine, which is a server side implementation of the Ext Direct Protocol. You can read about this protocol in <a href="http://www.sencha.com/products/extjs/extdirect">Ext JS documentation</a>.</p></div>
+<div class="paragraph"><p>CDB has generated a sample UI for us too. Check out the samples directory shown on <a href="#FIG6-7-CDB">[FIG6-7-CDB]</a>.</p></div>
+<div class="imageblock" id="FIG6-7-CDB">
+<div class="content">
+<img src="images/fig_06_07cdb.png" alt="image">
+</div>
+<div class="title">Figure 64. Folder with generated UI files</div>
+</div>
+<div class="paragraph"><p>CDB has generated <span class="monospaced">SampleController.js</span>, <span class="monospaced">SampleGridPanel.js</span>, and the Ext JS application entry point <span class="monospaced">sampleApp.js</span>. To test this application just copy the file  <span class="monospaced">SampleController.js</span> into the controller folder, <span class="monospaced">SampleGridPanel.js</span> panel into the view folder, and the sample application in the root of the WebContent folder. Change the application entry point with to be <span class="monospaced">sampleApp.js</span> in the index.html of the Eclipse projectas shown below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">&lt;script</span></span> <span style="color: #009900">type</span><span style="color: #990000">=</span><span style="color: #FF0000">"text/javascript"</span> <span style="color: #009900">src</span><span style="color: #990000">=</span><span style="color: #FF0000">"sampleApp.js"</span><span style="font-weight: bold"><span style="color: #0000FF">&gt;&lt;/script&gt;</span></span></tt></pre></div></div>
+<div class="paragraph"><p>This is how the generated UI of the sample application looks like <a href="#FIG6-8-CDB">[FIG6-8-CDB]</a></p></div>
+<div class="imageblock" id="FIG6-8-CDB">
+<div class="content">
+<img src="images/fig_06_08cdb.png" alt="image">
+</div>
+<div class="title">Figure 65. Scaffolded CRUD application template</div>
+</div>
+<div class="paragraph"><p>On the server side, CDB also follows the <em>Generation Gap Pattern</em> and it generated stubs for the service methods. Override these methods when you&#8217;re ready to implement the CRUD functionality, similar to the below code sample.</p></div>
+<div class="listingblock">
+<a id="LISTING_3"></a>
+<div class="title">Implementation of PersonService interface</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">package</span></span> service<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> java<span style="color: #990000">.</span>util<span style="color: #990000">.</span>ArrayList<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> java<span style="color: #990000">.</span>util<span style="color: #990000">.</span>List<span style="color: #990000">;</span>
+
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> clear<span style="color: #990000">.</span>data<span style="color: #990000">.</span>ChangeObject<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> dto<span style="color: #990000">.</span>Person<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> service<span style="color: #990000">.</span>generated<span style="color: #990000">.*;</span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #0000FF">class</span></span> <span style="color: #008080">PersonServiceImpl</span> <span style="font-weight: bold"><span style="color: #0000FF">extends</span></span> _PersonServiceImpl <span style="color: #FF0000">{</span> <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/1.png" alt="1"></span></span>
+
+  @Override
+  <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #008080">List&lt;Person&gt;</span> <span style="font-weight: bold"><span style="color: #000000">getPersons</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>                            <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/2.png" alt="2"></span></span>
+        <span style="color: #008080">List&lt;Person&gt;</span> result <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> ArrayList<span style="color: #990000">&lt;&gt;();</span>
+        <span style="color: #008080">Integer</span> id<span style="color: #990000">=</span> <span style="color: #993399">0</span><span style="color: #990000">;</span>
+        result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Person</span></span><span style="color: #990000">(++</span>id<span style="color: #990000">,</span> <span style="color: #FF0000">"Joe"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"Doe"</span><span style="color: #990000">,</span>
+                                   <span style="color: #FF0000">"555-55-55"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"1111-11-1111"</span><span style="color: #990000">));</span>
+        result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Person</span></span><span style="color: #990000">(++</span>id<span style="color: #990000">,</span> <span style="color: #FF0000">"Joe"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"Doe"</span><span style="color: #990000">,</span>
+                                   <span style="color: #FF0000">"555-55-55"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"1111-11-1111"</span><span style="color: #990000">));</span>
+        result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Person</span></span><span style="color: #990000">(++</span>id<span style="color: #990000">,</span> <span style="color: #FF0000">"Joe"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"Doe"</span><span style="color: #990000">,</span>
+                                    <span style="color: #FF0000">"555-55-55"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"1111-11-1111"</span><span style="color: #990000">));</span>
+        result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Person</span></span><span style="color: #990000">(++</span>id<span style="color: #990000">,</span> <span style="color: #FF0000">"Joe"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"Doe"</span><span style="color: #990000">,</span>
+                                    <span style="color: #FF0000">"555-55-55"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"1111-11-1111"</span><span style="color: #990000">));</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> result<span style="color: #990000">;</span>          <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/3.png" alt="3"></span></span>
+  <span style="color: #FF0000">}</span>
+
+  @Override
+  <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">getPersons_doCreate</span></span><span style="color: #990000">(</span><span style="color: #008080">ChangeObject</span> changeObject<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/4.png" alt="4"></span></span>
+        <span style="color: #008080">Person</span> dto <span style="color: #990000">=</span> <span style="color: #990000">(</span>Person<span style="color: #990000">)</span> <span style="font-weight: bold"><span style="color: #000000">deserializeObject</span></span><span style="color: #990000">(</span>
+                        <span style="color: #990000">(</span>Map<span style="color: #990000">&lt;</span>String<span style="color: #990000">,</span> String<span style="color: #990000">&gt;)</span> changeObject<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getNewVersion</span></span><span style="color: #990000">(),</span>
+                        Person<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">class</span></span><span style="color: #990000">);</span>
+
+        System<span style="color: #990000">.</span>out<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">println</span></span><span style="color: #990000">(</span>dto<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">toString</span></span><span style="color: #990000">());</span>
+  <span style="color: #FF0000">}</span>
+
+  @Override
+  <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">getPersons_doUpdate</span></span><span style="color: #990000">(</span><span style="color: #008080">ChangeObject</span> changeObject<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/5.png" alt="5"></span></span>
+        <span style="font-style: italic"><span style="color: #9A1900">// TODO Auto-generated method stub</span></span>
+        <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getPersons_doUpdate</span></span><span style="color: #990000">(</span>changeObject<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+
+  @Override
+  <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #009900">void</span> <span style="font-weight: bold"><span style="color: #000000">getPersons_doDelete</span></span><span style="color: #990000">(</span><span style="color: #008080">ChangeObject</span> changeObject<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/6.png" alt="6"></span></span>
+        <span style="font-style: italic"><span style="color: #9A1900">// TODO Auto-generated method stub</span></span>
+        <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getPersons_doDelete</span></span><span style="color: #990000">(</span>changeObject<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+
+<span style="color: #FF0000">}</span>
+</tt></pre></div></div>
+<div class="colist arabic"><table>
+<tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
+Extend the generated class and provide the actual implementation.
+</td></tr>
+<tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
+The <span class="monospaced">getPerson()</span> is our retrieve method (the R in CRUD) .
+</td></tr>
+<tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
+For this sample application we can use <span class="monospaced">java.util.ArrayList</span> class as in-memory server side storage of the <span class="monospaced">Person</span> objects. In the real world applications you&#8217;d use a database or other persistent storage.
+</td></tr>
+<tr><td><img src="images/icons/callouts/4.png" alt="4"></td><td>
+<span class="monospaced">fillmethod</span>+<span class="monospaced">doCreate()</span> is our create method (the C in CRUD).
+</td></tr>
+<tr><td><img src="images/icons/callouts/5.png" alt="5"></td><td>
+<span class="monospaced">fillmethod</span>+<span class="monospaced">doUpdate</span> is our update method (the U in CRUD).
+</td></tr>
+<tr><td><img src="images/icons/callouts/6.png" alt="6"></td><td>
+<span class="monospaced">fillmethod</span>+<span class="monospaced">doDelete</span> is our delete method (the D in CRUD).
+</td></tr>
+</table></div>
+<div class="paragraph"><p>Click on the <span class="monospaced">Load</span> menu on the UI, and the application will retrieve four persons from our server.</p></div>
+<div class="paragraph"><p>To test the rest of the CRUD methods,  we&#8217;ll ask the user to insert one new row, modify three existing ones and remove two rows using the generated Web client. The <span class="monospaced">Clear.data.DirectStore</span> object will automatically create a collection of six `ChangeObject`s - one to represent a new row, three to represent the modified ones, and two for the removed rows.</p></div>
+<div class="paragraph"><p>When the user clicks on the <span class="monospaced">Sync</span> UI menu the changes will be sent to the corresponding <span class="monospaced">do...</span> remote method. When you <span class="monospaced">sync()</span> a standard <span class="monospaced">Ext.data.DirectStore</span> Ext JS is POST-ing new, modified and deleted items to the server. When the request is complete the server&#8217;s response data is applied to the store expecting that some items can be modified by the server. In case of <span class="monospaced">Clear.data.DirectStore</span> instead of passing around items, we pass the deltas, wrapped in the <span class="monospaced">ChangeObject</span>.</p></div>
+<div class="paragraph"><p>Each instance of the <span class="monospaced">ChangeOject</span> contains the following:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<span class="monospaced">newVersion</span>  - it&#8217;s an instance of the newly inserted or modified item. On the Java side it&#8217;s available via <span class="monospaced">getNewVersion()</span>.
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">prevVersion</span> - it&#8217;s an instance of the deleted of old version of modified item. On the Java side it&#8217;s available via <span class="monospaced">getPrevVersion()</span>.
+</p>
+</li>
+<li>
+<p>
+array of <span class="monospaced">changepropertyNames</span> if this <span class="monospaced">ChangeObject</span> represents an update operation.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The rest of <span class="monospaced">ChangeObject</span> details described on the <a href="https://github.com/Farata/ClearJS/wiki/Change-Object%3A-Synchronization-Keystone">Clear Toolkit Wiki</a>.</p></div>
+<div class="paragraph"><p>The corresponding Java implementation of <span class="monospaced">ChangeObject</span> is available on the server side and Clear Toolkit passes <span class="monospaced">ChangeObject</span> instances to the appropriate <span class="monospaced">do*</span> method of the service class. Take a look at the <span class="monospaced">getPersons_doCreate()</span> method from <a href="#LISTING_3">[LISTING_3]</a>. When the server needs to read the new or updated data arrived from the client your Java class has to invoke the method <span class="monospaced">changeObject.getNewVersion()</span>. This method will return the JSON object that you need to deserialize into the object <span class="monospaced">Person</span>. This is done in <a href="#LISTING_3">[LISTING_3]</a> and looks like this.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt> <span style="color: #008080">Person</span> dto <span style="color: #990000">=</span> <span style="color: #990000">(</span>Person<span style="color: #990000">)</span> <span style="font-weight: bold"><span style="color: #000000">deserializeObject</span></span><span style="color: #990000">(</span>
+                <span style="color: #990000">(</span>Map<span style="color: #990000">&lt;</span>String<span style="color: #990000">,</span> String<span style="color: #990000">&gt;)</span> changeObject<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getNewVersion</span></span><span style="color: #990000">(),</span>Person<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">class</span></span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>When the new version of the <span class="monospaced">Person</span> object is extracted from the <span class="monospaced">ChangeObject</span> you can do with it whatever has to be done to persist it in the appropriate storage. In our example we just print the new person information on the server-side Java console. This is why we said earlier, that it may be a good idea to provide a pretty printing feature on the class <span class="monospaced">Person</span> by overriding method <span class="monospaced">toString()</span>. Similarly, when you need to do a delete, the <span class="monospaced">changeObject.getPrevVersion()</span> would give you a person to be deleted.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_part_three_data_pagination">Part Three: Data Pagination</h4>
+<div class="paragraph"><p>The pagination feature is needed in almost every enterprise web application. Often you don&#8217;t want to bring all the  data to the client at once - a page by page feed brings the data to the user a lot faster. The user can navigate back and forth between the pages using pagination UI components. To do that, we need to split our data on the server side into chunks, to send them page by page by the client request. Implementing pagination is the agenda for this section. We&#8217;ll do the following:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Add the data pagination to our sample CRUD application:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Add the <span class="monospaced">Ext.toolbar.Paging</span> component
+</p>
+</li>
+<li>
+<p>
+Bind both <em>grid</em> and <em>pagingtoolbar</em> to the same store
+</p>
+</li>
+<li>
+<p>
+Use <span class="monospaced">DirectOptions</span> class to read the pagination parameters
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="paragraph"><p>We are going to improve our CRUD application by adding the paging toolbar component bound to the same store as the grid. The class <span class="monospaced">DirectOptions</span> will handle the pagination parameters on the server side.
+So far CDB has generate the UI from the Java back end service as well as the Ext JS store and model. We&#8217;ll refactor the service code from previous example to generate more data (a thousand objects) so we have something to paginate, see below.</p></div>
+<div class="listingblock">
+<a id="LISTING_4"></a>
+<div class="title">Refactored implementation of PersonService Interface</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #0000FF">class</span></span> <span style="color: #008080">PersonServiceImpl</span> <span style="font-weight: bold"><span style="color: #0000FF">extends</span></span> _PersonServiceImpl <span style="color: #FF0000">{</span>
+  @Override
+    <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #008080">List&lt;Person&gt;</span> <span style="font-weight: bold"><span style="color: #000000">getPersons</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+        <span style="color: #008080">List&lt;Person&gt;</span> result <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> ArrayList<span style="color: #990000">&lt;&gt;();</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #990000">(</span><span style="color: #009900">int</span> i<span style="color: #990000">=</span><span style="color: #993399">0</span><span style="color: #990000">;</span> i<span style="color: #990000">&lt;</span><span style="color: #993399">1000</span><span style="color: #990000">;</span> i<span style="color: #990000">++)</span><span style="color: #FF0000">{</span>
+            result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Person</span></span><span style="color: #990000">(</span>i<span style="color: #990000">,</span> <span style="color: #FF0000">"Joe"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"Doe"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"555-55-55"</span><span style="color: #990000">,</span>
+                                                   <span style="color: #FF0000">"1111-11-1111"</span><span style="color: #990000">));</span>
+        <span style="color: #FF0000">}</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> result<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span></tt></pre></div></div>
+<div class="paragraph"><p>If you&#8217;ll re-run the application now, the Google Chrome Console will show that <span class="monospaced">PersonStore</span> is populated with one thousand records. Now we&#8217;ll add the the Ext JS paging <span class="monospaced">toolbarpaging</span> UI component to the file sampleApp.js as shown below.</p></div>
+<div class="listingblock">
+<a id="LISTING_5"></a>
+<div class="title">Sample Application Entry</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ext<span style="color: #990000">.</span>Loader<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setConfig</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+        disableCaching <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">,</span>
+        enabled <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">,</span>
+        paths <span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+                episode_3_pagination <span style="color: #990000">:</span> <span style="color: #FF0000">'app'</span><span style="color: #990000">,</span>
+                Clear <span style="color: #990000">:</span> <span style="color: #FF0000">'clear'</span>
+        <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">syncRequire</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'episode_3_pagination.init.InitDirect'</span><span style="color: #990000">);</span>
+<span style="font-style: italic"><span style="color: #9A1900">// Define GridPanel</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myStore <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'episode_3_pagination.store.dto.PersonStore'</span><span style="color: #990000">,</span><span style="color: #FF0000">{}</span><span style="color: #990000">);</span> <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/1.png" alt="1"></span></span>
+Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">define</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'episode_3_pagination.view.SampleGridPanel'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+        extend <span style="color: #990000">:</span> <span style="color: #FF0000">'Ext.grid.Panel'</span><span style="color: #990000">,</span>
+        store <span style="color: #990000">:</span> myStore<span style="color: #990000">,</span>
+        alias <span style="color: #990000">:</span> <span style="color: #FF0000">'widget.samplegridpanel'</span><span style="color: #990000">,</span>
+        autoscroll <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">,</span>
+        plugins <span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">{</span>
+                ptype <span style="color: #990000">:</span> <span style="color: #FF0000">'cellediting'</span>
+        <span style="color: #FF0000">}</span><span style="color: #990000">],</span>
+        dockedItems<span style="color: #990000">:</span> <span style="color: #990000">[</span>
+                <span style="color: #FF0000">{</span>
+                        xtype<span style="color: #990000">:</span> <span style="color: #FF0000">'pagingtoolbar'</span><span style="color: #990000">,</span>         <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/2.png" alt="2"></span></span>
+                        displayInfo<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">,</span>
+                        dock<span style="color: #990000">:</span> <span style="color: #FF0000">'top'</span><span style="color: #990000">,</span>
+                        store<span style="color: #990000">:</span> myStore                  <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/3.png" alt="3"></span></span>
+                <span style="color: #FF0000">}</span>
+        <span style="color: #990000">],</span>
+        columns <span style="color: #990000">:</span> <span style="color: #990000">[</span>
+                <span style="color: #FF0000">{</span>header <span style="color: #990000">:</span> <span style="color: #FF0000">'firstName'</span><span style="color: #990000">,</span> dataIndex <span style="color: #990000">:</span> <span style="color: #FF0000">'firstName'</span><span style="color: #990000">,</span> editor <span style="color: #990000">:</span> <span style="color: #FF0000">{</span>xtype <span style="color: #990000">:</span> <span style="color: #FF0000">'textfield'</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span> flex <span style="color: #990000">:</span> <span style="color: #993399">1</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+                <span style="color: #FF0000">{</span>header <span style="color: #990000">:</span> <span style="color: #FF0000">'id'</span><span style="color: #990000">,</span> dataIndex <span style="color: #990000">:</span> <span style="color: #FF0000">'id'</span><span style="color: #990000">,</span> flex <span style="color: #990000">:</span> <span style="color: #993399">1</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+                <span style="color: #FF0000">{</span>header <span style="color: #990000">:</span> <span style="color: #FF0000">'lastName'</span><span style="color: #990000">,</span> dataIndex <span style="color: #990000">:</span> <span style="color: #FF0000">'lastName'</span><span style="color: #990000">,</span> editor <span style="color: #990000">:</span> <span style="color: #FF0000">{</span>xtype <span style="color: #990000">:</span> <span style="color: #FF0000">'textfield'</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span> flex <span style="color: #990000">:</span> <span style="color: #993399">1</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+                <span style="color: #FF0000">{</span>header <span style="color: #990000">:</span> <span style="color: #FF0000">'phone'</span><span style="color: #990000">,</span> dataIndex <span style="color: #990000">:</span> <span style="color: #FF0000">'phone'</span><span style="color: #990000">,</span> editor <span style="color: #990000">:</span> <span style="color: #FF0000">{</span>xtype <span style="color: #990000">:</span> <span style="color: #FF0000">'textfield'</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span> flex <span style="color: #990000">:</span> <span style="color: #993399">1</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+                <span style="color: #FF0000">{</span>header <span style="color: #990000">:</span> <span style="color: #FF0000">'ssn'</span><span style="color: #990000">,</span> dataIndex <span style="color: #990000">:</span> <span style="color: #FF0000">'ssn'</span><span style="color: #990000">,</span> editor <span style="color: #990000">:</span> <span style="color: #FF0000">{</span>xtype <span style="color: #990000">:</span> <span style="color: #FF0000">'textfield'</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span> flex <span style="color: #990000">:</span> <span style="color: #993399">1</span> <span style="color: #FF0000">}</span><span style="color: #990000">],</span>
+        tbar <span style="color: #990000">:</span> <span style="color: #990000">[</span>
+                <span style="color: #FF0000">{</span>text <span style="color: #990000">:</span> <span style="color: #FF0000">'Load'</span><span style="color: #990000">,</span> action <span style="color: #990000">:</span> <span style="color: #FF0000">'load'</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+                <span style="color: #FF0000">{</span>text <span style="color: #990000">:</span> <span style="color: #FF0000">'Add'</span><span style="color: #990000">,</span> action <span style="color: #990000">:</span> <span style="color: #FF0000">'add'</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+                <span style="color: #FF0000">{</span>text <span style="color: #990000">:</span> <span style="color: #FF0000">'Remove'</span><span style="color: #990000">,</span> action <span style="color: #990000">:</span> <span style="color: #FF0000">'remove'</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+                <span style="color: #FF0000">{</span>text <span style="color: #990000">:</span> <span style="color: #FF0000">'Sync'</span><span style="color: #990000">,</span> action <span style="color: #990000">:</span> <span style="color: #FF0000">'sync'</span><span style="color: #FF0000">}</span>
+                <span style="color: #990000">]</span>
+        <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+<span style="font-style: italic"><span style="color: #9A1900">// Launch the application</span></span>
+Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">application</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+        name <span style="color: #990000">:</span> <span style="color: #FF0000">'episode_3_pagination'</span><span style="color: #990000">,</span>
+        requires <span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">'Clear.override.ExtJSOverrider'</span><span style="color: #990000">],</span>
+        controllers <span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">'SampleController'</span><span style="color: #990000">],</span>
+        launch <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+                Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Ext.container.Viewport'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+                        items <span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">{</span>
+                                xtype <span style="color: #990000">:</span> <span style="color: #FF0000">'samplegridpanel'</span>
+                        <span style="color: #FF0000">}</span><span style="color: #990000">]</span>
+                <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+        <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+</tt></pre></div></div>
+<div class="colist arabic"><table>
+<tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
+Manual store instantiation - create a separate variable <span class="monospaced">myStore</span> for this store with empty <span class="monospaced">config</span> object
+</td></tr>
+<tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
+Adding the <span class="monospaced">xtype</span> <span class="monospaced">pagingtoolbar</span> to this component docked items property to display the information and dock this element at the top.
+</td></tr>
+<tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
+Now the paging toolbar is also connected to same store.
+</td></tr>
+</table></div>
+<div class="paragraph"><p>The next step is to fix the automatically generated controller to take care of the loading of data on
+click of <span class="monospaced">Load</span> button as shown in the code below.</p></div>
+<div class="listingblock">
+<a id="LISTING_6"></a>
+<div class="title">Controller for sample application</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">define</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'episode_3_pagination.controller.SampleController'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+        extend<span style="color: #990000">:</span> <span style="color: #FF0000">'Ext.app.Controller'</span><span style="color: #990000">,</span>
+        stores<span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">'episode_3_pagination.store.dto.PersonStore'</span><span style="color: #990000">],</span>
+        refs<span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">{</span>                                                                <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/1.png" alt="1"></span></span>
+                ref<span style="color: #990000">:</span> <span style="color: #FF0000">'ThePanel'</span><span style="color: #990000">,</span>
+                selector<span style="color: #990000">:</span> <span style="color: #FF0000">'samplegridpanel'</span>
+        <span style="color: #FF0000">}</span><span style="color: #990000">],</span>
+
+        init<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+                <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">control</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+                        <span style="color: #FF0000">'samplegridpanel button[action=load]'</span><span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+                                click<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>onLoad
+                        <span style="color: #FF0000">}</span>
+                <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+        <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+        onLoad<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+                <span style="font-style: italic"><span style="color: #9A1900">// returns instance of PersonStore</span></span>
+                <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> store <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getThePanel</span></span><span style="color: #990000">().</span><span style="font-weight: bold"><span style="color: #000000">getStore</span></span><span style="color: #990000">();</span>              <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/2.png" alt="2"></span></span>
+                store<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">load</span></span><span style="color: #990000">();</span>
+        <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="colist arabic"><table>
+<tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
+Bind the store instance to our grid panel. In controller&#8217;s <span class="monospaced">refs</span> property we&#8217;re referencing our  <span class="monospaced">simplegrid</span> panel with <span class="monospaced">ThePanel</span> alias.
+</td></tr>
+<tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
+In this case there is no need to explicitly retrieve the store instance by name. Instead, we can use getters <span class="monospaced">getPanel()</span> and <span class="monospaced">getStore()</span> automatically generated by the Ext JS framework.
+</td></tr>
+</table></div>
+<div class="paragraph"><p>When the user clicks the button <em>next</em> or <em>previous</em> the method <span class="monospaced">loadPage</span> of the underlying store is called. Let&#8217;s examine the <span class="monospaced">directprovider</span> URL - the server side router of the remoting calls - to see how the direct request looks like.  Open Google Chrome Developer Tools from the menu View &#8594; Developer, refresh the Web page and go to the Network tab. You&#8217;ll see that each time the user clicks on the <em>next</em> or <em>previous</em> buttons on the pagination toolbar the component sends <span class="monospaced">directOptions</span> as a part of the request.</p></div>
+<div class="imageblock" id="FIG6-9-CDB">
+<div class="content">
+<img src="images/fig_06_09cdb.png" alt="image">
+</div>
+<div class="title">Figure 66. Request payload details</div>
+</div>
+<div class="paragraph"><p>The default Ext Direct request doesn&#8217;t carry any information about the page size. Clear JS has the client side extension of the Ext JS framework that adds some extra functionality to <span class="monospaced">Ext.data.DirectStore</span> component to pass the page <span class="monospaced">start</span> and <span class="monospaced">limit</span> values to the server side. At this point, the <span class="monospaced">directOptions</span> request property (see <a href="#FIG6-9-CDB">[FIG6-9-CDB]</a>) can be extracted on the server side to get the information about the page boundaries. Let&#8217;s add some code to the <span class="monospaced">PersonServiceImpl.java</span>. At this point the pagination doesn&#8217;t work. The server sends the entire thousand records, because it doesn&#8217;t know that the data has to be paginated. We&#8217;ll fix it in the following listing.</p></div>
+<div class="listingblock">
+<a id="LISTING_7"></a>
+<div class="title">Implementation of PersonService with pagination</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">package</span></span> service<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> java<span style="color: #990000">.</span>util<span style="color: #990000">.</span>ArrayList<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> java<span style="color: #990000">.</span>util<span style="color: #990000">.</span>List<span style="color: #990000">;</span>
+
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> clear<span style="color: #990000">.</span>djn<span style="color: #990000">.</span>DirectOptions<span style="color: #990000">;</span>                 <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/1.png" alt="1"></span></span>
+
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> dto<span style="color: #990000">.</span>Person<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #000080">import</span></span> service<span style="color: #990000">.</span>generated<span style="color: #990000">.*;</span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="font-weight: bold"><span style="color: #0000FF">class</span></span> <span style="color: #008080">PersonServiceImpl</span> <span style="font-weight: bold"><span style="color: #0000FF">extends</span></span> _PersonServiceImpl <span style="color: #FF0000">{</span>
+        @Override
+        <span style="font-weight: bold"><span style="color: #0000FF">public</span></span> <span style="color: #008080">List&lt;Person&gt;</span> <span style="font-weight: bold"><span style="color: #000000">getPersons</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+                <span style="color: #008080">List&lt;Person&gt;</span> result <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> ArrayList<span style="color: #990000">&lt;&gt;();</span>
+                <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #990000">(</span><span style="color: #009900">int</span> i<span style="color: #990000">=</span><span style="color: #993399">0</span><span style="color: #990000">;</span> i<span style="color: #990000">&lt;</span><span style="color: #993399">1000</span><span style="color: #990000">;</span> i<span style="color: #990000">++)</span><span style="color: #FF0000">{</span>
+                        result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Person</span></span><span style="color: #990000">(</span>i<span style="color: #990000">,</span> <span style="color: #FF0000">"Joe"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"Doe"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"555-55-55"</span><span style="color: #990000">,</span>
+                                                                <span style="color: #FF0000">"1111-11-1111"</span><span style="color: #990000">));</span>
+                <span style="color: #FF0000">}</span>
+                <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/2.png" alt="2"></span></span>
+                <span style="color: #009900">int</span> start <span style="color: #990000">=</span> <span style="color: #990000">((</span>Double<span style="color: #990000">)</span>DirectOptions<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getOption</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"start"</span><span style="color: #990000">)).</span><span style="font-weight: bold"><span style="color: #000000">intValue</span></span><span style="color: #990000">();</span>
+                <span style="color: #009900">int</span> limit <span style="color: #990000">=</span> <span style="color: #990000">((</span>Double<span style="color: #990000">)</span>DirectOptions<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getOption</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"limit"</span><span style="color: #990000">)).</span><span style="font-weight: bold"><span style="color: #000000">intValue</span></span><span style="color: #990000">();</span>
+
+                limit <span style="color: #990000">=</span> Math<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">min</span></span><span style="color: #990000">(</span>start<span style="color: #990000">+</span>limit<span style="color: #990000">,</span> result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">size</span></span><span style="color: #990000">()</span> <span style="color: #990000">);</span>          <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/3.png" alt="3"></span></span>
+                DirectOptions<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setOption</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"total"</span><span style="color: #990000">,</span> result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">size</span></span><span style="color: #990000">());</span>        <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/4.png" alt="4"></span></span>
+                result <span style="color: #990000">=</span> result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">subList</span></span><span style="color: #990000">(</span>start<span style="color: #990000">,</span> limit<span style="color: #990000">);</span>                  <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/5.png" alt="5"></span></span>
+
+                <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> result<span style="color: #990000">;</span>
+        <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span>
+</tt></pre></div></div>
+<div class="colist arabic"><table>
+<tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
+On the server side there is a special object called <span class="monospaced">DirectOptions</span>, which comes with Clear Toolkit.
+</td></tr>
+<tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
+We want to monitor the <span class="monospaced">start</span> and in <span class="monospaced">limit</span> values (see <a href="#FIG6-9-CDB">[FIG6-9-CDB]</a>).
+</td></tr>
+<tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
+Calculate the actual limit. Assign the size of the data collection to the <span class="monospaced">limit</span> variable if it&#8217;s  less than the page size (<span class="monospaced">start+limit</span>).
+</td></tr>
+<tr><td><img src="images/icons/callouts/4.png" alt="4"></td><td>
+Notify the component about the total number of elements on the server side by using <span class="monospaced">DirectOptions.setOption()</span> method with <span class="monospaced">total</span> option.
+</td></tr>
+<tr><td><img src="images/icons/callouts/5.png" alt="5"></td><td>
+Before returning the result, create a subset, an actual page of data using the method <span class="monospaced">java.util.List.sublist()</span> which produces the view of the portion of this list between indexes specified by the <span class="monospaced">start</span> and the <span class="monospaced">limit</span> parameters.
+</td></tr>
+</table></div>
+<div class="paragraph"><p>As you can see from the Network tab in <a href="#FIG6-8-CDB">[FIG6-8-CDB]</a>, we&#8217;ve limited the data load to 25 elements per page. Clicking on <span class="monospaced">next</span> or <span class="monospaced">previous</span> buttons will get you only a page worth of data. The Google Chrome Developers Tools Network tab shows that that we are sending the <span class="monospaced">start</span> and <span class="monospaced">limit</span> values with every request, and the response contains the object with 25 elements.</p></div>
+<div class="paragraph"><p>If you&#8217;d like to repeat all of the above steps on you own, watch <a href="http://faratasystems.com/training-at-farata-youtube-chanel/">the screencasts</a> where we demonstrate all the actions described in the section on CDB.</p></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_summary_6">Summary</h3>
+<div class="paragraph"><p>The development of enterprise web application involves many steps that need to be done by developer. But with the right set of tools the repetitive steps can be automated. Remember the DRY principle - don&#8217;t repeat yourself. Try to do more with less efforts. This rather long chapter will help your to get started with Ext JS and, if you need to develop CRUD applications, CDB will make you more productive.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_test_driven_development_with_javascript">Test-Driven Development with JavaScript</h2>
 <div class="sectionbody">
 <div class="quoteblock">
@@ -7528,21 +8114,21 @@ The module stores the rendering state in the property <span class="monospaced">r
 <div class="content">
 <img src="images/fig_09_09.png" alt="images/fig_09_09.png">
 </div>
-<div class="title">Figure 58. Initially only two modules are loaded</div>
+<div class="title">Figure 67. Initially only two modules are loaded</div>
 </div>
 <div class="paragraph"><p>In Google Chrome Developer Tools console you can see that login and donation modules are reporting about successful loading. <a href="#FIG9-10">[FIG9-10]</a> confirms that these modules perform fine - clicking on the button Donate reveals the form and clicking on the Login button makes the id/password fields visible.</p></div>
 <div class="imageblock" id="FIG9-10">
 <div class="content">
 <img src="images/fig_09_10.png" alt="images/fig_09_10.png">
 </div>
-<div class="title">Figure 59. Two modules are loaded during the Save Sick Child application startup</div>
+<div class="title">Figure 68. Two modules are loaded during the Save Sick Child application startup</div>
 </div>
 <div class="paragraph"><p>Now click the Way To Give menu item and keep an eye on the Developer Tools console <a href="#FIG9-11">[FIG9-11]</a>. You will see the way-to-give module reporting about its loading and rendering.</p></div>
 <div class="imageblock" id="FIG9-11">
 <div class="content">
 <img src="images/fig_09_11.png" alt="images/fig_09_11.png">
 </div>
-<div class="title">Figure 60. The auction controls are loaded and rendered</div>
+<div class="title">Figure 69. The auction controls are loaded and rendered</div>
 </div>
 <div class="paragraph"><p>Once the user clicks the menu Way to Give the framework require.js has to load code of the WebSocket-based auction module. Here is the code snippet from the JavaScript file <span class="monospaced">app.js</span> - the entry point of our Save Sick Child application. This is how it loads the module <em>on demand</em> (see Chapter 7 for the Require.js refresher).</p></div>
 <div class="listingblock">
@@ -7665,13 +8251,13 @@ Checking the WebSocket object state. If WebSocket is open (<span class="monospac
 <div class="content">
 <img src="images/fig_09_12.png" alt="images/fig_09_12.png">
 </div>
-<div class="title">Figure 61. The console logs incoming message contains list of auction items.</div>
+<div class="title">Figure 70. The console logs incoming message contains list of auction items.</div>
 </div>
 <div class="imageblock" id="FIG9-13">
 <div class="content">
 <img src="images/fig_09_13.png" alt="images/fig_09_13.png">
 </div>
-<div class="title">Figure 62. Using Network feature of Dev Tools we can monitor WebSocket frames.</div>
+<div class="title">Figure 71. Using Network feature of Dev Tools we can monitor WebSocket frames.</div>
 </div>
 <div class="imageblock" id="FIG9-14">
 <div class="content">
@@ -7685,34 +8271,34 @@ Checking the WebSocket object state. If WebSocket is open (<span class="monospac
 <div class="content">
 <img src="images/fig_09_04.png" alt="images/fig_09_04.png">
 </div>
-<div class="title">Figure 63. Initial WebSocket handshake in Chrome DevTools</div>
+<div class="title">Figure 72. Initial WebSocket handshake in Chrome DevTools</div>
 </div>
 <div class="paragraph"><p>You can also click on <span class="monospaced">WebSocket</span> at the bottom-right to show only the <span class="monospaced">WebSocket</span> endpoints. Click on <span class="monospaced">Frames</span> in the right panel to view the actual frames being exchanged between the client and server. <a href="#FIG9-5">[FIG9-5]</a>. The white colored rows represent incoming data, and the green (or gray on paper) rows - outgoing.</p></div>
 <div class="imageblock" id="FIG9-5">
 <div class="content">
 <img src="images/fig_09_05.png" alt="images/fig_09_05.png">
 </div>
-<div class="title">Figure 64. Monitoring WebSocket frames in Chrome Developer Tools</div>
+<div class="title">Figure 73. Monitoring WebSocket frames in Chrome Developer Tools</div>
 </div>
 <div class="paragraph"><p>For more gore details you can navigate your Google Chrome to the secret URL - <span class="monospaced">chrome://net-internals</span>, which is a very useful URL showing a lot of additional information (see <a href="#FIG9-6">[FIG9-6]</a> and <a href="#FIG9-7">[FIG9-7]</a> ). You can find documentation about net-internal in <a href="http://www.chromium.org/developers/design-documents/network-stack/view-net-internals">Chromium Design Documents</a></p></div>
 <div class="imageblock" id="FIG9-6">
 <div class="content">
 <img src="images/fig_09_06.png" alt="images/fig_09_06.png">
 </div>
-<div class="title">Figure 65. Details of initial handshake in Chrome Net Internals</div>
+<div class="title">Figure 74. Details of initial handshake in Chrome Net Internals</div>
 </div>
 <div class="imageblock" id="FIG9-7">
 <div class="content">
 <img src="images/fig_09_07.png" alt="images/fig_09_07.png">
 </div>
-<div class="title">Figure 66. Details of the socket connection</div>
+<div class="title">Figure 75. Details of the socket connection</div>
 </div>
 <div class="paragraph"><p>Google Developer Tools show just the length of the data. But <span class="monospaced">chrome://net-internals</span> shows the actual size of the WebSocket frame too. <a href="#FIG9-8">[FIG9-8]</a> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of the frame is slightly different from the size of the payload. There are few more bytes for the frame header. Moreover, all outgoing messages will be masked by the browser (see the note in the <a href="#FRAMES">[FRAMES]</a> section). This frame&#8217;s mask is going to be transferred to the server as a part of the frame itself, which creates additional 32 bits (4 bytes) overhead.</p></div>
 <div class="imageblock" id="FIG9-8">
 <div class="content">
 <img src="images/fig_09_08.png" alt="images/fig_09_08.png">
 </div>
-<div class="title">Figure 67. Dev tools and net-internals side by side</div>
+<div class="title">Figure 76. Dev tools and net-internals side by side</div>
 </div>
 </div>
 <div class="sect3">
@@ -7722,48 +8308,48 @@ Checking the WebSocket object state. If WebSocket is open (<span class="monospac
 <div class="content">
 <img src="images/fig_09_15.png" alt="images/fig_09_15.png">
 </div>
-<div class="title">Figure 68. Wireshark application main view</div>
+<div class="title">Figure 77. Wireshark application main view</div>
 </div>
 <div class="paragraph"><p>Wireshark captures all network activity. Set up the filter to see only the data you are interested in. We want to capture HTTP and TCP traffic on the port <span class="monospaced">8080</span> because our WebSocket server (Oracle&#8217;s GlassFish) runs on this port <a href="#FIG9-16">[FIG9-16]</a>. Enter <span class="monospaced">http &amp;&amp; (tcp.dstport==8080)</span> in the filter text box and click Apply.</p></div>
 <div class="imageblock" id="FIG9-16">
 <div class="content">
 <img src="images/fig_09_16.png" alt="images/fig_09_16.png">
 </div>
-<div class="title">Figure 69. Filter setup</div>
+<div class="title">Figure 78. Filter setup</div>
 </div>
 <div class="paragraph"><p>Now the Wireshark is ready to sniff at the traffic of our application. You can start the auction session and place bids. After you&#8217;re done with the auction you can return to the Wireshark window and analyze what we got. You can see the initial handshake (<span class="monospaced">GET</span> request on <a href="#FIG9-17">[FIG9-17]</a> and the <span class="monospaced">Upgrade</span> response on <a href="#FIG9-18">[FIG9-18]</a>).</p></div>
 <div class="imageblock" id="FIG9-17">
 <div class="content">
 <img src="images/fig_09_17.png" alt="images/fig_09_17.png">
 </div>
-<div class="title">Figure 70. The <span class="monospaced">GET</span> request for protocol upgrade</div>
+<div class="title">Figure 79. The <span class="monospaced">GET</span> request for protocol upgrade</div>
 </div>
 <div class="imageblock" id="FIG9-18">
 <div class="content">
 <img src="images/fig_09_18.png" alt="images/fig_09_18.png">
 </div>
-<div class="title">Figure 71. The <span class="monospaced">GET</span> response with protocol upgrade</div>
+<div class="title">Figure 80. The <span class="monospaced">GET</span> response with protocol upgrade</div>
 </div>
 <div class="paragraph"><p>After the successful connection upgrade, Wireshark captured the <span class="monospaced">http-alt</span> stream (this is how it reports the Websocket&#8217;s traffic) on the 8080 port. Right click on this row and select <span class="monospaced">Follow TCP Stream</span> <a href="#FIG9-19">[FIG9-19]</a>.</p></div>
 <div class="imageblock" id="FIG9-19">
 <div class="content">
 <img src="images/fig_09_19.png" alt="images/fig_09_19.png">
 </div>
-<div class="title">Figure 72. The <span class="monospaced">GET</span> response with protocol upgrade</div>
+<div class="title">Figure 81. The <span class="monospaced">GET</span> response with protocol upgrade</div>
 </div>
 <div class="paragraph"><p>On the next screen you can see the details of WebSocket frame <a href="#FIG9-20">[FIG9-20]</a>. We took this screenshot right after the auction application started. You can see here the data with the list of available auctions. The outgoing data is marked with <em>red</em> color and the incoming data is shown in <em>blue</em>.</p></div>
 <div class="imageblock" id="FIG9-20">
 <div class="content">
 <img src="images/fig_09_20.png" alt="images/fig_09_20.png">
 </div>
-<div class="title">Figure 73. WebSocket frame</div>
+<div class="title">Figure 82. WebSocket frame</div>
 </div>
 <div class="paragraph"><p>The screenshot <a href="#FIG9-21">[FIG9-21]</a> was taken  after the auction has been closed. You can see here the entire data that were sent over the WebSocket connection.</p></div>
 <div class="imageblock" id="FIG9-21">
 <div class="content">
 <img src="images/fig_09_21.png" alt="images/fig_09_21.png">
 </div>
-<div class="title">Figure 74. Entire auction conversation</div>
+<div class="title">Figure 83. Entire auction conversation</div>
 </div>
 </div>
 <div class="sect3">
@@ -7952,7 +8538,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect2">
-<h3 id="_summary_6">Summary</h3>
+<h3 id="_summary_7">Summary</h3>
 <div class="paragraph"><p>After reading this chapter you should see the benefits of using WebSocket protocol in Web applications. In many cases WebSocket is an ultimate means for improving the application performance by reducing the network latency and removing the HTTP-headers overhead. You&#8217;ve learned how to integrate the WebSocket-based functionality into the existing HTTP-based application Save Sick Child. There is no need to make the entire communication of the Web application over WebSocket. Use this powerful protocol when it&#8217;s clearly improves the performance and responsiveness of your application.</p></div>
 <div class="paragraph"><p>As a side benefit, you&#8217;ve learned how to use the network monitoring capabilities of Google Chrome Developer Tools and Wireshark application by sniffing the WebSocket traffic. You can&#8217;t underestimate the importance of monitoring tools, which are the best friends of Web developers.</p></div>
 </div>
@@ -7992,14 +8578,14 @@ Develop a <em>hybrid application</em>, which is a Web application on steroids - 
 <div class="content">
 <img src="images/fig_11_01.jpg" alt="images/fig_11_01.jpg">
 </div>
-<div class="title">Figure 75. The desktop version of bbc.com</div>
+<div class="title">Figure 84. The desktop version of bbc.com</div>
 </div>
 <div class="paragraph"><p>The <a href="#FIG11-1">[FIG11-1]</a> page layout delivers more content as it can be allocated nicely on the large desktop monitor or a tablet. But the mobile version on <a href="#FIG11-2">[FIG11-2]</a> substantially limits what&#8217;s delivered to the client, which is done not only because the screen is small, but the user may be accessing the page over the slower network.</p></div>
 <div class="imageblock" id="FIG11-2">
 <div class="content">
 <img src="images/fig_11_02.png" alt="images/fig_11_02.png">
 </div>
-<div class="title">Figure 76. The mobile version of bbc.com</div>
+<div class="title">Figure 85. The mobile version of bbc.com</div>
 </div>
 <div class="paragraph"><p>Have you ever tried to share the link of the Web site from your iPhone? It&#8217;s so easy! Just press the button and enter the email of the person to share the site with. Go to bbc.com from your iPhone or Android phone and share this link with someone. That person will receive the link <a href="http://www.bbc.co.uk/mobile/i/">http://www.bbc.co.uk/mobile/i</a>, and if she&#8217;s visit this site from the desktop it won&#8217;t look pretty. It&#8217;ll just show the wider version of what you see in <a href="#FIG11-2">[FIG11-2]</a>. Try to enter this URL in your desktop browser to see for yourself.</p></div>
 <div class="paragraph"><p>Maintaining two different versions of the application code requires more efforts than maintaining one: you need to have two sets of HTML, CSS, JavaScript, and images. Besides, most likely your Web application will use a  third-party JavaScript framework. At some point you may run into a bug and will need to upgrade the mobile version to use the latest version of, say jQuery framework. But the desktop version works just fine. In case of having two separate versions of the application you&#8217;ll have to either upgrade jQuery and thoroughly test both mobile and desktop versions of Save Sick Child, or live with two different versions of the framework.</p></div>
@@ -8042,7 +8628,7 @@ Develop a <em>hybrid application</em>, which is a Web application on steroids - 
 <div class="content">
 <img src="images/fig_11_03.png" alt="images/fig_11_03.png">
 </div>
-<div class="title">Figure 77. The User-Agent String from iPhone 5</div>
+<div class="title">Figure 86. The User-Agent String from iPhone 5</div>
 </div>
 <div class="paragraph"><p>It&#8217;s impossible to create different layouts of a Web application for thousands of user agents. Grouping devices by screen sizes is a more practical approach for lowering the number of UI layouts supported by your application. The responsive design is a collection of techniques based upon three pillars:</p></div>
 <div class="olist arabic"><ol class="arabic">
@@ -8072,28 +8658,28 @@ Fluid media
 <div class="content">
 <img src="images/fig_11_04.png" alt="images/fig_11_04.png">
 </div>
-<div class="title">Figure 78. The Desktop layout</div>
+<div class="title">Figure 87. The Desktop layout</div>
 </div>
 <div class="paragraph"><p>Jerry gave us several version of the images - with and without the grid background. The use of the grid will be explained later in the section "Fluid Grids". <a href="#FIG11-5">[FIG11-5]</a> depicts the rendering on tablet devices that fall in a category of under 768px width screen in the portrait mode.</p></div>
 <div class="imageblock" id="FIG11-5">
 <div class="content">
 <img src="images/fig_11_05.png" alt="images/fig_11_05.png">
 </div>
-<div class="title">Figure 79. The tablet layout (portrait)</div>
+<div class="title">Figure 88. The tablet layout (portrait)</div>
 </div>
 <div class="paragraph"><p>Next comes the mockup for the large smart phones having the width of up to 640 pixels. <a href="#FIG11-6">[FIG11-6]</a> shows two different images of the screen next to each other (the user would need to scroll to see the second image).</p></div>
 <div class="imageblock" id="FIG11-6">
 <div class="content">
 <img src="images/fig_11_06.png" alt="images/fig_11_06.png">
 </div>
-<div class="title">Figure 80. The large phone layout (portrait)</div>
+<div class="title">Figure 89. The large phone layout (portrait)</div>
 </div>
 <div class="paragraph"><p>The mockup for the smaller phones with the width of under 480 pixels is shown on <a href="#FIG11-7">[FIG11-7]</a>. The mockup looks wide, but it actually shows three views of the phone screen next to each other. The user would need to scroll vertically to see the middle or the right view. Physical screens are not too small - iPhone 3 falls into this category, but resolution-wise they are smaller.</p></div>
 <div class="imageblock" id="FIG11-7">
 <div class="content">
 <img src="images/fig_11_07.png" alt="images/fig_11_07.png">
 </div>
-<div class="title">Figure 81. The small phone layout (portrait)</div>
+<div class="title">Figure 90. The small phone layout (portrait)</div>
 </div>
 <div class="paragraph"><p>If need be, you can ask Jerry to create mocupts for the really devices with the width under 320 pixels, but we won&#8217;t even try it here. Now we need to translate these mockups into working code. The first subject to learn is CSS media queries.</p></div>
 </div>
@@ -8104,21 +8690,21 @@ Fluid media
 <div class="content">
 <img src="images/fig_11_08.png" alt="images/fig_11_08.png">
 </div>
-<div class="title">Figure 82. The tesktop layout implemented</div>
+<div class="title">Figure 91. The tesktop layout implemented</div>
 </div>
 <div class="paragraph"><p>Drag the right border of your desktop Web browser&#8217;s window to the left to make it narrower. After reaching certain <em>breakpoint width</em> (in our project it&#8217;s 768 pixels) you&#8217;ll see how the <span class="monospaced">&lt;div&gt;</span><em>s</em> reallocate themselves into the two-column window shown on <a href="#FIG11-9">[FIG11-9]</a>.</p></div>
 <div class="imageblock" id="FIG11-9">
 <div class="content">
 <img src="images/fig_11_09.png" alt="images/fig_11_09.png">
 </div>
-<div class="title">Figure 83. The tablet layout (portrait) implemented</div>
+<div class="title">Figure 92. The tablet layout (portrait) implemented</div>
 </div>
 <div class="paragraph"><p>Keep making the browser&#8217;s window narrower, and when the width will pass another breakpoint (becomes less than 640 pixels), the window will re-arrange itself into one long column as in <a href="#FIG11-10">[FIG11-10]</a>. The users will have to use scrolling to see the lower portion of this window, but they don&#8217;t loose any content.</p></div>
 <div class="imageblock" id="FIG11-10">
 <div class="content">
 <img src="images/fig_11_10.png" alt="images/fig_11_10.png">
 </div>
-<div class="title">Figure 84. The smaller phone layout (portrait) implemented</div>
+<div class="title">Figure 93. The smaller phone layout (portrait) implemented</div>
 </div>
 <div class="paragraph"><p>The W3C Recommendation titled <a href="http://www.w3.org/TR/css3-mediaqueries/">Media Queries</a> has been introduced in CSS2 and HTML4. The idea was to provide different stylesheets for different media. For example, you can specify different stylesheets in HTML using the <span class="monospaced">media</span> for the regular screen and for the smaller ones (up to 640 pixel in width).</p></div>
 <div class="listingblock">
@@ -8347,7 +8933,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <img src="images/fig_11_11.png" alt="images/fig_11_11.png">
 </div>
-<div class="title">Figure 85. Creating a Fluid Grid Layout in Dreamweaver</div>
+<div class="title">Figure 94. Creating a Fluid Grid Layout in Dreamweaver</div>
 </div>
 <div class="paragraph"><p>Web designers use different approaches in styling with fluid grids. When you design a new page with Dreamweaver&#8217;s Fluid Grid Layout it suggests you to allocate different number of columns for desktop, tablet and mobile, for example, its default offer is to allocate 12 columns for the desktops, 8 for the tablets, and 5 for phones, which is perfectly solid approach. But our Web designer Jerry prefers using 12 columns for all screen sizes playing with the width percentages for different layouts - you&#8217;ll see how he does it in the project Responsive Donation Section later in this chapter.</p></div>
 <div class="paragraph"><p>Now imagine that you&#8217;ll overlay the entire window with an invisible grid containing twelve equally sized columns. In this case each column will occupy 8.333% of the total width. Now, if you&#8217;d need to allocate to some HTML component about 40% of the total width, you could do this by allocating five grid columns (8.333% * 5 = 41.665%). Accordingly, your CSS file can contain 12 classes that you can use in your page:</p></div>
@@ -8409,14 +8995,14 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <img src="images/fig_11_12.png" alt="images/fig_11_12.png">
 </div>
-<div class="title">Figure 86. Fluid Grid on the wide screen</div>
+<div class="title">Figure 95. Fluid Grid on the wide screen</div>
 </div>
 <div class="paragraph"><p>If you&#8217;ll start lowering the width of the browser&#8217;s window, you&#8217;ll see how the grid cells start squeezing, but the layout remains the same until the page size will become lower than one of the predefined breakpoints. Then another media query kicks in and the layout changes. For example, <a href="#FIG11-13">[FIG11-13]</a> shows the fragment of the Web page when the width of the browser&#8217;s window goes below 640px. The 12-, 6-, and 4-cell grids show all the cells vertically one under another. Only the 480px grids still have enough room to display their cells horizontally. But if you keep squeezing the window, all the grids will display their content in one column as long as the viewport width stays under 480px.</p></div>
 <div class="imageblock" id="FIG11-13">
 <div class="content">
 <img src="images/fig_11_13.png" alt="images/fig_11_13.png">
 </div>
-<div class="title">Figure 87. Fluid Grid on the viewport under 640px</div>
+<div class="title">Figure 96. Fluid Grid on the viewport under 640px</div>
 </div>
 <div class="paragraph"><p>The fragment of the index.html from the Responsive Fluid Grid project goes next. For brevity, we&#8217;ve removed some repetitive markup and marked such places with the comment "A fragment removed for brevity". This code fragment includes the 12-, 6-, and 4-column grids shown on top of <a href="#FIG11-12">[FIG11-12]</a>.</p></div>
 <div class="listingblock">
@@ -8708,7 +9294,7 @@ We&#8217;ll make the page responsive gradually - the first version will make the
 <div class="content">
 <img src="images/fig_11_14.png" alt="images/fig_11_14.png">
 </div>
-<div class="title">Figure 88. Responsive Header (width 580px+)</div>
+<div class="title">Figure 97. Responsive Header (width 580px+)</div>
 </div>
 <div class="paragraph"><p>Below is the fragment from index.html that&#8217;s displays the logo image and the header&#8217;s menus.</p></div>
 <div class="listingblock">
@@ -8787,14 +9373,14 @@ The styles.css of this project has media queries for different viewport sizes. F
 <div class="content">
 <img src="images/fig_11_15.png" alt="images/fig_11_15.png">
 </div>
-<div class="title">Figure 89. Responsive Header 2 (width between 480 and 580px )</div>
+<div class="title">Figure 98. Responsive Header 2 (width between 480 and 580px )</div>
 </div>
 <div class="paragraph"><p>When the width shrinks to 480px, the header looks as in <a href="#FIG11-16">[FIG11-16]</a>. Once again, we are not tying the design to the specific device, but rather to a viewport width. The iPhone 4 will render this page using the layout shown at &lt;&lt;&gt;FIG11-16&gt;, but iPhone 5 will use the layout from <a href="#FIG11-15">[FIG11-15]</a>. You can&#8217;t go by a device type.</p></div>
 <div class="imageblock" id="FIG11-16">
 <div class="content">
 <img src="images/fig_11_16.png" alt="images/fig_11_16.png">
 </div>
-<div class="title">Figure 90. Responsive Header (width below 480px)</div>
+<div class="title">Figure 99. Responsive Header (width below 480px)</div>
 </div>
 <div class="paragraph"><p>The next version of the Aptana project to try is called Responsive Donation. This version make the donation section fluid. The donation section contains the Lorem Ipsum text and the form, which is revealed when the user clicks the button Donate. First, let&#8217;s look at the HTML. The index.html contains the following fragment (some of the content that irrelevant for layout was removed for better readability):</p></div>
 <div class="listingblock">
@@ -8841,7 +9427,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <img src="images/fig_11_17.png" alt="images/fig_11_17.png">
 </div>
-<div class="title">Figure 91. Responsive Donate Section: 570px</div>
+<div class="title">Figure 100. Responsive Donate Section: 570px</div>
 </div>
 <div class="paragraph"><p>But when the width become less then 480px, there is no room for two background images, and only the flowers will remain on the page background. The media query for 480px viewport is shown next - note that the background in the main top section has only one image now: bg2.png. Floating is off to show the navigation menu vertically as in <a href="#FIG11-18">[FIG11-18]</a>.</p></div>
 <div class="listingblock">
@@ -8901,7 +9487,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <img src="images/fig_11_18.png" alt="images/fig_11_18.png">
 </div>
-<div class="title">Figure 92. Responsive Donate Section under 480px</div>
+<div class="title">Figure 101. Responsive Donate Section under 480px</div>
 </div>
 <div class="paragraph"><p>The Aptana project Responsive Final includes the charts, maps, and video. Each of these sections uses <span class="monospaced">four-column</span> style, which is defined in styles.css as 33.332% of the container&#8217;s width.</p></div>
 <div class="listingblock">
@@ -8940,7 +9526,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <img src="images/fig_11_19.png" alt="images/fig_11_19.png">
 </div>
-<div class="title">Figure 93. The Portrait Mode on Tablets</div>
+<div class="title">Figure 102. The Portrait Mode on Tablets</div>
 </div>
 <div class="paragraph"><p>The relevant code from the style.css is shown below.The top and bottom sections get about a half of the width each, and the floating is turned off so the browser would allocate charts, maps, and video vertically.</p></div>
 <div class="listingblock">
@@ -9010,7 +9596,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect2">
-<h3 id="_summary_7">Summary</h3>
+<h3 id="_summary_8">Summary</h3>
 <div class="paragraph"><p>Authors of this book have different opinions about the merits of responsive design. One of us simply stated, "I haven&#8217;t seen complex single-code-base applications that work well on Android, iPhone, and desktop browsers". The other responded "We need to compromise". With browser plugins like Flash Player or Silverlight you can choose pixel-perfect design. Just set a pre-requisite: the user must have a 1024x768 viewport minus chrome and margins. But if you&#8217;ll need to make this application work on highly fragmented Android market, on all iPhones, Blackberies, desktops, and other devices, ask yourself a simple question, "Do we have money to hire two or three teams for developing and supporting several versions of the application for different devices or we&#8217;d rather compromise, and push the HTML5-based product out the door?"</p></div>
 <div class="paragraph"><p>Each enterprise project has a limited budget, and if you&#8217;ll agree to compromise and move away from the pixel-perfect world accepting the fact that the Donate button will look a little bit different on different devices, go with the responsive design principles and have one code base. You&#8217;ll provide different CSS sections that will automatically apply different layouts based on the viewport size, and the HTML markup and JavaScript will be the same. This approach has drawbacks because some portions of unnecessary CSS will be loaded to the user&#8217;s device, but this still can be a practical business solution.</p></div>
 <div class="paragraph"><p>On the other hand, using the same code and design for different platforms works perfectly only for  publishing information and not for all Web applications. If you need to publish the information using different layout managers, responsive design is a good fit. Mobile applications could be compiled either into the native code or into some byte code that performs close to the native one. But the UI could be different based on the available screen real estate and use touch interface.</p></div>
@@ -9070,7 +9656,7 @@ var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-36390249-1"]);_gaq.push(["_setDom
 <div id="footnotes"><hr></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-02-12 14:10:39 EST
+Last updated 2013-02-13 14:30:35 EST
 </div>
 </div>
 </body>
