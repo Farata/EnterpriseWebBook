@@ -24,7 +24,9 @@ TIP: You can provide a fallback URL by adding one extra line that will load jQue
 
 [source, html]
 ----
-<script> window.jQuery || document.write('<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>')</script>
+<script> window.jQuery || document.write('<script 
+                 src="http://code.jquery.com/jquery-1.9.1.min.js"></script>')
+</script>
 ----
 
 WARNING: You may find code samples that use the URL http://code.jquery.com/jquery-latest.min.js to download the latest version of jQuery. But keep in mind that by doing this you may run into a situation when some of the API of jQuery has been changed or deprecated. For example, jQuery 2.0 http://blog.jquery.com/2012/07/01/jquery-1-9-and-2-0-tldr-edition/[will not support] Internet Explorer 6, 7, and 8 and automatically switching to the latest version may result in malfunctioning of your application. We recommend using the specific version that has been tested with your application.
@@ -613,9 +615,11 @@ Our Save Sick Child application submits the donation form to Paypal.com. The fil
 
 [source, html]
 ----
-<form id="donate-form" name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<form id="donate-form" name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" 
+                                                                 method="post">
 	<input type="hidden" name="cmd" value="_xclick">
-	<input type="hidden" name="business" value="email-registered-in-paypal@site-url.com">
+	<input type="hidden" name="business" 
+	                               value="email-registered-in-paypal@site-url.com">
 	<input type="hidden" name="item_name" value="Donation">
 	<input type="hidden" name="currency_code" value="USD">
 	<div class="donation-form-section">
@@ -647,9 +651,9 @@ Our Save Sick Child application submits the donation form to Paypal.com. The fil
 </form>
 ----
 
-If you simply want to submit this form to the URL listed in its `action` property when the user clicks on the button submit, there is nothing else that has to be done. This already works and Paypal's login page opens up in the browser. But if you wanted to seamlessly integrate your page with Paypal or any other third-party service, a preferred way is not to send the user to the third-party Web site, but do it without leaving your Web application.  We won't be implementing such integration with Paypal here, but technically it would be possible to pass the user's credentials and bank information to charge the donor of Save Sick Child without even opening the Paypal Web page in the browser. To do this, you'd need to submit the form using AJAX and Paypal API with processing the results of this transaction using the standardAJAX techniques.    
+If you simply want to submit this form to the URL listed in its `action` property when the user clicks on the button submit, there is nothing else to be done. This already works and Paypal's login page opens up in the browser. But if you wanted to seamlessly integrate your page with Paypal or any other third-party service, a preferred way is not to send the user to the third-party Web site, but do it without leaving your Web application.  We won't be implementing such integration with Paypal here, but technically it would be possible to pass the user's credentials and bank information to charge the donor of Save Sick Child without even opening the Paypal Web page in the browser. To do this, you'd need to submit the form using AJAX and Paypal API with processing the results of this transaction using the standardAJAX techniques.    
 
-To post the form to a specified URL using jQuery AJAX we'll serialize the data from the form on `submit` event. The code fragment from main.js finds the form with ID `donate-form` and chains to it the `submit()` method passing to it a callback that will prepare the data and make an AJAX call. We are using the method `submit()` instead of attaching an event handler to process clicks on the button donate for a good reason - the method `submit()` will be invoked not only on the Submit button click event, but when the user presses the Enter key while the cursor is in one of the form's input fields.
+To post the form to a specified URL using jQuery AJAX we'll serialize the data from the form on `submit` event. The code fragment from main.js finds the form with ID `donate-form` and chains to it the `submit()` method passing to it a callback that will prepare the data and make an AJAX call. You may use the method `submit()` instead of attaching an event handler to process clicks on the button donate - the method `submit()` will be invoked not only on the Submit button click event, but when the user presses the Enter key while the cursor is in one of the form's input fields.
 
 [source, javascript]
 ----
@@ -674,7 +678,107 @@ _"The Donation form is serialized: cmd=_xclick&business=email-registered-in-payp
 email_addr=asmith%40gmail.com&street_address=123+Broadway&scty=New+York&zip=10013&
 state=NY&country=US"_
 
-TODO: add the code sample from SSC
+Manual form serialization has other advantages too - you don't have to pass the entire form to the server, but select only some of the input fields to be submitted. The following code snippet shows several ways of sending the partial form content.
+
+[source, javascript]
+----
+var queryString;
+
+queryString = $('form[name="_xclick"]')                     // <1>
+               .find(':input[name=full_name],:input[name=email_addr]')
+               .serialize();
+
+queryString = $('form[name="_xclick"]')                    // <2>
+               .find(':input[type=text]')
+               .serialize();
+
+queryString = $('form[name="_xclick"]')                     // <3>
+                .find(':input[type=hidden]')
+                .serialize();
+----
+<1> Find the form named '_xclick', apply the filter to select only the full name and the email address and serialize only these two fields.
+ 
+<2> Find the form named '_xclick', apply the filter to select only the input fields of type `text` and serialize them
+
+<3> Find the form named '_xclick', apply the filter to select only the hidden input fields and serialize them	
+
+We've prepared for you one more Aptana project illustrating manual serialization of the Donation form. It's called project-15-jQuery-serialize-form. The main.js in this project suppresses the default processing of the form submit event and sends the form to a server side PHP script that simply echoes the data received from the server. The file demo.php is shown next. It's located in the same directory where the index.html is. 
+
+[source, php]
+----
+<?php
+if (isset($_POST['paypal_email'])) {
+	$paypal_email = $_POST['paypal_email'];
+	$item_name = $_POST['item_name'];
+	$currency_code = $_POST['currency_code'];
+	$amount = $_POST['amount'];
+	$full_name = $_POST['full_name'];
+	$email_addr = $_POST['email_addr'];
+
+	echo('Got from the client and will send to PayPal: ' . 
+	     $paypal_email . '    Payment type: ' . $item_name . 
+	'   amount: ' . $amount .' '. $currency_code .
+	               '    Thank you ' . $full_name 
+	. '    The confirmation will be sent to ' . $email_addr);	
+	
+} else {
+	echo('Error getting data');
+}
+exit();
+?>
+----
+
+To see that this PHP in action, it has to be deployed in any Web server that supports PHP. For example, you can install on your computer the http://www.apachefriends.org/en/xampp.html[XAMP server] and deploy it there. Integration with the payment system using https://www.x.com/content/introducing-adaptive-payments[Paypal API] is out of this book's scope, but at least we can identify the place to do it - you'd need to replace the `echo` statement with the code making requests to Paypal or any other payment system. The fragment from the main.js that shows how to make a request to the demo.php comes next.
+
+[source, javascript]
+----
+$('.donate-button-submit').on('click', submitSerializedData);
+
+function submitSerializedData(event) {
+
+  // disable the button to prevent more than one click
+  onOffButton($('.donate-button-submit'), true, 'submitDisabled');
+
+  event.preventDefault();                     // <1>
+
+  var queryString;
+
+  queryString = $('form[name="_xclick"]')    // <2>
+       .find(':input[type=hidden][name!=cmd], :input[name=amount][value!=""], 
+       :input[name=full_name], :input[name=email_addr]')
+       .serialize();
+
+  console.log('- get inputs data with definite type, name or value -');
+  console.log("Submitting to the server: " + queryString);
+  	
+  	$.ajax({
+  	    type : 'POST',
+  	    url : 'demo.php',                     // <3>    
+  	    data : queryString
+  	}).done(function(response) {
+  		console.log('-------- response from demo.php  -----------');
+  		console.log("Got the response from the ajax() call to demo.php: " + 
+  		                                                         response);
+  		// enable the donate button again
+  		onOffButton($('.donate-button-submit'), false, 'submitDisabled');
+  	}).fail(function (jqXHR, textStatus, error) {   
+
+        console.log('AJAX request failed: ' + error + ". Code: " 
+                                            + jqXHR.status);
+
+        // The code to display the error in the 
+        // browser's window goes here                
+        });
+}
+----
+
+<1> Prevent the default processing of the submit event - we don't want to simply the form to the URL listed in the form's `action` property.
+
+<2>  Serializing the form fields excluding the empty amounts and the hidden field with the name cmd.
+
+<3>   The serialized data from `queryString` will be submitted to the server-side script demo.php
+
+
 
 === Plugins 
 
@@ -723,47 +827,47 @@ The code fragment below displays error messages in the HTML element `<div id="va
 ----
 var validator = $('form[name="_xclick"]').validate({
 	
-	highlight : function(target, errorClass) {                    // <1>
-		$(target).addClass("invalidElement");
-		$("#validationSummary").text(validator.numberOfInvalids() +
-		                                       " field(s) are invalid");
-		$("#validationSummary").show();
-	},
+  highlight : function(target, errorClass) {                    // <1>
+  	$(target).addClass("invalidElement");
+  	$("#validationSummary").text(validator.numberOfInvalids() +
+  	                                       " field(s) are invalid");
+  	$("#validationSummary").show();
+  },
 
-	unhighlight : function(target, errorClass) {                 // <2>
-		$(target).removeClass("invalidElement");
+  unhighlight : function(target, errorClass) {                 // <2>
+  	$(target).removeClass("invalidElement");
 
-		var errors = validator.numberOfInvalids();
-		$("#validationSummary").text( errors + " field(s) are invalid");
+  	var errors = validator.numberOfInvalids();
+  	$("#validationSummary").text( errors + " field(s) are invalid");
 
-		if(errors == 0) {
-			$("#validationSummary").hide();
-		}			
-	},
+  	if(errors == 0) {
+  		$("#validationSummary").hide();
+  	}			
+  },
 
-	rules : {                                                   // <3>
-		full_name : {
-			required : true,
-			minlength : 2
-		},
-		email_addr : {
-			required : true,
-			email : true
-		},
-		zip : {
-			 digits:true
-		}
-	},
+  rules : {                                                   // <3>
+  	full_name : {
+  		required : true,
+  		minlength : 2
+  	},
+  	email_addr : {
+  		required : true,
+  		email : true
+  	},
+  	zip : {
+  		 digits:true
+  	}
+  },
 
-		messages : {                                            // <4>   
-			 full_name: {
-                required: "Name is required",
-              	minlength: "Name should have at least 2 letters"
-            },
-			email_addr : {
-				required : "Email is required",
-			}
-		}
+  	messages : {                                            // <4>   
+  		 full_name: {
+              required: "Name is required",
+            	minlength: "Name should have at least 2 letters"
+          },
+  		email_addr : {
+  			required : "Email is required",
+  		}
+  	}
 });
 ----
 
@@ -781,12 +885,65 @@ var validator = $('form[name="_xclick"]').validate({
 .Validator's Error Messages
 image::images/fig_05_06.png[]
 
-==== TODO Adding Image Slider
-
-Before including a jQuery plugin to your application spend some time testing it - check its size and compare its performance with competing plugins. 
+TIP: Before including a jQuery plugin to your application spend some time testing it - check its size and compare its performance with competing plugins. 
 
 
-NOTE: If you can't find a plugin that fits your needs or have specific custom logic that needs to be used or reused in your application.  Should you decide to write a plugin on your own, refer to the http://docs.jquery.com/Plugins/Authoring[Plugins/Authoring] document.
+==== Adding Image Slider
+
+Pretty often you need to add a rotation of the images feature to a Web page. The Save Sick Chile page, for example, could rotate the images of the kids saved by the donors. To give you yet another illustration of using jQuery plugin, we've created the project called project-16-jQuery slider, where we integrated the jQuery plugin called Responsive Carousel.  The file index.html of this project includes the CSS styles and the JavaScript code plugin as follows:
+
+[source, html]
+----
+<link rel="stylesheet" href="assets/css/responsive-carousel.css" />
+<link rel="stylesheet" href="assets/css/responsive-carousel.slide.css" />
+<link rel="stylesheet" href="assets/css/responsive-carousel.fade.css" />
+<link rel="stylesheet" href="assets/css/responsive-carousel.flip.css" />
+...
+<script src="js/plugins/responsive-carousel/responsive-carousel.min.js"></script>
+<script src="js/plugins/responsive-carousel/responsive-carousel.flip.js"></script>
+----
+
+We ran into issue as this version of the Resonsive Carousel plugin was using the method `live()` that was deprecated in jQuery 1.7 and removed in jQuery 1.9. After consulting with the http://jquery.com/upgrade-guide/1.9/[jQuery Core 1.9 Upgrade Guide] we've replaced all the occurrences of `live()` with `on()` right inside the file responsive-carousel.min.js, and the plugin started working fine.
+
+Run Aptana project-16-jQuery and you'll see rotating how three plain slides rotate as shown on <<FIG5-7>>. The HTML part of the container includes the three slides as follows. 
+
+[source, html]
+----
+<div id="image-carousel" class="carousel carousel-flip" 
+                                         data-transition="flip">
+	<div>
+		<img src="assets/img/slides/slide-1.jpg" />
+	</div>
+	<div>
+		<img src="assets/img/slides/slide-2.jpg" />
+	</div>
+	<div>
+		<img src="assets/img/slides/slide-3.jpg" />
+	</div>
+</div>
+----
+
+
+[[FIG5-7]]
+.Using Responsive Carousel plugin
+image::images/fig_05_07.png[]
+
+With this plugin, the JavaScript code that the application developer has to write to implement several types of rotation is minimal. When the user clicks on the one of the radio buttons (Fade, Slide, or Flip transitions) the code below just changes the CSS class name to be used with the carousel.
+
+[source, javascript]
+----
+$(function() {
+	$("input:radio[name=transitions]").click(function() {
+		var transition = $(this).val();
+		var newClassName = 'carousel carousel-' + transition;
+		$('#image-carousel').attr('class', '');
+		$('#image-carousel').addClass(newClassName);
+		$('#image-carousel').attr('data-transition', transition);
+	});
+});
+----
+
+The Validator and Responsive Carousel clearly demonstrate that jQuery plugins can save you some serious time of writing code to implement some commonly required features. It's great that the members of the jQuery community from around the world share their creations with other developers. If you can't find a plugin that fits your needs or have specific custom logic that needs to be used or reused in your application.  Should you decide to write a plugin on your own, refer to the http://docs.jquery.com/Plugins/Authoring[Plugins/Authoring] document.
 
 
 === Summary
