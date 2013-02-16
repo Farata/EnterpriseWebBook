@@ -2,29 +2,58 @@
 
 In the previous chapter you've got familiar with the JavaScript library jQuery. Now we'll introduce you to a more complex product - a JavaScript framework http://www.sencha.com/products/extjs[Ext JS] from http://www.sencha.com[Sencha]. This is one of the most feature-complete frameworks available on the market, and you should give it a serious consideration while deciding on the tooling for your next enterprise HTML5 application. 
 
-If you just finished reading the jQuery Chapter, you'll need to switch to a different state of mind. The Core jQuery library was light, it didn't drastically change the way we developed a pure HTML/JavaScript applications. Working with Ext JS framework is a completely different ball game. It's not about improving an existing Web page, it's about re-writing it from scratch without using HTML. The Ext JS framework is large so be prepared that your application code will become several hundred kilobytes heavier.
+If you just finished reading the jQuery Chapter, you'll need to switch to a different state of mind. The Core jQuery library was light, it didn't drastically change the way we developed a pure HTML/JavaScript applications. Working with Ext JS framework is a completely different ball game. It's not about improving an existing Web page, it's about re-writing it from scratch without using HTML. 
 
-The learning curve of this framework is steeper than with jQuery, and this chapter is divided into three sections. First, you'll go through a detailed Ext JS primer, then we'll develop a new version of the Save Sick Child application with Ext JS, and finally, you'll see how to improve the productivity of development with Ext JS and Java using an open source code generator called Clear Data Builder (CDB). 
+IMPORTANT: The materials presented in this chapters were tested in Ext JS 4.1 and Ext 4.2 that's currently in Release Candidate version, which is available from  at the time of this writing. If you have an older version than Ext JS 4.1, please upgrade it or some of the code samples may not work. 
 
-We'll also switch from Aptana IDE to its parent - Eclipse IDE, end we'll use its version called "Eclipse IDE for Java EE developers". This is the most popular IDE among Java developers, and it's available free of charge at the http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation is simple unzip of the downloaded archive. Then double-click on the Eclipse executable, and you'll see the workbench that looks very similar to Aptana.
-
-The file with the minimized production version of Ext JS 4.1 is called ext-all.js and its size is pretty large: 1.3Mb. But there is a way to remove from this file everything that's not used by your application, but it's not likely that you can get it to be less than 500Kb. If size is not the object, simply add it to your index.html from Sencha CDN:
+The file with the minimized production version of Ext JS 4.1 is called ext-all.js and its size is pretty large: 1.4Mb. But there is a way to remove from this file everything that's not used by your application by using http://docs.sencha.com/ext-js/4-1/#!/guide/command[Sencha Cmd]. If this application will be used on the high-speed networks and size is not the object, simply add it to your index.html from your local servers or from the Sencha CDN, which for the Ext JS 4.1 should look as follows:
 
 [source, html]
 ----
-<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.1.0-gpl/ext-all.js"></script> 
-----
+<link rel="http://cdn.sencha.io/ext-4.1.0-gpl/resources/css/ext-all.css" />
 
-For the most of the example in this chapter we'll use Ext JS 4.2, which is in Beta at the time of this writing. You can download the Beta (a 60Mb zip) from http://cdn.sencha.io/ext-4.2.0-beta.zip. 
+<script type="text/javascript" charset="utf-8" 
+        src="http://cdn.sencha.io/ext-4.1.0-gpl/ext-all.js"></script> 
+----
+After downloading and unzipping the Ext JS framework you'll find a number of file and folders there. The files with the names starting with *ext-all* are differently packaged versions of Ext JS framework - you'll need to pick one and we'll explain the differences between a bit later. The *doc* folder contains an excellent documentation - just open the index.html in your browser and enjoy the reading. The *builds* folder has a sandboxed version of Ext JS in case you need to to use Ext JS 4 along with older version of this framework. Browsing the builds folder reveals that the Ext JS framework consists of three parts:
+
+* Ext Core - it's a free to use http://www.sencha.com/products/extcore/[JavaScript library] for enhancing Web sites. It supports DOM manipulation with CSS selectors, events and AJAX requests. It also offers a syntax to define and create classes that can extend from each other.
+
+* Ext JS 4  - a UI framework that includes a rich library of UI components.
+
+* The Foundation - a set of useful utilities. 
+
+Such code separation allows reusing a large portion of the Ext JS code in the mobile library Sencha Touch, which we'll cover in Chapter 13. Comparing jQuery and Ext JS is like comparing apples to oranges. The functionality of Ext Core is comparable to Core jQuery, but there is no equivalent to the Ext JS framework in the jQuery community.  
+
+The *src* folder has the source code of all Ext JS classes in separate files. There is one more folder in the Ext JS distribution that shouldn't go unnoticed: *build*. It includes the text file sdk.jsb3 that describes the library packages, and can be used for creating a a customized version of Ext JS.
+
+While Ext Core is available for free under the MIT license, Ext JS can be used for free only for non-commercial projects. For Enterprise Web development you or your firm has to purchase one of the http://www.sencha.com/products/extjs/license/[Ext JS licenses]. The complete commercial version of Ext JS is available for the 45-days evaluation for free.  
+
+The learning curve of Ext JS is steeper than of jQuery, and this chapter is divided into three sections. First, you'll go through a detailed Ext JS primer, then we'll develop a new version of the Save Sick Child application with Ext JS, and finally, you'll see how to improve the productivity of development with Ext JS and Java using an open source code generator called Clear Data Builder (CDB). 
+
+The Ext JS framework is large so be prepared that your application code will become several hundred kilobytes heavier. So why not just sticking to a lightweight, easy to learn and free jQuery library or one of a dozen of other JavaScript MVC open source frameworks? None of these MVC frameworks offers such a library of components suitable for enterprise applications like Ext JS. If you had a chance to develop or use rich Internet applications developed with such frameworks as Microsoft Silverlight or Apache Flex (formerly Adobe Flex) - Ext JS offers the closest by functionality set of components and tools.  
+
+In this chapter we'll switch from Aptana IDE to its parent - Eclipse IDE. We'll use the "Eclipse IDE for Java EE developers" version of this most popular IDE among Java developers. It's available free of charge at the http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable, and you'll see the workbench that looks very similar to Aptana.
+
 
 === Ext JS Primer
 
-As in Chapter on jQuery, let's start the Ext JS primer with developing a Hello World application. At the very minimum, every Ext JS application will contain one HTML and one JavaScript file usually index.html and app.js. In addition to it, the file index.html has to include the links to the javascript file with the Ext JS framework and a CSS file with the Ext JS theme.
+Let's start the Ext JS primer similar to what we did in the previous chapter with developing a Hello World application. At the very minimum, every Ext JS application will contain one HTML and one JavaScript file usually index.html and app.js. In addition to it, the file index.html has to include the links to the javascript file with the Ext JS framework and a CSS file with the Ext JS theme.
 
 
 ==== JavaScript With Classes
 
 In Chapter two we states that JavaScript doesn't have classes and the closes to classes language construct was a constructor function. Ext JS extends the JavaScript language and introduces classes and a special way to define and instantiate them with functions `define()` and `create()`. Ext JS also allows to extend one class from another using the property `extend` and define class constructors using the property `constructor`. Java developers will also find a familiar concept of packages and fully qualified class names. We'll illustrate all of these concepts next.
+
+Ext.define()
+
+
+Ext.create()
+
+Ext.create() is a preferred way of instantiation as it does more than the new operator. For example, performs lazy loading if need be (if you haven't used require).
+
+Ext.require()
+
 
 
 ==== Best Practice: MVC 
@@ -35,14 +64,32 @@ http://docs.sencha.com/ext-js/4-0/#!/guide/application_architecture
 
 ==== Models and Stores
 
-tbd
+TBD
 
 ==== Controllers and Views
-=== Developing Save Sick Chiled With Ext JS
 
 TBD
 
+==== Layouts
 
+TBD
+
+==== Grid
+
+TBD
+
+==== Customizing Ext JS for Your Application
+
+TBD
+
+==== Minimizing Ext JS Framework for Your Project
+
+Sencha Cmd tool allows you to build the project from a JSB3 file. 
+
+
+=== Developing Save Sick Child With Ext JS
+
+TBD
 
 TIP: http://www.sencha.com/products/desktop-packager/[Sencha Desktop Packager] allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. 
 

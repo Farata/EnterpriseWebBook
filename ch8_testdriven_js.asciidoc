@@ -5,10 +5,7 @@
 To shorten the development cycle of your Web application you need to start testing it on the early stages of the project. It seems obvious, but many enterprise IT organizations haven't adopted the agile testing methodologies, which costs them dearly. JavaScript is dynamically typed interpreted language, which means that there is no compiler to help to identifying errors as it's done in compiled languages like Java. This means that for
 JavaScript Web applications a lot more time should be allocated for testing.
 
-// <vik>
-Static code analysis and code quality tools such as http://esprima.org/[Esprima] and http://www.jshint.com/[JSHint] can help to reduce amount of syntax error and improve your JavaScript quality.
-
-//</vik>
+The static code analysis and code quality tools such as http://esprima.org/[Esprima] and http://www.jshint.com/[JSHint] can help in reducing the number of syntax errors and improve your JavaScript quality.
 
 To switch to a test-driven development, start with accepting the notion of embedding testing into your development process rather than scheduling testing after the development cycle is complete.
 
@@ -16,39 +13,33 @@ In this chapter we'll give you a brief overview of selected test frameworks for 
 
 The second part of this chapter is dedicated to setting up a new Save Sick Child project in the IDE with selected test frameworks.
 
-=== Why to test ?
+=== Why Testing
 
-// <vik>
-Software has bugs. We want to minimize its numbers and make changes to be safe.
-We need constantly test the code to catch regression errors, so we can add new features without breaking existing ones. Covered with tests code easy to refactor. Tests help to prove correctness of out code. Well tested code leads to the better design.
+Any software has bugs. But in interpreted languages like JavaScript you don't have help of compilers that could have pointed you at the potential issues on early stages of development. You need to continue testing the code over and over again to catch regression errors, to be able to add new features without breaking the existing ones. The code covered with tests is easy to refactor. Tests help to prove correctness of your code. A well tested code leads to the better overall design of your programs.
 
-// TBD
 
 === Testing Basics
 
-The basic types of testing are:
+In this chapter we are going to discuss the following types of testing (we don't cover QA and UAT in this book):
 
-- Unit
-- Integration
-- Functional
-- Load
+- Unit tests
+- Integration tests
+- Functional tests
+- Load (a.k.a. stress) tests
 
-The sections that follow examine the differences between these testing strategies and list the tools that will help you in automation of the testing process.
+Let's go over the strategies, approaches, and tools that will help you in automation of each of the above tests.
 
 ==== Unit Testing
 
-Unit testing is performed by a developer and is targeted at small pieces of code to ensure, for example, that if you call a function with particular arguments, it will return the expected result.
+Unit testing is performed by a developer and is targeted at small pieces of code to ensure, for example if you call a function with particular arguments, it should return the expected result.
 
 ==== Integration Testing
 
-Integration testing is a process in which a developer combines several unit tests to ensure that they work properly with each other.
-We use the term integration tests to refer to the tests that check how some of our code works with code from outside the team that we can't change. It might be a public framework or a library from another team within our enterprise. The distinction is that integration tests make sure that any abstractions we build over third-party code work as we expect.
-Both unit and integration tests have to be written by application developers.
+The integration testing is a process in which a developer combines several unit tests to ensure they work properly with each other. We use the term integration tests to refer to the tests that check how some of your works with the code written by other developers. You need to integrate with a framework o framework or a library from another team within our enterprise. The distinction is that integration tests ensures that any abstractions we build over the third-party code work as expected. Both unit and integration tests have to be written by application developers.
 
 ==== Functional Testing
 
-Functional testing (or acceptance testing) is aimed at finding out whether the application properly implements business logic. For example, if the user clicks on a row in the customer data grid, the program should display a form view with specific details about the selected customer. In functional testing business users should define what has to be tested, unlike unit or integration testing where tests are created by software developers.
-Functional tests can be performed manually, in which a real person clicks through each and every view of the web application, confirming that it operates properly or reporting discrepancies with the functional specifications.
+Functional testing (or acceptance testing) is aimed at finding out whether the application properly implements business logic. For example, if the user clicks on a row in the customer data grid, the program should display a form view with specific details about the selected customer. In functional testing business users should define what has to be tested, unlike unit or integration testing where tests are created by software developers. Functional tests can be performed manually, in which a real person clicks through each and every view of the web application, confirming that it operates properly or reporting discrepancies with the functional specifications.
 
 //TBD
 // TODO Is Casper.js good example to demonstrate functional testing of app?
@@ -57,15 +48,16 @@ Functional tests can be performed manually, in which a real person clicks throug
 
 ==== Load Testing
 
-Load testing is a process that can help answer to following questions:
-How many concurrent users can work with your application? But without bringing your server to its knees? Even if the server is capable of serving a thousand users, will performance suffer? If yes, how bad is it going to be?
+Load testing is a process that can help in answering the following questions:
+
+* How many concurrent users can work with your application without bringing your server to its knees? 
+* Even if your server is capable of serving a thousand users, is your application performance in a compliance with the service level agreement (SLA), if any? 
 
 //TBD
 
 ==== Test Driven Development
 
-Test-Driven Development (TDD) turns "classic" software development on its head. We write our tests even before we write the production code. Instead of just using testing to verify our work after it's done, TDD turns testing into a design activity. We use the tests to clarify our ideas about what we want the code to do.
-Here is fundamental mantra of TDD:
+The methodology known as Test-Driven Development (TDD) substantially changes the way a "classic" software development is done. This methodology wants you to write tests _even before_ writing the application code. Instead of just using testing to verify our work _after it's done_, TDD moves the testing into the earlier application design phase. You should use the tests to clarify your ideas about what you are about to program. Here is fundamental mantra of TDD:
 
 - Write a test and make it fail.
 - Make the test pass.
@@ -74,8 +66,9 @@ Here is fundamental mantra of TDD:
 
 This technique also referred as "Red-Green-Refactoring" because IDE's and test runners use red color to indicate failed test and green color to indicate passed tests.
 
-Here the example that can clarify what we just said earlier. When you are about to start programming a class with some business logic, ask yourself, "How can I ensure that this function works fine?" After you know the answer, write a test JavaScript class that calls this function to assert that the business logic gives the expected result. And first time your test will fail because there is no production code yet. Only after the test is written, start program the business logic. You should write a simplest possible piece of code to make test pass. Don't try to find generic solution at this step. For example, if you want to test calculator that needs to return `4` as result of `2+2` write production code what simply returns `4`. Don't worry about performance or optimization on this step. Just make the test pass. Once you made it, you can refator your production code. Now you might want to introduce more optimal algorithm for for solving your production problem without worrying to break contract with other units of your application. Failed unit test will indicate that your change caused regression. Actually, it's good thing. TDD allows receive feedback from your code almost immediately.
-It's better to find that something is broken in development rather than in production.
+When you are about to start programming a class with some business logic, ask yourself, "How can I ensure that this function works fine?" After you know the answer, write a test JavaScript class that calls this function _to assert_ that the business logic gives the expected result. Run your test, and it  will immediately fail because no application code is written yet! Only after the test is written, start programming the business logic of your application. 
+
+You should write a simplest possible piece of code to make the test pass. Don't try to find a generic solution at this step. For example, if you want to test calculator that needs to return `4` as result of `2+2` write the code what simply returns `4`. Don't worry about performance or optimization on this step. Just make the test pass. Once you made it, you can refator your application code. Now you might want to introduce a real algorithm for implementing the application logic without worrying about breaking the  contract with other components of your application. A failed unit test will indicate that your change caused regression...... Actually, it's a good thing. TDD allows to receive feedback from your code almost immediately. It's better to find that something is broken during development rather than in the application deployed in production.
 
 // TODO - develop the idea of receiving feedback from code. http://vimeo.com/36579366
 
@@ -87,20 +80,19 @@ Never write new functionality without a failing test
 ____
 ===============================
 
-Say we want to test validation logic in donation entry form.
+Say, you want to test validation logic in Donation entry form.
 
 //TODO - here should be code example with
 
 In addition to business logic, web applications should be tested for proper rendering of UI components, changing view states, dispatching, and handling events.
 
-==== «Automate All The Things»!
+==== Automate All The Things
 
-We must automate testing as much as we can to reduce the costs of building, deploying, and modifying versions of the system. In this chapter we're going to introduce build automation tool for JavaScript project called http://gruntjs.com/[Grunt]. With Grunt help we'll automate process of running tests once code is changes. Tests should help us to provide feedback about quality of our code. We will show how setup Grunt to watch of your code changes and run tests right after you saved the file.
+you should automate testing as much as you can to reduce the costs of building, deploying, and maintaining your application. In this chapter we're going to introduce a build automation tool for JavaScript project called http://gruntjs.com/[Grunt]. With Grunt's help we'll automate process of running tests once the code changes. The tests should help us to check the quality of our own code. You'll learn how to setup Grunt to watch your code changes and run tests right after you modified the code and saved the changes.
 
 TBD
 
-//</vik>
 
-=== Save Sick Children With TDD
+=== Save Sick Child With TDD
 
 TBD
