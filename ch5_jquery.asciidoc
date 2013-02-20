@@ -1,6 +1,8 @@
 == Save Sick Child with JQuery 
 
-Up till now we've been using HTML, JavaScript and CSS to create the Save Sick Child Web application.  In the real world, developers try to be more productive by using JavaScript libraries and MVC frameworks. Libraries do not dictate how to structure the code of your application - they offer you components that allow to write less code. MVC frameworks force you to organize your code in layers implementing the Model-View-Controller design pattern.  There are more than a dozen MVC JavaScript frameworks that are being used by professional developers: http://backbonejs.org/[Backbone.js], http://www.sencha.com/products/extjs[ExtJS], AngularJS, http://emberjs.com/[Ember.js], http://knockoutjs.com/[Knockout] just to name a few. In this chapter we'll introduce the JavaScript library called jQuery. Chapter 6 is about the JavaScript framework ExtJS. Their mobile counterparts are called jQuery Mobile and Sencha Touch (see Chapters 12 and 13). 
+Up till now we've been using HTML, JavaScript and CSS to create the Save Sick Child Web application.  In the real world, developers try to be more productive by using JavaScript libraries and MVC frameworks. Libraries do not dictate how to structure the code of your application - they offer you components that allow to write less code. MVC frameworks force you to organize your code in layers implementing the Model-View-Controller design pattern.  There are more than a dozen MVC JavaScript frameworks that are being used by professional developers: http://backbonejs.org/[Backbone.js], http://www.sencha.com/products/extjs[ExtJS], AngularJS, http://emberjs.com/[Ember.js], http://knockoutjs.com/[Knockout] just to name a few. In this chapter we'll introduce the JavaScript library called jQuery. Chapter 6 is about the JavaScript framework Ext JS. Their mobile counterparts are called jQuery Mobile and Sencha Touch (see Chapters 12 and 13). 
+
+TIP: There is an excellent Web site called http://todomvc.com/[TodoMVC], which shows the examples of implementing the same application (a Todo list) using various popular frameworks. Studying the source code of this application implemented in several frameworks can help you in selecting the one for your project.
 
 http://jquery.com/[jQuery] is the most popular JavaScript library. More than 60% of top Web sites use jQuery (visit http://trends.builtwith.com/javascript/top[http://trends.builtwith.com/javascript/top] for the current statistics). jQuery is simple to use and doesn't require you to dramatically change the way you program for the Web. jQuery offers you a helping hand with the tasks that most of the Web developers need to deal with, for example, finding and manipulating DOM elements, processing browser's events, and dealing with browser incompatibility. Since jQuery is an extensible framework, lots and lots of plugins were created by developers from around the world, and all of them are available for free. If you can't find the plugin that fits your need you can create one yourself.
 
@@ -728,7 +730,7 @@ exit();
 ?>
 ----
 
-To see that this PHP in action, it has to be deployed in any Web server that supports PHP. For example, you can install on your computer the http://www.apachefriends.org/en/xampp.html[XAMP server] and deploy it there. Integration with the payment system using https://www.x.com/content/introducing-adaptive-payments[Paypal API] is out of this book's scope, but at least we can identify the place to do it - you'd need to replace the `echo` statement with the code making requests to Paypal or any other payment system. The fragment from the main.js that shows how to make a request to the demo.php comes next.
+The process of integration with the payment system using https://www.x.com/content/introducing-adaptive-payments[Paypal API] is out of this book's scope, but at least we can identify the place to do it - you'd need to replace the `echo` statement with the code making requests to Paypal or any other payment system. The fragment from the main.js that shows how to make a request to the demo.php comes next.
 
 [source, javascript]
 ----
@@ -748,7 +750,7 @@ function submitSerializedData(event) {
        :input[name=full_name], :input[name=email_addr]')
        .serialize();
 
-  console.log('- get inputs data with definite type, name or value -');
+  console.log('-------- get the form inputs data  -----------');
   console.log("Submitting to the server: " + queryString);
   	
   	$.ajax({
@@ -778,6 +780,76 @@ function submitSerializedData(event) {
 
 <3>   The serialized data from `queryString` will be submitted to the server-side script demo.php
 
+.Installing the XAMPP server with PHP support
+*****************************************************
+To see this PHP script in action, it has to be deployed in any Web server that supports PHP. For example, you can install on your computer the XAMPP package from the http://www.apachefriends.org/en/xampp.html[ Apache Friends web site], which includes Apache Web Server that supports PHP, FTP, preconfigured MYSQL database server(we are not going to use it). The installation process is very simple - just go through the short instructions on the Apache Friends website that are applicable for your OS. Start the XAMPP Control application and click on the button Start next to the label Apache. By default, Apache server starts on the port 80, so entering *http://localhost* will open the XAMPP welcome page. 
+
+TIP: If you use MAC OS X, you may need to kill the pre-installed Apache server by using the *sudo apachectl stop* command.
+
+The directory xampp/htdocs is the document root of the Apache Web Server, hence you can place the index.html of your project there or in one of its subdirectories. To test that a PHP is supported, just save the following code in the  helloworld.php in the htdocs directory:
+
+[source,php]
+----
+<?php
+  echo('Hello World!');
+?>
+----
+
+After entering the URL http://localhost/helloworld.php in your Web browser, you should see a greeting from this simple PHP program. The home Web page of XAMPP server contains the link phpinfo() on the left panel that shows the current configuration of your PHP server. 
+*****************************************************
+
+The easiest way to test the project-15-jQuery-serialize-form that uses demo.php is to copy this folder from Aptana into the htdocs directory of your XAMPP install (just drag and drop this folder from Aptana to your file system). Then enter the URL http://localhost/project-15-jquery-serialize-form/ in your Web browser and you'll see the Save Sick Child application. Then fill out the form and click on the Donate Now button. The form will be serialized and submitted to the demo.php as explained above. If you'll open Google Developers Tools in the Network tab you'll see that the demo.php has received the AJAX request and the console will show the output similar to the following (for Alex Smith, alex@gmail.com):
+
+[source, html]
+----
+-------- get the form inputs data  ----------- main.js:138
+Submitting to the server: paypal_email=email-registered-in-paypal%40
+site-url.com&item_name=Donation+to+the+Save+Sick+Child&currency_code
+=USD&amount=50&full_name=Alex+Smith&email_addr=alex%40gmail.com main.js:139
+
+-------- response from demo.php  ----------- main.js:146
+Got the response from the ajax() call to demo.php: Got from the client 
+and will send to PayPal: email-registered-in-paypal@site-url.com    
+Payment type: Donation to the Save Sick Child   amount: 50 USD    
+Thank you Alex Smith    
+The confirmation will be sent to alex@gmail.com main.js:147
+----
+
+TIP: If you'll open Aptana's view Project Explorer, you'll be able to browse local file system without switching to File Manager on Windows or Finder on MAC OS. 
+
+.Configuring Aptana IDE to use Apache Web Server
+************************************************
+As your Web projects become more complex, you may want to configure Aptana to use an external Web server, e.g. Apache Web Server that you just installed as a part of XAMPP instead of working with its own embedded Web server. First, create a subdirectory in the document root of your server (in case of Apache Web server it's htdocs). If you start from scratch, create a new Aptana's workspace in this directory by selecting the menu File | Switch Workspace | Other. If you just want to create a single new project to be used with Apache, while creating a new project (its name doesn't matter), uncheck the option "Use Default Location" and select a folder that you have created under xampp/htdocs, for example xampp/htdocs/ssc. Now create a folder in your Aptana's App Explorer view for your new Web application, e.g. helloworld. Then create an hello.html inside this folder.
+
+[source, html]
+----
+<!DOCTYPE >
+<html>
+  
+  <body>
+    <h1>Hello from under XAMPP</h1>
+  </body> 
+  
+</html>
+----
+
+Now there are several ways of accessing this index.html via Apache Web Server.  If it's up and running on port 80, just go to your Web browser and enter the URL http://localhost/ssc/helloworld/hello.html. You'll see the Web page that read "Hello from under XAMPP".
+
+The other choice is to configure an external Web server (Apache) in Aptana and create a _Run Configuration_ that will know that hello.html has to be run using this server. 
+
+
+To switch to XAMPP's Apache Web Server that was installed and started on port 80, right-click on hello.html and select the menu *Run Configuration...* In the popup window select the radiobuttons Use Current Page and Use Selected Server. For the first time you'll need to click on the link Configure to specify where the Apache server runs. <<FIG5-6>> can server as a guide for filling up the server's parameters: 
+
+[[FIG5-6]]
+.Configuring Apache Web Server 
+image::images/fig_05_06.png[]
+
+
+TIP: The Start and Stop command options may give you some troubles if you'd like to be able to start/stop the Web server from Aptana (see details http://bit.ly/134yyUI[here]), but if you're OK with starting Apache Web Server via the UI that comes with XAMPP, you can just leave the fields for starting and stopping commands empty.  
+
+After you've configured hello.html to run under an external Web server, you should run it by opening the Play dropdown (clicking on a little arrow next to the green button) on the toolbar and selecting the hello.html entry.
+
+************************************************
 
 
 === Plugins 
@@ -879,11 +951,11 @@ var validator = $('form[name="_xclick"]').validate({
 
 <4>	Set the custom error messages to be displayed if the user enters invalid data.
 
-<<FIG5-6>> shows the above code in action. After entering a one-character name and missing an email the user will see the corresponding error messages. These messages won't be shown until the user submits the form. But as soon as the user will fix any of them (e.g. enter one more letter in the name) the form will be immediately re-validated and the error messages will be removed as soon as the user fix the error.
+<<FIG5-7>> shows the above code in action. After entering a one-character name and missing an email the user will see the corresponding error messages. These messages won't be shown until the user submits the form. But as soon as the user will fix any of them (e.g. enter one more letter in the name) the form will be immediately re-validated and the error messages will be removed as soon as the user fix the error.
 
-[[FIG5-6]]
+[[FIG5-7]]
 .Validator's Error Messages
-image::images/fig_05_06.png[]
+image::images/fig_05_07.png[]
 
 TIP: Before including a jQuery plugin to your application spend some time testing it - check its size and compare its performance with competing plugins. 
 
@@ -905,7 +977,7 @@ Pretty often you need to add a rotation of the images feature to a Web page. The
 
 We ran into issue as this version of the Resonsive Carousel plugin was using the method `live()` that was deprecated in jQuery 1.7 and removed in jQuery 1.9. After consulting with the http://jquery.com/upgrade-guide/1.9/[jQuery Core 1.9 Upgrade Guide] we've replaced all the occurrences of `live()` with `on()` right inside the file responsive-carousel.min.js, and the plugin started working fine.
 
-Run Aptana project-16-jQuery and you'll see rotating how three plain slides rotate as shown on <<FIG5-7>>. The HTML part of the container includes the three slides as follows. 
+Run Aptana project-16-jQuery and you'll see rotating how three plain slides rotate as shown on <<FIG5-8>>. The HTML part of the container includes the three slides as follows. 
 
 [source, html]
 ----
@@ -924,9 +996,9 @@ Run Aptana project-16-jQuery and you'll see rotating how three plain slides rota
 ----
 
 
-[[FIG5-7]]
+[[FIG5-8]]
 .Using Responsive Carousel plugin
-image::images/fig_05_07.png[]
+image::images/fig_05_08.png[]
 
 With this plugin, the JavaScript code that the application developer has to write to implement several types of rotation is minimal. When the user clicks on the one of the radio buttons (Fade, Slide, or Flip transitions) the code below just changes the CSS class name to be used with the carousel.
 
