@@ -43,18 +43,48 @@ Let's start the Ext JS primer similar to what we did in the previous chapter wit
 
 
 
-==== JavaScript With Classes
+==== Ext JS Classes
 
-In Chapter two we states that JavaScript doesn't have classes and the closes to classes language construct was a constructor function. Ext JS extends the JavaScript language and introduces classes and a special way to define and instantiate them with functions `define()` and `create()`. Ext JS also allows to extend one class from another using the property `extend` and define class constructors using the property `constructor`. Java developers will also find a familiar concept of packages and fully qualified class names. We'll illustrate all of these concepts next.
+In Chapter 2 we stated that JavaScript doesn't have classes and that constructor functions were the closest to classes language constructs. Ext JS extends the JavaScript language and introduces classes and a special way to define and instantiate them with functions `Ext.define()` and `Ext.create()`. Ext JS also allows to extend one class from another using the property `extend` and define class constructors using the property `constructor`. It seems that creators of Ext JS tried to model their class system after Java. For example, for each class there is one instance of special class `Ext.Class`. Ext JS has familiar to Java developers concept of packages and fully qualified class names. On the other hand, Ext JS supports multiple inheritance, which Java doesn't. Java developers will have to get used to the fact that a class constructor can get any object as an argument, and Ext JS will use its propery values to initialize the corresponding properties defined in the class *if found*, the rest of the properties will be created on the fly. We'll illustrate all of these concepts next - just keep in mind - it's not Java, and it's not C# either.
+
 
 Ext.define()
-
 
 Ext.create()
 
 Ext.create() is a preferred way of instantiation as it does more than the new operator. For example, performs lazy loading if need be (if you haven't used require).
 
 Ext.require()
+
+
+TODO: Add a sidebar explaining JavaScript mixins
+
+.JavaScript Mixins
+***************************
+
+
+
+Object-oriented languages Java and C# can be considered as simpler version of C++. One of the C++ features that didn't make it into Java and C# was support of multiple inheritance: a class can extend only one other class. This was done for a good reason - debugging of the C++ programs that were written with multiple inheritance was difficult. 
+***************************
+
+
+Ext JS supports multiple inheritance by implementing mixins. The following code snippet shows how to define a `classB` that will have features defined in classes `classA`,`classC`, and `classD`.
+
+[source, javascript]
+----
+Ext.define("MyApp.classB",{
+  extend: "MyApp.classA",
+  mixins: {classC: "MyApp.ClassC"
+           classD, "MyApp.classD"}
+  
+  }
+  ...
+});
+
+WARNING: If more than one mixin has a method with the same name, the first method that was applied to the resulting class wins. To avoid collisions Ext JS allows you to provide fully qualified name of the method, for example `this.mixins.classC.conflictingName(); this.mixins.classD.conflictingName();`.
+---- 
+
+
 
 
 
