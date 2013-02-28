@@ -4,6 +4,8 @@ In the previous chapter you've got familiar with the JavaScript library jQuery. 
 
 If you just finished reading the jQuery Chapter, you'll need to switch to a different state of mind. The Core jQuery library was light, it didn't drastically change the way we developed a pure HTML/JavaScript applications. Working with Ext JS framework is a completely different ball game. It's not about improving an existing Web page, it's about re-writing it from scratch without using HTML. 
 
+Ext JS offers you a rich library of UI components, a flexible class system and custom layouts. This is great, but you should not forget that Web browsers understand nothing, but HTML, DOM, CSS, and JavaScript. This means that the framework will have to do some extra work in converting the code written using great Ext JS class system into the same old HTML objects. Extra work requires extra time and will discuss this in the section titled The Components Lifecycle. 
+
 IMPORTANT: The materials presented in this chapters were tested in Ext JS 4.1 and Ext 4.2 that's currently in Release Candidate version, which is available from  at the time of this writing. If you have an older version than Ext JS 4.1, please upgrade it or some of the code samples may not work. 
 
 The file with the minimized production version of Ext JS 4.1 is called ext-all.js and its size is pretty large: 1.4Mb. But there is a way to remove from this file everything that's not used by your application by using http://docs.sencha.com/ext-js/4-1/#!/guide/command[Sencha Cmd]. If this application will be used on the high-speed networks and size is not the object, simply add it to your index.html from your local servers or from the Sencha CDN, which for the Ext JS 4.1 should look as follows:
@@ -40,6 +42,15 @@ In this chapter we'll start Aptana IDE, but then will switch to its parent Eclip
 
 Let's start the Ext JS primer similar to what we did in the previous chapter with developing a Hello World application. At the very minimum, every Ext JS application will contain one HTML and one JavaScript file usually index.html and app.js. In addition to it, the file index.html has to include the links to the javascript file with the Ext JS framework and a CSS file with the Ext JS theme.
 
+First you need to select the packaging of the Ext JS framework that fits your need. You may select a minimized version to be used in production or a larger developers' version with detailed comments and error messages. Besides, you may select a version of Ext JS that include either all or only the core classes. The third option is to create a custom build of Ext JS that will include only the those framework classes that are used by your application.
+
+
+TIP: If the name of the file with Ext JS framework contains _-all_, this indicates that all framework classes are included.
+
+
+
+TODO: Generate Hello World using Sencha Cmd
+
 
 
 
@@ -48,13 +59,23 @@ Let's start the Ext JS primer similar to what we did in the previous chapter wit
 In Chapter 2 we stated that JavaScript doesn't have classes and that constructor functions were the closest to classes language constructs. Ext JS extends the JavaScript language and introduces classes and a special way to define and instantiate them with functions `Ext.define()` and `Ext.create()`. Ext JS also allows to extend one class from another using the property `extend` and define class constructors using the property `constructor`. It seems that creators of Ext JS tried to model their class system after Java. For example, for each class there is one instance of special class `Ext.Class`. Ext JS has familiar to Java developers concept of packages and fully qualified class names. On the other hand, Ext JS supports multiple inheritance, which Java doesn't. Java developers will have to get used to the fact that a class constructor can get any object as an argument, and Ext JS will use its propery values to initialize the corresponding properties defined in the class *if found*, the rest of the properties will be created on the fly. We'll illustrate all of these concepts next - just keep in mind - it's not Java, and it's not C# either.
 
 
-Ext.define()
+Ext.define() contains a class declaration. In the first argument you specify a fully qualified class name, 
 
 Ext.create()
 
 Ext.create() is a preferred way of instantiation as it does more than the new operator. For example, performs lazy loading if need be (if you haven't used require).
 
-Ext.require()
+A sample configuration: `{renderTo: Ext.getBody()}`
+
+Ext.require() uses loader
+
+
+==== DOM Manipulations 
+
+Ext.Element
+
+Ext.DomQuery, or Ext.select() that uses internally DomQuery 
+
 
 
 TODO: Add a sidebar explaining JavaScript mixins
@@ -98,17 +119,41 @@ http://docs.sencha.com/ext-js/4-0/#!/guide/application_architecture
 
 TBD
 
+TIP: To be more productive, always have a mock store with the test data right on your computer. This way you won't depend on the readiness and availability of the server-side data.
+
 ==== Controllers and Views
 
 TBD
 
+==== The Components Lifecycle
+
+In previous chapters CSS was responsible for all of the layouts of our Save Sick Child application. In Chapter 11 you'll be learning about responsive design techniques and CSS media queries that will allow to create fluid layouts that automatically adjust to the size of the viewport. 
+
+But this section is about Ext JS proprietary way of creating and adding UI components to your Web pages. Before the user will see a component, Ext JS framework will go through the following phases for each component:
+
+* Load - load the required (or all) Ext JS classes and their dependencies 
+* Initialize components when the DOM is ready
+* Rendering  - convert components to HTML elements
+* Layout - measuring and assigning sizes 
+
+Rendering and layout are the most time consuming phases. The rendering does a lot of preparations to give the browser's rendering engine HTML elements and not Ext JS classes. The layout phase is slow because the calculation of sizes and positions (unless they are in absolute coordinates) and applying of cascading stylesheets takes time. Ext JS 4.1 was redesigned to minimize the number of reflows, which happen when  the code reads-measures-writes to the DOM and makes dynamic style modifications. Now a large portion or recalculations is done in a batch before modyfying the DOM.
+
+Each Web page consists of one or more containers, which include some children - components (in Ext JS they are subclasses of http://bit.ly/Zy3iZU[`Ext.Component`]), for example, `Ext.button.Button`. If a component can contain other components, it's a container (e.g. `Ext.panel.Panel`) and will have http://bit.ly/13QH0TG[`Ext.container.Container`] as one of its ancestors.
+
+The process of adding a component to a container will typically consist of two simple method invocations: `Ext.create()` for instantiation  `Ext.render()` for rendering and layout by the browser. But under the hood Ext JS will do a lot more work. The framework will auto-generate a unique ID for the component, assign some event listeners, instantiate component plugins if specified, invoke the `initComponent()`, and add the component to `Ext.ComponentManager`.  
+
+WARNING: Even though you can manually assign an ID to the component via configuration object, it's not recommended to avoid duplicate IDs.
+
+TIP: At any time your program can get from the `ComponentManager` a reference to a component by ID, for example, `var donationForma = Ext.getCmp();`
+
+
 ==== Layouts
 
-TBD
+Border layout - is typically used for a home page.
 
 ==== Grid
 
-TBD
+Grid is probably the most used component in enterprise applications. Displaying rows of data is important and the performance of a grid component is crucial for any UI platform. Large grids are infamous for poor scrolling performance, which is defined by how the grid data is being rendered. Grid-centric Web application should be using Ext JS 4.2 and you'll see a sample grid application in this section.  
 
 ==== Customizing Ext JS for Your Application
 
