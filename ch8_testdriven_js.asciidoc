@@ -2,25 +2,16 @@
 
 // [quote, @bphogan, http://twitter.com/bphogan/status/194856922208407552]
 
-To shorten the development cycle of your Web application you need to start testing it on the early stages of the project. It seems obvious, but many enterprise IT organizations haven't adopted the agile testing methodologies, which costs them dearly. JavaScript is dynamically typed interpreted language, which means that there is no compiler to help to identifying errors as it's done in compiled languages like Java. This means that for
-JavaScript Web applications a lot more time should be allocated for testing.
+To shorten the development cycle of your Web application you need to start testing it on the early stages of the project. It seems obvious, but many enterprise IT organizations haven't adopted the agile testing methodologies, which costs them dearly. JavaScript is dynamically typed interpreted language, which means that there is no compiler to help to identifying errors as it's done in compiled languages like Java. This means that a lot more time should be allocated for testing for JavaScript Web applications. Moreover, a programmer who didn't introduce unit testing techniques into his daily routine can't be 100% sure that his code is working properly.
 
-// <vik>
-Moreover,  programmer who doesn't introduced unit testing techniques into his daily routine can't be 100% sure that his code base is working.
+The static code analysis and code quality tools such as http://esprima.org/[Esprima] and http://www.jshint.com/[JSHint] will help in reducing the number of syntax errors and improve the quality of your code. Later in this chapter we will demonstrate how to setup +JSHint+ for your JavaScript project and check your code for the syntax errors automatically. 
 
-//</vik>
-The static code analysis and code quality tools such as http://esprima.org/[Esprima] and http://www.jshint.com/[JSHint] can help in reducing the number of syntax errors and improve your JavaScript quality.
+To switch to a test-driven development mode, make testing a part of your development process in its early stages rather than scheduling testing after the development cycle is complete.
 
-// <vik>
-Later in this chapter we will demonstrate how to setup +JSHint+ for your JavaScript project and check your code for the syntax errors automatically. 
+Introduction of test-driven development may substantially improve you code quality. It is very important to receive the feedback about your code on a regular basis. That's why unit tests must be automated. Ideally, the tests should run as soon as you've changed the code. In this chapter we are going to introduce Grunt - the task runner tool - that can help you with automation of repetitive operations like running unit tests when the code changes. 
 
-To switch to a test-driven development, start with accepting the notion of embedding testing into your development process rather than scheduling testing after the development cycle is complete.
+There are many testing frameworks in JavaScript world, and in this chapter we'll give you a brief overview of two of them: http://qunitjs.com/[Qunit] and http://pivotal.github.com/jasmine/[Jasmine]. The main goal of each framework to is to test small pieces of code a.k.a. _units_.  We will also show how to abstract your JavaScript project lifecycle from any specific frameworks or libraries using Grunt tool.
 
-Introduction of test-driven development might tremendously improve you code quality. It is very important to receive constant feedback from your code base. That is why unit tests must be automated. Ideally, the tests should run each time when you change code. In this chapter we are going to introduce Grunt - the tasks runner tool - that can help you with automation of repetitive operation like running unit test on code change. 
-
-There are so many testing frameworks in JavaScript world. In this chapter we'll introduce and give you a brief overview of selected test frameworks: http://qunitjs.com/[Qunit] and http://pivotal.github.com/jasmine/[Jasmine]. Target responsibility of the each framework to test small pieces of code - units. Of course, you can change you mind in future and pick another framework. But we will get you covered. We will show how to abstract your JavaScript project lifecycle from specific frameworks or libraries using Grunt tool.
-
-// </vik>
 We will go through the basic testing techniques such as "Test-driver development" and "Test First". You'll learn how to automate the testing process in multiple browsers with http://vojtajina.github.com/testacular/[Testacular] or by running tests in so called _headless_ mode with http://phantomjs.org/[PhantomJS]. You'll learn how to mock and stub selected artifacts of the environment (such as `XMLHTTPRequiest` object or timer) with http://sinonjs.org/[Sinon.js] and how to unit test the DOM manipulation code.
 
 The second part of this chapter is dedicated to setting up a new Save Sick Child project in the IDE with selected test frameworks.
@@ -42,21 +33,14 @@ Let's go over the strategies, approaches, and tools that will help you in automa
 
 ==== Unit Testing
 
-// <vik>
-Unit test is a piece of code that invoke the method or class being tested. Then it checks some assumptions about logic and behavior of tested method or class. Unit test is written using unit-testing framework. Test should be easily written and runs quickly, be automated and readable.
-Unit testing is performed by a developer and is targeted at small pieces of code to ensure, for example if you call a function with particular arguments, it should return the expected result.
-We will take more closer look on unit testing terminology and vocabulary in a <<TDD>> section.
+The _unit test_ is a piece of code that invokes the method or class being tested. It _asserts_ some assumptions about the application logic and behavior of the  method or class. You'll be writing unit tests using a unit-testing framework. The test should run fast, be automated and readable. For example you can test that if a function is called with a particular arguments, it should return an expected result.
+We will take a closer look on unit testing terminology and vocabulary in a <<TDD>> section.
 
-// </vik>
 
 ==== Integration Testing
 
-// <vik>
+Integration testing is a phase when already tested units are combined into a module to test the interfaces between them. You may want to test the integration of your code with the code written by other developers, e.g. some framework. Integration tests ensures that any abstractions we build over the third-party code work as expected. Both unit and integration tests are written by application developers. 
 
-Integration testing is all about testing two or more dependent software modules as a group. Software and/or hardware elements are combined and tested until the entire system has been integrated. 
-We use the term integration tests to refer to the tests that check how some of your code works with the code written by other developers. You need to integrate with a framework  or a library from another team within our enterprise. The distinction is that integration tests ensures that any abstractions we build over the third-party code work as expected. Both unit and integration tests have to be written by application developers. 
-
-// </vik>
 
 ==== Functional Testing
 
@@ -90,23 +74,18 @@ This technique also referred as "Red-Green-Refactoring" because IDE's and test r
 
 When you are about to start programming a class with some business logic, ask yourself, "How can I ensure that this function works fine?" After you know the answer, write a test JavaScript class that calls this function _to assert_ that the business logic gives the expected result. 
 
-// <vik>
-An assertion is a true-false statement that assumes something about program state. 
 
-// M.Fauler Refactoring - Improving the Design of Existing Code, 2002 p.212
-According to M.Fauler, an assertion is a sections of code work only if certain conditions are true. An assertion is a conditional statement that is assumed to be always true. Failure of an assertion indicates test failure. 
+An assertion is a true-false statement that represents what a programmer assumes about program state, e.g.  *customerID >0* is an assertion. 
 
-//</vik>
+According to Martin Fauler, an assertion is a sections of code work only if certain conditions are true (M.Fauler Refactoring - Improving the Design of Existing Code, 2002 p.212). An assertion is a conditional statement that is assumed to be always true. Failure of an assertion results in test failure. 
+
 Run your test, and it  will immediately fail because no application code is written yet! Only after the test is written, start programming the business logic of your application 
 
 You should write a simplest possible piece of code to make the test pass. Don't try to find a generic solution at this step. For example, if you want to test calculator that needs to return `4` as result of `2+2` write the code what simply returns `4`. Don't worry about performance or optimization on this step. Just make the test pass. Once you made it, you can refactor your application code. Now you might want to introduce a real algorithm for implementing the application logic without worrying about breaking the  contract with other components of your application. 
 
-// <vik>
-A failed unit test will indicate that your change introduced regression. 
-Regression is a bug meaning a feature that worked before stop functioning after code change. Automated testing and well-written test cases can reduce the likelihood of a regression in your code.
+A failed unit test indicates that your code change introduced regression, which is a new bug in a previously worked software. Automated testing and well-written test cases can reduce the likelihood of a regression in your code.
 
-//<vik>
-Actually, it's a good thing. TDD allows to receive feedback from your code almost immediately. It's better to find that something is broken during development rather than in the application deployed in production.
+TDD allows to receive feedback from your code almost immediately. It's better to find that something is broken during development rather than in the application deployed in production.
 
 // TODO - develop the idea of receiving feedback from code. http://vimeo.com/36579366
 
@@ -124,24 +103,23 @@ Say, you want to test validation logic in Donation entry form.
 
 In addition to business logic, web applications should be tested for proper rendering of UI components, changing view states, dispatching, and handling events.
 
-==== Automate All The Things
+==== Automate Everything
 
 You should automate testing as much as you can to reduce the costs of building, deploying, and maintaining your application. 
 
-// <vik>
-Now lets start to create foundation for our refactored application. We are going to use the tasks running framework for JavaScript project called http://gruntjs.com/[Grunt]. With Grunt's help we'll automate process of running tests once the code changes. The tests should help us to check the quality of our own code. You'll learn how to setup Grunt to watch your code changes and run tests right after you modified the code and saved the changes. 
-With Grunt tool you can have script to run all your test. In you came from Java world, you know very popular general purpose command-line tool for drive processes described in build files as targets - Apache Ant. Grunt also running the tasks described in. There are wide range of tasks available today - starting with running automated unit tests and ending with JavaScript code minification. Grunt provides separate layer of abstraction where you can define tasks in special DSL (domain - specific language ) in Gruntfile and Grunt will execute it.
+Now lets start building the foundation for our refactored application. We are going to use the tasks running framework for the JavaScript project called http://gruntjs.com/[Grunt]. With Grunt's help we'll automate process of running tests once the code changes. The tests should help in assessing the quality of our code. You'll learn how to setup Grunt to watch your code changes and run tests right after you modified the code and saved the changes. 
 
-===== Simplest possible Grunt file
+With the Grunt tool you can have a script to run all your tests. In you came from the Java world, you know about Apache Ant, a general-purpose command-line tool for drive processes described in build files as targets. Grunt also running the tasks described in. There is a wide range of tasks available today - starting with running automated unit tests and ending with JavaScript code minification. Grunt provides a separate layer of abstraction where you can define tasks in special DSL (domain-specific language) in Gruntfile and Grunt will execute it.
+
+===== The Simplest Grunt File
 
 You can follow http://gruntjs.com/getting-started[instruction from official website] to install Grunt on your machine.
 
-Lets start with the simplest Grunt project setup. Here is two files required to present in project directory:
+Let's start with the simplest Grunt project setup. The following two files must be present in the project directory:
 
-* `package.json`: This file is used by npm (https://npmjs.org/[Node Package Manager]) to store metadata for projects. You will list grunt and the Grunt plugins your project needs as devDependencies in this file.
-* `Gruntfile`: This file is named `Gruntfile.js` or `Gruntfile.coffee` and is used to configure or define tasks and load Grunt plugins.
+* `package.json`: This file is used by npm (https://npmjs.org/[Node Package Manager]) to store metadata for projects. You will list Grunt and its plugins your project needs as devDependencies in this file.
+* `Gruntfile`: This file is named `Gruntfile.js` or `Gruntfile.coffee` and is used to configure or define the tasks and load Grunt plugins.
 
-// </vik>
 TBD
 
 === Save Sick Child With TDD
