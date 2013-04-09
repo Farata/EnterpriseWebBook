@@ -1,14 +1,14 @@
-== Save Sick Child With Ext JS
+== Rewriting the Application With Ext JS Framework
 
 In the previous chapter you've got familiar with the JavaScript library jQuery. Now we'll introduce you to a more complex product - a JavaScript framework http://www.sencha.com/products/extjs[Ext JS] from http://www.sencha.com[Sencha]. This is one of the most feature-complete frameworks available on the market, and you should give it a serious consideration while deciding on the tooling for your next enterprise HTML5 application. 
 
-If you just finished reading the jQuery Chapter, you'll need to switch to a different state of mind. The Core jQuery library was light, it didn't drastically change the way we developed a pure HTML/JavaScript applications. Working with Ext JS framework is a completely different ball game. It's not about improving an existing Web page, it's about re-writing it from scratch without using HTML. 
+If you just finished reading the jQuery chapter, you'll need to switch to a different state of mind. The Core jQuery library was light, it didn't drastically change the way we developed a pure HTML/JavaScript applications. Working with Ext JS framework is a completely different ball game. It's not about improving an existing Web page, it's about re-writing it from scratch without using HTML. 
 
 Ext JS includes rich library of UI components, a flexible class system and custom layouts. This is great, but Web browsers understand nothing, but HTML, DOM, CSS, and JavaScript. This means that the framework will have to do some extra work in converting the code written using the Ext JS class system into the same old HTML objects. Extra work requires extra time and will discuss this in the section titled The Components Lifecycle. 
 
 IMPORTANT: The materials presented in this chapters were tested only with the current version of Ext JS framework, which at the time of this writing is 4.2.  
 
-The file with the minimized production version of Ext JS is called ext-all.js and its size is pretty large: 1.4Mb. But there is a way to remove from this file everything that's not used by your application by using http://docs.sencha.com/ext-js/4-1/#!/guide/command[Sencha Cmd]. If this application will be used on the high-speed networks and size is not the object, simply add it to your index.html from your local servers or from the Sencha CDN, which may look similar to the following:
+The file with the minimized production version of Ext JS is called ext-all.js and its size is pretty large: 1.4Mb. But there is a way to remove from this file everything that's not used by your application by using http://docs.sencha.com/ext-js/4-2/#!/guide/command[Sencha Cmd]. If this application will be used on the high-speed networks and size is not the object, simply add it to your index.html from your local servers or from the Sencha CDN, which may look similar to the following:
 
 [source, html]
 ----
@@ -17,7 +17,11 @@ The file with the minimized production version of Ext JS is called ext-all.js an
 <script type="text/javascript" charset="utf-8" 
         src="http://cdn.sencha.io/ext-4.2.0/ext-all.js"></script> 
 ----
-After downloading and unzipping the Ext JS framework you'll find a number of file and folders there. The files with the names starting with *ext-all* are differently packaged versions of Ext JS framework - you'll need to pick one and we'll explain the differences between a bit later. The *doc* folder contains an excellent documentation - just open the index.html in your browser and enjoy the reading. The *builds* folder has a sandboxed version of Ext JS in case you need to to use Ext JS 4 along with older version of this framework. Browsing the builds folder reveals that the Ext JS framework consists of three parts:
+After downloading the Ext JS framework, unzip it to some place that's available for all your projects rather than copying it for each and every project. The authors of this book use MAC OS computers, hence the proper place for Ext JS framework is the public Library folder - all the files located there are available to any application on your computer. In Windows, your user's directory is the place to keep the Ext JS framework.  
+
+TIP: If you want to always work with the latest major release of Ext JS with minimal changes in your code, rename the Ext JS directory to remove the numbers that represent minor releases and builds, for example, the location of Ext JS can look like _/Library/ext-4.2_.
+
+After unzipping the Ext JS distribution, you'll find a number of files and folders there. The files with the names starting with *ext-all* are differently packaged versions of Ext JS framework - you'll need to pick one and we'll explain the differences between a bit later. The *doc* folder contains an excellent documentation - just open the index.html in your browser and start reading and studying. The *builds* folder has a sandboxed version of Ext JS in case you need to to use Ext JS 4 along with older version of this framework. Browsing the builds folder reveals that the Ext JS framework consists of three parts:
 
 * Ext Core - it's a free to use http://www.sencha.com/products/extcore/[JavaScript library] for enhancing Web sites. It supports DOM manipulation with CSS selectors, events and AJAX requests. It also offers a syntax to define and create classes that can extend from each other.
 
@@ -42,24 +46,104 @@ In this chapter we'll start Aptana IDE, but then will switch to its parent Eclip
 
 Let's start the Ext JS primer similar to what we did in the previous chapter with developing a Hello World application. At the very minimum, every Ext JS application will contain one HTML and one JavaScript file usually index.html and app.js. In addition to it, the file index.html has to include the links to the javascript file with the Ext JS framework and a CSS file with the Ext JS theme.
 
+Even though you can create all these files manually, let's automate this process using Sencha CMD tool.
+
+
+==== Using Sencha CMD Tool
+
+Sencha CMD is a handy command line tool that automate your work starting from scaffolding your application to minimizing, packaging and deploying it.  
+Download and install Sencha CMD from http://www.sencha.com/products/sencha-cmd/download[http://www.sencha.com/products/sencha-cmd/download] for your platform. Install Sencha CMD and open the command window and just enter the command *sencha* - you should see a prompt with all possible commands and options that CMD understands. 
+
+For example, to generate the initial project structure for HelloWorld application enter the following command, specifying the absolute path to the ExtJS SDK directory and to the output folder, where the generated project should go. For example, we ran the the CMD tool in command window using the following:
+
+_sencha -sdk /Library/ext-4.2 generate app HelloWorld /Users/yfain11/hello_
+
+After the code generation was complete, it created the folder hello of the structure shown in <<FIG6-1>>.
+
+
+[[FIG6-1]]
+.CMD-generated project 
+image::images/fig_06_01.png[image]
+
+The generated project is created with the assumption that your application will be built using the MVC paradigm discussed in the section Best Practice:MVC. The JavaScript is located in the _app_ folder, which includes the _view_ subfolder with the visual portion of your application, the _controller_ folder with controller classes, and the _model_ is for data. 
+The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js. The bootstrap.js contains mapping of the long names if the framework and application classes to the shorter names (_xtypes_) and determines which version of the Ext JS framework to load (e.g. it the application is started from _localhost_, the bootstrap will use the developer's version of Ext JS framewework).
+
+[source, html]
+----
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>HelloWorld</title>
+    <!-- <x-compile> -->
+        <!-- <x-bootstrap> -->
+            <link rel="stylesheet" href="bootstrap.css">
+            <script src="ext/ext-dev.js"></script>
+            <script src="bootstrap.js"></script>
+        <!-- </x-bootstrap> -->
+        <script src="app/app.js"></script>
+    <!-- </x-compile> -->
+</head>
+<body></body>
+</html>
+----
+
+The content of the generated app.js is shown next. It just calls the method `Ext.application()` passing so called configuration object that specifies the application name, and the names of the classes that play roles of views and controller. We'll go into details a bit later, but at this point let's concentrate on the big picture.
+
+[source, javascript]
+----
+Ext.application({
+    name: 'HelloWorld',
+
+    views: [
+        'Main',
+        'Viewport'
+    ],
+
+    controllers: [
+        'Main'
+    ],
+
+    autoCreateViewport: true
+});
+----
+
+Finally, if you'll open index.html in your Web browser, you'll see our Hello World initial Web page that looks as in <<Fig6-2>>. Without going into details, we'll just say that this view uses so called `Border` layout and shows a `panel` on the west and a `tabpanel` in the central region of the view. 
+
+[[FIG6-2]]
+.Running the Generated Application 
+image::images/fig_06_02.png[image]
+
+The total size of this version of the Hello World application is really large: 4Mb and the browser makes 173 requests to the server by the time the user sees the application shown on <<FIG6-2>>. But Sencha Cmd knows how to build the production version of the Ext JS application. It minimizes and merges the application's and required framework's JavaScript code into one file. The application css file is also minimized and the references to the image resources become relative hence shorter. Besides, the images may be automatically sliced - cut into smaller rectangular pieces that can be downloaded by the browser simultaneously.
+
+To create optimized version of your application go to the Terminal or a command
+windos and change to the root directory of your application (in our case it's _/Users/yfain11/hello_) and run the following command:
+
+_sencha app build_
+
+After the build is finished, you'll see newly generated version of the application in the directory _build/HelloWorld/production_. Open the file index.html while running Google Developers Tools, and you'll see that the total size of the application is substantially lower (about 900Kb) and the the browser had to make only five requests to the server (see <<FIG6-3>>). Using gZip will reduce the size of this application to 600Kb, which is still a lot, but Ext JS framework is not the right choice for writing Hello World type of applications or light Web sites.
+
+[[FIG6-3]]
+.Running production version of HelloWorld 
+image::images/fig_06_03.png[image]
+ 
+
+
+NOTE: With older versions of Sencha Cmd (Sencha SDK Tools) you would generate a manifest file in a jsb3 format, that would describe all the classes that your application uses. Such jsb3 file would be used for creating custom builds. This option is still available, but Sencha Cmd uses the command _sencha app build_ as was shown above. For more details about code generation refer to the section http://docs.sencha.com/ext-js/4-2/#!/guide/command_app[Using Sencha Cmd with Ext JS] in the product documentation.
+
+
+==== Which Ext JS Framework to use?
+
 First you need to select the packaging of the Ext JS framework that fits your need. You may select a minimized version to be used in production or a larger developers' version with detailed comments and error messages. Besides, you may select a version of Ext JS that include either all or only the core classes. The third option is to create a custom build of Ext JS that will include only the those framework classes that are used by your application.
 
-
 TIP: If the name of the file with Ext JS framework contains _-all_, this indicates that all framework classes are included.
-
-
-
-TODO: Generate Hello World using Sencha Cmd
-
-
-
 
 ==== Ext JS Classes
 
 In Chapter 2 we stated that JavaScript doesn't have classes and that constructor functions were the closest to classes language constructs. Ext JS extends the JavaScript language and introduces classes and a special way to define and instantiate them with functions `Ext.define()` and `Ext.create()`. Ext JS also allows to extend one class from another using the property `extend` and define class constructors using the property `constructor`. It seems that creators of Ext JS tried to model their class system after Java. For example, for each class there is one instance of special class `Ext.Class`. Ext JS has familiar to Java developers concept of packages and fully qualified class names. On the other hand, Ext JS supports multiple inheritance, which Java doesn't. Java developers will have to get used to the fact that a class constructor can get any object as an argument, and Ext JS will use its propery values to initialize the corresponding properties defined in the class *if found*, the rest of the properties will be created on the fly. We'll illustrate all of these concepts next - just keep in mind - it's not Java, and it's not C# either.
 
 
-Ext.define() contains a class declaration. In the first argument you specify a fully qualified class name, 
+`Ext.define()` contains a class declaration. In the first argument you specify a fully qualified class name, 
 
 Ext.create()
 
@@ -104,9 +188,6 @@ Ext.define("MyApp.classB",{
 
 WARNING: If more than one mixin has a method with the same name, the first method that was applied to the resulting class wins. To avoid collisions Ext JS allows you to provide fully qualified name of the method, for example `this.mixins.classC.conflictingName(); this.mixins.classD.conflictingName();`.
 ---- 
-
-
-
 
 
 ==== Best Practice: MVC 
@@ -171,14 +252,11 @@ TBD
 
 TBD
 
-==== Minimizing Ext JS Framework for Your Project
-
-Sencha Cmd tool allows you to build the project from a JSB3 file. 
 
 
 === Developing Save Sick Child With Ext JS
 
-TBD
+Let's see how to re-write with Ext JS our Save Sick Child application. Since it doesn't look like a typical enterprise application with a bunch of forms and grids, we'll use a lightest top-level container class `Container`, which allows the most freedom in what to put inside and how to layout its child elements.  
 
 TIP: http://www.sencha.com/products/desktop-packager/[Sencha Desktop Packager] allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. 
 
