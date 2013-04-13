@@ -18,6 +18,6 @@ end
 
 # uncomment this 3 lines to use LiveReload 
 # Chrome extension http://goo.gl/wNPKB
-#guard 'livereload' do
-#  watch(%r{^.+\.(css|js|html)$})
-#end
+guard 'livereload' do
+  watch(%r{^.+\.(css|js|html)$})
+end
