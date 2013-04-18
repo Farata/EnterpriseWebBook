@@ -36,11 +36,9 @@ Let's go over the strategies, approaches, and tools that will help you in automa
 The _unit test_ is a piece of code that invokes the method or class being tested. It _asserts_ some assumptions about the application logic and behavior of the  method or class. You'll be writing unit tests using a unit-testing framework. The test should run fast, be automated and readable. For example you can test that if a function is called with a particular arguments, it should return an expected result.
 We will take a closer look on unit testing terminology and vocabulary in a <<TDD>> section.
 
-
 ==== Integration Testing
 
 Integration testing is a phase when already tested units are combined into a module to test the interfaces between them. You may want to test the integration of your code with the code written by other developers, e.g. some framework. Integration tests ensures that any abstractions we build over the third-party code work as expected. Both unit and integration tests are written by application developers. 
-
 
 ==== Functional Testing
 
@@ -73,7 +71,6 @@ The methodology known as Test-Driven Development (TDD) substantially changes the
 This technique also referred as "Red-Green-Refactoring" because IDE's and test runners use red color to indicate failed test and green color to indicate passed tests.
 
 When you are about to start programming a class with some business logic, ask yourself, "How can I ensure that this function works fine?" After you know the answer, write a test JavaScript class that calls this function _to assert_ that the business logic gives the expected result. 
-
 
 An assertion is a true-false statement that represents what a programmer assumes about program state, e.g.  *customerID >0* is an assertion. 
 
@@ -120,7 +117,6 @@ Let's start with the simplest Grunt project setup. The following two files must 
 * `package.json`: This file is used by npm (https://npmjs.org/[Node Package Manager]) to store metadata for projects. You will list Grunt and its plugins your project needs as devDependencies in this file.
 * `Gruntfile`: This file is named `Gruntfile.js` or `Gruntfile.coffee` and is used to configure or define the tasks and load Grunt plugins.
 
-
 .The simplest possible Gruntfile
 [source,javascript]
 ----------------------------------------------------------------------
@@ -138,7 +134,7 @@ module.exports = function (grunt) {
 
 Let's run this `hello` task with the command `grunt --gruntfile Grunt_simple.js hello`
 
-[source,scala]
+[source,bash]
 ----------------------------------------------------------------------
 Running "hello" task
 Hello from grunt
@@ -149,6 +145,10 @@ Done, without errors.
 ==== Test-driven development with Qunit
 
 TBD
+
+===== Setup Grunt with Qunit
+
+TDB
 
 ==== Behavior-Driven Development With Jasmine
 
@@ -248,51 +248,173 @@ In next section you will learn how write your own specifications.
 
 After we've set up the tools for running the tests let's start developing our tests and learn the Jasmine framework constructs. Every specification file has a set of _suites_ defined in the `describe` function. Such a suite helps logically organize the code of test specifications. 
 
-.HelloSpec.js
+// <vik>
+.ExampleSpec.js
 [source,javascript]
 ----
-describe("My test suite", function(){       // <1>
-    it("my first spec", function(){         // <2>
+describe("My function under test should", function () {     // <1>
+    it("return on", function () {                           // <2>
         // place specification code here
-        // 
+        //
     });
-    it("my another spec", function(){       // <3>
-        // 
+    describe("another suite", function () {                   // <3>
+        it("spec1", function () {
+
+        });
+    });
+    it("my another spec", function () {                    // <4>
+        var truth = true;
+        expect(truth).toBeTruthy();
+    });
+    it("2+2 = 4", function () {
+        expect(2 + 2).toEqual(4);                       // <5>
     });
 });
 ----
 
-<1> The function `describe` accepts two parameters - the name of the test suite, and the callback function. The function is a block of code that implements the suite.
+<1> The function `describe` accepts two parameters - the name of the test suite, and the callback function. The function is a block of code that implements the suite. If for some reasons you would like to skip suite from execution you can just use method `xdescribe` and whole suite will excluded until you rename it back to `describe`.
 
-<2> The function `it` accepts two parameters - the name of the test specification, and the function that implements this specification.
+<2> The function `it` accepts two parameters - the name of the test specification, and the function that implements this specification. Like in case with suites, Jasmine has paired `xit` method to exclude specification from execution.
 
-<3> Each suite can have any number of specifications.
+<3> Each suite can have any number of suites.
+
+<4> Or any number of specifications.
+
+<5> Expectations are built with the function `expect` which takes a value, called the actual. It is chained with a Matcher function, which takes the expected value.
+
+In the previous example, you were checking to see if `2+2` equals `4`. We used the function toEqual(), which is a _matcher_. This basically takes the argument to the expect function and checks to see if it satisfies some criterion in the matcher. There are different flavors of matchers shipped with Jasmine framework. Here we're going to couple the most important and frequently used matchers functions.
+
+* Equality
++
+Function `toEqual()` checks if two things are equal.
+
+* True or False?
++
+Functions `toBeTruthy` and `toBeFalsy` checks if something is true or false respectively.
+
+* Identity
++
+Function `toBe()` checks if two things are _the same object_.
+
+* Nullness
++
+Function `toBeNull` checks if something is +null+.
+
+* Is Element Present
++
+Function `toContain()` check if actual value is an element of array.
+
++
+[source, javascript]
+----
+expect(["James Bond", "Austin Powers", "Jack Reacher", "Duck"]).toContain("Duck");
+----
+
+* Negate Other Matchers
+
++
+It's frequently useful to reverse matchers to make sure that they aren't +true+. To do that, simply prefix things with `.not`:
+
++
+[source, javascript]
+----
+expect(["James Bond", "Austin Powers", "Jack Reacher"]).not.toContain("Duck");
+----
+
+As was mentioned above, here we listed only part of existing matchers. Full documentation with code example you can find on http://pivotal.github.io/jasmine/#section-Matchers[official Jasmine website] and on https://github.com/pivotal/jasmine/wiki/Matchers[wiki].
+
+===== Specification Setup
+
+TBD
+
+// `beforeEach` and `afterEach` -> execute code before and after each spec
+
+===== Custom Matchers
+
+Jasmine framework in very extendable and it allows you define your own matchers if for some reasons you unable to find satisfied matchers in Jasmine distribution. In this case you can write custom matcher. Let's write matcher that check if string contains name of Secret Agent from defined list of agents. 
+
+// TBD
+
+.Custom `toBeSecretAgent` matcher
+[source,javascript]
+----
+beforeEach(function () {
+    this.addMatchers({
+        toBeSecretAgent: function () {
+            var agentList = [
+                "James Bond",
+                "Ethan Hunt",
+                "Jason Bourne",
+                "Aaron Cross",
+                "Jack Reacher"
+            ];
+
+            var actual = this.actual;               // <1>
+            this.message = function () {            // <2>
+                return actual + " is not a secret agent";
+            };
+            return agentList.indexOf(actual) !== -1;    // <3> 
+        }
+    });
+});
+----
+
+<1> `this.actual` contains value that developer passes in `expect` function.
+
+<2> We can customize error message in case of failed test.
+
+<3> This function checks is agentsList contains the actual value.
+
+And this is how call of this helper is looks like:
+
+[source,javascript]
+----
+it("part of super agents", function () {
+    expect("James Bond").toBeSecretAgent();         // <1>
+    expect("Jason Bourne").toBeSecretAgent();
+    expect("Austin Powers").not.toBeSecretAgent();  // <2>
+    expect("Austin Powers").toBeSecretAgent();     // <3>
+});
+----
+
+<1> Calling the custom matcher.
+
+<2> Custom matchers could be used together with `.not` modifier.
+
+<3> This expectation will fail because 'Austin Powers' in not in the list of secret agents. 
+And we can see custom failure message on the console.
+    
+[source,bash]
+----
+/usr/local/share/npm/bin/grunt --gruntfile Gruntfile_jasmine.js jasmine
+Running "jasmine:src" (jasmine) task
+Testing jasmine specs via phantom
+...........x
+My function under test should:: part of super agents: failed
+  "Austin Powers is not a secret agent (4)"               # <1>
+1 specs in 0.115s.
+>> 1 failures
+Warning: Task "jasmine:src" failed. Use --force to continue.
+
+Aborted due to warnings.
+----
+
+<1> Custom failure message. Also we can see that failed `expect` was fourth one (4) (in the order mentioned in spec).
+
+
+===== Spies
 
 // TBD
 
 .Specifications Anatomy TODO
-* suite
-** `describe` defines suite
-** `xdescribe` exclude suite from execution
-* spec
-** `it` defines specification
-** `xit` exclude specification from execution
-* `expect` 
-* matchers  - asserts (?). in details...
-** Equality
-** Identity
-** Yes or No?
-** Negate other matchers
-** Is element present
-** Nullness
-** Comparator
-** Custom matchers (and helpers files)
 * Write Jasmine specs in test-first manner (write test -> test fail -> write implementation -> test pass -> refactor )
-* `beforeEach` and `afterEach` -> execute code before and after each spec
-* nested suites
-* Spies (?)
+
+===== BDD Best Practices
+
+TBD...
 
 === Save Sick Child With TDD
 
 TBD...
 
+// <vik>
