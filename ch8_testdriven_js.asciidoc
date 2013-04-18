@@ -160,7 +160,7 @@ Similarly to unit tests, with BDD you write short specifications that test one t
 
 ===== Setup Grunt with Jasmine
 
-You've learned already how to use Grunt tool to automate boilerplate tasks. Next in this section we're going to show how you can execute a Jasmine specification with Grunt.
+You've learned already how to use Grunt tool to automate boilerplate tasks. Next in this section we're going to show how you can execute a Jasmine specification with Grunt. We'll cover the Jasmine basic in the next section, but for now think of Jasmine as a piece of code that should be executed by Grunt.
 
 Let's start by downloading latest version of Jasmine from https://github.com/pivotal/jasmine/downloads[official github repository]. Unzip the archive. Content of unzipped folder will be looking similar to screenshot <<FIG-1>>.
 
@@ -235,7 +235,7 @@ Testing jasmine specs via phantom
 Done, without errors.
 ----
 
-// <vik>
+
 In this example, Grunt successfully executed the tests with PhantomJS of all five specifications defined in +PlayerSpec.js+. 
 
 .What is PhantomJS?
@@ -246,9 +246,9 @@ In next section you will learn how write your own specifications.
 
 ===== Jasmine Basics
 
-After we've set up the tools for running the tests let's start developing our tests and learn the Jasmine framework constructs. Every specification file has a set of _suites_ defined in the `describe` function. Such a suite helps logically organize the code of test specifications. 
+After we've set up the tools for running the tests let's start developing tests and learn the Jasmine framework constructs. Every specification file has a set of _suites_ defined in the `describe` function. Suites help logically organize the code of test specifications. 
 
-// <vik>
+
 .ExampleSpec.js
 [source,javascript]
 ----
@@ -274,15 +274,13 @@ describe("My function under test should", function () {     // <1>
 
 <1> The function `describe` accepts two parameters - the name of the test suite, and the callback function. The function is a block of code that implements the suite. If for some reasons you would like to skip suite from execution you can just use method `xdescribe` and whole suite will excluded until you rename it back to `describe`.
 
-<2> The function `it` accepts two parameters - the name of the test specification, and the function that implements this specification. Like in case with suites, Jasmine has paired `xit` method to exclude specification from execution.
+<2> The function `it` also accepts similar two parameters - the name of the test specification, and the function that implements this specification. Like in case with suites, Jasmine has paired `xit` method to exclude specification from execution.
 
-<3> Each suite can have any number of suites.
+<3> Each suite can have any number of nested suites.
 
-<4> Or any number of specifications.
+<4> Each suite can have any number of specifications.
 
-<5> Expectations are built with the function `expect` which takes a value, called the actual. It is chained with a Matcher function, which takes the expected value.
-
-In the previous example, you were checking to see if `2+2` equals `4`. We used the function toEqual(), which is a _matcher_. This basically takes the argument to the expect function and checks to see if it satisfies some criterion in the matcher. There are different flavors of matchers shipped with Jasmine framework. Here we're going to couple the most important and frequently used matchers functions.
+<5> The code checks to see if `2+2` equals `4`. We used the function toEqual(), which is a _matcher_.Define expectations with the function `expect`, which takes a value, called the actual. It is chained with a Matcher function, which takes the expected value (in our case it's 4) and checks to see if it satisfies some criterion in the matcher. Various flavors of matchers are shipped with Jasmine framework, and we're going to review a couple the frequently used matchers functions.
 
 * Equality
 +
@@ -307,7 +305,7 @@ Function `toBeNull` checks if something is +null+.
 * Is Element Present
 +
 
-Function `toContain()` check if actual value is an element of array.
+Function `toContain()` check if an actual value is an element of array.
 +
 
 [source, javascript]
@@ -318,7 +316,7 @@ expect(["James Bond", "Austin Powers", "Jack Reacher", "Duck"]).toContain("Duck"
 * Negate Other Matchers
 +
 
-It's frequently useful to reverse matchers to make sure that they aren't +true+. To do that, simply prefix things with `.not`:
+This function is used to reverse matchers to make sure that they aren't +true+. To do that, simply prefix things with `.not`:
 +
 
 [source, javascript]
@@ -326,7 +324,7 @@ It's frequently useful to reverse matchers to make sure that they aren't +true+.
 expect(["James Bond", "Austin Powers", "Jack Reacher"]).not.toContain("Duck");
 ----
 
-As was mentioned above, here we listed only part of existing matchers. Full documentation with code example you can find on http://pivotal.github.io/jasmine/#section-Matchers[official Jasmine website] and on https://github.com/pivotal/jasmine/wiki/Matchers[wiki].
+Above we've listed only some of existing matchers. You can find the complete documentation with code examples at http://pivotal.github.io/jasmine/#section-Matchers[official Jasmine website] and at https://github.com/pivotal/jasmine/wiki/Matchers[wiki].
 
 ===== Specification Setup
 
@@ -336,7 +334,7 @@ TBD
 
 ===== Custom Matchers
 
-Jasmine framework in very extendable and it allows you define your own matchers if for some reasons you unable to find satisfied matchers in Jasmine distribution. In this case you can write custom matcher. Let's write matcher that check if string contains name of Secret Agent from defined list of agents. 
+Jasmine framework in easily extendable, and it allows you to define your own matchers if for some reasons you're unable to find the appropriate matchers in the Jasmine distribution. In such cases you'd need to write a custom matcher. Let's write matcher that check if string contains name of Secret Agent from the defined list of agents. 
 
 // TBD
 
@@ -364,13 +362,13 @@ beforeEach(function () {
 });
 ----
 
-<1> `this.actual` contains value that developer passes in `expect` function.
+<1> `this.actual` contains the value used as arguments in the `expect` function.
 
-<2> We can customize error message in case of failed test.
+<2> We can customize error message if the test fails.
 
-<3> This function checks is agentsList contains the actual value.
+<3> This function checks if `agentsList` contains the actual value.
 
-And this is how call of this helper is looks like:
+The invocations of this helper can look like this:
 
 [source,javascript]
 ----
@@ -386,8 +384,9 @@ it("part of super agents", function () {
 
 <2> Custom matchers could be used together with `.not` modifier.
 
-<3> This expectation will fail because 'Austin Powers' in not in the list of secret agents. 
-And we can see custom failure message on the console.
+<3> This expectation will fail because 'Austin Powers' in not in the list of secret agents.
+
+The following custom failure message will be displayed on the console.
     
 [source,bash]
 ----
@@ -404,7 +403,7 @@ Warning: Task "jasmine:src" failed. Use --force to continue.
 Aborted due to warnings.
 ----
 
-<1> Custom failure message. Also we can see that failed `expect` was fourth one (4) (in the order mentioned in spec).
+<1> A custom failure message. Also, the failed `expect` was the fourth one (4) according to the order mentioned in spec.
 
 
 ===== Spies
@@ -421,5 +420,3 @@ TBD...
 === Save Sick Child With TDD
 
 TBD...
-
-// <vik>
