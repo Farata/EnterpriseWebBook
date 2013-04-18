@@ -10,9 +10,7 @@ IMPORTANT: The materials presented in this chapters were tested only with the cu
 
 While the _Ext Core_ library is available for free under the MIT license, the _Ext JS_ framework can be used for free only for non-commercial projects. To use  Ext JS for enterprise Web development you or your firm has to purchase one of the http://www.sencha.com/products/extjs/license/[Ext JS licenses]. But for studying, you can download the complete commercial version of Ext JS for free for the 45-days evaluation period.
 
-After downloading the Ext JS framework, unzip it to some place that's available for all your projects. The authors of this book use MAC OS computers, hence the proper place for Ext JS framework is the public _Library_ folder - all the files located there are available to any application on your computer. In Windows, your user's directory is the place to keep the Ext JS framework.  
-
-TIP: If you want to always work with the latest major release of Ext JS with minimal changes in your code, rename the Ext JS directory to remove the numbers that represent minor releases and builds, for example, the location of Ext JS can look like _/Library/ext-4.2_.
+After downloading the Ext JS framework, unzip it to any directory of your choice - later on the framework will be copied either in in your project derectory (see Sencha CMD section below) or in the document root of your Web server.   
 
 After unzipping the Ext JS distribution, you'll find a number of files and folders there. The files with the names starting with *ext-all*, *ext-debug*, and *ext-dev*, which are differently packaged versions of Ext JS framework - you'll need to pick one of them, and we'll explain how they differ a bit later. The *docs* folder contains well-written documentation - just open the index.html in your browser and start reading and studying. The *builds* folder includes sandboxed versions of Ext JS in case you need to to use say Ext JS 4.2 along with older versions of this framework. Browsing the *builds* folder reveals that the Ext JS framework consists of three parts:
 
@@ -28,8 +26,12 @@ The learning curve of Ext JS is steeper than of jQuery, and this chapter is divi
 
 Ext JS framework is large so be prepared that your application will weigh at least 1Mb. So if you just need to create a small Web site, you may be better off by just using a lightweight, easy to learn and free jQuery library or one of a dozen of other JavaScript MVC open source frameworks that just improve organizational structure of your project or offer a set of a la cart component that you can just add to any HTML5 application.  But if you had a chance to develop or use rich Internet applications developed with such frameworks as Microsoft Silverlight or Apache Flex, then you'll quickly realize that Ext JS is the closest by functionality, rich set of components and tools.  
 
-In this chapter we'll switch from Aptana IDE to its parent Eclipse IDE just for one reason - we'll need it later in this chapter to demonstrate the application generation using Java and CDB. We'll use the "Eclipse IDE for Java EE developers" version of this most popular IDE among Java developers. It's available free of charge at the http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable, and you'll see the workbench that looks very similar to Aptana. But if you are not interested in the Java part, you can stick to Aptana, or purchase an inexpensive license of JetBrain's WebStorm IDE, which is the best environment for developing in JavaScript.
 
+In this chapter we'll switch from Aptana IDE to its parent Eclipse IDE. Although Eclipse is not the best IDE for JavaScript developers, but it's the most popular IDE among enterprise Java developers, and we'll need it later in this chapter to demonstrate the application generation using Java and CDB. Besides, Sencha offers Eclipse plugin for those who purhased a license of Sencha Complete (we are not going to use it though).
+
+We'll use the "Eclipse IDE for Java EE developers" version of this most popular IDE among Java developers. It's available free of charge at the http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable, and you'll see the workbench that looks very similar to Aptana. But if you are not interested in the Java part, you can stick to Aptana. 
+
+TIP: Authors of this book believe that the best IDE for JavaScript developers (regardless of which framework they use) is JetBrain's http://www.jetbrains.com/webstorm/[WebStorm IDE].
 
 
 === Ext JS Primer
@@ -43,7 +45,7 @@ Even though you can create a new project and all these files manually, let's aut
 Sencha CMD is a handy command line tool that automates your work starting from scaffolding your application to minimizing, packaging and deploying it.  
 Download Sencha CMD from http://www.sencha.com/products/sencha-cmd/download[http://www.sencha.com/products/sencha-cmd/download]. Run the installer, and when it's complete, open the Terminal or Command window and enter the command *sencha* - you should see a prompt with all possible commands and options that CMD understands. 
 
-For example, to generate the initial project structure for HelloWorld application enter the following command, specifying the absolute path to your ExtJS SDK directory and to the output folder, where the generated project should reside. 
+For example, to generate the initial project structure for HelloWorld application enter the following command, specifying the absolute path to your ExtJS SDK directory (we keep it in the _/Library_ directory) and to the output folder, where the generated project should reside. 
 
 _sencha -sdk /Library/ext-4.2 generate app HelloWorld /Users/yfain11/hello_
 
@@ -438,46 +440,40 @@ import clear.data.ChangeObject;
 import dto.Person;
 import service.generated.*;
 
-public class PersonServiceImpl extends _PersonServiceImpl { // <1>
+public class PersonServiceImpl extends _PersonServiceImpl { // 1
 
-  @Override
-  public List<Person> getPersons() {				// <2>
-  	List<Person> result = new ArrayList<>();	
-  	Integer id= 0;
-  	result.add(new Person(++id, "Joe", "Doe", 
-  	                           "555-55-55", "1111-11-1111"));
-  	result.add(new Person(++id, "Joe", "Doe", 
-  	                           "555-55-55", "1111-11-1111"));
-  	result.add(new Person(++id, "Joe", "Doe", 
-  	                            "555-55-55", "1111-11-1111"));
-  	result.add(new Person(++id, "Joe", "Doe", 
-  	                            "555-55-55", "1111-11-1111"));
-  	return result;		//<3>
-  }
+        @Override
+        public List<Person> getPersons() {                              // 2
+                List<Person> result = new ArrayList<>();
+                Integer id= 0;
+                result.add(new Person(++id, "Joe", "Doe", "555-55-55", "1111-11-1111"));
+                result.add(new Person(++id, "Joe", "Doe", "555-55-55", "1111-11-1111"));
+                result.add(new Person(++id, "Joe", "Doe", "555-55-55", "1111-11-1111"));
+                result.add(new Person(++id, "Joe", "Doe", "555-55-55", "1111-11-1111"));
+                return result;          // 3
+        }
 
-  @Override
-  public void getPersons_doCreate(ChangeObject changeObject) {  // <4>
-  	Person dto = (Person) deserializeObject(
-  			(Map<String, String>) changeObject.getNewVersion(),
-  			Person.class);
+        @Override
+        public void getPersons_doCreate(ChangeObject changeObject) {  // 4
+                Person dto = (Person) deserializeObject(
+                                (Map<String, String>) changeObject.getNewVersion(),
+                                Person.class);
 
-  	System.out.println(dto.toString());
-  }
+                System.out.println(dto.toString());
+        }
 
-  @Override
-  public void getPersons_doUpdate(ChangeObject changeObject) {	// <5>
-  	// TODO Auto-generated method stub
-  	super.getPersons_doUpdate(changeObject);
-  }
+        @Override
+        public void getPersons_doUpdate(ChangeObject changeObject) {    // 5 
+                // TODO Auto-generated method stub
+                super.getPersons_doUpdate(changeObject);
+        }
 
-  @Override
-  public void getPersons_doDelete(ChangeObject changeObject) {	// <6>
-  	// TODO Auto-generated method stub
-  	super.getPersons_doDelete(changeObject);
-  }
-  
+        @Override
+        public void getPersons_doDelete(ChangeObject changeObject) {    // 6
+                // TODO Auto-generated method stub
+                super.getPersons_doDelete(changeObject);
+        }
 }
-
 ----------------------------------------------------------------------
 <1> Extend the generated class and provide the actual implementation.
 <2> The `getPerson()` is our retrieve method (the R in CRUD) .
@@ -656,7 +652,7 @@ image::images/fig_06_09cdb.png[image]
 The default Ext Direct request doesn't carry any information about the page size. Clear JS has the client side extension of the Ext JS framework that adds some extra functionality to +Ext.data.DirectStore+ component to pass the page +start+ and +limit+ values to the server side. At this point, the `directOptions` request property (see <<FIG6-9-CDB>>) can be extracted on the server side to get the information about the page boundaries. Let's add some code to the `PersonServiceImpl.java`. At this point the pagination doesn't work. The server sends the entire thousand records, because it doesn't know that the data has to be paginated. We'll fix it in the following listing. 
 
 [[LISTING_7]]
-.Implementation of PersonService with pagination
+.Implementation of PersonService With Pagination
 [source,java]
 ----------------------------------------------------------------------
 package service;
