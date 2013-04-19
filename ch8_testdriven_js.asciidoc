@@ -1,3 +1,5 @@
+:toclevels: 3
+
 == Test-Driven Development with JavaScript
 
 // [quote, @bphogan, http://twitter.com/bphogan/status/194856922208407552]
@@ -12,7 +14,7 @@ Introduction of test-driven development may substantially improve you code quali
 
 There are many testing frameworks in JavaScript world, and in this chapter we'll give you a brief overview of two of them: http://qunitjs.com/[Qunit] and http://pivotal.github.com/jasmine/[Jasmine]. The main goal of each framework to is to test small pieces of code a.k.a. _units_.  We will also show how to abstract your JavaScript project lifecycle from any specific frameworks or libraries using Grunt tool.
 
-We will go through the basic testing techniques such as "Test-driver development" and "Test First". You'll learn how to automate the testing process in multiple browsers with http://vojtajina.github.com/testacular/[Testacular] or by running tests in so called _headless_ mode with http://phantomjs.org/[PhantomJS]. You'll learn how to mock and stub selected artifacts of the environment (such as `XMLHTTPRequiest` object or timer) with http://sinonjs.org/[Sinon.js] and how to unit test the DOM manipulation code.
+We will go through the basic testing techniques such as "Test-driver development" and "Test First". You'll learn how to automate the testing process in multiple browsers with http://karma-runner.github.io/[Karma Runner] or by running tests in so called _headless_ mode with http://phantomjs.org/[PhantomJS]. You'll learn how to mock and stub selected artifacts of the environment (such as `XMLHTTPRequiest` object or timer) with http://sinonjs.org/[Sinon.js] and how to unit test the DOM manipulation code.
 
 The second part of this chapter is dedicated to setting up a new Save Sick Child project in the IDE with selected test frameworks.
 
@@ -416,6 +418,101 @@ Aborted due to warnings.
 ===== BDD Best Practices
 
 TBD...
+
+// <vik>
+
+==== Multi-Browser Testing With Karma
+
+In previous section of this chapter we showed you how to execute your test and specification in headless mode using PhantomJS. This is very useful to run test in Continuous Integration environments. As we learned in this chapter, PhantomJS uses WebKit engine. But it's few more browser out there - Safari, Google Chrome, Google Chrome Canary, Firefox, Internet Explorer. Definitely, manually run tests in each browser is tedious and not productive.
+To automate testing in all this myriad of browsers Karma (previously known as _Testacular_) framework emerged. In this section we will show how to configure Karma and integrate it with Grunt.
+
+===== Karma Configuration file
+
+Karma runner is driven by configuration file.
+
+// TBD
+
+.Simple Karma configuration file
+----
+basePath = '';      // <1>
+
+files = [           // <2>
+  JASMINE,
+  JASMINE_ADAPTER,
+    "app/js/*.js",
+    "test/spec/*.js"
+];
+
+exclude = [         // <3>
+    "app/js/main.js",
+    "test/spec/introduction.js"
+];
+
+browsers = ['Chrome', 'ChromeCanary', 'PhantomJS', 'Safari', 'Firefox', 'Opera']; // <4>
+
+singleRun = true; //<5>
+----
+<1> Path that will be used to resolve files <2> and exclude <3>.
+<2> Array of files that will be loaded in the browser.
+<3> Array of files that will be excluded from loading.
+<4> Array of browsers that will be used to execute JavaScript code.
+<5> if true, it capture browsers, run tests and exit.
+
+===== Running Tests 
+
+// TBD
+
+.Gruntfile with karma task
+[source,javascript]
+----
+module.exports = function(grunt) {
+  "use strict";  
+  grunt.initConfig({
+    karma: {                        // <1>
+      unit: {
+        configFile: 'test/runner/karma_min.conf.js' // <2>
+      }
+    }
+  });
+  grunt.loadNpmTasks("grunt-karma");
+};
+----
+<1> Karma task is defined in grunt config.
+<2> We specify config file for karma task.
+
+Now we can run our test simultaneously on all browsers that we have on out computer - Google Chrome (+ Canary version), Safari, Firefox, Opera and PhantomJS with one command:
+`grunt karma`.
+
+// TBD
+
+[source,bash]
+----
+Running "karma:unit" (karma) task
+INFO [karma]: Karma server started at http://localhost:9876/
+INFO [launcher]: Starting browser Chrome
+INFO [launcher]: Starting browser ChromeCanary
+INFO [launcher]: Starting browser PhantomJS
+INFO [launcher]: Starting browser Safari
+INFO [launcher]: Starting browser Firefox
+INFO [launcher]: Starting browser Opera
+INFO [Firefox 21.0 (Mac)]: Connected on socket id kfZ_D_dP0eewVOWMx2z4
+INFO [Chrome 28.0 (Mac)]: Connected on socket id XYjd5-4l7KrVW1Tbx2z3
+INFO [Chrome 27.0 (Mac)]: Connected on socket id t8LWBg5pOW0sj-J0x2z2
+INFO [PhantomJS 1.9 (Mac)]: Connected on socket id -_8qltf9e0aGkqE5x2z5
+INFO [Safari 6.0 (Mac)]: Connected on socket id M9D2SRAmIvDdiQRcx2z6
+INFO [Opera 12.15 (Mac)]: Connected on socket id AMMmGSyUu7j_mkRDx2z7
+Firefox 21.0 (Mac): Executed 12 of 12 SUCCESS (0.27 secs / 0.007 secs)
+Chrome 28.0 (Mac): Executed 12 of 12 SUCCESS (0.341 secs / 0.02 secs)
+Chrome 27.0 (Mac): Executed 12 of 12 SUCCESS (0.34 secs / 0.016 secs)
+PhantomJS 1.9 (Mac): Executed 12 of 12 SUCCESS (0.329 secs / 0.012 secs)
+Safari 6.0 (Mac): Executed 12 of 12 SUCCESS (0.438 secs / 0.051 secs)
+Opera 12.15 (Mac): Executed 12 of 12 SUCCESS (0.662 secs / 0.015 secs)
+TOTAL: 72 SUCCESS
+----
+
+// TBD
+
+// </vik>
 
 === Save Sick Child With TDD
 
