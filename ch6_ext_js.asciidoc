@@ -1,34 +1,89 @@
-== Rewriting the Application With Ext JS Framework
+== Developing Web Applications With Ext JS Framework
 
 In the previous chapter you've got familiar with the JavaScript library jQuery. Now we'll introduce you to a more complex product - a JavaScript framework http://www.sencha.com/products/extjs[Ext JS] from http://www.sencha.com[Sencha]. This is one of the most feature-complete frameworks available on the market, and you should give it a serious consideration while deciding on the tooling for your next enterprise HTML5 application. 
 
+=== Why Ext JS?
+
+After learning how jQuery library can simplify development of the HTML5 applications you might be wondering, what's so good about Ext JS framework that makes it worthwhile for studying. First of all, Core jQuery is just a library of utilities that simplify working with DOM and - you still need to write the Web application using HTML and JavaScript. In addition to it, there are lots and lots of jQuery plugins that include handy widgets to add to your manually created Web site. There are other HTML5 frameworks that help better organizing your project (e.g. Angular.js) or modularizing your project (e.g. Require.js), but enterprise application may need more. So here comes the Ext JS sales pitch. 
+
+1. Ext JS an HTML5 framework that doesn't require you to write HTML. Yes, your only tiny HTML file will just include three files: one  with Ext JS framework, one CSS file, and one _app.js_, but the `<body>` section will be empty. 
+
+2. Ext JS offers you a comprehensive JavaScript-based classes that include pretty much everything you need to develop a Web application (UI components, UI layouts, collections, networking, collections, CSS compiler, packaging tool, and more).
+
+3. Ext JS offers you a way to write object-oriented code, define classes and inheritance that's closer to classical inheritance and doesn't require to use the prototype property.
+
+4. Ext JS can jump starts your application development by generating the initial code based on the Model-View-Controller (MVC) architecture. 
+
+5. Ext JS is a cross-browser framework that promises to automatically take care of all differences in major Web browsers. 
+
 If you just finished reading the jQuery chapter, you'll need to switch to a different state of mind. The Core jQuery library was light, it didn't drastically change the way of developing a pure HTML/JavaScript application. But working with Ext JS framework is a completely different ball game. It's not about improving an existing Web page, it's about re-writing it from scratch without using HTML. 
 
-Ext JS includes rich library of UI components, a flexible class system, custom layouts, code generators. This is great, but Web browsers understand nothing, but HTML, DOM, CSS, and JavaScript. This means that the framework will have to do some extra work in converting the code written using the Ext JS class system into the same old HTML objects. Extra work requires extra time and will discuss this in the section titled The Components Lifecycle. 
+It's great that Ext JS includes rich library of UI components, a flexible class system, custom layouts, code generators. But Web browsers understand nothing, but HTML, DOM, CSS, and JavaScript. This means that the framework will have to do some extra work in converting the code written using the Ext JS class system into the same old HTML objects. Extra work requires extra time and will discuss this in the section titled The Components Lifecycle. 
+
+=== Downloading and Installing Ext JS
+
+First, you need to know tha _Ext JS_ framework can be used for free only for non-commercial projects. To use  Ext JS for enterprise Web development you or your firm has to purchase one of the http://www.sencha.com/products/extjs/license/[Ext JS licenses]. But for studying, you can download the complete commercial version of Ext JS for free for the 45-days evaluation period.
 
 IMPORTANT: The materials presented in this chapters were tested only with the current version of Ext JS framework, which at the time of this writing was 4.2.  
 
-While the _Ext Core_ library is available for free under the MIT license, the _Ext JS_ framework can be used for free only for non-commercial projects. To use  Ext JS for enterprise Web development you or your firm has to purchase one of the http://www.sencha.com/products/extjs/license/[Ext JS licenses]. But for studying, you can download the complete commercial version of Ext JS for free for the 45-days evaluation period.
+After downloading the Ext JS framework, unzip it to any directory of your choice - later on the framework will be copied either in in your project directory (see the Sencha CMD section below) or in the document root of your Web server.   
 
-After downloading the Ext JS framework, unzip it to any directory of your choice - later on the framework will be copied either in in your project derectory (see Sencha CMD section below) or in the document root of your Web server.   
+After unzipping the Ext JS distribution, you'll find a number of files and folders there. There are several JavaScript files containing differently packages Ext JS framework. You'll need to pick just one of these files. The files that include the word _all_ in their names contain the entire framework and if you'll include one of the following files, all the classes will be loaded to the user's browser even though your application may never use most of them.
 
-After unzipping the Ext JS distribution, you'll find a number of files and folders there. The files with the names starting with *ext-all*, *ext-debug*, and *ext-dev*, which are differently packaged versions of Ext JS framework - you'll need to pick one of them, and we'll explain how they differ a bit later. The *docs* folder contains well-written documentation - just open the index.html in your browser and start reading and studying. The *builds* folder includes sandboxed versions of Ext JS in case you need to to use say Ext JS 4.2 along with older versions of this framework. Browsing the *builds* folder reveals that the Ext JS framework consists of three parts:
+* ext-all.js - minimized version of the source code of Ext JS, which literally looks like one line of 1.4 million characters (it's still JavaScript, of course). Most likely you won't deploy this file on your production server.
 
-* Ext Core - it's a free to use http://www.sencha.com/products/extcore/[JavaScript library] for enhancing Web sites. It supports DOM manipulation with CSS selectors, events and AJAX requests. It also offers a syntax to define and create classes that can extend from each other.
+* ext-all-debug.js - human-readable source code of Ext JS with no comments. If you like to read comments, use ext-all-debug-w-comments.js
+* ext-all-dev.js - human-readable source code of Ext JS that includes console.log() statements that generates and outputs debugging information in the browser's console.
+
+Similarly, there are files that don't include _all_ in their names: ext.js, ext-debug.js, and ext-dev.js. These are much smaller files that do not include the entire framework, but rather a minimum set of classes required to start the application. Later on, the additional classes may be lazy-loaded on the as-needed basis.
+
+The _docs_ folder contains well-written documentation - just open the index.html in your browser and start reading and studying. 
+
+The _builds_ folder includes sandboxed versions of Ext JS in case you need to to use say Ext JS 4.2 along with older versions of this framework. Browsing the *builds* folder reveals that the Ext JS framework consists of three parts:
+
+* Ext Core - it's a free to use http://www.sencha.com/products/extcore/[JavaScript library] for enhancing Web sites. It supports DOM manipulation with CSS selectors, events and AJAX requests. It also offers a syntax to define and create classes that can extend from each other. The functionality of Ext Core is comparable to Core jQuery, but the latter has a huge community of users and contributors, so it's not likely that anyone would be using just Ext Core.
 
 * Ext JS - a UI framework that includes a rich library of UI components.
 
 * The Foundation - a set of useful utilities. 
 
-Such code separation allows reusing a large portion of the Ext JS code in the mobile library Sencha Touch, which we'll cover in Chapter 13. The functionality of Ext Core is comparable to Core jQuery, but there is no equivalent to the Ext JS framework in the jQuery community.  
+Such code separation allowed creators of Ext JS reuse a large portion of the framework's code in the mobile library Sencha Touch, which we'll cover in Chapter 13.   
 
-The learning curve of Ext JS is steeper than of jQuery, and this chapter is divided into three sections. First, you'll go through a detailed Ext JS primer, then we'll develop a new version of the Save Sick Child application with Ext JS, and finally, you'll see how to improve the productivity of development with Ext JS and Java using an open source code generator called Clear Data Builder (CDB). 
+The material in this chapter is divided into three sections. First, you'll go through the Ext JS primer, then we'll develop a new version of the Save Sick Child application with Ext JS, and finally, you'll see how to improve the productivity of development with Ext JS on the client and Java one the server using an open source code generator called Clear Data Builder (CDB). 
 
-Ext JS framework is large so be prepared that your application will weigh at least 1Mb. So if you just need to create a small Web site, you may be better off by just using a lightweight, easy to learn and free jQuery library or one of a dozen of other JavaScript MVC open source frameworks that just improve organizational structure of your project or offer a set of a la cart component that you can just add to any HTML5 application.  But if you had a chance to develop or use rich Internet applications developed with such frameworks as Microsoft Silverlight or Apache Flex, then you'll quickly realize that Ext JS is the closest by functionality, rich set of components and tools.  
+Ext JS framework is large so be prepared that your application will weigh at least 1Mb. So if you just need to create a small Web site, you may be better off by just using a lightweight, easy to learn and free jQuery library or one of a dozen of other JavaScript frameworks that either improve organizational structure of your project or offer a set of a la cart components to prettify your HTML5 application. But if you had a chance to develop or use rich Internet applications developed with such frameworks as Microsoft Silverlight or Apache Flex, then you'll quickly realize that Ext JS is the closest by functionality, rich set of components and tools.  
 
 === Ext JS Primer
 
-Let's start the Ext JS primer similar to what we did in the previous chapter with developing a Hello World application. At the very minimum, every Ext JS application will contain one HTML and one JavaScript file usually index.html and app.js. In addition to it, the file index.html has to include the links to the javascript file with the Ext JS framework and a CSS file with the Ext JS theme. Even though you can create Required application files manually, let's automate this process by using the Sencha Cmd tool.
+Let's start the Ext JS primer similar to what we did in the previous chapter with developing a Hello World application. First, create a new directory (e.g. _hello1_). Create inside a subdirectory named _ext_ and copy theere the entire content of your Ext JS installation directory. Create yet another subdirectory _app_ inside _hello1_ - this is where your application JavaScript files will go.
+
+At the very minimum, every Ext JS application will contain one HTML and one JavaScript file - usually index.html and app.js. The file index.html will include the references to the CSS and JavaScript code of Ext JS and will include your app.js containing the code of the Hello World application: 
+
+[source, html]
+----
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>HelloWorld</title>
+      <link rel="stylesheet" href="ext/resources/ext-all-gray.css">
+      <script src="ext/ext.js"></script>
+      <script src="app/app.js"></script>
+</head>
+<body></body>
+</html>
+----
+
+The next comes the content of the app.js that you should place in the _app_ directory of your project. This is how the app.js may look like:
+
+[source, jaascript]
+----
+Ext.onReady(function(){
+      alert("Hello World");
+});
+----
+
+The `onReady()` method is called on the framework's global object `Ext` when the DOM's ready. In our example, this method takes an anonymous function that displays a Hello World message. Open the file index.html in your Web browser and you'll see this greeting. But this was a plain vanilla Hello World. In the next section we'll automate the process of creation of a fancier Hello World (or the initial version of any other application) by using the Sencha Cmd tool.
 
 ==== Using Sencha CMD Tool
 
@@ -41,7 +96,6 @@ For example, to generate the initial project structure for HelloWorld applicatio
 _sencha -sdk /Library/ext-4.2 generate app HelloWorld /Users/yfain11/hello_
 
 After the code generation was complete, it created the folder _hello_ of the structure shown in <<FIG6-1>>.
-
 
 [[FIG6-1]]
 .CMD-generated project 
@@ -71,7 +125,7 @@ The entry point to your application is index.html, which contains the references
 </html>
 ----
 
-The content of the generated app.js is shown next. It just calls the method `Ext.application()` passing so called configuration object that specifies the application name, and the names of the classes that play roles of views and controller. We'll go into details a bit later, but at this point let's concentrate on the big picture.
+The content of the generated app.js is shown next. This script just calls the method `Ext.application()` passing as an argument so called configuration object that specifies the application name, and the names of the classes that play roles of views and controller. We'll go into details a bit later, but at this point let's concentrate on the big picture.
 
 [source, javascript]
 ----
@@ -113,12 +167,51 @@ NOTE: With older versions of Sencha Cmd (Sencha SDK Tools) you would generate a 
 
 ==== Configuring Eclipse IDE, Apache Tomcat, and Ext JS
 
-In this chapter we'll switch from Aptana IDE to its parent Eclipse IDE. Although Eclipse is not the best IDE for JavaScript developers, but it's the most popular IDE among enterprise Java developers, and we'll need it later in this chapter to demonstrate the application generation using Java and CDB. Besides, Sencha offers Eclipse plugin for those who purhased a license of Sencha Complete (we are not going to use it though).
+In this chapter we'll switch from Aptana IDE to its parent Eclipse IDE. Although Eclipse is not the best IDE for JavaScript developers, but it's the most popular IDE among enterprise Java developers, and we'll need it later in this chapter to demonstrate the application generation using Java and CDB. Besides, Sencha offers Eclipse plugin for those who purchased a license of Sencha Complete (not covered in the book).
 
-We'll use the "Eclipse IDE for Java EE developers" version of this most popular IDE among Java developers. It's available free of charge at the http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable, and you'll see the workbench that looks very similar to Aptana.  
+We'll use the "Eclipse IDE for Java EE developers" version of this most popular IDE among Java developers. It's available free of charge at http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable, and you'll see the workbench that looks very similar to Aptana.  
 
-TIP: Authors of this book believe that the best IDE for JavaScript developers (regardless of which framework they use) is JetBrain's http://www.jetbrains.com/webstorm/[WebStorm IDE].
+TIP: In our opinion the best IDE for JavaScript developers (regardless of which framework they use) is JetBrain's http://www.jetbrains.com/webstorm/[WebStorm IDE].
 
+
+===== Apache Tomcat
+
+http://tomcat.apache.org[Apache Tomcat] is probably the most popular free and open source server used by Java developers for deploying Web applications. Besides being a Web Server, Tomcat also contains Java Servlet container that will be used later in this chapter in the section "Generating CRUD applications". But for most examples we'll use Tomcat as a Web server where Ext JS code will be deployed. 
+
+Get the latest version of Apache Tomcat from the Download section at http://tomcat.apache.org. At the time of this writing Tomcat 7.0.39 is the latest build, so download the zip file with the Tomcat's Binary Distributions (Core). Unzip the file in the directory of your choice.
+
+Even though you can start Tomcat from a separate command window, the  more productive way is to configure Tomcat right in the Eclipse IDE. This will allow to deploy your applications, and start/stop Tomcat without the need to leave Eclipse. 
+
+To add a server to Eclipse, open Eclipse Java EE perspective (menu Window | Open Perspective ), select the menu  File | New | Other | Server |Server | Apache | Tomcat v7.0 Server, select your Tomcat installation directory and press Finish. If you don’t see Tomcat 7 in the list of Apache servers, click on “Download additional server adapters”.
+
+You'll see the Tomcat entry in the Eclipse Project Explorer. Go to Eclipse menu Windows | Show View and open the Servers view. Start Tomcat using the right-click menu.
+
+TIP: By default, Eclipse IDE keeps all the required server configuration and deployment files in its own hidden directory. To see where exactly they are located in your computer, just double-click on the name of Tomcat in the Server view. The server path field contains the path. Keep in mind that while Tomcat documentation defines _webapps_ as a default deployment directory, Eclipse uses _wtpwebapps_ directory instead. If you prefer to deploy your Eclipse projects under your original Tomcat installation path, select the option Use Tomcat Installation.  
+
+In the next section you'll learn how to create Dynamic Web Projects in Eclipse, where you'll need to specify the Target Runtime for deployment of your Web applications. This newly installed and configured Tomcat server will serve as a deployment target for our sample projects. 
+
+
+===== Dynamic Web Projects and Ext JS
+
+Eclipse for Java EE developers comes with http://www.eclipse.org/webtools/[Web Tools Platform] that simplifies development of Web applications by allowing you to create so-called Dynamic Web Project, which will be specifically created for deployment under a particular Java server - Apache Tomcat in our case. 
+
+To create such a project select Eclipse menu File | New | Other | Web | Dynamic Web Project. It'll pop up a window similar to <<FIG6-4>>. Note that the Target Runtime is Apache Tomcat v7.0 that we've configured in the previous section. 
+
+[[FIG6-4]]
+.Creating Dynamic Web Project in Eclipse
+image::images/fig_06_04.png[image]
+
+Upon creation, this project will include several directories, and one of them will be called _WebContent_. This directory it serves as a document root of the Web server in Eclipse Dymamic Web Projects . This is the place to put your index.html and one of possible places to keep the Ext JS framework.Create a subdirectory _ext_ under _WebContent_ and copy there all files from the Ext JS distribution. The _app_ directory should also go under _WebContent_.
+
+Unfortunately, Eclipse IDE is infamous for slow validation of JavaScript files, and given the fact that Ext JS has hundreds of JavaScript files, your work may be interrupted by Eclipse trying to unnecessary revalidate these files. Developers of Sencha Eclipse plugin decided to solve this problem by creating a special type library file supporting code assistance in Eclipse. This solution will work until some of the Ext JS API changes, after that Sencha should update the type library. 
+
+If you don't have Sencha Eclipse Plugin, there is a couple of solutions to this problem (we'll use the first one). 
+
+1. Exclude from Eclipse build the following Ext JS directories: ext, packages, and overrides.    
+
+2. Don't copy the Ext JS framework into your Eclipse project. Keep it int the document root of your Tomcat or other Web server right next to your index.html file.
+
+In both of these solutions you'll lose the Ext JS context sensitive help, but at least you will eliminate the long pauses caused by Eclipse internal builds. Again, using Web Storm IDE would spare you from all these issues. 
 
 
 ==== Which Ext JS Framework to use?
@@ -129,10 +222,10 @@ The file with the minimized production version of Ext JS is called ext-all.js an
 
 [source, html]
 ----
-<link rel="http://cdn.sencha.io/ext-4.2.0/resources/css/ext-all.css" />
+<link rel="http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css" />
 
 <script type="text/javascript" charset="utf-8" 
-        src="http://cdn.sencha.io/ext-4.2.0/ext-all.js"></script> 
+        src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all.js"></script> 
 ----
 
 TIP: If the name of the file with Ext JS framework contains _-all_, this indicates that all framework classes are included.
@@ -207,7 +300,7 @@ TBD
 
 TIP: You can view and test Ext JS components against bundled themes browsing the Theme Viewer at the http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html[Ext JS 4.2 Examples] page.
 
-==== The Components Lifecycle
+==== The Component's Lifecycle
 
 In previous chapters CSS was responsible for all of the layouts of our Save Sick Child application. In Chapter 11 you'll be learning about responsive design techniques and CSS media queries that will allow to create fluid layouts that automatically adjust to the size of the viewport. 
 
@@ -225,8 +318,7 @@ Each Web page consists of one or more containers, which include some children - 
 You'll be defining your container class with as a subclass of a container by including 
 `extend: Ext.container.Container`. The child elements of a container are accessible via its property `items`. In the `Ext.define()` statement of the container you may specify the code that will loop through this `items` array and, say style the components, but actual instances of the children will be provided during the `Ext.create()` call via configuration object. 
 
-The process of adding a component to a container will typically consist of invoking `Ext.create()` and specifying in a configuration object where to render the component to, for example `renderTo: Ext.getBody()`. 
-
+The process of adding a component to a container will typically consist of invoking `Ext.create()` and specifying in a configuration object where to render the component to, for example `renderTo: Ext.getBody()`.
 
 But under the hood Ext JS will do a lot more work. The framework will auto-generate a unique ID for the component, assign some event listeners, instantiate component plugins if specified, invoke the `initComponent()`, and add the component to `Ext.ComponentManager`.  
 
@@ -247,17 +339,17 @@ Grid is probably the most used component in enterprise applications. Displaying 
 
 TBD
 
-==== Customizing Ext JS for Your Application
-
-TBD
-
-
 
 === Developing Save Sick Child With Ext JS
 
 Let's see how to re-write with Ext JS our Save Sick Child application. Since it doesn't look like a typical enterprise application with a bunch of forms and grids, we'll use a lightest top-level container class `Container`, which allows the most freedom in what to put inside and how to layout its child elements.  
 
 TIP: http://www.sencha.com/products/desktop-packager/[Sencha Desktop Packager] allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. 
+
+Run the SSC_Top_ExtJS project and turn on the Chrome Developers Tools. Scroll to the bottom of the Network tab, and you'll see that the browser made about 250 requests to the server and downloaded 4.5Mb in total. Not too exciting isn't it? On the next runs these numbers will drop to about 30 requests and 1.7Mb transferred - the browser's caching kicked in. These numbers would be better if instead of ext-all.js we'd be linking ext.js, and even better if we'd created a custom build (see Sencha CMB section) for the Save Sick Child application merging into one file the application code with only those framework classes that were actually used.
+
+
+
 
 === Productive Enterprise Web Development with Ext JS and CDB 
 
