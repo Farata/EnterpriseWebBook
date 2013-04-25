@@ -165,7 +165,7 @@ image::images/fig_06_03.png[image]
  
 NOTE: With older versions of Sencha Cmd (Sencha SDK Tools) you would generate a manifest file in a jsb3 format, that would describe all the classes that your application uses. Such jsb3 file would be used for creating custom builds. This option is still available, but Sencha Cmd uses the command _sencha app build_ as was shown above. For more details about code generation refer to the section http://docs.sencha.com/ext-js/4-2/#!/guide/command_app[Using Sencha Cmd with Ext JS] in the product documentation.
 
-==== Configuring Eclipse IDE, Apache Tomcat, and Ext JS
+==== Configuring Eclipse project with Apache Tomcat and Ext JS
 
 In this chapter we'll switch from Aptana IDE to its parent Eclipse IDE. Although Eclipse is not the best IDE for JavaScript developers, but it's the most popular IDE among enterprise Java developers, and we'll need it later in this chapter to demonstrate the application generation using Java and CDB. Besides, Sencha offers Eclipse plugin for those who purchased a license of Sencha Complete (not covered in the book).
 
@@ -203,15 +203,33 @@ image::images/fig_06_04.png[image]
 
 Upon creation, this project will include several directories, and one of them will be called _WebContent_. This directory it serves as a document root of the Web server in Eclipse Dymamic Web Projects . This is the place to put your index.html and one of possible places to keep the Ext JS framework.Create a subdirectory _ext_ under _WebContent_ and copy there all files from the Ext JS distribution. The _app_ directory should also go under _WebContent_.
 
-Unfortunately, Eclipse IDE is infamous for slow validation of JavaScript files, and given the fact that Ext JS has hundreds of JavaScript files, your work may be interrupted by Eclipse trying to unnecessary revalidate these files. Developers of Sencha Eclipse plugin decided to solve this problem by creating a special type library file supporting code assistance in Eclipse. This solution will work until some of the Ext JS API changes, after that Sencha should update the type library. 
+Unfortunately, Eclipse IDE is infamous for slow indexing of JavaScript files, and given the fact that Ext JS has hundreds of JavaScript files, your work may be interrupted by Eclipse trying to unnecessary re-validate these files. Developers of Sencha Eclipse plugin decided to solve this problem by creating a special type library file (ext.ser) supporting code assistance in Eclipse. This solution will work until some of the Ext JS API changes, after that Sencha should update the type library file. 
 
-If you don't have Sencha Eclipse Plugin, there is a couple of solutions to this problem (we'll use the first one). 
+If you don't have Sencha Eclipse plugin, there is a couple of solutions to this problem (we'll use the first one). 
 
-1. Exclude from Eclipse build the following Ext JS directories: ext, packages, and overrides.    
+1. Exclude from Eclipse build the following Ext JS directories: ext, build, and packages. 
 
-2. Don't copy the Ext JS framework into your Eclipse project. Keep it int the document root of your Tomcat or other Web server right next to your index.html file.
+2. Don't copy the Ext JS framework into your Eclipse project. Keep it in the place known for Tomcat, and configure as a loadable module.
 
-In both of these solutions you'll lose the Ext JS context sensitive help, but at least you will eliminate the long pauses caused by Eclipse internal builds. Again, using Web Storm IDE would spare you from all these issues. 
+To implement the first solution, right click on the properties of your project and select JavaScript | Include Path. Then switch to the Source tab, expand the project's Web content and press the buttons Edit and then Add. One by one add the ext, build, and packages as exclusion patterns (add the slash at the end) as shown in <<Fig6-5>>
+    
+[[FIG6-5]]
+.Excluding folders in Eclipse
+image::images/fig_06_05.png[image]
+
+For the second solution,  In this case you'll need to add your Ext JS folder as a static Tomcat module. Double-click at the Tomcat name in the Servers view and then click on the bottom tab Modules. Then Click on Add External Web Module. In the popup window find the folder where your Ext JS is (in my computer it's inside the Library folder as in <<Fig6-6>>) and give it a name (e.g. /extjs-4.2). Now Tomcat will know that on each start it has to load year another static Web module known as /static/extjs-4.2. If you're interested in details of such deployment, open up the file server.xml located in your Eclipse workspace in the hidden directory _.metadata/.plugins/org.eclipse.wst.server.core/tmp0/conf_.
+
+To ensure that you did everything right, just enter in your browser the URL http://localhost:8080/extjs-4.2, and you should see the  welcome screen of Ext JS.
+
+[[FIG6-6]]
+.Adding Ext JS to Tomcat as a static module 
+image::images/fig_06_06.png[image]
+
+In both of these solutions you'll lose the Ext JS context sensitive help, but at least you will eliminate the long pauses caused by Eclipse internal indexing processes. Again, developing ExtJS code in WebStorm IDE or IntelliJ IDEA IDEs would spare you from all these issues because these IDE's are smart enough to produce context-sensitive help from an external JavaScript library. 
+
+In this section we brought together three pieces of software: Eclipse IDE, Apache Tomcat server, and Ext JS framework.  Let's bring one more program to the mix: Sencha CMD. We already went through the initial code generation of Ext JS applications. If you already have a Dynamic Web Project in Eclipse workspace, run Sencha CMD specifying the _WebContent_ directory of your project as the output folder, where the generated project will reside. For example, if the name of your Dynamic Web Project is hello2, the Sencha CMD command can look as follows:
+
+_sencha -sdk /Library/ext-4.2 generate app HelloWorld /Users/yfain11/myEclipseWorkspace/hello2/WebContent_
 
 
 ==== Which Ext JS Framework to use?
@@ -342,13 +360,302 @@ TBD
 
 === Developing Save Sick Child With Ext JS
 
-Let's see how to re-write with Ext JS our Save Sick Child application. Since it doesn't look like a typical enterprise application with a bunch of forms and grids, we'll use a lightest top-level container class `Container`, which allows the most freedom in what to put inside and how to layout its child elements.  
+In this section we'll do a code walktrough of the Ext JS version of our Save Sick Child application. We've prepared two separate Eclipse projects SSC_Top_ExJS.zip contains the top portion of the application, and SSC_Complete_ExtJS.zip contains the complete version. To test these applications in Eclipse, you need to have it configured with Tomcat as described earlier in the section "Configuring Eclipse project with Apache Tomcat and Ext JS".  
+
+If this part is done, select Eclipse menu File | Import | General | Existing projects into workspace and press the button Next. Then select the option Select archive file and press browse to find SSC_Top_ExJS.zip on your disk. This will import the entire Dynamic Web Project, and most likely you'll see one error in the Problems view indicating that the target runtime with so-and-so name is not defined. This may happen because the name of the Tomcat configuration in your Eclipse is difference from the one in the file SSC_Top_ExJS.zip. 
+
+To fix this issue right-click on the project name and select the menu Properties | Targeted runtimes. Then uncheck the Tomcat name that was imported from our archive and check the name of your Tomcat configuration. This action will make the project SSC_Top_ExtJS deployable under your Tomcat server. Right-click on the server name in the Servers view and select Add and Remove menu item. You'll see a popup window similar to <<FIG6-1-SSC>>, which depicts a state when the project SSC_Top_ExtJS is deployed, but SSC_Complete_ExtJS.
+
+[[FIG6-1-SSC]]
+.Deploying Dynamic Web Project
+image::images/fig_06_01_SSC.png[image]
+
+Right-click on the project name SSC_Top_ExtJS, select the menu Run as | Run on server. Eclipse may offer to restart the server - accept it, and you'll see the top portion of the Save Sick Child application running in the internal browser of Eclipse as shown on <<FIG6-2-SSC>>. 
+You can either configure Eclipse to use your system browser or just enter the URL http://localhost:8080/SSC_Top_ExtJS/ in the browser of your choice - the Web page will look the same.
+
+[[FIG6-2-SSC]]
+.Running the SSC_Top_ExtJS in Eclipse
+image::images/fig_06_02_SSC.png[image]
+
+TIP: Apache Tomcat runs on the port 8080 by default. If you want to change the port number, double-click on the Tomcat name in the Servers view and change the port there.
+
+It's time for a code review. The initial application was generated by Sencha CMD so the directory structure complies with the MVC paradigm. This version has one controller Donate.js and three views: DonateForm.js, Viewport.js, and Header.js as shown in <<FIG6-3-SSC>>. The images are located under the folder resources.
+
+[[FIG6-3-SSC]]
+.Controller, views and images of SSC_Top_ExtJS
+image::images/fig_06_03_SSC.png[image]
+
+TIP: If you prefer using WebStorm for JavaScript development, but have to use Eclipse for some other reasons, you can create a project in WebStorm pointing at the WebContent directory of your Eclipse project. This way you'll modification done in WebStorm become immediately visible in the  Eclipse project. It looks like an overkill, but we are talking about the enterprise development where you may jump through some hoops to create a convenient working environment for yourself.
+
+The app.js is pretty short - it just declares SSC as the application name, views and controllers. By adding the property `autoCreateViewport: true` we requested the application to automatically load the main window, which must be called Viewport.js and located in the view directory.
+
+[source, javascript]
+----
+Ext.application({
+    name: 'SSC',
+
+    views: [
+        'DonateForm',
+        'Header',
+        'Viewport'
+    ],
+
+    controllers: [
+        'Donate'
+    ],
+
+    autoCreateViewport: true
+});
+----
+
+In this version of the application controller Donate.js is listening for the events from the view DonateForm. It's responsible just for the showing and hiding the Donate form panel. We've implemented the same behavior as in the previous version of the SaveSick Child application - click on the Donate Now button reveals the donation form. If the application would need to make some AJAX calls to the server, such code would also be placed in the controller. The code of the Donate controller looks as follows:
+
+[source, javascript]
+----
+Ext.define('SSC.controller.Donate', {
+  extend: 'Ext.app.Controller',
+
+  refs: [{
+    ref: 'donatePanel',
+    selector: '[cls=donate-panel]'
+  }],
+
+  init: function () {                 // 1 
+    'use strict';
+
+    this.control({                    
+      'button[action=showform]': {    // 2
+        click: this.showDonateForm
+      },
+
+      'button[action=hideform]': {
+        click: this.hideDonateForm
+      },
+
+      'button[action=donate]': {
+        click: this.submitDonateForm
+      }
+    });
+  },
+
+  showDonateForm: function () {        // 3
+    this.getDonatePanel().getLayout().setActiveItem(1);
+  },
+
+  hideDonateForm: function () {
+    this.getDonatePanel().getLayout().setActiveItem(0);
+  },
+
+  submitDonateForm: function () {
+    var form = this.getDonatePanel().down('form');
+    form.isValid();
+  }
+});
+----
+<1> The `init()` method is invoked only once on instantiaton of the controller.
+
+<2> The `control()` method of the controller take as arguments selectors to find the components with the corresponding event listeners to be added. For example, `'button[action=showform]'` means find a button that has a property `action` with the value `showform` - it's has the same meaning as in CSS selectors.
+
+<3> Event handler functions to process show, hide, and submit events.
+
+The top level window is a Viewport, which will contain the Header and the Donate form views. The simplest view is the Header.Since Save Sick Child doesn't look like a typical enterprise application with a bunch of forms and grids, we'll use the lightest top-level container class `Container` where possible. The class `Container` gives you the most freedom in what to put inside and how to layout its child elements. For example, the Header view extends `Ext.Container` and contains child elements, some of which have the xtype `component`, and some `container`: 
+
+[source, javascript]
+----
+Ext.define("SSC.view.Header", {
+  extend: 'Ext.Container',
+  xtype: 'appheader',       // 1
+
+  cls: 'app-header',
+  height: 85,
+
+  layout: {                 // 2   
+    type: 'hbox',
+    align: 'middle'
+  },
+
+  items: [{                 // 3 
+    xtype: 'component',          
+    cls: 'app-header-logo',
+    width: 75,
+    height: 75
+  }, {
+    xtype: 'component',
+    cls: 'app-header-title',
+    html: 'SAVE SICK CHILD',
+    flex: 1
+  }, {
+    xtype: 'container',      // 4
+    defaults: {
+      scale: 'medium',
+      margin: '0 0 0 5'
+    },
+    items: [{
+      xtype: 'button',
+      text: 'Who We Are'
+    }, {
+      xtype: 'button',
+      text: 'What We Do'
+    }, {
+      xtype: 'button',
+      text: 'Where We Work'
+    }, {
+      xtype: 'button',
+      text: 'Way To Give'
+    }]
+  }]
+});
+----
+
+<1> We named the xtype of this view `appheader`, which will be used as a reference in the Viewport. 
+
+<2> The header uses `hbox` layout with center alignment
+
+<3> Child components of the top container are the logo image, the text "Save Sick Child", and another container with buttons
+
+<4> A container with button components
+
+Let's review the DonateForm next. It's a subclass of the `Ext.form.Panel` and contains the form with radio buttons, fields and labels. This component named `donateform` will be placed under the Header in the Viewport. 
+
+[source, html]
+----
+Ext.define('SSC.view.DonateForm', {
+  extend: 'Ext.form.Panel',
+  xtype: 'donateform',
+  requires: [                  // 1
+    'Ext.form.RadioGroup',
+    'Ext.form.field.*',
+    'Ext.form.Label'
+  ],
+
+  layout: {
+    type: 'hbox',
+    align: 'stretch'          // 2
+  },
+
+  bodyStyle: {
+    backgroundColor: 'transparent'
+  },
+
+  defaults: {
+    margin: '0 50 0 0'
+  },
+
+  items:[{
+    xtype: 'container',
+    layout: 'vbox',
+
+    items: [{
+      xtype: 'container',
+      width: 200,
+
+      items: [{
+        xtype: 'radiogroup',
+        fieldLabel: 'Please select or enter donation amount',
+        labelAlign: 'top',
+        labelSeparator: '',
+        labelCls: 'donate-form-label',
+
+        vertical: true,
+        columns: 1,
+
+        defaults: {
+          name: 'amount'
+        },
+
+        items: [
+          { boxLabel: '10',  inputValue: '10'  },
+          { boxLabel: '20',  inputValue: '20'  },
+          { boxLabel: '50',  inputValue: '50'  },
+          { boxLabel: '100', inputValue: '100' },
+          { boxLabel: '200', inputValue: '200' }
+        ]
+      }]
+    }, {
+      xtype: 'textfield',
+      fieldLabel: 'Other amount',
+      labelAlign: 'top',
+      labelSeparator: '',
+      labelCls: 'donate-form-label'
+    }]
+  }, {
+    xtype: 'fieldcontainer',
+    fieldLabel: 'Donor information',
+    labelAlign: 'top',
+    labelSeparator: '',
+    labelCls: 'donate-form-label',
+
+    defaults: {
+      allowBlank: false
+    },
+
+    items: [{
+      xtype: 'textfield',
+      name: 'donor',
+      emptyText: 'full name'
+    }, {
+      xtype: 'textfield',
+      emptyText: 'email'
+    }, {
+      xtype: 'textfield',
+      emptyText: 'address'
+    }, {
+      xtype: 'textfield',
+      emptyText: 'city'
+    }, {
+      xtype: 'textfield',
+      emptyText: 'zip/postal code'
+    }, {
+      xtype: 'combobox',
+      emptyText: 'state',
+      store: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
+    }, {
+      xtype: 'combobox',
+      emptyText: 'country',
+      store: ['US', 'Russia']
+    }]
+  }, {
+    xtype: 'container',
+    layout: {
+      type: 'vbox',
+      align: 'center'
+    },
+
+    items: [{
+      xtype: 'label',
+      text: 'We accept PayPal payments',
+      labelSeparator: '',
+      cls: 'donate-form-label',
+      width: 220
+    }, {
+      xtype: 'component',
+      width: 220,
+      html: 'Your payment will processed securely by PayPal. PayPal employ industry-leading encryption and fraud prevention tools. Your financial information is never divulged to us.'
+    }, {
+      xtype: 'button',
+      action: 'donate',
+      text: 'DONATE NOW',
+      scale: 'large',
+      margin: '20 0 0 0'
+    }, {
+      xtype: 'button',
+      action: 'hideform',
+      margin: '10 0 0 0',
+      text: 'I will donate later'
+    }]
+  }]
+
+});
+----
+
+<1>
+
+<2>
+
 
 TIP: http://www.sencha.com/products/desktop-packager/[Sencha Desktop Packager] allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. 
 
 Run the SSC_Top_ExtJS project and turn on the Chrome Developers Tools. Scroll to the bottom of the Network tab, and you'll see that the browser made about 250 requests to the server and downloaded 4.5Mb in total. Not too exciting isn't it? On the next runs these numbers will drop to about 30 requests and 1.7Mb transferred - the browser's caching kicked in. These numbers would be better if instead of ext-all.js we'd be linking ext.js, and even better if we'd created a custom build (see Sencha CMB section) for the Save Sick Child application merging into one file the application code with only those framework classes that were actually used.
-
-
 
 
 === Productive Enterprise Web Development with Ext JS and CDB 
