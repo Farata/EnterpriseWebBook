@@ -1,4 +1,5 @@
 :toclevels: 3
+:imagesdir: ./images
 
 == Test-Driven Development with JavaScript
 
@@ -102,6 +103,22 @@ Say, you want to test validation logic in Donation entry form.
 
 In addition to business logic, web applications should be tested for proper rendering of UI components, changing view states, dispatching, and handling events.
 
+// <vik>
+Regardless of that testing framework are you using, your tests will follow same basic pattern. First of all, you need to setup up the test environment. After that, you run a production code and check that your production code did that it supposed to. At the very end you need to clean up after yourself.
+This pattern for authoring the unit tests has name _Arrange-Act-Assert_ (AAA footnote:[ http://integralpath.blogs.com/thinkingoutloud/2005/09/principles_of_t.html[Principles for Test-Driven Development] ]).
+
+In _Arrange_ phase you set up the unit under the test. For example, create a DOM element that your production code manipulates.
+
+In _Act_ phase you exercise the unit under test and capturing any resulting state. Here you executing your production code in unit test context.
+
+In the _Assert_ phase you verify the behavior through assertions.
+
+There is one more phase - _Reset_. In this phase, if needed, you return environment to the initial state. For example, erase the DOM elements created in _Arrange_ phase.
+
+Later in this chapter, we will show how different frameworks implements _AAAR_ pattern.
+
+// </vik>
+
 ==== Automate Everything
 
 You should automate testing as much as you can to reduce the costs of building, deploying, and maintaining your application. 
@@ -128,13 +145,17 @@ module.exports = function (grunt) {
     grunt.registerTask('hello', 'say hello', function(){    // <1>
         grunt.log.writeln("Hello from grunt");              // <2>
     });
+
+    grunt.registerTask('default', 'hello');                 // <3>              
 };
 ----------------------------------------------------------------------
-
+// <vik>
 <1> Register the new task named `hello`.
 <2> Print the greeting text using http://gruntjs.com/api/grunt.log[grunt's log API]
+<3> With `grunt.registerTask` we define a default task to run when Grunt is called without any parameter. 
 
-Let's run this `hello` task with the command `grunt --gruntfile Grunt_simple.js hello`
+Let's run this `hello` task with the command `grunt --gruntfile Grunt_simple.js hello`. 
+Each task can be called separately from the command line by passing task's name as a command line parameter: For example `grunt hello` would only execute the listed above hello task.
 
 [source,bash]
 ----------------------------------------------------------------------
@@ -144,13 +165,100 @@ Hello from grunt
 Done, without errors.
 ----------------------------------------------------------------------
 
-==== Test-driven development with Qunit
+==== Test-driven development with QUnit
 
-TBD
+// <vik>
+We will start our journey to JavaScript testing frameworks with http://qunitjs.com/[QUnit]. QUnit was originally developed by http://ejohn.org/about/[John Resig] as part of jQuery. QUnit now runs completely standalone and doesn't require jQuery dependency. While heavily used by the jQuery Project for testing jQuery, jQuery UI and jQuery Mobile, it can be used to test any generic JavaScript code.
+
+// </vik>
 
 ===== Setup Grunt with Qunit
 
-TDB
+WARNING: Section is in active development
+
+// <vik>
+In this section of the chapter we're going learn how to automatically run the Qunit tests using Grunt.
+Let's setup our project by adding the Qunit and tests file. We will start with downloading the latest version from http://qunitjs.com/[official web site]. We need to get only two files - `qunit-*.js` and `qunit-*.css`.
+
+.A download section on QUnit website
+image::fig_08_04.png[]
+
+.QUnit framework in our project 
+image::fig_08_05.png[]
+
+.Our first QUnit test
+[sources,javascript]
+----
+'use strict';
+test("my first qunit test", function () {
+    ok(2 + 2 === 4, "Passed!");
+});
+----
+
+One more thing that we need for out test setup is a test runner. 
+
+.A test runner
+[source,html]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>QUnit Example</title>
+    <link rel="stylesheet" href="lib/qunit-1.11/qunit.css"> 
+    <script src="lib/qunit-1.11/qunit.js"></script>     <!-- <1> -->
+    <script type="text/javascript" src="../app/js/libs/jquery-1.9.0.min.js"></script> <!-- <2> -->
+    <script src="test/tests.js"></script>               <!-- <3> -->
+</head>
+<body>
+<div id="qunit"></div>
+</body>
+</html>
+----
+
+<1> A test runner is a html file contains links to QUnit framework JavaScript file.
+<2> In this chapter we will continue to work on jQuery-based version of the "Save Sick Child" application. Out production depends on jQuery and we need to include jQuery in the test runner.
+<3> Test files are included as well.
+
+To run all our tests we just need to open the `qunit-runner.html` in browser.
+
+.A test run results in browser
+image::fig_08_06.png[]
+
+.Gruntfile with qunit runner
+[source,javascript]
+----
+module.exports = function (grunt) {
+    "use strict";
+    grunt.initConfig({
+        qunit: {
+            all: ["test/qunit-runner.html"]
+        }
+    });
+    grunt.registerTask("test", "qunit");
+    grunt.loadNpmTasks("grunt-contrib-qunit");
+};
+----
+
+TODO:
+
+Test methods:
+         module(name, {[setup][ ,teardown]})
+         test(name, callback)
+         expect(numberOfAssertions)
+         stop(increment)
+         start(decrement)
+Test assertions:
+         ok(value, [message])
+         equal(actual, expected, [message])
+         notEqual(actual, expected, [message])
+         deepEqual(actual, expected, [message])
+         notDeepEqual(actual, expected, [message])
+         strictEqual(actual, expected, [message])
+         notStrictEqual(actual, expected, [message])
+         throws(block, [expected], [message])
+
+// <vik>
 
 ==== Behavior-Driven Development With Jasmine
 
@@ -168,13 +276,13 @@ Let's start by downloading latest version of Jasmine from https://github.com/piv
 
 .Jasmine Distribution
 [[FIG-1]]
-image::images/fig_08_01.png["Jasmine distribution"]
+image::fig_08_01.png["Jasmine distribution"]
 
 Jasmine comes with example spec (+spec+ folder) and html test runner - +SpecRunner.html+. Let's open +SpecRunner.html+ in browser <<FIG-2>>. 
 
 .Running Jasmine Specs in a Browser
 [[FIG-2]]
-image::images/fig_08_02.png["SpectRunner.html"]
+image::fig_08_02.png["SpectRunner.html"]
 
 +SpecRunner.html+ file is very similar to the qunit html runner. You can run specs by opening the runner file in browser.  
 
@@ -192,7 +300,7 @@ Now let's update our Grunfile to run the same sample specifications with the hea
 
 .Jasmine Specifications in Our Project
 [[FIG-3]]
-image::images/fig_08_03.png[]
+image::fig_08_03.png[]
 
 Now we need to edit the +Gruntfile.js+ to activate Jasmine support.
 
@@ -244,12 +352,18 @@ In this example, Grunt successfully executed the tests with PhantomJS of all fiv
 ****
 PhantomJS is a headless WebKit-based rendering engine with JavaScript API.  Think of PhantomJS as a browser that doesn't have any graphical user interface. PhantomJS can execute HTML, CSS, JavaScript code. Because PhantomJS is not required to render GUI, it can be used in display-less environments (e.g.  Continuous Integration server) to run tests. In our case, Grunt automatically spawns PhantomJS instance, executes the code of our tests, reads the execution results using PhantomJS API, and prints them out in the console.
 ****
+
+// <vik>
+.What is Continuous Integration
+****
+TBD
+****
+
 In next section you will learn how write your own specifications.
 
 ===== Jasmine Basics
 
 After we've set up the tools for running the tests let's start developing tests and learn the Jasmine framework constructs. Every specification file has a set of _suites_ defined in the `describe` function. Suites help logically organize the code of test specifications. 
-
 
 .ExampleSpec.js
 [source,javascript]
@@ -419,6 +533,14 @@ Aborted due to warnings.
 
 TBD...
 
+// <vik>
+==== Testing DOM
+
+As you learned in the previous chapters, Document Object Model (DOM) is standard browser API that allows a developer to access and manipulate page elements. As you have seen in previous chapter, most on your JavaScript code needs to access and manipulate the page in some way. Testing the DOM is the crucial part of testing your client side JavaScript. 
+By design, DOM is cross-browser API. But in real world, if you want to make sure that your code works on the particular browser you need to run the test inside on your browser.
+
+// </vik>
+
 ==== Multi-Browser Testing With Karma
 
 In the previous section of this chapter we showed you how to execute your test and specification in headless mode using PhantomJS, which is very useful for running tests in the Continuous Integration environments. While PhantomJS is based on the WebKit rendering engine, there are browsers that don't use WebKit. It's obvious that running tests manually in each browser is tedious and not productive.
@@ -451,12 +573,14 @@ browsers = ['Chrome', 'ChromeCanary', 'PhantomJS', 'Safari', 'Firefox', 'Opera']
 
 singleRun = true; //<5>
 ----
-<1> Path that will be used to resolve location of the files <2> and exclude <3>.
-<2> An array of file names to load in the browser.
-<3> An array of file names to be excluded from loading.
-<4> An array of browser names to be used to execute JavaScript code.
-<5> If true, it captures browsers, runs the tests and exit.
+//<vik>
+<1> Path that will be used to resolve location of the files <2> and exclude <3>. 
+<2> An array of the file names to load in the browser.
+<3> An array of the file names to be excluded from loading.
+<4> An array of the browser names to be used to execute JavaScript code.
+<5> If this property is equals true that Karma will start the browsers, runs the tests and exit.
 
+//<vik>
 ===== Running Tests 
 
 // TBD
@@ -515,4 +639,4 @@ TOTAL: 72 SUCCESS
 
 === Save Sick Child With TDD
 
-TBD...
+TBD...  
