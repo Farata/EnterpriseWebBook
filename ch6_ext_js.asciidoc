@@ -53,9 +53,13 @@ The material in this chapter is divided into three sections. First, you'll go th
 
 Ext JS framework is large so be prepared that your application will weigh at least 1Mb. So if you just need to create a small Web site, you may be better off by just using a lightweight, easy to learn and free jQuery library or one of a dozen of other JavaScript frameworks that either improve organizational structure of your project or offer a set of a la cart components to prettify your HTML5 application. But if you had a chance to develop or use rich Internet applications developed with such frameworks as Microsoft Silverlight or Apache Flex, then you'll quickly realize that Ext JS is the closest by functionality, rich set of components and tools.  
 
-=== Ext JS Primer
+=== Getting Familiar with Ext JS 
 
-Let's start the Ext JS primer similar to what we did in the previous chapter with developing a Hello World application. First, create a new directory (e.g. _hello1_). Create inside a subdirectory named _ext_ and copy theere the entire content of your Ext JS installation directory. Create yet another subdirectory _app_ inside _hello1_ - this is where your application JavaScript files will go.
+This section is not going to be an Ext JS primer that gradually explains each and every feature and API of Ext JS. We'd need to write a fat Ext JS tutorial. Sencha published online tutorials, documentation and videos, besides here are several pretty current books written by independent authors. In this section chapter you'll be learning Ext JS on the go. 
+
+You'll start, as usual, with developing a Hello World application, then we'll included a high level overview of how things work in Ext JS. But the section where we'll review the code of the Save Sick Child application offers a hands-on way of learning the framework. You'll read the code and the comments followed by brief explanations. You'll be able to run and debug this application on your own computer seeing how various components and program layers work in practice. But first things first - let's create a couple of versions of Hello World.
+
+Create a new directory (e.g. _hello1_). Inside _hello1_ create a subdirectory named _ext_ and copy there the entire content of your Ext JS installation directory. Create yet another subdirectory _app_ inside _hello1_ - this is where your application JavaScript files will go.
 
 At the very minimum, every Ext JS application will contain one HTML and one JavaScript file - usually index.html and app.js. The file index.html will include the references to the CSS and JavaScript code of Ext JS and will include your app.js containing the code of the Hello World application: 
 
@@ -76,7 +80,7 @@ At the very minimum, every Ext JS application will contain one HTML and one Java
 
 The next comes the content of the app.js that you should place in the _app_ directory of your project. This is how the app.js may look like:
 
-[source, jaascript]
+[source, javascript]
 ----
 Ext.onReady(function(){
       alert("Hello World");
@@ -349,9 +353,14 @@ TIP: At any time your program can get from the `ComponentManager` a reference to
 
 Border layout - is typically used for a home page.
 
+TBD
+
 ==== Grid
 
 Grid is probably the most used component in enterprise applications. Displaying rows of data is important and the performance of a grid component is crucial for any UI platform. Large grids are infamous for poor scrolling performance, which is defined by how the grid data is being rendered. Grid-centric Web application should be using Ext JS 4.2 and you'll see a sample grid application in this section.  
+
+TBD
+
 
 ==== Overrides
 
@@ -360,7 +369,7 @@ TBD
 
 === Developing Save Sick Child With Ext JS
 
-In this section we'll do a code walktrough of the Ext JS version of our Save Sick Child application. We've prepared two separate Eclipse projects SSC_Top_ExJS.zip contains the top portion of the application, and SSC_Complete_ExtJS.zip contains the complete version. To test these applications in Eclipse, you need to have it configured with Tomcat as described earlier in the section "Configuring Eclipse project with Apache Tomcat and Ext JS".  
+In this section we'll do a code walk-through of the Ext JS version of our Save Sick Child application. We've prepared two separate Eclipse projects SSC_Top_ExJS.zip contains the top portion of the application, and SSC_Complete_ExtJS.zip contains the complete version. To test these applications in Eclipse, you need to have it configured with Tomcat as described earlier in the section "Configuring Eclipse project with Apache Tomcat and Ext JS".  
 
 If this part is done, select Eclipse menu File | Import | General | Existing projects into workspace and press the button Next. Then select the option Select archive file and press browse to find SSC_Top_ExJS.zip on your disk. This will import the entire Dynamic Web Project, and most likely you'll see one error in the Problems view indicating that the target runtime with so-and-so name is not defined. This may happen because the name of the Tomcat configuration in your Eclipse is difference from the one in the file SSC_Top_ExJS.zip. 
 
@@ -408,7 +417,7 @@ Ext.application({
 });
 ----
 
-In this version of the application controller Donate.js is listening for the events from the view DonateForm. It's responsible just for the showing and hiding the Donate form panel. We've implemented the same behavior as in the previous version of the SaveSick Child application - click on the Donate Now button reveals the donation form. If the application would need to make some AJAX calls to the server, such code would also be placed in the controller. The code of the Donate controller looks as follows:
+In this version of the application controller Donate.js is listening to the events from the view `DonateForm`. It's responsible just for the showing and hiding the `Donate` form panel. We've implemented the same behavior as in the previous version of the SaveSick Child application - click on the Donate Now button reveals the donation form. If the application would need to make some AJAX calls to the server, such code would also be placed in the controller. The code of the `Donate` controller looks as follows:
 
 [source, javascript]
 ----
@@ -420,11 +429,11 @@ Ext.define('SSC.controller.Donate', {
     selector: '[cls=donate-panel]'
   }],
 
-  init: function () {                 // 1 
+  init: function () {                 // <1> 
     'use strict';
 
     this.control({                    
-      'button[action=showform]': {    // 2
+      'button[action=showform]': {    // <2>
         click: this.showDonateForm
       },
 
@@ -438,8 +447,8 @@ Ext.define('SSC.controller.Donate', {
     });
   },
 
-  showDonateForm: function () {        // 3
-    this.getDonatePanel().getLayout().setActiveItem(1);
+  showDonateForm: function () {        // <3>
+    this.getDonatePanel().getLayout().setActiveItem(1); // <4>
   },
 
   hideDonateForm: function () {
@@ -447,34 +456,115 @@ Ext.define('SSC.controller.Donate', {
   },
 
   submitDonateForm: function () {
-    var form = this.getDonatePanel().down('form');
+    var form = this.getDonatePanel().down('form'); // <5>
     form.isValid();
   }
 });
 ----
-<1> The `init()` method is invoked only once on instantiaton of the controller.
+<1> The `init()` method is invoked only once on instantiation of the controller.
 
-<2> The `control()` method of the controller take as arguments selectors to find the components with the corresponding event listeners to be added. For example, `'button[action=showform]'` means find a button that has a property `action` with the value `showform` - it's has the same meaning as in CSS selectors.
+<2> The `control()` method of the controller take as arguments selectors to find the components with the corresponding event listeners to be added. For example, `'button[action=showform]'` means find a button that has a property `action` with the value `showform` - it has the same meaning as in CSS selectors.
 
 <3> Event handler functions to process show, hide, and submit events.
 
-The top level window is a Viewport, which will contain the Header and the Donate form views. The simplest view is the Header.Since Save Sick Child doesn't look like a typical enterprise application with a bunch of forms and grids, we'll use the lightest top-level container class `Container` where possible. The class `Container` gives you the most freedom in what to put inside and how to layout its child elements. For example, the Header view extends `Ext.Container` and contains child elements, some of which have the xtype `component`, and some `container`: 
+<4> In containers with card layout, you can make one of the components visible (the top one in the card deck) by passing its index to the method `setActiveItem()`. The Viewport.js includes a container with the card layout (see ` cls: 'donate-panel'` in the next code sample).   
+<5> Finding the children of the container can be done using the method `down()` method. in this case we are finding the child `<form>` element of a donate panel. If you need to find the parents of the component use `up()`. 
+
+The top level window is a `Viewport`, which will contain the `Header` and the `Donate` form views. 
+
+[source, javascript]
+----
+Ext.define('SSC.view.Viewport', {
+  extend: 'Ext.container.Viewport',
+  requires: [
+    'Ext.tab.Panel',
+    'Ext.layout.container.Column'
+  ],
+
+  cls: 'app-viewport',
+  layout: 'column',                  // <1>
+  defaults: {
+    xtype: 'container'
+  },
+
+  items: [{
+    columnWidth: 0.5,
+    html: '&nbsp;' // Otherwise column collapses
+  }, {
+    width: 980,
+    cls: 'main-content',
+    layout: {
+      type: 'vbox',              // <2>
+      align: 'stretch'
+    },
+
+    items: [{                
+      xtype: 'appheader'         // <3>
+    }, {
+      xtype: 'container',            
+      minHeight: 350,
+      flex: 1,
+
+      cls: 'donate-panel',              
+      layout: 'card', 
+
+      items: [{
+        xtype: 'container',
+        layout: 'vbox',
+
+        items: [{
+          xtype: 'component',
+          html: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ...',
+
+          maxWidth: 550,
+          padding: '80 20 0'
+        }, {
+          xtype: 'button',
+          action: 'showform',
+          text: 'DONATE NOW',
+          scale: 'large',
+          margin: '30 230'
+        }]
+      }, {
+        xtype: 'donateform',
+        margin: '80 0 0 0'
+      }]
+    }, {
+      xtype: 'container',
+      flex: 1
+    }]
+  }, {
+    columnWidth: 0.5,
+    html: '&nbsp;' 
+  }]
+
+});
+
+----
+
+<1>
+
+<2>    
+
+
+The simplest view is `Header`. Since Save Sick Child is not a typical enterprise application with a bunch of forms and grids, we'll use the lightest top-level container class `Container` where possible. The class `Container` gives you the most freedom in what to put inside and how to layout its child elements. For example, the `Header` view extends `Ext.Container` and contains child elements, some of which have the `xtype: component`, and some - `container`: 
 
 [source, javascript]
 ----
 Ext.define("SSC.view.Header", {
   extend: 'Ext.Container',
-  xtype: 'appheader',       // 1
+  xtype: 'appheader',       // <1>
 
-  cls: 'app-header',
+  cls: 'app-header',        // <2>
+  
   height: 85,
 
-  layout: {                 // 2   
+  layout: {                 // <3>   
     type: 'hbox',
     align: 'middle'
   },
 
-  items: [{                 // 3 
+  items: [{                 // <4> 
     xtype: 'component',          
     cls: 'app-header-logo',
     width: 75,
@@ -485,7 +575,7 @@ Ext.define("SSC.view.Header", {
     html: 'SAVE SICK CHILD',
     flex: 1
   }, {
-    xtype: 'container',      // 4
+    xtype: 'container',      // <5>
     defaults: {
       scale: 'medium',
       margin: '0 0 0 5'
@@ -507,22 +597,24 @@ Ext.define("SSC.view.Header", {
 });
 ----
 
-<1> We named the xtype of this view `appheader`, which will be used as a reference in the Viewport. 
+<1> We assigned `appheader` as the `xtype` value of this view, which will be used as a reference inside the `Viewport`. 
 
-<2> The header uses `hbox` layout with center alignment
+<2> `cls` is a class attribute of a DOM element. In this case it the same as writing `class=app-header` in the HTML element.
 
-<3> Child components of the top container are the logo image, the text "Save Sick Child", and another container with buttons
+<3> The header uses `hbox` layout with center alignment
 
-<4> A container with button components
+<4> Child components of the top container are the logo image, the text "Save Sick Child", and another container with buttons
 
-Let's review the DonateForm next. It's a subclass of the `Ext.form.Panel` and contains the form with radio buttons, fields and labels. This component named `donateform` will be placed under the Header in the Viewport. 
+<5> A container with button components
+
+Let's review the DonateForm next. It's a subclass of the `Ext.form.Panel` and contains the form with radio buttons, fields and labels. This component named `donateform` will be placed under the `Header` inside  the `Viewport`. 
 
 [source, html]
 ----
 Ext.define('SSC.view.DonateForm', {
   extend: 'Ext.form.Panel',
   xtype: 'donateform',
-  requires: [                  // 1
+  requires: [                  // <1>
     'Ext.form.RadioGroup',
     'Ext.form.field.*',
     'Ext.form.Label'
@@ -530,7 +622,7 @@ Ext.define('SSC.view.DonateForm', {
 
   layout: {
     type: 'hbox',
-    align: 'stretch'          // 2
+    align: 'stretch'          // <2>
   },
 
   bodyStyle: {
