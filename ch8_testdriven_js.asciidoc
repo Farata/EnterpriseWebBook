@@ -105,7 +105,7 @@ In addition to business logic, web applications should be tested for proper rend
 
 With any testing framework, your tests will follow same basic pattern. First, you need to setup up the test environment. Second, you run the  production code and check that it works as it supposed to. Finally, you need to clean up after yourself.
 
-This pattern for authoring unit tests is called _Arrange-Act-Assert_ (AAA footnote:[ http://integralpath.blogs.com/thinkingoutloud/2005/09/principles_of_t.html[Principles for Test-Driven Development] ]).
+[[AAAR]]This pattern for authoring unit tests is called _Arrange-Act-Assert_ (AAA footnote:[ http://integralpath.blogs.com/thinkingoutloud/2005/09/principles_of_t.html[Principles for Test-Driven Development] ]).
 
 In the _Arrange_ phase you set up the unit of work to test. For example, create a DOM element.
 
@@ -212,7 +212,10 @@ We'll also need a test runner for the test setup.
     <script src="test/tests.js"></script>               <!-- <3> -->
 </head>
 <body>
-<div id="qunit"></div>
+<div id="qunit"></div> <!-- <4> -->
+<div id='qunit-fixture'>
+    <!-- <5> -->
+</div>
 </body>
 </html>
 ----
@@ -222,6 +225,10 @@ We'll also need a test runner for the test setup.
 <2> In this chapter we continue working on the jQuery-based version of the Save Sick Child application. Hence our "production environment" depends on availability of jQuery, so we need to include jQuery in the test runner.
 
 <3> Test files are included too.
+
+<4> QUnit fills this block with results.
+
+<5> Any HTML you want to be present in each test. It will be reset for each test.
 
 To run all our tests we need to open the `qunit-runner.html` in browser.
 
@@ -446,9 +453,69 @@ Above we've listed only some of existing matchers. You can find the complete doc
 
 ===== Specification Setup
 
-TBD
+// <vik>
+Jasmine framework has API to arrange (see <<AAAR>>) your specification. There are two methods `beforeEach()` and `afterEach()`. They allow you to execute some code before and after each spec. This can be very useful for instantiation common object or cleaning up after tests.
+If you need to fulfill your test with common dependencies or setup the environment just place code inside `beforeEach()` method. 
 
-// `beforeEach` and `afterEach` -> execute code before and after each spec
+.Specification setup with beforeEach
+[source,javascript]
+----
+(function($) {
+    describe("DOM manipulation spec", function() {
+        var usernameInput;
+        var passwordInput;
+        beforeEach(function() {         // <1>
+            usernameInput = document.createElement("input");       // <2>
+            usernameInput.setAttribute("type", "text");
+            usernameInput.setAttribute("id", "username");
+            usernameInput.setAttribute("name", "username");
+            usernameInput.setAttribute("placeholder", "username");
+            usernameInput.setAttribute("autocomplete", "off");
+
+            passwordInput = document.createElement("input");
+            passwordInput.setAttribute("type", "text");
+            passwordInput.setAttribute("id", "password");
+            passwordInput.setAttribute("name", "password");
+            passwordInput.setAttribute("placeholder", "password");
+            passwordInput.setAttribute("autocomplete", "off");
+        });
+
+        afterEach(function () { // <3>
+
+        });
+
+        it("jquey should be present", function() {
+            expect($).not.toBeNull();
+        });
+        it("inputs should exist", function() {
+            expect(usernameInput.id).toBe("username");
+            expect(passwordInput.id).toBe("password");
+        });
+        it("should not allow login with empty username and password and return code equals 0", function() {
+            var result = ssc.login(usernameInput, passwordInput);   // <4>
+            expect(result).toBe(0);
+        });
+        it("should allow login with user admin and password 1234 and return code equals 1", function() {
+            usernameInput.value = "admin";      // <5>
+            passwordInput.value = "1234";
+            var result = ssc.login(usernameInput, passwordInput);  
+            expect(result).toBe(1);
+        });
+    });
+})(jQuery);
+----
+
+<1> This method will be called before each specification.
+
+<2> In `beforeEach` method we create two input fields. This two inputs will be available in all specification of this suite.
+
+<3> You can place additional cleanup code inside `afterEach` function.
+
+<4> We don't need to create the dependency elements inside each spec manually.
+
+<5> We can change defaults inside each spec without worrying to affect other specs because environment will be reset for each specification.
+
+// </vik>
 
 ===== Custom Matchers
 
@@ -541,6 +608,17 @@ TBD...
 Document Object Model is a standard browser API that allows a developer to access and manipulate page elements. As you have seen in previous chapters, pretty often your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing the DOM is the crucial part of testing your client side JavaScript. 
 By design, DOM is a browser-agnostic API. But in the real world, if you want to make sure that your code works in the particular browser you need to run the test inside this browser.
 
+1. Setup the fixture
+
+Jasmine has beforeEach(). Create with cre
+
+----
+describe("spec", function(){
+    beforeEach(function(){
+    
+    });
+});
+----
 
 ==== Multi-Browser Testing With Karma
 
