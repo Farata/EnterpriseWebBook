@@ -105,10 +105,10 @@ In addition to business logic, web applications should be tested for proper rend
 
 With any testing framework, your tests will follow same basic pattern. First, you need to setup up the test environment. Second, you run the  production code and check that it works as it supposed to. 
 
-// <vik>
-Finally, you need to clean up after the test will run - remove everything that you created during setup of the environment.
 
-//</vik>
+Finally, you need to clean up after the test will run - remove everything that your program has created during setup of the environment.
+
+
 [[AAAR]]This pattern for authoring unit tests is called _Arrange-Act-Assert_ (AAA footnote:[ http://integralpath.blogs.com/thinkingoutloud/2005/09/principles_of_t.html[Principles for Test-Driven Development] ]).
 
 In the _Arrange_ phase you set up the unit of work to test. For example, create a DOM element.
@@ -457,12 +457,11 @@ Above we've listed only some of existing matchers. You can find the complete doc
 
 ===== Specification Setup
 
-// <vik>
-Jasmine framework has API to arrange (see <<AAAR>>) your specification. There are two methods - `beforeEach()` and `afterEach()`. They allow you to execute some code before and after each spec respectively. It's very useful for instantiation of the shared objects or cleaning up after the tests.
-If you need to fulfill your test with common dependencies or setup the environment just place code inside `beforeEach()` method. These dependencies and environment knows as fixture.
+Jasmine framework has an API to arrange your specification (see <<AAAR>>). It includes two methods - `beforeEach()` and `afterEach()`, which allow you to execute some code before and after each spec respectively. It's very useful for instantiation of the shared objects or cleaning up after the tests complete.
+If you need to fulfill your test with some common dependencies or setup the environment, just place code inside `beforeEach()` method. Such dependencies and environment are known as _fixture_.
 
 ****
-*That is Fixture?*
+*What is Fixture?*
 Test fixture refers to the fixed state used as a baseline for running tests. The main purpose of a test fixture is to ensure that there is a well known and fixed environment in which tests are run so that results are repeatable. Sometimes a fixture also referred as _test context_.
 ****
 
@@ -516,15 +515,14 @@ Test fixture refers to the fixed state used as a baseline for running tests. The
 
 <1> This method will be called before each specification.
 
-<2> In `beforeEach` method we create two input fields. This two inputs will be available in all specification of this suite.
+<2> In the `beforeEach()` method we create two input fields. These two inputs will be available in all specifications of this suite.
 
-<3> You can place additional cleanup code inside `afterEach` function.
+<3> You can place additional cleanup code inside `afterEach()` function.
 
-<4> A `beforeEach` functions helps to implement _Don't repeat yourself_ principle in the out tests. We don't need to create the dependency elements inside each spec manually.
+<4> A `beforeEach()` function helps to implement _Don't Repeat Yourself_ principle in our tests. You don't need to create the dependency elements inside each specification manually.
 
-<5> We can change defaults inside each spec without worrying to affect other specs. A environment will be reset for each specification.
+<5> You can change defaults inside each specification without worrying about  affecting other specifications. Your test environment will be reset for each specification.
 
-// </vik>
 
 ===== Custom Matchers
 
@@ -716,8 +714,7 @@ TOTAL: 72 SUCCESS
 Document Object Model is a standard browser API that allows a developer to access and manipulate page elements. As you have seen in previous chapters, pretty often your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing the DOM is the crucial part of testing your client side JavaScript. 
 By design, DOM is a browser-agnostic API. But in the real world, if you want to make sure that your code works in the particular browser you need to run the test inside this browser.
 
-// <vik>
-As we showed earlier, Jasmine has `beforeEach()` which is suitable place to setup all required DOM elements and make them available in the specifications.
+Earlier in this chapter we've introduced the Jasmine method `beforeEach()`, which is the right place for setting all required DOM elements and making them available in the specifications.
 
 .Using jQuery APIs to create the required DOM elements before run the spec
 [[FIX-1]]
@@ -734,20 +731,20 @@ describe("spec", function() {
     });
 });
 ----
-<1> Inside `beforeEach` method we're using the API to manipulate the DOM programmatically. Also, if you're using a HTML tests runner, you can add the fixture using HTML tags. But we would not recommend this approach. Very soon you will find you HTML rest runner full of fixture HTML code and your HTML runner code very soon will become unmaintainable.
+<1> Inside the `beforeEach()` method we're using the API to manipulate the DOM programatically. Also, if you're using an HTML test runner you can add the fixture using HTML tags. But we don't recommend this approach. Very soon you will find your HTML test runner will become unmaintainable because it's going to get clogged with tons of fixture HTML code.
 
-<2> We create input element using jQuery APIs. This code will create corresponding input element, e.g.   
+<2> Create an `<input>` element using jQuery APIs, which will turn into the following HTML:   
 
 [source,html]
 ----
 <input type=​"text" id=​"password" name=​"password" placeholder=​"password" autocomplete=​"off">​
 ----
 
-The jQuery API is slightly more convenient than plan DOM API. But in future examples we will use https://github.com/searls/jasmine-fixture[jasmine-fixture] library for easy setup of DOM fixture. Jasmine-fixture uses similar to jQuery selectors syntax for injecting HTML fixtures. This this library you will significantly decrease amount of repetitive code while creating the fixtures.
+The jQuery API is more convenient than a plain DOM API. But in the future examples we will use the https://github.com/searls/jasmine-fixture[jasmine-fixture] library for easier setup of the DOM fixture. Jasmine-fixture uses similar to jQuery selectors syntax for injecting HTML fixtures. With this library you will significantly decrease the amount of repetitive code while creating the fixtures.
 
 // TODO: add jasmine-fixture setup, how to download and add to jasmine Grunts's task
 
-Let's see how example from <<FIX-1,previous code snippet>> looks like with jasmine-fixture library.
+Let's see how the example from <<FIX-1,previous code snippet>> looks like with the jasmine-fixture library.
 
 .Using jasmine-fixture to setup the DOM before spec run
 [source,javascript]
@@ -764,13 +761,11 @@ describe("spec", function() {
     });
 });
 ----
-<1> Using the `affix` function provided by jasmine-fixture library and expressiveness of the CSS selectors we can easily setup required DOM elements. More examples of possible selectors could be found in https://github.com/searls/jasmine-fixture#more-examples[documentation page] of jasmine-fixture.
+<1> Using the `affix()` function provided by the jasmine-fixture library and expressiveness of CSS selectors we can easily setup required DOM elements. More examples of possible selectors could be found at the https://github.com/searls/jasmine-fixture#more-examples[documentation page] of jasmine-fixture.
 
-<2> Now when all requirements for our production code (`login` function) are satisfied we can run it in context of a test and assert the results.
+<2> Now when all requirements for our production code (`login()` function) are satisfied we can run it in the context of a test and assert the results.
 
-As you can see, a testing of the DOM manipulation code is much like a other type of the unit testing. We need to prepare out fixture - the testing context, run the production code and assert the results.
-
-// </vik>
+As you can see, testing of the DOM manipulation code is much like any other type of unit testing. You need to prepare a fixture (a.k.a. the testing context), run the production code and assert the results.
 
 // TBD faking events and user interaction
 // TBD using spies to mock code related to interaction with server
