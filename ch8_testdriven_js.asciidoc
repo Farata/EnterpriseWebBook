@@ -103,9 +103,13 @@ Say, you want to test validation logic in Donation entry form.
 
 In addition to business logic, web applications should be tested for proper rendering of UI components, changing view states, dispatching, and handling events.
 
-With any testing framework, your tests will follow same basic pattern. First, you need to setup up the test environment. Second, you run the  production code and check that it works as it supposed to. Finally, you need to clean up after yourself.
+With any testing framework, your tests will follow same basic pattern. First, you need to setup up the test environment. Second, you run the  production code and check that it works as it supposed to. 
 
-This pattern for authoring unit tests is called _Arrange-Act-Assert_ (AAA footnote:[ http://integralpath.blogs.com/thinkingoutloud/2005/09/principles_of_t.html[Principles for Test-Driven Development] ]).
+// <vik>
+Finally, you need to clean up after the test will run - remove everything that you created during setup of the environment.
+
+//</vik>
+[[AAAR]]This pattern for authoring unit tests is called _Arrange-Act-Assert_ (AAA footnote:[ http://integralpath.blogs.com/thinkingoutloud/2005/09/principles_of_t.html[Principles for Test-Driven Development] ]).
 
 In the _Arrange_ phase you set up the unit of work to test. For example, create a DOM element.
 
@@ -188,7 +192,7 @@ image::fig_08_04.png[]
 image::fig_08_05.png[]
 
 .Our first QUnit test
-[sources,javascript]
+[source,javascript]
 ----
 'use strict';
 test("my first qunit test", function () {
@@ -212,7 +216,10 @@ We'll also need a test runner for the test setup.
     <script src="test/tests.js"></script>               <!-- <3> -->
 </head>
 <body>
-<div id="qunit"></div>
+<div id="qunit"></div> <!-- <4> -->
+<div id='qunit-fixture'>
+    <!-- <5> -->
+</div>
 </body>
 </html>
 ----
@@ -222,6 +229,10 @@ We'll also need a test runner for the test setup.
 <2> In this chapter we continue working on the jQuery-based version of the Save Sick Child application. Hence our "production environment" depends on availability of jQuery, so we need to include jQuery in the test runner.
 
 <3> Test files are included too.
+
+<4> QUnit fills this block with results.
+
+<5> Any HTML you want to be present in each test. It will be reset for each test.
 
 To run all our tests we need to open the `qunit-runner.html` in browser.
 
@@ -446,9 +457,74 @@ Above we've listed only some of existing matchers. You can find the complete doc
 
 ===== Specification Setup
 
-TBD
+// <vik>
+Jasmine framework has API to arrange (see <<AAAR>>) your specification. There are two methods - `beforeEach()` and `afterEach()`. They allow you to execute some code before and after each spec respectively. It's very useful for instantiation of the shared objects or cleaning up after the tests.
+If you need to fulfill your test with common dependencies or setup the environment just place code inside `beforeEach()` method. These dependencies and environment knows as fixture.
 
-// `beforeEach` and `afterEach` -> execute code before and after each spec
+****
+*That is Fixture?*
+Test fixture refers to the fixed state used as a baseline for running tests. The main purpose of a test fixture is to ensure that there is a well known and fixed environment in which tests are run so that results are repeatable. Sometimes a fixture also referred as _test context_.
+****
+
+.Specification setup with beforeEach
+[source,javascript]
+----
+(function($) {
+    describe("DOM manipulation spec", function() {
+        var usernameInput;
+        var passwordInput;
+        beforeEach(function() {         // <1>
+            usernameInput = document.createElement("input");       // <2>
+            usernameInput.setAttribute("type", "text");
+            usernameInput.setAttribute("id", "username");
+            usernameInput.setAttribute("name", "username");
+            usernameInput.setAttribute("placeholder", "username");
+            usernameInput.setAttribute("autocomplete", "off");
+
+            passwordInput = document.createElement("input");
+            passwordInput.setAttribute("type", "text");
+            passwordInput.setAttribute("id", "password");
+            passwordInput.setAttribute("name", "password");
+            passwordInput.setAttribute("placeholder", "password");
+            passwordInput.setAttribute("autocomplete", "off");
+        });
+
+        afterEach(function () { // <3>
+
+        });
+
+        it("jquey should be present", function() {
+            expect($).not.toBeNull();
+        });
+        it("inputs should exist", function() {
+            expect(usernameInput.id).toBe("username");
+            expect(passwordInput.id).toBe("password");
+        });
+        it("should not allow login with empty username and password and return code equals 0", function() {
+            var result = ssc.login(usernameInput, passwordInput);   // <4>
+            expect(result).toBe(0);
+        });
+        it("should allow login with user admin and password 1234 and return code equals 1", function() {
+            usernameInput.value = "admin";      // <5>
+            passwordInput.value = "1234";
+            var result = ssc.login(usernameInput, passwordInput);  
+            expect(result).toBe(1);
+        });
+    });
+})(jQuery);
+----
+
+<1> This method will be called before each specification.
+
+<2> In `beforeEach` method we create two input fields. This two inputs will be available in all specification of this suite.
+
+<3> You can place additional cleanup code inside `afterEach` function.
+
+<4> A `beforeEach` functions helps to implement _Don't repeat yourself_ principle in the out tests. We don't need to create the dependency elements inside each spec manually.
+
+<5> We can change defaults inside each spec without worrying to affect other specs. A environment will be reset for each specification.
+
+// </vik>
 
 ===== Custom Matchers
 
@@ -533,14 +609,8 @@ Aborted due to warnings.
 
 ===== BDD Best Practices
 
-TBD...
-
-
-==== Testing DOM
-
-Document Object Model is a standard browser API that allows a developer to access and manipulate page elements. As you have seen in previous chapters, pretty often your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing the DOM is the crucial part of testing your client side JavaScript. 
-By design, DOM is a browser-agnostic API. But in the real world, if you want to make sure that your code works in the particular browser you need to run the test inside this browser.
-
+// TBD
+// Organize Tests As If Reading a Story
 
 ==== Multi-Browser Testing With Karma
 
@@ -583,7 +653,7 @@ singleRun = true; //<5>
 
 <4> An array of the browser names to be used to execute JavaScript code
 
-<5> If this property is equal to  `true` than Karma will start the browsers, run the tests, and exit.
+<5> If this property is equal to `true` than Karma will start the browsers, run the tests, and exit.
 
 ===== Running Tests 
 
@@ -605,6 +675,7 @@ module.exports = function(grunt) {
 };
 ----
 <1> TheKarma task is defined in the grunt config.
+
 <2> The name of the configuration file for the Karma task.
 
 Now we can run our test simultaneously on all browsers that we have installed in  our computer - Google Chrome (+ Canary version), Safari, Firefox, Opera and PhantomJS - with one command:
@@ -640,6 +711,69 @@ TOTAL: 72 SUCCESS
 
 // TBD
 
+==== Testing DOM
+
+Document Object Model is a standard browser API that allows a developer to access and manipulate page elements. As you have seen in previous chapters, pretty often your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing the DOM is the crucial part of testing your client side JavaScript. 
+By design, DOM is a browser-agnostic API. But in the real world, if you want to make sure that your code works in the particular browser you need to run the test inside this browser.
+
+// <vik>
+As we showed earlier, Jasmine has `beforeEach()` which is suitable place to setup all required DOM elements and make them available in the specifications.
+
+.Using jQuery APIs to create the required DOM elements before run the spec
+[[FIX-1]]
+[source,javascript]
+----
+describe("spec", function() {
+    var usernameInput;
+    beforeEach(function() { // <1>
+        usernameInput = $(document.createElement("input")).attr({ // <2>
+            type: 'text',
+            id: 'username',
+            name: 'username'
+        })[0];
+    });
+});
+----
+<1> Inside `beforeEach` method we're using the API to manipulate the DOM programmatically. Also, if you're using a HTML tests runner, you can add the fixture using HTML tags. But we would not recommend this approach. Very soon you will find you HTML rest runner full of fixture HTML code and your HTML runner code very soon will become unmaintainable.
+
+<2> We create input element using jQuery APIs. This code will create corresponding input element, e.g.   
+
+[source,html]
+----
+<input type=​"text" id=​"password" name=​"password" placeholder=​"password" autocomplete=​"off">​
+----
+
+The jQuery API is slightly more convenient than plan DOM API. But in future examples we will use https://github.com/searls/jasmine-fixture[jasmine-fixture] library for easy setup of DOM fixture. Jasmine-fixture uses similar to jQuery selectors syntax for injecting HTML fixtures. This this library you will significantly decrease amount of repetitive code while creating the fixtures.
+
+// TODO: add jasmine-fixture setup, how to download and add to jasmine Grunts's task
+
+Let's see how example from <<FIX-1,previous code snippet>> looks like with jasmine-fixture library.
+
+.Using jasmine-fixture to setup the DOM before spec run
+[source,javascript]
+----
+describe("spec", function() {
+    var usernameInput;
+    beforeEach(function() {
+        usernameInput = affix('input[id="username"][type="text"][name="username]')[0]; // <1>
+    });
+
+    it("should not allow login with empty username and password and return code equals 0", function() {
+        var result = ssc.login(usernameInput, passwordInput); // <2>
+        expect(result).toBe(0);
+    });
+});
+----
+<1> Using the `affix` function provided by jasmine-fixture library and expressiveness of the CSS selectors we can easily setup required DOM elements. More examples of possible selectors could be found in https://github.com/searls/jasmine-fixture#more-examples[documentation page] of jasmine-fixture.
+
+<2> Now when all requirements for our production code (`login` function) are satisfied we can run it in context of a test and assert the results.
+
+As you can see, a testing of the DOM manipulation code is much like a other type of the unit testing. We need to prepare out fixture - the testing context, run the production code and assert the results.
+
+// </vik>
+
+// TBD faking events and user interaction
+// TBD using spies to mock code related to interaction with server
 
 === Save Sick Child With TDD
 
