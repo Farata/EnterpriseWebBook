@@ -3,8 +3,6 @@
 
 == Test-Driven Development with JavaScript
 
-// [quote, @bphogan, http://twitter.com/bphogan/status/194856922208407552]
-
 To shorten the development cycle of your Web application you need to start testing it on the early stages of the project. It seems obvious, but many enterprise IT organizations haven't adopted the agile testing methodologies, which costs them dearly. JavaScript is dynamically typed interpreted language, which means that there is no compiler to help to identifying errors as it's done in compiled languages like Java. This means that a lot more time should be allocated for testing for JavaScript Web applications. Moreover, a programmer who didn't introduce unit testing techniques into his daily routine can't be 100% sure that his code is working properly.
 
 The static code analysis and code quality tools such as http://esprima.org/[Esprima] and http://www.jshint.com/[JSHint] will help in reducing the number of syntax errors and improve the quality of your code. Later in this chapter we will demonstrate how to setup +JSHint+ for your JavaScript project and check your code for the syntax errors automatically. 
@@ -59,7 +57,28 @@ Load testing is a process that can help in answering the following questions:
 * How many concurrent users can work with your application without bringing your server to its knees? 
 * Even if your server is capable of serving a thousand users, is your application performance in a compliance with the service level agreement (SLA), if any? 
 
-//TBD
+// <vik>
+
+It all comes down to two factors: availability and response time. 
+These requirements for your application should be well defined in the service level agreement (SLA), which should clearly state what's acceptable from the user's perspective.
+For example, the SLA can include a clause stating that the initial download of your application shouldn't take longer than 10 seconds for users with a slow connection (500 kbps).
+The SLA can state that the query to display a list of customers shouldn't run for more than five seconds, and the application should be operational 99.9 percent of the time.
+
+To avoid surprises after going live with your new mission-critical web application , don't forget to include in your project plan a set of heavy stress tests, and do this well in advance before it goes live.
+You don't need to hire 1,000 interns to find out whether your application will meet the SLA requirements.
+The automated load testing software allows you to emulate required number of users, set up the throttling to emulate a slower connection, and configure the ramp-up speed.
+For example, you can simulate a situation where the number of users logged on to your system grows at the speed of 50 users every 10 seconds.
+Stress testing software also allows you to prerecord the action of the business users, and then you can run these scripts emulating a heavy load.
+
+Good stress-testing software allows simulating the load close to the real-world usage patterns.
+You should be able to create and run mixed scripts simulating a situation in which some users are logging on to your application while others are retrieving the data and performing data modifications. 
+
+* http://httpd.apache.org/docs/2.2/programs/ab.html[Apache Benchmark]
+* http://jmeter.apache.org/[jMeter]
+* http://wesleyhales.com/slides/html5devconf2013/[Browser Performance metering with PhantomJS]
+
+// TBD
+// </vik>
 
 [[TDD]]
 === Test Driven Development
@@ -177,11 +196,9 @@ Done, without errors.
 
 We'll start our journey to JavaScript testing frameworks with http://qunitjs.com/[QUnit], which was originally developed by http://ejohn.org/about/[John Resig] as part of jQuery. QUnit now runs completely standalone and doesn't have any jQuery dependency. While it's still being used by the jQuery Project itself for testing jQuery, jQuery UI and jQuery Mobile code, QUnit can be used to test any generic JavaScript code.
 
-
 ===== Setup Grunt With Qunit
 
 WARNING: Section is in active development
-
 
 In this section you're going learn how to automatically run the Qunit tests using Grunt. Let's setup our project by adding the Qunit framework and tests file. We'll start with downloading the latest version from http://qunitjs.com/[QUint Web site]. We need to get only two files - `qunit-*.js` and `qunit-*.css`.
 
@@ -358,7 +375,6 @@ Testing jasmine specs via phantom
 Done, without errors.
 ----
 
-
 In this example, Grunt successfully executed the tests with PhantomJS of all five specifications defined in +PlayerSpec.js+. 
 
 .What is PhantomJS?
@@ -366,11 +382,27 @@ In this example, Grunt successfully executed the tests with PhantomJS of all fiv
 PhantomJS is a headless WebKit-based rendering engine with JavaScript API.  Think of PhantomJS as a browser that doesn't have any graphical user interface. PhantomJS can execute HTML, CSS, JavaScript code. Because PhantomJS is not required to render GUI, it can be used in display-less environments (e.g.  Continuous Integration server) to run tests. In our case, Grunt automatically spawns PhantomJS instance, executes the code of our tests, reads the execution results using PhantomJS API, and prints them out in the console.
 ****
 
+// <vik>
+.What is Continuous Integration?
+****
+Continuous Integration is a software development practice where members of a team integrate their work frequently, leading to multiple integrations per day.
+Introduced by Martin Fowler and Matthew Foemmel, the theory of continuous integration footnote:[http://martinfowler.com/articles/continuousIntegration.html[Continuous Integration by Martin Fowler]] recommends creating scripts and running automated builds (including tests) of your application at least once a day.
+This allows you to identify issues in the code a lot sooner.
 
-.What is Continuous Integration
+The authors are successfully using an open source framework called http://jenkins-ci.org/[Jenkins] for establishing a continuous build process.
+With Jenkins, you can have scripts that run either at a specified time interval or on each check-in of the new code into the source code repository.
+You may also force the build whenever you like. 
+Grunt command line tool should be installed and be available on CI machine. Hence Jenkins can invoke Grunt scrips and publish test results.
+
+// TODO: Add screenshot with grunt-based job for savesickchild.org website + test results 
+
+At Farata Systems, we use it to ensure continuous builds of the internal and open source projects.
+
+.Jenkins CI server running at savesichild.org website and used to build example applications for this book.
+image::fig_08_07.png[Jenkins]
 ****
-TBD
-****
+
+// </vik>
 
 In next section you will learn how write your own specifications.
 
@@ -597,11 +629,13 @@ Aborted due to warnings.
 
 <1> A custom failure message. Also, the failed `expect` was the fourth one (4) according to the order mentioned in spec.
 
-
 ===== Spies
 
-// TBD
+// <vik>
+Test spies are objects and functions that record information about their usage through the systems under test. They are useful when determining a function's success is not easily accomplished by inspecting its return value or changes to the state of objects with witch it interacts.
 
+// </vik>
+    
 .Specifications Anatomy TODO
 * Write Jasmine specs in test-first manner (write test -> test fail -> write implementation -> test pass -> refactor )
 
@@ -609,6 +643,12 @@ Aborted due to warnings.
 
 // TBD
 // Organize Tests As If Reading a Story
+// Test method names should be sentences
+// Developers discovered it could do at least some of their documentation for them, so they started to write test methods that were real sentences. What's more, they found that when they wrote the method name in the language of the business domain, the generated documents made sense to business users, analysts, and testers.
+
+// A simple sentence template keeps test methods focused 
+
+// An expressive test name is helpful when a test fails 
 
 ==== Multi-Browser Testing With Karma
 
@@ -623,6 +663,7 @@ Karma runner is driven by a configuration file.
 // TBD
 
 .A Simple Karma Configuration File
+[source,javascript]
 ----
 basePath = '';      // <1>
 
@@ -773,3 +814,11 @@ As you can see, testing of the DOM manipulation code is much like any other type
 === Save Sick Child With TDD
 
 TBD...  
+
+//<vik>
+=== Summary
+
+Testing is one of the most important parts of software development. Well organized testing helps to keep a code of application in a good state, in a working state. Especially, it's important in interpretable languages like JavaSctip where compiler can't provide you a hint about the errors. The enterprises that have adopted test-driven development (as well as behavior-driven development) can make the application development process even more bulletproof by including test scripts in the continuous integration build process. If unit, integration, and functional test scripts (which automatically run after each successful build process) don't produce any issues, you can rest assured that the latest code changes did not break the application logic.
+
+//TDB
+// </vik>
