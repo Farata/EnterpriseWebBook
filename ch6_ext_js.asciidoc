@@ -12,7 +12,7 @@ After learning how jQuery library can simplify development of the HTML5 applicat
 
 3. Ext JS offers you a way to write object-oriented code, define classes and inheritance in a way that's closer to classical inheritance and doesn't require the `prototype` property.
 
-4. Ext JS can jump starts your application development by generating the initial code based on the Model-View-Controller (MVC) architecture. 
+4. Ext JS can jump start your application development by generating the initial code layered according to the Model-View-Controller (MVC) design pattern. 
 
 5. Ext JS is a cross-browser framework that promises to automatically take care of all differences in major Web browsers. 
 
@@ -175,7 +175,7 @@ In this chapter we'll switch from Aptana IDE to its parent Eclipse IDE. Although
 
 We'll use the "Eclipse IDE for Java EE developers" version of this most popular IDE among Java developers. It's available free of charge at http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable, and you'll see the workbench that looks very similar to Aptana.  
 
-TIP: In our opinion the best IDE for JavaScript developers (regardless of which framework they use) is JetBrain's http://www.jetbrains.com/webstorm/[WebStorm IDE].
+TIP: In our opinion the best IDE for JavaScript developers (regardless of which framework they use) is JetBrain's http://www.jetbrains.com/webstorm/[WebStorm IDE]. Later in this chapter we'll show you how to use WebStorm for developing JavaScript portion of the project even if the Java part has to be developed in Eclipse.
 
 
 ===== Apache Tomcat
@@ -221,7 +221,7 @@ To implement the first solution, right click on the properties of your project a
 .Excluding folders in Eclipse
 image::images/fig_06_05.png[image]
 
-For the second solution,  In this case you'll need to add your Ext JS folder as a static Tomcat module. Double-click at the Tomcat name in the Servers view and then click on the bottom tab Modules. Then Click on Add External Web Module. In the popup window find the folder where your Ext JS is (in my computer it's inside the Library folder as in <<Fig6-6>>) and give it a name (e.g. /extjs-4.2). Now Tomcat will know that on each start it has to load year another static Web module known as /static/extjs-4.2. If you're interested in details of such deployment, open up the file server.xml located in your Eclipse workspace in the hidden directory _.metadata/.plugins/org.eclipse.wst.server.core/tmp0/conf_.
+For the second solution, you'll need to add your Ext JS folder as a static Tomcat module. Double-click at the Tomcat name in the Servers view and then click on the bottom tab Modules. Then Click on Add External Web Module. In the popup window find the folder where your Ext JS is (in my computer it's inside the Library folder as in <<Fig6-6>>) and give it a name (e.g. /extjs-4.2). Now Tomcat will know that on each start it has to load year another static Web module known as /extjs-4.2. If you're interested in details of such deployment, open up the file server.xml located in your Eclipse workspace in the hidden directory _.metadata/.plugins/org.eclipse.wst.server.core/tmp0/conf_.
 
 To ensure that you did everything right, just enter in your browser the URL http://localhost:8080/extjs-4.2, and you should see the  welcome screen of Ext JS.
 
@@ -371,7 +371,9 @@ TBD
 
 In this section we'll do a code walk-through of the Ext JS version of our Save Sick Child application. We've prepared two separate Eclipse projects SSC_Top_ExJS.zip contains the top portion of the application, and SSC_Complete_ExtJS.zip contains the complete version. To test these applications in Eclipse, you need to have it configured with Tomcat as described earlier in the section "Configuring Eclipse project with Apache Tomcat and Ext JS".  
 
-If this part is done, select Eclipse menu File | Import | General | Existing projects into workspace and press the button Next. Then select the option Select archive file and press browse to find SSC_Top_ExJS.zip on your disk. This will import the entire Dynamic Web Project, and most likely you'll see one error in the Problems view indicating that the target runtime with so-and-so name is not defined. This may happen because the name of the Tomcat configuration in your Eclipse is difference from the one in the file SSC_Top_ExJS.zip. 
+==== Working with the top portion of Save Sick Child
+
+Then select Eclipse menu File | Import | General | Existing projects into workspace and press the button Next. Then select the option Select archive file and press browse to find SSC_Top_ExJS.zip on your disk. This will import the entire Dynamic Web Project, and most likely you'll see one error in the Problems view indicating that the target runtime with so-and-so name is not defined. This may happen because the name of the Tomcat configuration in your Eclipse is different from the one in the file SSC_Top_ExJS.zip. 
 
 To fix this issue right-click on the project name and select the menu Properties | Targeted runtimes. Then uncheck the Tomcat name that was imported from our archive and check the name of your Tomcat configuration. This action will make the project SSC_Top_ExtJS deployable under your Tomcat server. Right-click on the server name in the Servers view and select Add and Remove menu item. You'll see a popup window similar to <<FIG6-1-SSC>>, which depicts a state when the project SSC_Top_ExtJS is deployed, but SSC_Complete_ExtJS.
 
@@ -488,7 +490,7 @@ Ext.define('SSC.controller.Donate', {
 
 <5> Finding the children of the container can be done using the method `down()` method. in this case we are finding the child `<form>` element of a donate panel. If you need to find the parents of the component use `up()`. 
 
-The top level window is a `Viewport`, which will contain the `Header` and the `Donate` form views. 
+The top level window is a `SSC.view.Viewport`, which will contain the `Header` and the `Donate` form views. 
 
 [source, javascript]
 ----
@@ -500,7 +502,7 @@ Ext.define('SSC.view.Viewport', {
   ],
 
   cls: 'app-viewport',
-  layout: 'column',                  // <1>
+  layout: 'column',               // <1>   
   defaults: {
     xtype: 'container'
   },
@@ -516,15 +518,17 @@ Ext.define('SSC.view.Viewport', {
       align: 'stretch'
     },
 
-    items: [{                
-      xtype: 'appheader'         // <3>
-    }, {
+    items: [
+      {                
+      xtype: 'appheader'         
+      }, 
+      {
       xtype: 'container',            
       minHeight: 350,
       flex: 1,
 
-      cls: 'donate-panel',              
-      layout: 'card', 
+      cls: 'donate-panel',       // <3>       
+      layout: 'card',             
 
       items: [{
         xtype: 'container',
@@ -560,12 +564,49 @@ Ext.define('SSC.view.Viewport', {
 
 ----
 
-<1>
+<1> Our viewport has a `column` layout, and will be explained after the <<FIG6-5-SSC>> Collapse Code of Viewport.js below.  
 
-<2>    
+<2> The vertical box layout will display the components from the items array one under another : the `appheader` and the `container`, which is explained next. 
 
+<3> The container with the class selector `donate-panel` includes two components, but since they are laid out as `card`, only one of them will be shown at a time: either the one with the "Lorem ipsum" text, or the `donateform`. Which one to show is mandated by the `Donate` controller by invoking the method `setActiveItem()` with the appropriate index.    
 
-`Header` is the simplest view. Since Save Sick Child is not a typical enterprise application with a bunch of forms and grids, we'll use the lightest top-level container class `Container` where possible. The class `Container` gives you the most freedom in what to put inside and how to layout its child elements. For example, the `Header` view extends `Ext.Container` and contains child elements, some of which have the `xtype: component`, and some - `container`: 
+The following figure shows a snapshot from WebStorm IDE, with collapsed code section just to see the big picture of what are the columns in the column layout - they are marked with arrows.  
+
+[[FIG6-5-SSC]]
+.Collapsed Code of Viewport.js 
+image::images/fig_06_05_SSC.png[image]
+
+In Ext JS the column layout is used when you are planning to present the information in columns as explained in the http://dev.sencha.com/deploy/ext-4.0.0/examples/layout-browser/layout-browser.html[product documentation]. Even though there are three columns in this layout, the entire content on this page is located in the middle column having the width of 980. The column on the left and the column on the right just hold one non-breakable space each to provide centering of the middle column in monitors with high resolution wider than 980 pixels (plus browser's chrome).
+
+The width of 0.5, 980, 0.5 means to give the middle column 980 pixels and share the remaining space equally between empty columns. 
+
+Tip: There is another way to lay out this screen using Horizontal Box `hbox` with the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.layout.container.HBox-cfg-pack[`pack` configuration property], but we decided to keep the column layout for illustration purposes.
+
+.SASS and CSS
+**************
+Take a look at the project structure shown at <<FIG6-5-SSC>> - it has sass directory, which contains several files with styles: DonateForm.scss, Header.css, and Viewport.scss. The content of the Viewport.css is shown below. If you've been wondering where are the CSS files we used in the previous chapters with our application, they are here.
+
+[source, html]
+----
+.app-viewport {
+  background: white;
+}
+
+.main-content {
+  background: url("images/bg-1.png") no-repeat;
+}
+
+.donate-panel {
+  background: url("images/child-1.jpg") no-repeat right bottom, url("images/bg-2.png") no-repeat 90px bottom;
+  border-bottom: 1px dotted #555;
+} 
+----
+Ext JS substantially reduces the need for manual CSS writing by using predefined http://docs.sencha.com/extjs/4.2.0/#!/guide/theming[themes]. 
+
+TODO: add more explanations on sass
+**************
+
+Now let's look at the child elements of the `SSC.view.Viewport`. The `SSC.view.Header` is the simplest view. Since Save Sick Child is not a typical enterprise application with a bunch of forms and grids, we'll use the lightest top-level container class `Container` where possible. The class `Container` gives you the most freedom in what to put inside and how to layout its child elements. Our `SSC.view.Header` view extends `Ext.Container` and contains child elements, some of which have the `xtype: component`, and some - `container`: 
 
 [source, javascript]
 ----
@@ -615,7 +656,7 @@ Ext.define("SSC.view.Header", {
 });
 ----
 
-<1> We assigned `appheader` as the `xtype` value of this view, which will be used as a reference inside the `Viewport`. 
+<1> We assigned `appheader` as the `xtype` value of this view, which will be used as a reference inside the `SSC.view.Viewport`. 
 
 <2> `cls` is a class attribute of a DOM element. In this case it the same as writing `class=app-header` in the HTML element.
 
@@ -625,7 +666,7 @@ Ext.define("SSC.view.Header", {
 
 <5> A container with button components
 
-Let's review the DonateForm next. It's a subclass of the `Ext.form.Panel` and contains the form with radio buttons, fields and labels. This component named `donateform` will be placed under the `Header` inside  the `Viewport`. 
+Let's review the DonateForm next. It's a subclass of the `Ext.form.Panel` and contains the form with radio buttons, fields and labels. This component named `donateform` will be placed under `SSC.view.Header` inside `SSC.view.Viewport`. 
 
 [source, html]
 ----
@@ -767,6 +808,9 @@ TIP: http://www.sencha.com/products/desktop-packager/[Sencha Desktop Packager] a
 
 Run the SSC_Top_ExtJS project and turn on the Chrome Developers Tools. Scroll to the bottom of the Network tab, and you'll see that the browser made about 250 requests to the server and downloaded 4.5Mb in total. Not too exciting isn't it? On the next runs these numbers will drop to about 30 requests and 1.7Mb transferred - the browser's caching kicked in. These numbers would be better if instead of ext-all.js we'd be linking ext.js, and even better if we'd created a custom build (see Sencha CMB section) for the Save Sick Child application merging into one file the application code with only those framework classes that were actually used.
 
+==== Completing Save Sick Child
+
+TBD
 
 === Productive Enterprise Web Development with Ext JS and CDB 
 
