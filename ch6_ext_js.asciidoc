@@ -306,12 +306,6 @@ WARNING: If more than one mixin has a method with the same name, the first metho
 ---- 
 
 
-==== Best Practice: MVC 
-
-Conventions over configuration.
-
-http://docs.sencha.com/ext-js/4-0/#!/guide/application_architecture
-
 ==== Models and Stores
 
 TBD
@@ -323,6 +317,13 @@ TIP: To be more productive, always have a mock store with the test data right on
 TBD
 
 TIP: You can view and test Ext JS components against bundled themes browsing the Theme Viewer at the http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html[Ext JS 4.2 Examples] page.
+
+==== Best Practice: MVC 
+
+Conventions over configuration.
+
+http://docs.sencha.com/ext-js/4-0/#!/guide/application_architecture
+
 
 ==== The Component's Lifecycle
 
@@ -373,7 +374,7 @@ TBD
 
 In this section we'll do a code walk-through of the Ext JS version of our Save Sick Child application. We've prepared two separate Eclipse projects SSC_Top_ExJS.zip contains the top portion of the application, and SSC_Complete_ExtJS.zip contains the complete version. To test these applications in Eclipse, you need to have it configured with Tomcat as described earlier in the section "Configuring Eclipse project with Apache Tomcat and Ext JS".  
 
-==== Working with the top portion of Save Sick Child
+==== Save Sick Child: The Top Portion
 
 Then select Eclipse menu File | Import | General | Existing projects into workspace and press the button Next. Then select the option Select archive file and press browse to find SSC_Top_ExJS.zip on your disk. This will import the entire Dynamic Web Project, and most likely you'll see one error in the Problems view indicating that the target runtime with so-and-so name is not defined. This may happen because the name of the Tomcat configuration in your Eclipse is different from the one in the file SSC_Top_ExJS.zip. 
 
@@ -491,6 +492,9 @@ Ext.define('SSC.controller.Donate', {
 <4> In containers with card layout, you can make one of the components visible (the top one in the card deck) by passing its index to the method `setActiveItem()`. The Viewport.js includes a container with the card layout (see ` cls: 'donate-panel'` in the next code sample).
 
 <5> Finding the children of the container can be done using the method `down()` method. in this case we are finding the child `<form>` element of a donate panel. If you need to find the parents of the component use `up()`. 
+
+TIP: Since MVC paradigm splits the code into separate layers, you can unit test them separately, e.g. test your controllers separately from the Views. Chapter 8 is dedicated to JavaSctipr testing. 
+
 
 The top level window is a `SSC.view.Viewport`, which will contain the `Header` and the `Donate` form views. 
 
@@ -684,7 +688,7 @@ Ext.define("SSC.view.Header", {
 
 <5> A container with button components
 
-Let's review the DonateForm next. It's a subclass of the `Ext.form.Panel` and contains the form with radio buttons, fields and labels. This component named `donateform` will be placed under `SSC.view.Header` inside `SSC.view.Viewport`. 
+Let's review the view `DonateForm` next, which is a subclass of `Ext.form.Panel` and contains the form with radio buttons, fields and labels. This component named `donateform` will be placed under `SSC.view.Header` inside `SSC.view.Viewport`. 
 
 [source, html]
 ----
@@ -711,7 +715,7 @@ Ext.define('SSC.view.DonateForm', {
   },
 
   items:[{
-    xtype: 'container',
+    xtype: 'container',        // <3>
     layout: 'vbox',
 
     items: [{
@@ -748,7 +752,7 @@ Ext.define('SSC.view.DonateForm', {
       labelCls: 'donate-form-label'
     }]
   }, {
-    xtype: 'fieldcontainer',             // <3>
+    xtype: 'fieldcontainer',             // <4>
     fieldLabel: 'Donor information',
     labelAlign: 'top',
     labelSeparator: '',
@@ -784,7 +788,7 @@ Ext.define('SSC.view.DonateForm', {
       store: ['US', 'Russia']
     }]
   }, {
-    xtype: 'container',
+    xtype: 'container',        //  <5>
     layout: {
       type: 'vbox',
       align: 'center'
@@ -819,16 +823,17 @@ Ext.define('SSC.view.DonateForm', {
 
 <1> `DonateForm` depends on several classes listed in the `requires` property. The Ext JS will check to see if these classes are present in memory, and if not, the loader will load all dependencies first, and only after the DonateForm class.
 
-<2> Our `DonateForm` uses horizontal box (`hbox`) layout, which means that certain components or containers will be laid out next to each other horizontally. But which ones? We'll explain it below.
-
-<3> http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.form.FieldContainer[`fieldcontainer` is a light-weight Ext JS container useful to group components.    
-
-
-The children of the container located in the `items[]` arrays hence they are the once that will be laid out horisontally in this case. But the above code contains several of `items[]` arrays with different level of nesting. How quickly find those that belong to the topmost container `DonateForm`? This is the case that clearly shows that having a good IDE can be of great help.
-
+<2> Our `DonateForm` uses horizontal box (`hbox`) layout, which means that certain components or containers will be laid out next to each other horizontally. But which ones? The children of the container located in the `items[]` arrays hence they are the once that will be laid out horisontally in this case. But the above code contains several of `items[]` arrays with different level of nesting. How quickly find those that belong to the topmost container `DonateForm`? This is the case that clearly shows that having a good IDE can be of great help.
++
 <<FIG6-6-SSC>> shows a snapshot from the WebStorm IDE illustrating how can you find the matching elements in the long listings. The top level `items[]` arrays starts from line 23 and we see that the first element to be laid out by in `hbox` has the xtype: `container`, which in turn has some children. If you'll move the blinking cursor of the WebStorm editor right after the firs open curly brace in line 23, you'll see a thin blue vertical line that goes down to line 60. This is where the first object literal ends.
++
+Hence the second object to be governed by the `hbox` layout starts on line 61.  You can repeat the same trick with the cursor to see where that object ends and the `fieldcontainer` starts . This might seem like a not overly important top, but it really saves developer's time.    
 
-Hence the second object to be governed by the `hbox` layout starts on line 61.  You can repeat the same trick with the cursor to see where that object ends and the `fieldcontainer` starts . This might seem like a not overly important top, but it really saves developer's time.
+<3> The first element of the `hbox` is a container that internally laid out as a `vbox` (see <<FIG6-7-SSC>>).Tthe `radiogroup` is on top and the `textfield` for entering Other amount at the bottom.
+
+<4> The http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.form.FieldContainer[`fieldcontainer` is a light-weight Ext JS container useful to group components - the donor information in this case. It's the central  element in the `hbox` container shown in <<FIG6-7-SSC>>. 
+
+<5> The right side of the `hbox` is another container with the `vbox` internal layout to show the "We accept Paypal" message, "DONATE NOW", and "I'll donate later" buttons (see <<FIG6-7-SSC>>). These buttons respond to clicks because       
 
 [[FIG6-6-SSC]]
 .Collapsed Code of Viewport.js 
@@ -836,11 +841,28 @@ image::images/fig_06_06_SSC.png[image]
 
 TIP: Debugging of frameworks that are extensions of JavaScript in Web browsers can be difficult, because while you may be operating with, say Ext JS classes, the browser will receive regular `<div>, <p>` and other HTML tags and JavaScript. http://www.illuminations-for-developers.com/[Illuminations] is a Firebug add-on that allows to inspect elements showing not just their HTML representations, but the corresponding Ext JS classes that were used to create them. 
 
-Run the SSC_Top_ExtJS project and turn on the Chrome Developers Tools. Scroll to the bottom of the Network tab, and you'll see that the browser made about 250 requests to the server and downloaded 4.5Mb in total. Not too exciting isn't it? On the next runs these numbers will drop to about 30 requests and 1.7Mb transferred - the browser's caching kicked in. These numbers would be better if instead of ext-all.js we'd be linking ext.js, and even better if we'd created a custom build (see Sencha CMB section) for the Save Sick Child application merging into one file the application code with only those framework classes that were actually used.
+[[FIG6-7-SSC]]
+.DonateForm.js: an hbox with three vbox containers 
+image::images/fig_06_07_SSC.png[image]
+
+The code review of the top portion of the Save Sick Child application is finished. Run the SSC_Top_ExtJS project and turn on the Chrome Developers Tools. Scroll to the bottom of the Network tab, and you'll see that the browser made about 250 requests to the server and downloaded 4.5Mb in total. Not too exciting isn't it? 
+
+On the next runs these numbers will drop to about 30 requests and 1.7Mb transferred - the browser's caching kicked in. These numbers would be better if instead of ext-all.js we'd be linking ext.js, and even better if we'd created a custom build (see Sencha CMB section above) for the Save Sick Child application merging the application code into one file to contain only those framework classes that were actually used. 
 
 ==== Completing Save Sick Child
 
-TBD
+In this section we'll review the code supporting the lower half of the Save Sick Child UI, which you should import into Eclipse IDE from the file SSC_Complete_ExtJS.zip. If you see the target runtime error, read the beginning of the section "Save Sick Child: The Top Portion" for the cure. Stop the Tomcat server if running, and deploy the SSC_Complete_ExtJS under Tomcat server in the Servers view (the right-click menu, Add and Remove...).  Start Tomcat in Eclipse, right-click on the project and run it on the server. It'll open up a Web browser pointing at http://localhost:8080/SSC_Complete_ExtJS showing the window similar to the one depicted on <<FIG6-8-SSC>>. 
+
+[[FIG6-8-SSC]]
+.Save Sick Child with live charts 
+image::images/fig_06_08_SSC.png[image]    
+
+This version has some additions comparing to the previous ones. Notice the bottom left panel with charts. First of all, the charts are placed inside the panel with tabs: Charts and Table. The same data can be rendered either as a chart or as a grid. Second, the charts became live thanks to ExtJS. We took snapshot of the Window shown in <<FIG6-8-SSC>> while hovering the mouse over the pie slice representing New York, and the pie slice has extended from the pie showing a tooltip.
+
+
+
+
+
 
 === Productive Enterprise Web Development with Ext JS and CDB 
 
