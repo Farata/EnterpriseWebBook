@@ -105,7 +105,7 @@ After the code generation was complete, it created the folder _hello_ of the str
 .CMD-generated project 
 image::images/fig_06_01.png[image]
 
-The generated project is created with the assumption that your application will be built using the MVC paradigm discussed in the section Best Practice:MVC. The JavaScript is located in the _app_ folder, which includes the _view_ subfolder with the visual portion of your application, the _controller_ folder with controller classes, and the _model_ is for data. 
+The generated project is created with the assumption that your application will be built using the MVC paradigm discussed in the section Best Practice:MVC. The JavaScript is located in the _app_ folder, which includes the _view_ subfolder with the visual portion of your application, the _controller_ folder with controller classes, and the _model_ is for data. The _ext_ folder contains multiple distributions of the Ext JS framework. The _sass_ folderis a place for your application's CSS files (see the sidebar titled SASS and CSS later in this chapter).
 
 The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js, which contains the mapping of the long names if the framework and application classes to the shorter names (_xtypes_).
 
@@ -168,6 +168,8 @@ After the build is finished, you'll see newly generated version of the applicati
 image::images/fig_06_03.png[image]
  
 NOTE: With older versions of Sencha Cmd (Sencha SDK Tools) you would generate a manifest file in a jsb3 format, that would describe all the classes that your application uses. Such jsb3 file would be used for creating custom builds. This option is still available, but Sencha Cmd uses the command _sencha app build_ as was shown above. For more details about code generation refer to the section http://docs.sencha.com/ext-js/4-2/#!/guide/command_app[Using Sencha Cmd with Ext JS] in the product documentation.
+
+TIP: http://www.sencha.com/products/desktop-packager/[Sencha Desktop Packager] allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. 
 
 ==== Configuring Eclipse project with Apache Tomcat and Ext JS
 
@@ -576,7 +578,7 @@ The following figure shows a snapshot from WebStorm IDE, with collapsed code sec
 .Collapsed Code of Viewport.js 
 image::images/fig_06_05_SSC.png[image]
 
-In Ext JS the column layout is used when you are planning to present the information in columns as explained in the http://dev.sencha.com/deploy/ext-4.0.0/examples/layout-browser/layout-browser.html[product documentation]. Even though there are three columns in this layout, the entire content on this page is located in the middle column having the width of 980. The column on the left and the column on the right just hold one non-breakable space each to provide centering of the middle column in monitors with high resolution wider than 980 pixels (plus browser's chrome).
+In Ext JS the column layout is used when you are planning to present the information in columns as explained in the http://dev.sencha.com/deploy/ext-4.0.0/examples/layout-browser/layout-browser.html[product documentation]. Even though there are three columns in this layout, the entire content on this page is located in the middle column having the width of 980. The column on the left and the column on the right just hold one non-breakable space each to provide centering of the middle column in monitors with high resolution wider than 980 pixels (plus the browser's chrome).
 
 The width of 0.5, 980, 0.5 means to give the middle column 980 pixels and share the remaining space equally between empty columns. 
 
@@ -584,7 +586,7 @@ Tip: There is another way to lay out this screen using Horizontal Box `hbox` wit
 
 .SASS and CSS
 **************
-Take a look at the project structure shown at <<FIG6-5-SSC>> - it has sass directory, which contains several files with styles: DonateForm.scss, Header.css, and Viewport.scss. The content of the Viewport.css is shown below. If you've been wondering where are the CSS files we used in the previous chapters with our application, they are here.
+Take a look at the project structure shown at <<FIG6-5-SSC>> - it has sass directory, which contains several files with styles: DonateForm.scss, Header.scss, and Viewport.scss. Note that the file name extension is not _css_, but _scss_ - it's Syntactically Awesome Stylesheets (SASS). The content of the Viewport.css is shown below. In particular, if you've been wondering where are located the image of the boy and the background flowers - there are right there.
 
 [source, html]
 ----
@@ -597,13 +599,29 @@ Take a look at the project structure shown at <<FIG6-5-SSC>> - it has sass direc
 }
 
 .donate-panel {
-  background: url("images/child-1.jpg") no-repeat right bottom, url("images/bg-2.png") no-repeat 90px bottom;
+  background: url("images/child-1.jpg") no-repeat right bottom, url("images/bg-2.png") 
+  no-repeat 90px bottom;
   border-bottom: 1px dotted #555;
 } 
 ----
-Ext JS substantially reduces the need for manual CSS writing by using predefined http://docs.sencha.com/extjs/4.2.0/#!/guide/theming[themes]. 
 
-TODO: add more explanations on sass
+http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html[SASS] is an extension of CSS3, which allows using variables, mixins, inline imports, inherit selectors and more with CSS-compatible syntax.  The simplest example of SASS syntax is to define a variable that stores some color code, e.g. `$mypanel-color: #cf6cc2;`. Now if you need to change the color you just change the value of the variable in one place rather than trying to find all places in a regular CSS where this color was used. But since modern Web browsers don't understand SASS styles, they have to be converted into regular CSS before deploying your Web applications. 
+
+Ext JS includes http://compass-style.org/[Compass], which is an open-source CSS Authoring Framework built on top of SASS. It includes a number of modules and functions that will save your time for defining such things as border radius, gradients, transitions and more in a cross-browser fashion. For example, you write one SASS line `.simple   { @include border-radius(4px, 4px); }`, but Compass will generate the following cross-browser CSS section: 
+
+[source, html]
+----
+ -webkit-border-radius: 4px 4px;
+ -moz-border-radius: 4px / 4px;
+ -khtml-border-radius: 4px / 4px;
+ border-radius: 4px / 4px; }
+----
+
+See http://compass-style.org/reference/compass/css3/border_radius/[Compass documentation] for more examples like the above. To manually compile your SASS into CSS you can use the command _compass compile_ from the Command or Terminal window. This step is also performed automatically during the Sencha CMD application build. In case of the Save Sick Child application the resulting CSS file is located in build/SSC/production/resources/SSC-all.css. 
+
+We are not using any extended CSS syntax in our Save Sick Child application, but since SASS is a superset of CSS, you can use your existing CSS as is - just save it in the _.scss_ file. If you'd like to learn more about the SASS syntax, visit the site http://sass-lang.com/[sass-lang.com], which has tutorials and reference documentation.
+
+In general, Ext JS substantially reduces the need for manual CSS writing by using predefined http://docs.sencha.com/extjs/4.2.0/#!/guide/theming[themes]. Sencha offers a http://www.sencha.com/learn/theming/#!/guide/theming-section-1[tutorial] explaining how to use SASS and Compass for theming. 
 **************
 
 Now let's look at the child elements of the `SSC.view.Viewport`. The `SSC.view.Header` is the simplest view. Since Save Sick Child is not a typical enterprise application with a bunch of forms and grids, we'll use the lightest top-level container class `Container` where possible. The class `Container` gives you the most freedom in what to put inside and how to layout its child elements. Our `SSC.view.Header` view extends `Ext.Container` and contains child elements, some of which have the `xtype: component`, and some - `container`: 
@@ -680,8 +698,8 @@ Ext.define('SSC.view.DonateForm', {
   ],
 
   layout: {
-    type: 'hbox',
-    align: 'stretch'          // <2>
+    type: 'hbox',             // <2> 
+    align: 'stretch'          
   },
 
   bodyStyle: {
@@ -730,7 +748,7 @@ Ext.define('SSC.view.DonateForm', {
       labelCls: 'donate-form-label'
     }]
   }, {
-    xtype: 'fieldcontainer',
+    xtype: 'fieldcontainer',             // <3>
     fieldLabel: 'Donor information',
     labelAlign: 'top',
     labelSeparator: '',
@@ -759,7 +777,7 @@ Ext.define('SSC.view.DonateForm', {
     }, {
       xtype: 'combobox',
       emptyText: 'state',
-      store: ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
+      store: ['Alabama', 'Alaska', ..., 'Wyoming']
     }, {
       xtype: 'combobox',
       emptyText: 'country',
@@ -781,7 +799,7 @@ Ext.define('SSC.view.DonateForm', {
     }, {
       xtype: 'component',
       width: 220,
-      html: 'Your payment will processed securely by PayPal. PayPal employ industry-leading encryption and fraud prevention tools. Your financial information is never divulged to us.'
+      html: 'Your payment will processed securely by PayPal...'
     }, {
       xtype: 'button',
       action: 'donate',
@@ -799,12 +817,24 @@ Ext.define('SSC.view.DonateForm', {
 });
 ----
 
-<1>
+<1> `DonateForm` depends on several classes listed in the `requires` property. The Ext JS will check to see if these classes are present in memory, and if not, the loader will load all dependencies first, and only after the DonateForm class.
 
-<2>
+<2> Our `DonateForm` uses horizontal box (`hbox`) layout, which means that certain components or containers will be laid out next to each other horizontally. But which ones? We'll explain it below.
+
+<3> http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.form.FieldContainer[`fieldcontainer` is a light-weight Ext JS container useful to group components.    
 
 
-TIP: http://www.sencha.com/products/desktop-packager/[Sencha Desktop Packager] allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. 
+The children of the container located in the `items[]` arrays hence they are the once that will be laid out horisontally in this case. But the above code contains several of `items[]` arrays with different level of nesting. How quickly find those that belong to the topmost container `DonateForm`? This is the case that clearly shows that having a good IDE can be of great help.
+
+<<FIG6-6-SSC>> shows a snapshot from the WebStorm IDE illustrating how can you find the matching elements in the long listings. The top level `items[]` arrays starts from line 23 and we see that the first element to be laid out by in `hbox` has the xtype: `container`, which in turn has some children. If you'll move the blinking cursor of the WebStorm editor right after the firs open curly brace in line 23, you'll see a thin blue vertical line that goes down to line 60. This is where the first object literal ends.
+
+Hence the second object to be governed by the `hbox` layout starts on line 61.  You can repeat the same trick with the cursor to see where that object ends and the `fieldcontainer` starts . This might seem like a not overly important top, but it really saves developer's time.
+
+[[FIG6-6-SSC]]
+.Collapsed Code of Viewport.js 
+image::images/fig_06_06_SSC.png[image]
+
+TIP: Debugging of frameworks that are extensions of JavaScript in Web browsers can be difficult, because while you may be operating with, say Ext JS classes, the browser will receive regular `<div>, <p>` and other HTML tags and JavaScript. http://www.illuminations-for-developers.com/[Illuminations] is a Firebug add-on that allows to inspect elements showing not just their HTML representations, but the corresponding Ext JS classes that were used to create them. 
 
 Run the SSC_Top_ExtJS project and turn on the Chrome Developers Tools. Scroll to the bottom of the Network tab, and you'll see that the browser made about 250 requests to the server and downloaded 4.5Mb in total. Not too exciting isn't it? On the next runs these numbers will drop to about 30 requests and 1.7Mb transferred - the browser's caching kicked in. These numbers would be better if instead of ext-all.js we'd be linking ext.js, and even better if we'd created a custom build (see Sencha CMB section) for the Save Sick Child application merging into one file the application code with only those framework classes that were actually used.
 
