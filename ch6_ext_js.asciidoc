@@ -418,6 +418,7 @@ image::images/fig_06_04_SSC.png[image]
 Such setup looks like an overkill, but we are talking about the enterprise development where you may jump through some hoops to create a convenient working environment for yourself.
 ********
 
+
 The app.js is pretty short - it just declares SSC as the application name, views and controllers. By adding the property `autoCreateViewport: true` we requested the application to automatically load the main window, which must be called Viewport.js and located in the view directory.
 
 [source, javascript]
@@ -581,6 +582,8 @@ The following figure shows a snapshot from WebStorm IDE, with collapsed code sec
 [[FIG6-5-SSC]]
 .Collapsed Code of Viewport.js 
 image::images/fig_06_05_SSC.png[image]
+
+TIP: Open its menu Preferences | JavaScript | Libraries and add the file ext-all-debug-w-comments.js as a global library and pressing the button F1 will display available comments about selected Ext JS element. Configuring Ext JS as external library allows you to remove Ext JS files from WebStorm project without losing context sensitive help.  
 
 In Ext JS the column layout is used when you are planning to present the information in columns as explained in the http://dev.sencha.com/deploy/ext-4.0.0/examples/layout-browser/layout-browser.html[product documentation]. Even though there are three columns in this layout, the entire content on this page is located in the middle column having the width of 980. The column on the left and the column on the right just hold one non-breakable space each to provide centering of the middle column in monitors with high resolution wider than 980 pixels (plus the browser's chrome).
 
@@ -857,16 +860,22 @@ In this section we'll review the code supporting the lower half of the Save Sick
 .Save Sick Child with live charts 
 image::images/fig_06_08_SSC.png[image]    
 
-This version has some additions comparing to the previous ones. Notice the bottom left panel with charts. First of all, the charts are placed inside the panel with tabs: Charts and Table. The same data can be rendered either as a chart or as a grid. Second, the charts became live thanks to ExtJS. We took snapshot of the Window shown in <<FIG6-8-SSC>> while hovering the mouse over the pie slice representing New York, and the pie slice has extended from the pie showing a tooltip.
+This version has some additions comparing to the previous ones. Notice the bottom left panel with charts. First of all, the charts are placed inside the panel with tabs: Charts and Table. The same data can be rendered either as a chart or as a grid. Second, the charts became live thanks to ExtJS. We took snapshot of the Window shown in <<FIG6-8-SSC>> while hovering the mouse over the pie slice representing New York, and the slice has extended from the pie showing a tooltip.
 
+The SSC_Complete_ExtJS has more Ext JS classes comparing to SSC_Top_ExtJS. You can see more views on <<FIG6-9-SSC>>. Besides, we've added two classes Donors.js and Campaigns.js to serve as data stores for the panels with charts and maps. 
 
+[[FIG6-9-SSC]]
+.JavaScript classes of SSC_Complete_ExtJS 
+image::images/fig_06_09_SSC.png[image] 
 
 
 
 
 === Productive Enterprise Web Development with Ext JS and CDB 
 
-The authors of this book work for http://faratasystems.com[Farata Systems], which has developed an open source freely available software Clear Toolkit for Ext JS, and the code generator and Eclipse IDE plugin CDB comes with it. CDB is a productivity tool that was created specifically for the applications that need to retrieve, manipulate, and save the data in some persistent storage. Such applications are known as _CRUD applications_ because they perform Create-Retrieve-Update-Delete operations with data. If the server side of your Web application is developed in Java, with CDB you can easily generate a CRUD application, where Ext JS front end communicates the Java back end. In this section you will learn how jump start development of such CRUD Web applications. 
+The authors of this book work for http://faratasystems.com[Farata Systems], which has developed an open source freely available software Clear Toolkit for Ext JS, and the code generator and Eclipse IDE plugin CDB comes with it. CDB is a productivity tool that was created specifically for the applications that need to retrieve, manipulate, and save the data in some persistent storage. 
+
+Such applications are known as _CRUD applications_ because they perform Create-Retrieve-Update-Delete operations with data. If the server side of your Web application is developed in Java, with CDB you can easily generate a CRUD application, where Ext JS front end communicates the Java back end. In this section you will learn how jump start development of such CRUD Web applications. 
 
 IMPORTANT: Familiarity with core Java concepts like classes, constructors, getters and setters, and annotations is required for understanding of the materials of this section.
 
@@ -1017,14 +1026,14 @@ CDB has generated a sample UI for us too. Check out the samples directory shown 
 .Folder with generated UI files
 image::images/fig_06_07cdb.png[image]
 
-CDB has generated `SampleController.js`, `SampleGridPanel.js`, and the Ext JS application entry point `sampleApp.js`. To test this application just copy the file  `SampleController.js` into the controller folder, `SampleGridPanel.js` panel into the view folder, and the sample application in the root of the WebContent folder. Change the application entry point with to be `sampleApp.js` in the index.html of the Eclipse projectas shown below.
+CDB has generated `SampleController.js`, `SampleGridPanel.js`, and the Ext JS application entry point `sampleApp.js`. To test this application just copy the file  `SampleController.js` into the controller folder, `SampleGridPanel.js` panel into the view folder, and the sample application in the root of the WebContent folder. Change the application entry point with to be `sampleApp.js` in the index.html of the Eclipse project as shown below.
 
 [source,html]
 ----------------------------------------------------------------------
 <script type="text/javascript" src="sampleApp.js"></script>
 ----------------------------------------------------------------------
 
-This is how the generated UI of the sample application looks like <<FIG6-8-CDB>>
+This is how the generated UI of the sample application looks like <<FIG6-8-CDB>>.
 
 [[FIG6-8-CDB]]
 .Scaffolded CRUD application template
@@ -1043,51 +1052,60 @@ import clear.data.ChangeObject;
 import dto.Person;
 import service.generated.*;
 
-public class PersonServiceImpl extends _PersonServiceImpl { // 1
+public class PersonServiceImpl extends _PersonServiceImpl { // <1>
 
-        @Override
-        public List<Person> getPersons() {                              // 2
-                List<Person> result = new ArrayList<>();
-                Integer id= 0;
-                result.add(new Person(++id, "Joe", "Doe", "555-55-55", "1111-11-1111"));
-                result.add(new Person(++id, "Joe", "Doe", "555-55-55", "1111-11-1111"));
-                result.add(new Person(++id, "Joe", "Doe", "555-55-55", "1111-11-1111"));
-                result.add(new Person(++id, "Joe", "Doe", "555-55-55", "1111-11-1111"));
-                return result;          // 3
-        }
+  @Override
+  public List<Person> getPersons() {                        // <2>
+      List<Person> result = new ArrayList<>();
+      Integer id= 0;
+      result.add(new Person(++id, "Joe", "Doe", 
+                      "555-55-55", "1111-11-1111"));
+      result.add(new Person(++id, "Joe", "Doe", 
+                      "555-55-55", "1111-11-1111"));
+      result.add(new Person(++id, "Joe", "Doe", 
+                      "555-55-55", "1111-11-1111"));
+      result.add(new Person(++id, "Joe", "Doe", 
+                      "555-55-55", "1111-11-1111"));
+      return result;                    // <3>
+  }
 
-        @Override
-        public void getPersons_doCreate(ChangeObject changeObject) {  // 4
-                Person dto = (Person) deserializeObject(
-                                (Map<String, String>) changeObject.getNewVersion(),
-                                Person.class);
+  @Override
+  public void getPersons_doCreate(ChangeObject changeObject) { // <4>
+      Person dto = (Person) deserializeObject(
+                      (Map<String, String>) changeObject.getNewVersion(),
+                      Person.class);
 
-                System.out.println(dto.toString());
-        }
+      System.out.println(dto.toString());
+  }
 
-        @Override
-        public void getPersons_doUpdate(ChangeObject changeObject) {    // 5 
-                // TODO Auto-generated method stub
-                super.getPersons_doUpdate(changeObject);
-        }
+  @Override
+  public void getPersons_doUpdate(ChangeObject changeObject) { // <5> 
+      // TODO Auto-generated method stub
+      super.getPersons_doUpdate(changeObject);
+  }
 
-        @Override
-        public void getPersons_doDelete(ChangeObject changeObject) {    // 6
-                // TODO Auto-generated method stub
-                super.getPersons_doDelete(changeObject);
-        }
+  @Override
+  public void getPersons_doDelete(ChangeObject changeObject) { // <6>
+      // TODO Auto-generated method stub
+      super.getPersons_doDelete(changeObject);
+  }
 }
 ----------------------------------------------------------------------
-<1> Extend the generated class and provide the actual implementation.
-<2> The `getPerson()` is our retrieve method (the R in CRUD) .
-<3> For this sample application we can use `java.util.ArrayList` class as in-memory server side storage of the `Person` objects. In the real world applications you'd use a database or other persistent storage. 
-<4> +fillmethod++`doCreate()` is our create method (the C in CRUD).
-<5> +fillmethod++`doUpdate` is our update method (the U in CRUD). 
-<6> +fillmethod++`doDelete` is our delete method (the D in CRUD).
+<1> Extend the generated class and provide the actual implementation
 
-Click on the +Load+ menu on the UI, and the application will retrieve four persons from our server. 
+<2> The `getPerson()` is our retrieve method (the R in CRUD)
 
-To test the rest of the CRUD methods,  we'll ask the user to insert one new row, modify three existing ones and remove two rows using the generated Web client. The `Clear.data.DirectStore` object will automatically create a collection of six `ChangeObject`s - one to represent a new row, three to represent the modified ones, and two for the removed rows.
+<3> For this sample application we can use `java.util.ArrayList` class as in-memory server side storage of the `Person` objects. In the real world applications you'd use a database or other persistent storage
+
+<4> +fillmethod++`doCreate()` is our create method (the C in CRUD)
+
+<5> +fillmethod++` doUpdate` is our update method (the U in CRUD)
+
+<6> +fillmethod++` doDelete` is our delete method (the D in CRUD)
+
+Click on the +Load+ menu on the UI, and the application will retrieve four persons from our server 
+
+To test the rest of the CRUD methods, we'll ask the user to insert one new row, modify three existing ones and remove two rows using the generated Web client. The `Clear.data.DirectStore` object will automatically create a collection of six `ChangeObject`s - one to represent a new row, three to represent the modified ones, and two for the removed rows.
 
 When the user clicks on the +Sync+ UI menu the changes will be sent to the corresponding `do...` remote method. When you `sync()` a standard `Ext.data.DirectStore` Ext JS is POST-ing new, modified and deleted items to the server. When the request is complete the server's response data is applied to the store expecting that some items can be modified by the server. In case of `Clear.data.DirectStore` instead of passing around items, we pass the deltas, wrapped in the `ChangeObject`.
 
@@ -1104,7 +1122,7 @@ The corresponding Java implementation of `ChangeObject` is available on the serv
 [source,java]
 ----------------------------------------------------------------------
  Person dto = (Person) deserializeObject(
-                (Map<String, String>) changeObject.getNewVersion(),Person.class);
+            (Map<String, String>) changeObject.getNewVersion(),Person.class);
 ----------------------------------------------------------------------
 
 When the new version of the `Person` object is extracted from the `ChangeObject` you can do with it whatever has to be done to persist it in the appropriate storage. In our example we just print the new person information on the server-side Java console. This is why we said earlier, that it may be a good idea to provide a pretty printing feature on the class `Person` by overriding method `toString()`. Similarly, when you need to do a delete, the `changeObject.getPrevVersion()` would give you a person to be deleted.
@@ -1121,6 +1139,7 @@ The pagination feature is needed in almost every enterprise web application. Oft
     ** Use `DirectOptions` class to read the pagination parameters
 
 We are going to improve our CRUD application by adding the paging toolbar component bound to the same store as the grid. The class `DirectOptions` will handle the pagination parameters on the server side. 
+
 So far CDB has generate the UI from the Java back end service as well as the Ext JS store and model. We'll refactor the service code from previous example to generate more data (a thousand objects) so we have something to paginate, see below. 
 
 [[LISTING_4]]
