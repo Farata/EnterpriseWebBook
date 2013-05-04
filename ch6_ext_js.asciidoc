@@ -1,6 +1,9 @@
+:toc:
+:toclevels: 4
+
 == Developing Web Applications With Ext JS Framework
 
-In the previous chapter you've got familiar with the JavaScript library jQuery. Now we'll introduce you to a more complex product - a JavaScript framework http://www.sencha.com/products/extjs[Ext JS] from http://www.sencha.com[Sencha]. This is one of the most feature-complete frameworks available on the market, and you should give it a serious consideration while deciding on the tooling for your next enterprise HTML5 application. 
+In the previous chapter you've got familiar with the JavaScript library jQuery. Now we'll introduce you to a more complex product - a JavaScript framework http://www.sencha.com/products/extjs[Ext JS] from http://www.sencha.com[Sencha]. This is one of the most feature-complete frameworks available on the market, and you should give it a serious consideration while deciding on the tooling for your next enterprise HTML5 application.
 
 === Why Ext JS?
 
@@ -179,7 +182,6 @@ We'll use the "Eclipse IDE for Java EE developers" version of this most popular 
 
 TIP: In our opinion the best IDE for JavaScript developers (regardless of which framework they use) is JetBrain's http://www.jetbrains.com/webstorm/[WebStorm IDE]. Later in this chapter we'll show you how to use WebStorm for developing JavaScript portion of the project even if the Java part has to be developed in Eclipse.
 
-
 ===== Apache Tomcat
 
 http://tomcat.apache.org[Apache Tomcat] is probably the most popular free and open source server used by Java developers for deploying Web applications. Besides being a Web Server, Tomcat also contains Java Servlet container that will be used later in this chapter in the section "Generating CRUD applications". But for most examples we'll use Tomcat as a Web server where Ext JS code will be deployed. 
@@ -231,7 +233,7 @@ To ensure that you did everything right, just enter in your browser the URL http
 .Adding Ext JS to Tomcat as a static module 
 image::images/fig_06_06.png[image]
 
-In both of these solutions you'll lose the Ext JS context sensitive help, but at least you will eliminate the long pauses caused by Eclipse internal indexing processes. Again, developing ExtJS code in WebStorm IDE or IntelliJ IDEA IDEs would spare you from all these issues because these IDE's are smart enough to produce context-sensitive help from an external JavaScript library. 
+In both of these solutions you'll lose the Ext JS context sensitive help, but at least you will eliminate the long pauses caused by Eclipse internal indexing processes. Again, developing ExtJS code in WebStorm IDE or IntelliJ IDEA IDEs would spare you from all these issues because these IDE's are smart enough to produce context-sensitive help from an external JavaScript library.   
 
 In this section we brought together three pieces of software: Eclipse IDE, Apache Tomcat server, and Ext JS framework.  Let's bring one more program to the mix: Sencha CMD. We already went through the initial code generation of Ext JS applications. If you already have a Dynamic Web Project in Eclipse workspace, run Sencha CMD specifying the _WebContent_ directory of your project as the output folder, where the generated project will reside. For example, if the name of your Dynamic Web Project is hello2, the Sencha CMD command can look as follows:
 
@@ -418,6 +420,7 @@ image::images/fig_06_04_SSC.png[image]
 Such setup looks like an overkill, but we are talking about the enterprise development where you may jump through some hoops to create a convenient working environment for yourself.
 ********
 
+TIP: To make WebStorm work faster, exclude directories _ext, packages, build, and WEB-INF_ from the project (hit the icon with a wrench image on the toolbar and select the Directories and the Excluded). This way WebStorm won't be indexing these directories.
 
 The app.js is pretty short - it just declares SSC as the application name, views and controllers. By adding the property `autoCreateViewport: true` we requested the application to automatically load the main window, which must be called Viewport.js and located in the view directory.
 
@@ -862,11 +865,168 @@ image::images/fig_06_08_SSC.png[image]
 
 This version has some additions comparing to the previous ones. Notice the bottom left panel with charts. First of all, the charts are placed inside the panel with tabs: Charts and Table. The same data can be rendered either as a chart or as a grid. Second, the charts became live thanks to ExtJS. We took snapshot of the Window shown in <<FIG6-8-SSC>> while hovering the mouse over the pie slice representing New York, and the slice has extended from the pie showing a tooltip.
 
-The SSC_Complete_ExtJS has more Ext JS classes comparing to SSC_Top_ExtJS. You can see more views on <<FIG6-9-SSC>>. Besides, we've added two classes Donors.js and Campaigns.js to serve as data stores for the panels with charts and maps. 
+The SSC_Complete_ExtJS has more Ext JS classes comparing to SSC_Top_ExtJS.  You can see more views on <<FIG6-9-SSC>>. Besides, we've added two classes Donors.js and Campaigns.js to serve as data stores for the panels with charts and maps. 
 
 [[FIG6-9-SSC]]
 .JavaScript classes of SSC_Complete_ExtJS 
 image::images/fig_06_09_SSC.png[image] 
+
+The Login Box view is pretty small and self explanatory:
+
+[source, javascript]
+----
+Ext.define("SSC.view.LoginBox", {
+    extend: 'Ext.Container',
+    xtype: 'loginbox',
+
+    layout: 'hbox',
+
+    items: [{
+        xtype: 'container',
+        flex: 1
+    }, {
+        xtype: 'textfield',
+        emptyText: 'username',
+        name: 'username',
+        hidden: true
+    }, {
+        xtype: 'textfield',
+        emptyText: 'password',
+        inputType: 'password',
+        name: 'password',
+        hidden: true
+    }, {
+        xtype: 'button',
+        text: 'Login',
+        action: 'login'
+    }]
+});
+----
+The code to process the user's logins is added to the Donate.js controller.
+
+[source, javascript]
+----
+'button[action=login]': {
+      click: this.showLoginFields
+ }
+...
+
+showLoginFields: function () {
+    this.getUsernameBox().show();
+    this.getPasswordBox().show();
+}
+----
+
+The bottom portion of the Windows includes several components. The video view simply reuses the HTML <video> tag we used in chapters 4 and 5. Ext JS 4.2 doesn't offer any other solutions for embedding videos. On one hand, subclussing `Ext.Component` is the lightest way of including any arbitrary HTML markup. On the other hand, by turning HTML into an Ext JS component allows us to use it the same way as any other Ext JS components, e.g. participate in layouts. Here's the code of the VideoPanel.js:
+
+[source, javascript]
+----
+Ext.define("SSC.view.VideoPanel", {
+ extend: 'Ext.Component',
+ xtype: 'videopanel',
+
+ html: [
+   '<video controls="controls" poster="resources/media/intro.jpg" width="390px" height="240px" preload="metadata">',
+     '<source src="resources/media/intro.mp4" type="video/mp4"/>',
+     '<source src="resources/media/intro.webm" type="video/webm"/>',
+     '<p>Sorry, your browser doesn\'t support the video element</p>',
+   '</video>'
+ ]
+
+});
+----
+
+The mapping part is located in the view CampaignsMap.js. Initially we tried to use the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.ux.GMapPanel[`Ext.ux.GMapPanel`], but it didn't work as expected. As a workaround, we've added the HTML `<div>` element to serve as a map container.
+
+[source, javascript]
+
+----
+Ext.define("SSC.view.CampaignsMap", {
+ extend: 'Ext.Component',
+ xtype: 'campaignsmap',
+
+ html: ['<div class="gmap"></div>'],
+
+ renderSelectors: {
+     mapContainer: 'div'
+ },
+
+ listeners: {
+     afterrender: function (comp) {
+         var mapDiv = comp.mapContainer.dom,
+             map    = comp.initMap(mapDiv);
+
+         comp.addCampaignsOnTheMap(map);
+     }
+ },
+
+ initMap: function (mapDiv) {
+  // latitude = 39.8097343 longitude = -98.55561990000001
+  // Lebanon, KS 66952, USA Geographic center of the contiguous United States
+  // the center point of the map
+  var latMapCenter = 39.8097343,
+      lonMapCenter = -98.55561990000001;
+
+  var mapOptions = {
+      zoom     : 3,
+      center   : new google.maps.LatLng(latMapCenter, lonMapCenter),
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      mapTypeControlOptions: {
+          style   : google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+          position: google.maps.ControlPosition.TOP_RIGHT
+      }
+  };
+
+  return new google.maps.Map(mapDiv, mapOptions);
+ },
+
+ addCampaignsOnTheMap: function (map) {
+  var marker,
+      infowindow = new google.maps.InfoWindow(),
+      geocoder   = new google.maps.Geocoder(),
+      campaigns  = Ext.StoreMgr.get('Campaigns');
+
+  campaigns.each(function (campaign) {
+      var title       = campaign.get('title'),
+          location    = campaign.get('location'),
+          description = campaign.get('description');
+
+      geocoder.geocode({
+          address: location,
+          country: 'USA'
+      }, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+
+            // getting coordinates
+            var lat = results[0].geometry.location.lat(),
+                lon = results[0].geometry.location.lng();
+
+            // create marker
+            marker = new google.maps.Marker({
+                position: new google.maps.LatLng(lat, lon),
+                map     : map,
+                title   : location
+            });
+
+            // adding click event to the marker to show info-bubble with data from json
+            google.maps.event.addListener(marker, 'click', (function(marker) {
+                return function () {
+                    var content = Ext.String.format(
+                        '<p class="infowindow"><b>{0}</b><br/>{1}<br/><i>{2}</i></p>',
+                        title, description, location);
+
+                    infowindow.setContent(content);
+                    infowindow.open(map, marker);
+                };
+            })(marker));
+        } else {
+            console.error('Error getting location data for address: ' + location);
+        }
+      });
+  });
+ }
+});
+----
 
 
 
