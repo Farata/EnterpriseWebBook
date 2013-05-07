@@ -115,9 +115,7 @@ In addition to business logic, web applications should be tested for proper rend
 
 With any testing framework, your tests will follow same basic pattern. First, you need to setup up the test environment. Second, you run the  production code and check that it works as it supposed to. 
 
-
 Finally, you need to clean up after the test will run - remove everything that your program has created during setup of the environment.
-
 
 [[AAAR]]This pattern for authoring unit tests is called _Arrange-Act-Assert_ (AAA footnote:[ http://integralpath.blogs.com/thinkingoutloud/2005/09/principles_of_t.html[Principles for Test-Driven Development] ]).
 
@@ -130,7 +128,6 @@ In the _Assert_ phase you verify the behavior through assertions.
 There is one more phase: _Reset_. In this phase, if needed, you reset the environment to the initial state. For example, erase the DOM elements created in the _Arrange_ phase.
 
 Later in this chapter, you'll see how different frameworks implements _AAAR_ pattern.
-
 
 ==== Automate Everything
 
@@ -182,6 +179,134 @@ Hello from grunt
 
 Done, without errors.
 ----------------------------------------------------------------------
+
+// <vik>
+
+Now after you have learned of basics of Grunt tool we can use it something more interesting than just printing "_hello world_" string on the screen. 
+As you already learned earlier in this book, JavaScript is a interpreted language and there is no compile to help catch syntax errors. Next we will show how you can take advantage of http://www.jshint.com/[JSHint] - the open source tool which helps you to identify errors in your JavaScript code. 
+Consider following JavaScript <<LISTING_WITH_ERRORS,code>>.
+
+.A JavaScript array with a couple typos
+[[LISTING_WITH_ERRORS]]
+[source,javascript]
+----
+include::include/jshint_example.js[]
+----
+<1> We want to define array that contains names of actors who played James Bond in a canonical series.
+
+<2> Here is example of typical typo. Developer commented line contains array element but left coma in previous line.
+
+<3> Here is another one typical typo -  a missing semicolon. It is not actual error and automatic semicolon insertion (ASI) will get you covered in this case. But omitting semicolon is not a good habit.
+
+A previous code snippet is a fairly simple example but can cause a serious trouble and a frustration if you don't have proper tools to check the code semantics and syntax. 
+
+Let's see how JShint can help with it. First, we need to install JSHint tools on the computer. As many JavaScript open source projects today, JSHint can be installed via NPM with command `npm install jshint -g`. 
+Now we can run JSHint against our code snippet:
+
+[source,bash]
+----
+> jshint jshint_example.js
+jshint_example.js: line 7, col 27, Extra comma. (it breaks older versions of IE)
+jshint_example.js: line 9, col 10, Missing semicolon. // <1>
+
+2 errors            // <2>
+----
+<1> JSHint provides location of error and a short description of the problem with your code.
+
+<2> A total count of errors occurred. 
+
+TIP: WebStorm IDE has http://blogs.jetbrains.com/idea/2012/05/lint-your-javascript-with-jslintjshint-in-real-time/[built-in support] for JSHint tool. There is 3rd party plugin for Eclipse - http://github.eclipsesource.com/jshint-eclipse/[jshint-eclipse].
+
+The Grunt also has task to run JSHint against your JavaScript code base. Here is how JSHint configuration in Grunt looks like.
+
+.A grunt file with JSHint support
+[source,javascript]
+----
+module.exports = function(grunt) {
+  grunt.initConfig({
+    jshint: {
+      gruntfile: {          // <1>
+        src: ['Gruntfile_jshint.js']
+      },
+      app: {
+        src: ['app/js/app.js']
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-jshint');       
+  grunt.registerTask('default', ['jshint']);        // <2>
+};
+----
+<1> Because Gruntfile is JavaScript file, JSHint can check it as well and identify the errors.
+
+<2> When grunt will be run without any parameters, default task +jshint+ will be triggered.
+
+[source,bash]
+----
+> grunt 
+
+Running "jshint:gruntfile" (jshint) task
+>> 1 file lint free.
+
+Running "jshint:app" (jshint) task
+>> 1 file lint free.
+
+Done, without errors.
+----
+
+Another handy task that we will use in our setup is `watch` task. A purpose of this task is to monitor defined in the task configuration files locations. When it detects any changes in that files it will run configured task. Here is how a <<LIST_WATCH_TASK,watch task config>> looks like
+
+.A `watch` task config 
+[source,javascript]
+----
+module.exports = function(grunt) {
+    grunt.initConfig({
+        jshint: {
+            // ... configuration code is omitted 
+        },
+        watch: {        // <1>
+            reload: {
+                files: ['app/*.html', 'app/data/**/*.json', 'app/assets/css/*.css', 'app/js/**/*.js', 'test/test/tests.js', 'test/spec/*.js'],  // <2>
+                tasks: ['jshint']           // <3>
+            }
+        }
+    });
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.registerTask('default', ['jshint']);
+};
+----
+
+<1> Watch task configuration starts here.
+
+<2> The list of the files that need to be monitored for changes.
+
+<3> A array of tasks that will be triggered after file change event occurs.
+
+[source,bash]
+----
+> grunt watch
+
+Running "watch" task
+Waiting...OK
+>> File "app/js/Player.js" changed.
+Running "jshint:gruntfile" (jshint) task
+>> 1 file lint free.
+
+Running "jshint:app" (jshint) task
+>> 1 file lint free.
+
+Done, without errors.
+
+Completed in 0.50s at Tue May 07 2013 00:41:42 GMT-0400 (EDT) - Waiting...
+----
+
+Later in this chapter we will use watch task to automatically run tests after production code or the code of the tests is changed.
+
+In this section we introduced new tool - Grunt - task runner. Grunt can be used to automate different aspects for your JavaScript development workflow. We will use Grunt to perform syntax and semantic checks of your code with JSHint. Also, to minimize repetitive tasks we showed hot to setup `watch` task to monitor changes in our codebase.
+In next sections we will dive into the testing frameworks for JavaScript. Our fist stop - QUnit.
+
+// </vik>
 
 ==== Test-Driven Development With QUnit
 
@@ -798,8 +923,13 @@ As you can see, testing of the DOM manipulation code is much like any other type
 
 === Save Sick Child With TDD
 
-TBD...  
 
+==== Test-drive ExtJS version of _SaveSickChild.org_
+
+TODO:
+
+* setup grunt to run tests
+* 
 
 ==== Setting up IDE for TDD
 
@@ -843,12 +973,12 @@ Let's assign a keyboard shortcut for our newly configured external tool launcher
 .Setup keyboard shortcut for grunt launcher
 image::fig_08_10.png[]
 
-By pressing a combination of keys specified in the previous screen, you will be able to launchgrunt with Jasmine tests with one click of a button(s). WebStorm will redirect all the output from the grunt tool into its  Run window.
+By pressing a combination of keys specified in the previous screen, you will be able to launch the grunt with Jasmine tests with one click of a button(s). WebStorm will redirect all the output from the grunt tool into its  Run window.
 
 .Grunt output in WebStorm
 image::fig_08_12.png[]
 
-===== Setup Jasmine support for Jasmine library
+===== Setup WebStorm support for Jasmine library
 
 //TBD
 
