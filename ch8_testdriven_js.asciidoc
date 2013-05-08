@@ -941,10 +941,116 @@ As you can see, testing of the DOM manipulation code is much like any other type
 
 ==== Test-drive ExtJS version of _SaveSickChild.org_
 
-TODO:
+// <vik>
+WARNING: This section is under active development
 
-* setup grunt to run tests
-* 
+In this section we will leverage previous knowledge about ExtJS framework from previous chapter. As you already know, ExtJS framework provides programming model based on MVC pattern. Separation of responsibilities between Views, Models and Controllers makes an ExtJS application a perfect candidate for unit testing. 
+We will the ExtJS version of "Save Sick Child" application that we developed in Chapter 6.
+
+//TBD
+===== Harnessing ExtJS application
+
+Let's create a fake application that can provide for out classes under the test familiar environment. 
+
+.A HTML-runner for Jasmine and ExtJS application
+[source,html]
+----
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title id="page-title">ExtJS Jasmine Tester</title>
+    <link rel="stylesheet" type="text/css" href="test/lib/jasmine-1.3.1/jasmine.css"/>
+    <script type="text/javascript" src=ext/ext-all.js></script> // <1>
+
+    <script type="text/javascript" src="test/lib/jasmine-1.3.1/jasmine.js"></script> //<2>
+    <script type="text/javascript" src="test/lib/jasmine-1.3.1/jasmine-html.js"></script>
+
+    <script type="text/javascript" src="test.js"></script> // <3>
+
+</head>
+<body>
+
+</body>
+</html>
+----
+<1> We need add Jasmine framework dependencies.
+<2> Also we need to add ExtJS framework dependencies.
+<3> Here is our fake ExtJS application that will setup "frendly" environment for components under the test. You can see content of `test.js` on <<FAKE_EXTJS_APP,following listing>>.
+
+[[FAKE_EXTJS_APP]]
+.A ExtJS testing endpoint
+[source,javascript]
+----
+Ext.Loader.setConfig({
+    disableCaching: false,
+    enabled: true,
+    paths: {
+        Test:   'test',       // <1>    
+        SSC:    'app'          // <2>
+        }
+});
+
+var application = null;
+
+Ext.onReady(function() {
+    application = Ext.create('Ext.app.Application', {   
+        name: 'SSC',        // <3>
+        requires: [
+            'Test.spec.AllSpecs'        // <4>
+        ],
+        controllers: [
+            'Donate'        // <5>
+        ],
+        launch: function() {
+            Ext.create('Test.spec.AllSpecs');
+
+            jasmine.getEnv().addReporter(new jasmine.TrivialReporter());        // <6>
+            jasmine.getEnv().execute();
+        }
+    });
+});
+----
+<1> ExtJS loader need to know about location of the testing classes...
+<2> ... and about location of production code.
+<3> We create fake application in namespace of production code to be to provide execution environment for production code.
+<4> The `AllSpec` class will be responsible for requesting for load the rest of the specs. We will show code of `AllSpec` class in <<ALL_SPEC,next listing>>
+<5> A fake application will test the controllers from the production application code.
+<6> This code initializes Jasmine environment and reporters.
+
+[[ALL_SPEC]]
+[source,javascript]
+----
+Ext.define('Test.spec.AllSpecs', {
+    requires: [         // <1>
+        'Test.spec.BasicAssumptions'
+        /*, 'Test.spec.ModelAssumptions' */
+    ]
+});
+----
+<1> A `requres` property contains array of Jasmine suites. All further tests will be added to this array. ExtJS framework will be responsible for loading and instantiation all test classes.
+
+Here is how our typical test suite will be look like.
+
+.A BasicAssumptions class
+[source,javascript]
+----
+Ext.define('Test.spec.BasicAssumptions', {}, function() {   // <1>
+    describe("Basic Assumptions: ", function() {            // <2>
+        it("Ext namespace should be available loaded", function() {
+            expect(Ext).toBeDefined();
+        });
+        it("SSC code should be loaded", function() {
+            expect(SSC).toBeDefined();
+        });
+    });
+});
+----
+<1> We wrap Jasmine suite into ExtJS class.
+<2> Rest of the code is very similar to that you've already learned in this chapter about Jasmine.
+
+// TBD
+// </vik>
 
 ==== Setting up IDE for TDD
 
