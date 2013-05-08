@@ -1,5 +1,6 @@
 :toc:
 :toclevels: 4
+:imagesdir: ./images
 
 == Developing Web Applications With Ext JS Framework
 
@@ -25,7 +26,7 @@ Ext JS includes a rich library of UI components, a flexible class system, custom
 
 === Downloading and Installing Ext JS
 
-First, you need to know tha _Ext JS_ framework can be used for free only for non-commercial projects. To use  Ext JS for enterprise Web development you or your firm has to purchase one of the http://www.sencha.com/products/extjs/license/[Ext JS licenses]. But for studying, you can download the complete commercial version of Ext JS for free for the 45-days evaluation period.
+First, you need to know that _Ext JS_ framework can be used for free only for non-commercial projects. To use  Ext JS for enterprise Web development you or your firm has to purchase one of the http://www.sencha.com/products/extjs/license/[Ext JS licenses]. But for studying, you can download the complete commercial version of Ext JS for free for the 45-days evaluation period.
 
 IMPORTANT: The materials presented in this chapters were tested only with the current version of Ext JS framework, which at the time of this writing was 4.2.  
 
@@ -871,6 +872,8 @@ The SSC_Complete_ExtJS has more Ext JS classes comparing to SSC_Top_ExtJS.  You 
 .JavaScript classes of SSC_Complete_ExtJS 
 image::images/fig_06_09_SSC.png[image] 
 
+===== Login, Video, and Maps
+
 The Login Box view is pretty small and self explanatory:
 
 [source, javascript]
@@ -917,7 +920,7 @@ showLoginFields: function () {
 }
 ----
 
-The bottom portion of the Windows includes several components. The video view simply reuses the HTML <video> tag we used in chapters 4 and 5. Ext JS 4.2 doesn't offer any other solutions for embedding videos. On one hand, subclussing `Ext.Component` is the lightest way of including any arbitrary HTML markup. On the other hand, by turning HTML into an Ext JS component allows us to use it the same way as any other Ext JS components, e.g. participate in layouts. Here's the code of the VideoPanel.js:
+The bottom portion of the Windows includes several components. The video view simply reuses the HTML <video> tag we used in chapters 4 and 5. Ext JS 4.2 doesn't offer any other solutions for embedding videos. On one hand, subclussing `Ext.Component` is the lightest way of including any arbitrary HTML markup. On the other hand, turning HTML into an Ext JS component allows us to use it the same way as any other Ext JS component, e.g. participate in layouts. Here's the code of the VideoPanel.js:
 
 [source, javascript]
 ----
@@ -945,22 +948,22 @@ Ext.define("SSC.view.CampaignsMap", {
  extend: 'Ext.Component',
  xtype: 'campaignsmap',
 
- html: ['<div class="gmap"></div>'],
+ html: ['<div class="gmap"></div>'],    
 
- renderSelectors: {
+ renderSelectors: {                  // <1>
      mapContainer: 'div'
  },
 
  listeners: {
      afterrender: function (comp) {
-         var mapDiv = comp.mapContainer.dom,
+         var mapDiv = comp.mapContainer.dom,   // <2>
              map    = comp.initMap(mapDiv);
 
          comp.addCampaignsOnTheMap(map);
      }
  },
 
- initMap: function (mapDiv) {
+ initMap: function (mapDiv) {                 // <3>  
   // latitude = 39.8097343 longitude = -98.55561990000001
   // Lebanon, KS 66952, USA Geographic center of the contiguous United States
   // the center point of the map
@@ -1028,12 +1031,140 @@ Ext.define("SSC.view.CampaignsMap", {
 });
 ----
 
+<1>  Since we've added video container just by including the HTML `<div>` component, Ext JS wouldn't create an ID for it. We didn't want to create an ID manually hence used the property `renderSelectors` allows to map an arbitrary name to a DOM selector. In this case such key-value pair is `mapContainer: 'div'`. The `mapContainer` is a cross-browser wrapper for DOM elements (see http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.dom.Element[product documentation]).
 
+<2> Querying the DOM to find the `mapContainer` defined in the `renderSelectors` property. Note that we are getting the reference to this DOM element after the view is rendered in the event handler function `afterrender`. The object `comp` will be provided to this handler, and it points at the instance of the current component, which is `SSC.view.CampaignsMap`.
+
+<3> The rest of the code in this class is the same mapping functionality as described in Chapter 3 in section "Adding Geolocation Support".
+
+===== Chart and Table Panels
+
+The very left bottom of the Save Sick Child window is occupied by a subclass of `Ext.tab.Panel`. The name of our view is `SSC.view.DonorsPanel`, and it contains two tabs: Chart and Table. Accordingly, the class definition start with declaring dependencies for the Ext JS classes that supports charts and a data grid. 
+
+Charting is an important part of many enterprise applications, and Ext JS framework offers solid chart drawing capabilities without the need to install any plugins. We'd like to stress that both Chart and Table panels use the same data - they just provide different vies of the data. Let's review the code now.
+
+[source, javascript]
+----
+Ext.define("SSC.view.DonorsPanel", {
+ extend: 'Ext.tab.Panel',
+ xtype: 'donorspanel',
+ requires: [
+     'Ext.chart.Chart',
+     'Ext.chart.series.Pie',
+     'Ext.grid.Panel',
+     'Ext.grid.column.Number',
+     'Ext.grid.plugin.CellEditing'
+ ],
+
+ maxHeight: 240,
+ plain: true,                  // <1>
+
+ items: [{
+   title: 'Chart',             // <2>
+   xtype: 'chart',
+   store: 'Donors',             
+   animate: true,
+   legend: {
+       position: 'right'
+   },
+   theme: 'Base:gradients',
+   series: [{
+       type: 'pie',            // <3>
+       angleField: 'donors',
+       showInLegend: true,
+       tips: {                                // <4>
+           trackMouse: true,
+           renderer: function (storeItem ) {        
+             
+             var store = storeItem.store,
+                 total = 0;
+
+             store.each(function(rec) {
+                 total += rec.get('donors');        // <5>
+             });
+
+             this.update(Ext.String.format('{0}: {1}%',
+                 storeItem.get('location'),
+                 Math.round(storeItem.get('donors') / total * 100)));
+           }
+       },
+       highlight: {
+           segment: {
+               margin: 20
+           }
+       },
+       label: {                  // <6>
+           field: 'location',
+           display: 'horizontal',
+           contrast: true,
+           renderer: function (label, item, storeItem) {
+               return storeItem.get('donors');
+           }
+       }
+   }]
+ }, {
+     title: 'Table',            // <7>    
+     xtype: 'gridpanel',
+     store: 'Donors',               
+     columns: [                 //  <8>
+         { text: 'State',  dataIndex: 'location', flex: 1},
+         { text: 'Donors', dataIndex: 'donors', 
+                  xtype: 'numbercolumn', format: '0', editor: 'numberfield' }
+     ],
+     plugins: [{
+         ptype: 'cellediting'
+     }]
+ }]
+
+});
+----
+
+<1> By default, the top portion of the tab panel was showing a blue background, which we didn't like and turned this style off to give a little cleaner look to the tabs. 
+
+<2> The first panel is an instance of xtype `chart`, which gets the data from the store object `Donors`. 
+
+<3> Configuring and creating a http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.chart.series.Pie[Pie Chart].   
+
+<4> We've overriden the config http://bit.ly/16fgnO5[`renderer`] to provide custom styling for each element.  In particular, we've configured http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.chart.series.Pie-cfg-tips[`tips`] to be displayed on mouse hover.
+
+<5> Calculating total for proper display of the percentages on mouse hover.
+
+<6> Displaying the chart legend on the right side. If the user moves the mouse over the legend, the pie sectors start to animate.
+
+<7> The second tab contains and instance of xtype `gridpanel`. Note that the store object is the same as the Chart panel uses. 
+
+<8>  The grid has two columns. One of them is a simple text, but the other is rendered as a http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.grid.column.Number[`numbercolumn`] that displays the data according to a format string.   
+
+The store `Donors` contains the hard-coded data for our pie chart as well as for the table. In the real world, the data would be retrieved from the server side. Since we were getting ready to consume JSON data (not implemented), our `Donors` class extends http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.JsonStore[`Ext.data.JsonStore`], which is a helper class for creating stores based on the JSON data. The class `JsonStore` is a subclass of more generic `Ext.data.Store`, which implements client side caching of Model objects, can load the data via the `Proxy` object, and supports sorting and filtering.
+
+[source, javascript]
+====
+Ext.define('SSC.store.Donors', {
+    extend: 'Ext.data.JsonStore',
+
+    fields: [
+        { name: 'donors',   type: 'int' },
+        { name: 'location', type: 'string' }
+    ],
+
+    data: [
+        { donors: 48, location: 'Chicago, IL' },
+        { donors: 60, location: 'New York, NY' },
+        { donors: 90, location: 'Dallas, TX' },
+        { donors: 22, location: 'Miami, FL' },
+        { donors: 14, location: 'Fargo, ND' },
+        { donors: 44, location: 'Long Beach, NY' },
+        { donors: 24, location: 'Lynbrook, NY' }
+    ]
+});
+====
+
+The total number of lines of code in `DonorsPanel` and in the store `Donors` is under 100.  You have to admit creating a tab panel with chart and grid with almost no coding is quite impressive!
 
 
 === Productive Enterprise Web Development with Ext JS and CDB 
 
-The authors of this book work for http://faratasystems.com[Farata Systems], which has developed an open source freely available software Clear Toolkit for Ext JS, and the code generator and Eclipse IDE plugin CDB comes with it. CDB is a productivity tool that was created specifically for the applications that need to retrieve, manipulate, and save the data in some persistent storage. 
+The authors of this book work for the company called Farata Systems, which has developed an open source freely available software Clear Toolkit for Ext JS, and the code generator and Eclipse IDE plugin CDB comes with it. CDB is a productivity tool that was created specifically for the applications that need to retrieve, manipulate, and save the data in some persistent storage. 
 
 Such applications are known as _CRUD applications_ because they perform Create-Retrieve-Update-Delete operations with data. If the server side of your Web application is developed in Java, with CDB you can easily generate a CRUD application, where Ext JS front end communicates the Java back end. In this section you will learn how jump start development of such CRUD Web applications. 
 
@@ -1468,9 +1599,13 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 
 ----------------------------------------------------------------------
 <1> On the server side there is a special object called `DirectOptions`, which comes with Clear Toolkit.
+
 <2> We want to monitor the +start+ and in +limit+ values (see <<FIG6-9-CDB>>).
+
 <3> Calculate the actual limit. Assign the size of the data collection to the `limit` variable if it's  less than the page size (`start+limit`).
-<4> Notify the component about the total number of elements on the server side by using `DirectOptions.setOption()` method with +total+ option. 
+
+<4> Notify the component about the total number of elements on the server side by using `DirectOptions.setOption()` method with +total+ option.
+
 <5> Before returning the result, create a subset, an actual page of data using the method +java.util.List.sublist()+ which produces the view of the portion of this list between indexes specified by the `start` and the `limit` parameters.  
 
 As you can see from the Network tab in <<FIG6-8-CDB>>, we've limited the data load to 25 elements per page. Clicking on +next+ or +previous+ buttons will get you only a page worth of data. The Google Chrome Developers Tools Network tab shows that that we are sending the +start+ and +limit+ values with every request, and the response contains the object with 25 elements.
