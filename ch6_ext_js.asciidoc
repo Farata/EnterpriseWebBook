@@ -1,10 +1,17 @@
 :toc:
 :toclevels: 4
-:imagesdir: ./images
 
 == Developing Web Applications With Ext JS Framework
 
 In the previous chapter you've got familiar with the JavaScript library jQuery. Now we'll introduce you to a more complex product - a JavaScript framework http://www.sencha.com/products/extjs[Ext JS] from http://www.sencha.com[Sencha]. This is one of the most feature-complete frameworks available on the market, and you should give it a serious consideration while deciding on the tooling for your next enterprise HTML5 application.
+
+Providing detailed coverage of Ext JS framework in on chapter is mission impossible. The material in this chapter is divided into three parts:
+
+1. You'll get a high level overview of the Ext JS framework.
+
+2. We'll do a code review of a new version of the Save Sick Child application developed with Ext JS. This is where we want you to spend most of the time in this chapter. Learn while studying commented code. We've also provided multiple links to the relevant product documentation.
+
+3. If you are developing application where Ext JS (the client) communicates with Java (the server) this part will offer a way to improve your productivity using an open source code generator called Clear Data Builder (CDB).
 
 === Why Ext JS?
 
@@ -52,8 +59,6 @@ The _builds_ folder includes sandboxed versions of Ext JS in case you need to to
 * The Foundation - a set of useful utilities. 
 
 Such code separation allowed creators of Ext JS reuse a large portion of the framework's code in the mobile library Sencha Touch, which we'll cover in Chapter 13.   
-
-The material in this chapter is divided into three sections. First, you'll go through the Ext JS primer, then we'll develop a new version of the Save Sick Child application with Ext JS, and finally, you'll see how to improve the productivity of development with Ext JS on the client and Java one the server using an open source code generator called Clear Data Builder (CDB). 
 
 Ext JS framework is large so be prepared that your application will weigh at least 1Mb. So if you just need to create a small Web site, you may be better off by just using a lightweight, easy to learn and free jQuery library or one of a dozen of other JavaScript frameworks that either improve organizational structure of your project or offer a set of a la cart components to prettify your HTML5 application. But if you had a chance to develop or use rich Internet applications developed with such frameworks as Microsoft Silverlight or Apache Flex, then you'll quickly realize that Ext JS is the closest by functionality, rich set of components and tools.  
 
@@ -174,6 +179,10 @@ image::images/fig_06_03.png[image]
 NOTE: With older versions of Sencha Cmd (Sencha SDK Tools) you would generate a manifest file in a jsb3 format, that would describe all the classes that your application uses. Such jsb3 file would be used for creating custom builds. This option is still available, but Sencha Cmd uses the command _sencha app build_ as was shown above. For more details about code generation refer to the section http://docs.sencha.com/ext-js/4-2/#!/guide/command_app[Using Sencha Cmd with Ext JS] in the product documentation.
 
 TIP: http://www.sencha.com/products/desktop-packager/[Sencha Desktop Packager] allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. 
+
+Later in this chapter we'll use Sencha CMD tool again in the section "Building Production Version" to create an optimized version of the Save Sick Child application. 
+
+IMPORTANT: If your organization is developing Web applications with Ext JS without using Sencha CMD - it's a mistake. Sencha CMD is a very useful code generator and optimizer that also enforces the MVC principles of application design.
 
 ==== Configuring Eclipse project with Apache Tomcat and Ext JS
 
@@ -372,6 +381,7 @@ TBD
 
 TBD
 
+TIP: In Chapter 1 we were discussing HTML5 local storage aAPI. Ext JS has a class http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.LocalStorage[Ext.data.proxy.LocalStorage] that saves the model data locally if the Web browser supports it.
 
 === Developing Save Sick Child With Ext JS
 
@@ -948,49 +958,58 @@ Ext.define("SSC.view.CampaignsMap", {
  extend: 'Ext.Component',
  xtype: 'campaignsmap',
 
- html: ['<div class="gmap"></div>'],    
+ html: ['<div class="gmap"></div>'],
 
- renderSelectors: {                  // <1>
+ renderSelectors: {                 // <1>
      mapContainer: 'div'
  },
 
  listeners: {
-     afterrender: function (comp) {
-         var mapDiv = comp.mapContainer.dom,   // <2>
-             map    = comp.initMap(mapDiv);
+  afterrender: function (comp) {
+      var map,
+          mapDiv = comp.mapContainer.dom;     // <2>
 
-         comp.addCampaignsOnTheMap(map);
-     }
+      if (navigator && navigator.onLine) {    // <3>
+          try {
+              map = comp.initMap(mapDiv);
+              comp.addCampaignsOnTheMap(map);
+          } catch (e) {
+              this.displayGoogleMapError();
+          }
+      } else {
+          this.displayGoogleMapError();
+      }
+  }
  },
 
- initMap: function (mapDiv) {                 // <3>  
-  // latitude = 39.8097343 longitude = -98.55561990000001
-  // Lebanon, KS 66952, USA Geographic center of the contiguous United States
-  // the center point of the map
-  var latMapCenter = 39.8097343,
-      lonMapCenter = -98.55561990000001;
+ initMap: function (mapDiv) {                   // <4>
+   // latitude = 39.8097343 longitude = -98.55561990000001
+   // Lebanon, KS 66952, USA Geographic center of the contiguous United States
+   // the center point of the map
+   var latMapCenter = 39.8097343,
+       lonMapCenter = -98.55561990000001;
 
-  var mapOptions = {
-      zoom     : 3,
-      center   : new google.maps.LatLng(latMapCenter, lonMapCenter),
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      mapTypeControlOptions: {
-          style   : google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-          position: google.maps.ControlPosition.TOP_RIGHT
-      }
-  };
+   var mapOptions = {
+       zoom     : 3,
+       center   : new google.maps.LatLng(latMapCenter, lonMapCenter),
+       mapTypeId: google.maps.MapTypeId.ROADMAP,
+       mapTypeControlOptions: {
+           style   : google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+           position: google.maps.ControlPosition.TOP_RIGHT
+       }
+   };
 
-  return new google.maps.Map(mapDiv, mapOptions);
+   return new google.maps.Map(mapDiv, mapOptions);
  },
 
  addCampaignsOnTheMap: function (map) {
   var marker,
       infowindow = new google.maps.InfoWindow(),
       geocoder   = new google.maps.Geocoder(),
-      campaigns  = Ext.StoreMgr.get('Campaigns');
+      campaigns  = Ext.StoreMgr.get('Campaigns');    // <5>
 
   campaigns.each(function (campaign) {
-      var title       = campaign.get('title'),
+      var title       = campaign.get('title'),       // <6>
           location    = campaign.get('location'),
           description = campaign.get('description');
 
@@ -998,35 +1017,40 @@ Ext.define("SSC.view.CampaignsMap", {
           address: location,
           country: 'USA'
       }, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
+          if (status == google.maps.GeocoderStatus.OK) {
 
-            // getting coordinates
-            var lat = results[0].geometry.location.lat(),
-                lon = results[0].geometry.location.lng();
+              // getting coordinates
+              var lat = results[0].geometry.location.lat(),
+                  lon = results[0].geometry.location.lng();
 
-            // create marker
-            marker = new google.maps.Marker({
-                position: new google.maps.LatLng(lat, lon),
-                map     : map,
-                title   : location
-            });
+              // create marker
+              marker = new google.maps.Marker({
+                  position: new google.maps.LatLng(lat, lon),
+                  map     : map,
+                  title   : location
+              });
 
-            // adding click event to the marker to show info-bubble with data from json
-            google.maps.event.addListener(marker, 'click', (function(marker) {
-                return function () {
-                    var content = Ext.String.format(
-                        '<p class="infowindow"><b>{0}</b><br/>{1}<br/><i>{2}</i></p>',
-                        title, description, location);
+              // adding click event to the marker to show info-bubble with data from json
+              google.maps.event.addListener(marker, 'click', (function(marker) {
+                  return function () {
+                      var content = Ext.String.format(
+                          '<p class="infowindow"><b>{0}</b><br/>{1}<br/><i>{2}</i></p>',
+                          title, description, location);
 
-                    infowindow.setContent(content);
-                    infowindow.open(map, marker);
-                };
-            })(marker));
-        } else {
-            console.error('Error getting location data for address: ' + location);
-        }
+                      infowindow.setContent(content);
+                      infowindow.open(map, marker);
+                  };
+              })(marker));
+          } else {
+              console.error('Error getting location data for address: ' + location);
+          }
       });
   });
+ },
+
+ displayGoogleMapError: function () {
+    console.log('Error is successfully handled while rendering Google map');
+    this.mapContainer.update('<p class="error">Sorry, Google Map service isn\'t available</p>');
  }
 });
 ----
@@ -1035,11 +1059,89 @@ Ext.define("SSC.view.CampaignsMap", {
 
 <2> Querying the DOM to find the `mapContainer` defined in the `renderSelectors` property. Note that we are getting the reference to this DOM element after the view is rendered in the event handler function `afterrender`. The object `comp` will be provided to this handler, and it points at the instance of the current component, which is `SSC.view.CampaignsMap`.
 
-<3> The rest of the code in this class is the same mapping functionality as described in Chapter 3 in section "Adding Geolocation Support".
+<3> If Google Map is not available, display an error message as in <<FIG6-10-SSC>>. This code was added after one of the authors was testing this code while sitting in the plane with no Internet connection. But checking the status of  https://developer.mozilla.org/en-US/docs/DOM/window.navigator.onLine[`navigator.onLine`] may not be a reliable indicator of the offline status, so we've wrapped it into a `try/catch` block just to be sure. 
+
+<4> The rest of the code in this class has the same mapping functionality as described in Chapter 3 in section "Adding Geolocation Support".
+
+<5> The data for the campaign information are coming from the store Campaigns.js located in the folder store. The store manager can find the reference to the store either if by assigned http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.StoreManager[`storeId`] or by name `Campaigns` listed in the `stores` array in the app.js:
+
+<6> We are configuring the mapping panel to get the information about the campaign title, location, and description from the fields with corresponding names from the store `SSC.store.Campaigns` that's shown right after app.js below.   
+
+[[FIG6-10-SSC]]
+.If Google Maps server is not responding 
+image::images/fig_06_10_SSC.png[image]  
+
+[source, javascript]
+----
+Ext.application({
+    name: 'SSC',
+
+    views: [
+        'CampaignsMap',
+        'DonateForm',
+        'DonorsPanel',
+        'Header',
+        'LoginBox',
+        'VideoPanel',
+        'Viewport'
+    ],
+
+    stores: [
+        'Campaigns',
+        'Donors'
+    ],
+
+    controllers: [
+        'Donate'
+    ],
+
+    autoCreateViewport: true
+}); 
+----
+
+In Chapter 5 the information about campaigns was taken from a file with JSON formatted data. In this version the data will be taken from the class `SSC.store.Campaigns` that's shown next.  This class extends http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.JsonStore[`Ext.data.JsonStore`], which is a helper class for creating stores based on the JSON data. The class `JsonStore` is a subclass of more generic `Ext.data.Store`, which implements client side caching of Model objects, can load the data via the `Proxy` object, and supports sorting and filtering.   
+
+[source, JavaScript]
+-----
+Ext.define('SSC.store.Campaigns', {
+    extend: 'Ext.data.JsonStore',
+
+    fields: [                               // <1>
+        { name: 'title',       type: 'string' },
+        { name: 'description', type: 'string' },
+        { name: 'location',    type: 'string' }
+    ],
+
+    data: [{                           // <2>
+        title:       'Lorem ipsum',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        location:    'Chicago, IL'
+    }, {
+        title:       'Donors meeting',
+        description: 'Morbi mollis ante at ante posuere tempor.',
+        location:    'New York, NY'
+    }, {
+        title:       'Sed tincidunt magna',
+        description: 'Donec ac ligula sit amet libero vehicula laoreet',
+        location:    'Dallas, TX'
+    }, {
+        title:       'Fusce tellus dui',
+        description: 'Sed accumsan nibh sapien, interdum ullamcorper velit.',
+        location:    'Miami, FL'
+    }, {
+        title:       'Aenean lorem quam',
+        description: 'Pellentesque habitant morbi tristique senectus',
+        location:    'Fargo, ND'
+    }]
+});
+-----
+<1> We have not created a separate model class for each campaign, because this information is used only in one place. The `fields` array defines our inline model, which consist of objects (`data`) containing the properties `title`, `description`, and `location`.
+
+<2> Hard-coded data for the model
 
 ===== Chart and Table Panels
 
-The very left bottom of the Save Sick Child window is occupied by a subclass of `Ext.tab.Panel`. The name of our view is `SSC.view.DonorsPanel`, and it contains two tabs: Chart and Table. Accordingly, the class definition start with declaring dependencies for the Ext JS classes that supports charts and a data grid. 
+The bottom left area of the Save Sick Child window is occupied by a subclass of `Ext.tab.Panel`. The name of our view is `SSC.view.DonorsPanel`, and it contains two tabs: Chart and Table. Accordingly, the class definition start with declaring dependencies for the Ext JS classes that supports charts and a data grid. 
 
 Charting is an important part of many enterprise applications, and Ext JS framework offers solid chart drawing capabilities without the need to install any plugins. We'd like to stress that both Chart and Table panels use the same data - they just provide different vies of the data. Let's review the code now.
 
@@ -1084,7 +1186,7 @@ Ext.define("SSC.view.DonorsPanel", {
              });
 
              this.update(Ext.String.format('{0}: {1}%',
-                 storeItem.get('location'),
+                 storeItem.get('location'),               // <6>
                  Math.round(storeItem.get('donors') / total * 100)));
            }
        },
@@ -1093,7 +1195,7 @@ Ext.define("SSC.view.DonorsPanel", {
                margin: 20
            }
        },
-       label: {                  // <6>
+       label: {                  // <7>
            field: 'location',
            display: 'horizontal',
            contrast: true,
@@ -1103,10 +1205,10 @@ Ext.define("SSC.view.DonorsPanel", {
        }
    }]
  }, {
-     title: 'Table',            // <7>    
+     title: 'Table',            // <8>    
      xtype: 'gridpanel',
      store: 'Donors',               
-     columns: [                 //  <8>
+     columns: [                 //  <9>
          { text: 'State',  dataIndex: 'location', flex: 1},
          { text: 'Donors', dataIndex: 'donors', 
                   xtype: 'numbercolumn', format: '0', editor: 'numberfield' }
@@ -1123,31 +1225,33 @@ Ext.define("SSC.view.DonorsPanel", {
 
 <2> The first panel is an instance of xtype `chart`, which gets the data from the store object `Donors`. 
 
-<3> Configuring and creating a http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.chart.series.Pie[Pie Chart].   
+<3> Configuring and creating a http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.chart.series.Pie[Pie Chart]. The width of each sector is controlled by the `angleField` property, which is mapped to the field `donors` defined in the store `SSC.store.Donors` (see the code listing below).  
 
 <4> We've overriden the config http://bit.ly/16fgnO5[`renderer`] to provide custom styling for each element.  In particular, we've configured http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.chart.series.Pie-cfg-tips[`tips`] to be displayed on mouse hover.
 
 <5> Calculating total for proper display of the percentages on mouse hover.
 
-<6> Displaying the chart legend on the right side. If the user moves the mouse over the legend, the pie sectors start to animate.
+<6> The label for each pie sector is retrieved from the field `location` defined in the store `SSC.store.Donors` shown in the code listing below.
 
-<7> The second tab contains and instance of xtype `gridpanel`. Note that the store object is the same as the Chart panel uses. 
+<7> Displaying the chart legend on the right side. If the user moves the mouse over the legend, the pie sectors start to animate.
 
-<8>  The grid has two columns. One of them is a simple text, but the other is rendered as a http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.grid.column.Number[`numbercolumn`] that displays the data according to a format string.   
+<8> The second tab contains and instance of xtype `gridpanel`. Note that the store object is the same as the Chart panel uses. 
 
-The store `Donors` contains the hard-coded data for our pie chart as well as for the table. In the real world, the data would be retrieved from the server side. Since we were getting ready to consume JSON data (not implemented), our `Donors` class extends http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.JsonStore[`Ext.data.JsonStore`], which is a helper class for creating stores based on the JSON data. The class `JsonStore` is a subclass of more generic `Ext.data.Store`, which implements client side caching of Model objects, can load the data via the `Proxy` object, and supports sorting and filtering.
+<9>  The grid has two columns. One of them is a simple text, but the other is rendered as a http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.grid.column.Number[`numbercolumn`] that displays the data according to a format string.   
+
+The store `Donors` contains the hard-coded data for our pie chart as well as for the table. In the real world, the data would be retrieved from the server side. Since we were getting ready to consume JSON data (not implemented), our `Donors` class.
 
 [source, javascript]
-====
+----
 Ext.define('SSC.store.Donors', {
     extend: 'Ext.data.JsonStore',
 
     fields: [
-        { name: 'donors',   type: 'int' },
+        { name: 'donors',   type: 'int' },      // <1>  
         { name: 'location', type: 'string' }
     ],
 
-    data: [
+    data: [                                     // <2>
         { donors: 48, location: 'Chicago, IL' },
         { donors: 60, location: 'New York, NY' },
         { donors: 90, location: 'Dallas, TX' },
@@ -1157,14 +1261,113 @@ Ext.define('SSC.store.Donors', {
         { donors: 24, location: 'Lynbrook, NY' }
     ]
 });
-====
+----
 
-The total number of lines of code in `DonorsPanel` and in the store `Donors` is under 100.  You have to admit creating a tab panel with chart and grid with almost no coding is quite impressive!
+<1> Defining inline model
 
+<2> Hard-coded data for the model    
+
+The data located in the store `SSC.store.Donors` can be rendered not only as a chart, but in a tabular form as well. To switch to a table view shown in <<FIG6-11-SSC>> the user has to click on the tab Table.
+
+[[FIG6-11-SSC]]
+.The Table tab 
+image::images/fig_06_11_SSC.png[image] 
+
+The following code fragment from `DonorsPanel` is all it takes to render the donors' data as a grid. The `xtype` of this component is `gridpanel`. For illustration purposes we made the column Donors editable - double click on the a cell with the number and it'll turn this field into a numeric field as shown in <<FIG6-11-SSC>> for the location Fargo, ND. 
+
+[source, javascript]
+----
+{
+ title: 'Table',
+ xtype: 'gridpanel',
+ store: 'Donors',      // <1>
+ columns: [
+     { text: 'City/State',  dataIndex: 'location', flex: 1},
+     { text: 'Donors', dataIndex: 'donors', xtype: 'numbercolumn', format: '0', editor: 'numberfield' }
+ ],
+ plugins: [{
+     ptype: 'cellediting'      // <2>
+ }
+----
+
+<1> Reusing the same store as in chart panel
+
+<2> We are using one of the exiting Ext JS plugins here, namely `Ext.grid.plugin.CellEditing` to allow editing the cells of the  `Donors` column. In this example we are using an existing Ext JS editor `numberfield` in the `Donors` column. Since we don't work with decimal numbers here, the editor uses `format:0`. To make the entire row of the grid editable use the plugin `Ext.grid.plugin.RowEditing`. If you wanted to create some custom plugin for a cell, you'd need to define it by the rules for writing Ext JS plugins.
+
+TIP: Modify the any value in the Donor's cell and switch to the Chart panel. You'll see that the size corresponding pie sector has changed accordingly.
+
+The total number of lines of code in `DonorsPanel` and in the store `Donors` is under 100.  Being able to create a tab panel with chart and grid with almost no manual coding is quite impressive, isn't it? 
+
+To complete Save Sick Chile code review, we need to mention the icons located in the bottom of the ViewPort.js shown on <<FIG6-12-SSC>>.
+
+[[FIG6-12-SSC]]
+.The Viewport footer 
+image::images/fig_06_12_SSC.png[image]
+
+This footer was implemented in the code snippet below. We've implemented these little icons as regular images.  
+
+[source, javascript]
+----
+ items: [{
+     xtype: 'component',
+     flex: 1,
+     html: '<strong>Project SSC_Complete_ExtJS:</strong>'
+ }, {
+     src: 'resources/images/facebook.png'
+ }, {
+     src: 'resources/images/google_plus.png'
+ }, {
+     src: 'resources/images/twitter.png'
+ }, {
+     src: 'resources/images/rss.png'
+ }, {
+     src: 'resources/images/email.png'
+ }]
+----
+
+TIP: There is a more efficient way to do this by using a numeric character code that renders as image (see the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.Img-cfg-glyph[glyph config property]). The http://pictos.cc/[Pictos library] offers hundreds of such tiny images in both vector or PNG form.
+
+Ext JS library contains lots of JavaScript code, but it allows developers produce nice looking applications with a fraction of a code comparing to other frameworks. Also, despite the fact that this version of Save Sick Child offers more functionality than those from the previous chapters, we've had to write the bare minimum of the CSS code thanks to Ext JS http://docs.sencha.com/extjs/4.2.0/#!/guide/theming[theming].
+
+===== Building Production Version of Save Sick Child 
+
+Run the completed version of our application in Chrome browser having Developers Tools turned on. Go to the Network tab and scroll to the bottom. You'll see the message reporting that the browser made 365 requests to the server and downloaded 6.4Mb of content as in <<FIG6-13-SSC>>. 
+
+[[FIG6-13-SSC]]
+.The size of development version of Save Sick Child  
+image::images/fig_06_13_SSC.png[image]
+
+Now let's create production version with all JavaScript merged into one file. Open the Terminal or Command window and change directory into the Eclipse workspace directory where your project was created (e.g. _.../SSC_Complete_ExtJS/WebContent_) and enter the command described in the Sencha CMD section earlier in this chapter:
+
+_sencha app build_  
+
+The production version of the Save Sick Child application will be generated in the directory _.../SSC_Complete_ExtJS/WebContent/build/SSC/production_. All your application JavaScript code will be merged with the required classes of Ext JS framework into one file all-classes.js, which in our case weighs 1.2Mb. The generated CSS file SSC-all.css will be located in the directory _resources_. All images are there too. This is how the production version of index.html will look like: 
+
+[source, javascript]
+----
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SSC</title>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<link rel="stylesheet" href="resources/SSC-all.css"/>
+<script type="text/javascript" src="all-classes.js"></script>
+</head>
+<body></body>
+</html>
+----
+
+Deploy the content of the _production_ under any Web server and load this version of the application in the Chrome with Developer Tools turned on. This time the number of dowloaded bytes is three times lower (2.3Mb). Ask your Web Server administrator to enable gzip or deflate, and the size of the JavaScript will go down from 1.2Mb to 365KB. The size of other resources will decrease even more.  Don't forget that we are loading a 500Kb video file intro.mp4. The number of server requests went down to 55, but more that 30 of them were Google Map API calls. 
+
+[[FIG6-14-SSC]]
+.The size of production version of Save Sick Child  
+image::images/fig_06_14_SSC.png[image]
+ 
 
 === Productive Enterprise Web Development with Ext JS and CDB 
 
-The authors of this book work for the company called Farata Systems, which has developed an open source freely available software Clear Toolkit for Ext JS, and the code generator and Eclipse IDE plugin CDB comes with it. CDB is a productivity tool that was created specifically for the applications that need to retrieve, manipulate, and save the data in some persistent storage. 
+Authors of this book work for the company called Farata Systems, which has developed an open source freely available software Clear Toolkit for Ext JS, and the code generator and Eclipse IDE plugin CDB comes with it. CDB is a productivity tool that was created specifically for the applications that need to retrieve, manipulate, and save the data in some persistent storage. 
 
 Such applications are known as _CRUD applications_ because they perform Create-Retrieve-Update-Delete operations with data. If the server side of your Web application is developed in Java, with CDB you can easily generate a CRUD application, where Ext JS front end communicates the Java back end. In this section you will learn how jump start development of such CRUD Web applications. 
 
@@ -1615,4 +1818,6 @@ If you'd like to repeat all of the above steps on you own, watch http://faratasy
 
 === Summary 
 
-The development of enterprise web application involves many steps that need to be done by developer. But with the right set of tools the repetitive steps can be automated. Remember the DRY principle - don't repeat yourself. Try to do more with less efforts. This rather long chapter will help your to get started with Ext JS and, if you need to develop CRUD applications, CDB will make you more productive.
+Creation of enterprise web applications involves many steps that need to be done by developers. But with the right set of tools the repetitive steps can be automated. Besides, Ext JS class rich component library and themes allows you to lower the amount of manual programming. 
+
+Remember the DRY principle - don't repeat yourself. Try to do more with less efforts. This rather long chapter will help your to get started with Ext JS and, if you need to develop CRUD applications, CDB will make you more productive.
