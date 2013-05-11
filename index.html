@@ -7041,7 +7041,7 @@ ext-all-dev.js - human-readable source code of Ext JS that includes console.log(
 </li>
 </ul></div>
 <div class="paragraph"><p>Similarly, there are files that don&#8217;t include <em>all</em> in their names: ext.js, ext-debug.js, and ext-dev.js. These are much smaller files that do not include the entire framework, but rather a minimum set of classes required to start the application. Later on, the additional classes may be lazy-loaded on the as-needed basis.</p></div>
-<div class="paragraph"><p>The <em>docs</em> folder contains well-written documentation - just open the index.html in your browser and start reading and studying.</p></div>
+<div class="paragraph"><p>The <em>docs</em> folder contains extensive documentation - just open the file index.html in your browser and start reading and studying.</p></div>
 <div class="paragraph"><p>The <em>builds</em> folder includes sandboxed versions of Ext JS in case you need to to use say Ext JS 4.2 along with older versions of this framework. Browsing the <em>builds</em> folder reveals that the Ext JS framework consists of three parts:</p></div>
 <div class="ulist"><ul>
 <li>
@@ -7138,7 +7138,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 <div class="title">Figure 60. CMD-generated project</div>
 </div>
-<div class="paragraph"><p>The generated project is created with the assumption that your application will be built using the MVC paradigm discussed in the section Best Practice:MVC. The JavaScript is located in the <em>app</em> folder, which includes the <em>view</em> subfolder with the visual portion of your application, the <em>controller</em> folder with controller classes, and the <em>model</em> is for data. The <em>ext</em> folder contains multiple distributions of the Ext JS framework. The <em>sass</em> folderis a place for your application&#8217;s CSS files (see the sidebar titled SASS and CSS later in this chapter).</p></div>
+<div class="paragraph"><p>The generated project is created with the assumption that your application will be built using the MVC paradigm discussed in the section Best Practice:MVC. The JavaScript is located in the <em>app</em> folder, which includes the <em>view</em> subfolder with the visual portion of your application, the <em>controller</em> folder with controller classes, and the <em>model</em> is for data. The <em>ext</em> folder contains multiple distributions of the Ext JS framework. The <em>sass</em> folder is a place for your application&#8217;s CSS files (see the sidebar titled SASS and CSS later in this chapter).</p></div>
 <div class="paragraph"><p>The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js, which contains the mapping of the long names if the framework and application classes to the shorter names (<em>xtypes</em>).</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
@@ -7309,17 +7309,81 @@ http://www.gnu.org/software/src-highlite -->
 <td class="icon">
 <img src="images/icons/tip.png" alt="Tip">
 </td>
-<td class="content">If the name of the file with Ext JS framework contains <em>-all</em>, this indicates that all framework classes are included.</td>
+<td class="content">If the name of the file with Ext JS framework contains <em>-all</em>, this indicates that all framework classes are included in this file.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_ext_js_classes">Ext JS Classes</h4>
 <div class="paragraph"><p>In Chapter 2 we stated that JavaScript doesn&#8217;t have classes and that constructor functions were the closest to classes language elements. Ext JS extends the JavaScript language and introduces classes and a special way to define and instantiate them with functions <span class="monospaced">Ext.define()</span> and <span class="monospaced">Ext.create()</span>. Ext JS also allows to extend one class from another using the property <span class="monospaced">extend</span> and define class constructors using the property <span class="monospaced">constructor</span>.</p></div>
-<div class="paragraph"><p>It seems that creators of Ext JS tried to model their class system after Java. For example, for each class there is one instance of special class <span class="monospaced">Ext.Class</span>. Ext JS has familiar to Java developers concept of packages and fully qualified class names. On the other hand, Ext JS supports multiple inheritance, which Java doesn&#8217;t. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly.</p></div>
-<div class="paragraph"><p><span class="monospaced">Ext.define()</span> contains a class declaration. In the first argument you specify a fully qualified class name,</p></div>
-<div class="paragraph"><p>Ext.create()</p></div>
-<div class="paragraph"><p>Ext.create() is a preferred way of instantiation as it does more than the new operator. For example, performs lazy loading if need be (if you haven&#8217;t used require).</p></div>
+<div class="paragraph"><p>With <span class="monospaced">Ext.define()</span> contains you declare a class declaration, and <span class="monospaced">Ext.create()</span> instantiate it. Basically, <span class="monospaced">define()</span> serves as a template for creation of one or more instances.</p></div>
+<div class="paragraph"><p>The first argument you specify to <span class="monospaced">define()</span> is a fully qualified class name, the second argument is an object literal that contains the class definition. For example, the next class <span class="monospaced">Header</span> has 200 pixel height, uses the <span class="monospaced">hbox</span> layout, has a custom config property <span class="monospaced">logo</span>, extends <span class="monospaced">Ext.panel.Panel</span>, which has to be rendered to some HTML element with id=content:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">define</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"SSC.view.Header"</span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+  extend<span style="color: #990000">:</span> <span style="color: #FF0000">'Ext.panel.Panel'</span><span style="color: #990000">,</span>
+
+  title<span style="color: #990000">:</span> <span style="color: #FF0000">'Test'</span><span style="color: #990000">,</span>
+  height<span style="color: #990000">:</span> <span style="color: #993399">200</span><span style="color: #990000">,</span>
+  renderTo<span style="color: #990000">:</span> <span style="color: #FF0000">'content'</span><span style="color: #990000">,</span>
+
+  config<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+     logo<span style="color: #990000">:</span> <span style="color: #FF0000">'sony_main.png'</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  layout<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+    type<span style="color: #990000">:</span> <span style="color: #FF0000">'hbox'</span><span style="color: #990000">,</span>
+    align<span style="color: #990000">:</span> <span style="color: #FF0000">'middle'</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>You can optionally include a third argument for <span class="monospaced">define()</span>, which is a function to be called when the class definition is created. Now you can create one or more instances of the class class, for example:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myHeader <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"SSC.view.Header"</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>The values of whatever custom properties you specify in the <span class="monospaced">config{}</span> section  of the class can be reassigned during the class instantiation. For example, the next code snippet will print sony.png for the first instance of the header, and sony_small.png for the second one. Please not that Ext JS automatically generated getters and setters for all config properties, which allowed us to use the method <span class="monospaced">getLogo()</span>.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">onReady</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+   <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myHeader1 <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"SSC.view.Header"</span><span style="color: #990000">);</span>
+   <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myHeader2 <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"SSC.view.Header"</span><span style="color: #990000">,</span>
+                                <span style="color: #FF0000">{</span> logo<span style="color: #990000">:</span> <span style="color: #FF0000">'sony_small.png'</span> <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+    console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span>myHeader1<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getLogo</span></span><span style="color: #990000">());</span>
+    console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span>myHeader2<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getLogo</span></span><span style="color: #990000">());</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/icons/tip.png" alt="Tip">
+</td>
+<td class="content">Don&#8217;t forget about an excellent little tool JSFiddle that allows you to test and share JavaScript code snippets, and JSFiddle knows about Ext JS 4.2 already. For example you can run the code snippet above by following this <a href="http://jsfiddle.net/yfain/yNva6/2/">JSFiddle link</a>. If it doesn&#8217;t render properly, check the url of the ext-all.css in the section External Resources.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>If a class you define dependencies on other classes, which must be  preloaded, use the <span class="monospaced">requires</span> parameter. For example, the next code snippet shows that the class <span class="monospaced">SSC.view.Viewport</span> requires the <span class="monospaced">Panel</span> and the <span class="monospaced">Column</span> classes. So the Ext JS loader will check if <span class="monospaced">Panel</span> and/or <span class="monospaced">Column</span> was not loaded yet, it&#8217;ll load them automatically.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">define</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.view.Viewport'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+    extend<span style="color: #990000">:</span> <span style="color: #FF0000">'Ext.container.Viewport'</span><span style="color: #990000">,</span>
+    requires<span style="color: #990000">:</span> <span style="color: #990000">[</span>
+        <span style="color: #FF0000">'Ext.tab.Panel'</span><span style="color: #990000">,</span>
+        <span style="color: #FF0000">'Ext.layout.container.Column'</span>
+    <span style="color: #990000">]</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// the rest of the class definition is omitted</span></span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p><span class="monospaced">Ext.create()</span> is a preferred way of instantiation as it does more than the <span class="monospaced">new</span> operator that is also allowed in Ext JS. But <span class="monospaced">Ext.create()</span> can perform additional functionality, like lazy loading if need be (if you haven&#8217;t used the option <span class="monospaced">require</span>). But there is even a shorter way of doing <span class="monospaced">define()</span> and <span class="monospaced">create()</span> in one step using <span class="monospaced">xtype</span>.</p></div>
+<div class="paragraph"><p>It seems that creators of Ext JS tried to model their class system after Java. For each class there is one instance of special class <span class="monospaced">Ext.Class</span>. Ext JS has familiar to Java developers concept of packages and fully qualified class names. On the other hand, Ext JS supports multiple inheritance, which Java doesn&#8217;t. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly.</p></div>
 <div class="paragraph"><p>A sample configuration: <span class="monospaced">{renderTo: Ext.getBody()}</span></p></div>
 <div class="paragraph"><p>Ext.require() uses loader</p></div>
 </div>
