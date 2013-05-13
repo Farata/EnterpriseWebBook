@@ -306,7 +306,9 @@ In Chapter 2 we stated that JavaScript doesn't have classes and that constructor
 
 With `Ext.define()` contains you declare a class declaration, and `Ext.create()` instantiate it. Basically, `define()` serves as a template for creation of one or more instances. 
 
-The first argument you specify to `define()` is a fully qualified class name, the second argument is an object literal that contains the class definition. For example, the next class `Header` has 200 pixel height, uses the `hbox` layout, has a custom config property `logo`, extends `Ext.panel.Panel`, which has to be rendered to some HTML element with id=content:
+Usually the first argument you specify to `define()` is a fully qualified class name, the second argument is an object literal that contains the class definition. If you use `null` as the first argument Ext JS creates an anonymous class. 
+
+The next class `Header` has 200 pixel height, uses the `hbox` layout, has a custom config property `logo`, extends `Ext.panel.Panel`, which has to be rendered to some HTML element with `id=content`:
 
 [source, javascript]
 ----
@@ -324,9 +326,16 @@ Ext.define("SSC.view.Header", {
   layout: {
     type: 'hbox',
     align: 'middle'
-  }
+  },
+
+  constructor: function() {
+    this.callParent(arguments);
+ }
 });
 ----
+
+The above code sample also defines a constructor function, which calls the constructor of its superclass (in our case it's `Ext.panel.Panel`). 
+It's a good practice to pass the standard JavaScript array `arguments` in one shot rather than trying to explicitly define each and every parameter.
 
 You can optionally include a third argument for `define()`, which is a function to be called when the class definition is created. Now you can create one or more instances of the class class, for example:
 
