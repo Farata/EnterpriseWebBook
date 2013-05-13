@@ -300,7 +300,7 @@ The file with the minimized production version of Ext JS is called ext-all.js an
 
 TIP: If the name of the file with Ext JS framework contains _-all_, this indicates that all framework classes are included in this file.
 
-==== Ext JS Classes
+==== Declaring, Loading and Instantiating Classes
 
 In Chapter 2 we stated that JavaScript doesn't have classes and that constructor functions were the closest to classes language elements. Ext JS extends the JavaScript language and introduces classes and a special way to define and instantiate them with functions `Ext.define()` and `Ext.create()`. Ext JS also allows to extend one class from another using the property `extend` and define class constructors using the property `constructor`. 
 
@@ -308,7 +308,7 @@ With `Ext.define()` contains you declare a class declaration, and `Ext.create()`
 
 Usually the first argument you specify to `define()` is a fully qualified class name, the second argument is an object literal that contains the class definition. If you use `null` as the first argument Ext JS creates an anonymous class. 
 
-The next class `Header` has 200 pixel height, uses the `hbox` layout, has a custom config property `logo`, extends `Ext.panel.Panel`, which has to be rendered to some HTML element with `id=content`:
+The next class `Header` has 200 pixel height, uses the `hbox` layout, has a custom `config` property `logo`, extends `Ext.panel.Panel`:
 
 [source, javascript]
 ----
@@ -317,10 +317,10 @@ Ext.define("SSC.view.Header", {
 
   title: 'Test',
   height: 200,
-  renderTo: 'content',  
+  renderTo: 'content',        // <1>
 
-  config: {
-     logo: 'sony_main.png'  
+  config: {  
+     logo: 'sony_main.png'    //  <2>  
   },
 
   layout: {
@@ -328,14 +328,17 @@ Ext.define("SSC.view.Header", {
     align: 'middle'
   },
 
-  constructor: function() {
+  constructor: function() {     // <3> 
     this.callParent(arguments);
  }
 });
 ----
 
-The above code sample also defines a constructor function, which calls the constructor of its superclass (in our case it's `Ext.panel.Panel`). 
-It's a good practice to pass the standard JavaScript array `arguments` in one shot rather than trying to explicitly define each and every parameter.
+<1> Render this panel to an HTML element with `id=content`.
+
+<2>  Defining a custom config property `logo`.
+
+<3> This is a constructor function. In this example it calls the constructor of its superclass `Ext.panel.Panel`. In general, it's a good practice to pass the standard JavaScript array `arguments` in one shot rather than trying to explicitly define each and every parameter.
 
 You can optionally include a third argument for `define()`, which is a function to be called when the class definition is created. Now you can create one or more instances of the class class, for example:
 
@@ -344,7 +347,7 @@ You can optionally include a third argument for `define()`, which is a function 
 var myHeader = Ext.create("SSC.view.Header");
 ----
 
-The values of whatever custom properties you specify in the `config{}` section  of the class can be reassigned during the class instantiation. For example, the next code snippet will print sony.png for the first instance of the header, and sony_small.png for the second one. Please not that Ext JS automatically generated getters and setters for all config properties, which allowed us to use the method `getLogo()`.
+The values of custom config properties from the `config{}` section  of the class can be reassigned during the class instantiation. For example, the next code snippet will print sony.png for the first instance of the header, and sony_small.png for the second one. Please not that Ext JS automatically generated getters and setters for all config properties, which allowed us to use the method `getLogo()`.
 
 [source, javascript]
 ----
@@ -358,9 +361,9 @@ Ext.onReady(function () {
 });
 ----
 
-TIP: Don't forget about an excellent little tool JSFiddle that allows you to test and share JavaScript code snippets, and JSFiddle knows about Ext JS 4.2 already. For example you can run the code snippet above by following this http://jsfiddle.net/yfain/yNva6/2/[JSFiddle link]. If it doesn't render properly, check the url of the ext-all.css in the section External Resources.
+TIP: Don't forget about an online tool JSFiddle that allows you to test and share JavaScript code snippets.JSFiddle knows about Ext JS 4.2 already. For example you can run the code snippet above by following this http://jsfiddle.net/yfain/yNva6/2/[JSFiddle link]. If it doesn't render the styles properly, check the URL of the ext-all.css in the section External Resources.
 
-If a class you define dependencies on other classes, which must be  preloaded, use the `requires` parameter. For example, the next code snippet shows that the class `SSC.view.Viewport` requires the `Panel` and the `Column` classes. So the Ext JS loader will check if `Panel` and/or `Column` was not loaded yet, it'll load them automatically.  
+If a class has dependencies on other classes, which must be  preloaded, use the `requires` parameter. For example, the next code snippet shows that the class `SSC.view.Viewport` requires the `Panel` and the `Column` classes. So the Ext JS loader will check if `Panel` and/or `Column` was not loaded yet, it'll dynamically load them first.  
 
 [source, javascript]
 ----
@@ -374,14 +377,89 @@ Ext.define('SSC.view.Viewport', {
 });
 ----
 
-`Ext.create()` is a preferred way of instantiation as it does more than the `new` operator that is also allowed in Ext JS. But `Ext.create()` can perform additional functionality, like lazy loading if need be (if you haven't used the option `require`). But there is even a shorter way of doing `define()` and `create()` in one step using `xtype`.
+`Ext.create()` is a preferred way of instantiation as it does more than the `new` operator that is also allowed in Ext JS. But `Ext.create()` may perform some additional functionality, for example id `Ext.Loader` is enabled, `create()` will attempt to  synchronously load dependencies (if you haven't used the option `require`). But with `requires` your preloads all dependencies asynchronously in parallel and is a preferred way of specifying dependencies. Besides, the async mode allows loading from different domains, while sync loading doesn't.
 
-It seems that creators of Ext JS tried to model their class system after Java. For each class there is one instance of special class `Ext.Class`. Ext JS has familiar to Java developers concept of packages and fully qualified class names. On the other hand, Ext JS supports multiple inheritance, which Java doesn't. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly. 
+.Dynamic Class Loading
+****
+The singleton http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.Loader[Ext.Loader] offers a powerful mechanism of dynamic loading of any classes on demand. You have to explicitly enable the loader first thing after including the Ext JS framework in your HTML file it providing the paths where the loaded should look for files, for example
 
-A sample configuration: `{renderTo: Ext.getBody()}`
+[source, html]
+----
+<script type="text/javascript">
+    Ext.Loader.setConfig({
+      enabled: true,
+      disablrCaching: false,
+      paths: {
+          'SSC': 'my_app_path'
+      }
+    });
+</script>
+----
 
-Ext.require() uses loader
+Then the manual loading of a class can be done using Ext.require('SSC.SomeClass') or Ext.syncRequire('SSC.SomeClass').  
+****  
 
+For each class Ext JS creates one instance of special class `Ext.Class`, which will be shared by all objects instantiated from this class. 
+
+TIP: The instance of any object has access to its class via a special variable http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.Base-property-self[`self`]. 
+
+
+Prior to creating a class, Ext JS will run some pre-processors and some post-processors based on the class definition. For example, the class `'SSC.view.Viewport'` from the code sample above uses `extend: 'Ext.container.Viewport'`, which will engage the _extend_ pre-processor that will do some background work to properly build a subclass of extend: `Viewport`.   
+
+If your class includes the `config` section, the _config_ preprocessor will be engaged. One of the interesting pre-processors is _xtype_, which allows to skip the invocation of the `create()` method for creating the instance of the class. Every Ext JS component has assigned `xtype`. For example, `Ext.panel.Panel` has an `xtype` of `panel`. Online documentation displays the name of the corresponding `xtype` in the header of each component as in <<FIG6-7>>.
+
+[[FIG6-7]]
+.Each component has an xtype 
+image::images/fig_06_07.png[image]
+
+If you are defining a class and include its `xtype`, Ext JS will instantiate if for you without the need to call `create()`. You can find many examples of using the `xtype` property in the section "Developing Save Sick Child with Ext JS" later in this chapter. For example, the following class definition includes many components with the `xtype` property.
+
+[source, javascript]
+----
+Ext.define("SSC.view.LoginBox", {
+    extend: 'Ext.Container',
+    xtype: 'loginbox',   
+
+    layout: 'hbox',
+
+    items: [{
+        xtype: 'container',
+        flex: 1
+    }, {
+        xtype: 'textfield',
+        emptyText: 'username',
+        name: 'username',
+        hidden: true
+    }, {
+        xtype: 'textfield',
+        emptyText: 'password',
+        inputType: 'password',
+        name: 'password',
+        hidden: true
+    }, {
+        xtype: 'button',
+        text: 'Login',
+        action: 'login'
+    }]
+});
+----
+
+Most of the above components use the standard Ext JS `xtype` values, so the fact that you have included them into the class `SSC.view.LoginBox` is a command for Ext JS to instantiate all these buttons and text fields.
+But the class `SSC.view.LoginBox` also includes `xtype: 'loginbox'`  - we decided to assign the value `loginbox` to serve as the `xtype` of our class. Now, you can use the statement `xtype: 'loginbox'` in any other container, it'll know how to instantiate it. For example, later in this chapter you'll see the complete code of the main window `SSC.view.ViewPort`, which includes (and instantiates) our login box as follows:
+
+[source, javascript]
+----
+   items: [{
+       xtype: 'loginbox',
+       margin: '10 0 0 0'
+   },
+   // more items go here
+   ]
+----
+
+Ext JS supports multiple inheritance via mixins, which Java doesn't. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly. 
+
+TBD
 
 ==== DOM Manipulations 
 
@@ -390,13 +468,8 @@ Ext.Element
 Ext.DomQuery, or Ext.select() that uses internally DomQuery 
 
 
-
-TODO: Add a sidebar explaining JavaScript mixins
-
 .JavaScript Mixins
 ***************************
-
-
 
 Object-oriented languages Java and C# can be considered as simpler version of C++. One of the C++ features that didn't make it into Java and C# was support of multiple inheritance: a class can extend only one other class. This was done for a good reason - debugging of the C++ programs that were written with multiple inheritance was difficult. 
 ***************************
@@ -417,7 +490,6 @@ Ext.define("MyApp.classB",{
 
 WARNING: If more than one mixin has a method with the same name, the first method that was applied to the resulting class wins. To avoid collisions Ext JS allows you to provide fully qualified name of the method, for example `this.mixins.classC.conflictingName(); this.mixins.classD.conflictingName();`.
 ---- 
-
 
 ==== Models and Stores
 
