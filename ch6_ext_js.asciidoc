@@ -404,9 +404,11 @@ For each class Ext JS creates one instance of special class `Ext.Class`, which w
 TIP: The instance of any object has access to its class via a special variable http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.Base-property-self[`self`]. 
 
 
-Prior to creating a class, Ext JS will run some pre-processors and some post-processors based on the class definition. For example, the class `'SSC.view.Viewport'` from the code sample above uses `extend: 'Ext.container.Viewport'`, which will engage the _extend_ pre-processor that will do some background work to properly build a subclass of extend: `Viewport`.   
+Prior to creating a class, Ext JS will run some pre-processors and some post-processors based on the class definition. For example, the class `'SSC.view.Viewport'` from the code sample above uses `extend: 'Ext.container.Viewport'`, which will engage the _extend_ pre-processor that will do some background work to properly build a subclass of extend: `Viewport`. If your class includes the `config` section, the _config_ preprocessor will be engaged. 
 
-If your class includes the `config` section, the _config_ preprocessor will be engaged. One of the interesting pre-processors is _xtype_, which allows to skip the invocation of the `create()` method for creating the instance of the class. Every Ext JS component has assigned `xtype`. For example, `Ext.panel.Panel` has an `xtype` of `panel`. Online documentation displays the name of the corresponding `xtype` in the header of each component as in <<FIG6-7>>.
+===== What's xtype
+
+One of the interesting pre-processors is _xtype_, which allows to skip the invocation of the `create()` method for creating the instance of the class. Every Ext JS component has assigned `xtype`. For example, `Ext.panel.Panel` has an `xtype` of `panel`. Online documentation displays the name of the corresponding `xtype` in the header of each component as in <<FIG6-7>>.
 
 [[FIG6-7]]
 .Each component has an xtype 
@@ -491,23 +493,90 @@ Ext.define("MyApp.classB",{
 WARNING: If more than one mixin has a method with the same name, the first method that was applied to the resulting class wins. To avoid collisions Ext JS allows you to provide fully qualified name of the method, for example `this.mixins.classC.conflictingName(); this.mixins.classD.conflictingName();`.
 ---- 
 
-==== Models and Stores
+==== MVC in Ext JS
 
-TBD
+While Ext JS doesn't force you to architect your application based on the MVC paradigm, it's a really good idea to do so. Earlier in the section on Sencha CMD you've seen how this tool generates a project, which separates model, views, controllers and stores into separate directories as in <<FIG6-1>> that depicted the structure of the Hello World project. But later in this chapter we'll build our Save Sick Child application the same way. <<FIG6-8>> presents a diagram illustration how the Ext JS application is linked to the Model-View-Controller tiers.
 
-TIP: To be more productive, always have a mock store with the test data right on your computer. This way you won't depend on the readiness and availability of the server-side data.
+[[FIG6-8]]
+.Model-View-Controller in Ext JS 
+image::images/fig_06_08.png[image]
 
-==== Controllers and Views
+* Controller is an objects that serves as an intermediary between the data and the views. The data has arrived to your application, and controller has to notify the appropriate view. The user changed the data on the view - the controller should pass the changes to the model (or stores in the Ext JS world). Controller is the place to write event listeners reaction to some important events of your application (e.g. a user clicked on the button). In other words, Controller maps the events to actions to be performed on the data or the view.
+
+* View is a certain portion of the UI that the user sees. The view is populated with the data from the model (or stores).
+
+* Model represents some business entity, e.g. Donor, Campaign, Customer, Order e.t.c. In Ext JS models are access via stores. 
+
+* Store contains one or more model instances. Typically, a Model is a separate class that is instantiated by the store object, but in simple cases a store can have the model data embedded in its own class. A store may use more than one model if need be. Both stores and model can communicate with the data feed that in a Web application is usually provided by some server-side data feed.
+
+The application object defines its controllers, views, models, and stores. When the Save Sick Child will be ready, the code of its app.js will look as follows:
+
+[source, javascript]
+----
+Ext.application({
+    name: 'SSC',
+
+    views: [
+        'CampaignsMap',
+        'DonateForm',
+        'DonorsPanel',
+        'Header',
+        'LoginBox',
+        'VideoPanel',
+        'Viewport'
+    ],
+
+    stores: [
+        'Campaigns',
+        'Donors'
+    ],
+
+    controllers: [
+        'Donate'
+    ],
+
+    autoCreateViewport: true
+});
+
+----
+
+It's a clean and simple to read/write code helps Ext JS framework in generating additional code required for wiring views, models, controllers and stores together. For better understanding of the rest of this chapter you should read the http://docs.sencha.com/extjs/4.2.0/#!/guide/application_architecture[MVC Architecture] section from Ext JS documentation. We don't want to repeat the content of Sencha product documentation, but rather will be giving you brief descriptions while doing code review of the Save Sick Child application. 
+
+===== Models and Stores
+
+When you create a class to be served as a model, it must be a subclass of `Ext.data.Model`. A Model has the `fields` property. For example, this is how the you can represent a Donor entity using just two fields: name and location:
+
+[source, javascript]
+----
+Ext.define('HR.model.Donor',{
+    extend: 'Ext.data.Model',
+
+    fields: [
+        { name: 'donors',   type: 'int' },
+        { name: 'location', type: 'string' }
+    ]
+});
+
+----
+
+Ext JS generate getters and setters for the models, so if an instance of the model is represented by a variable `sscDonor`, you can set or get the data as follows:
+
+[source, javascript]
+----
+sscDonor.set('name', 'Farata Systems');
+var donorName= sscDonor.get('name');
+----
+
+
+
+
+TIP: To be more productive, always have a mock store with the test data located right on your computer. This way you won't depend on the readiness and availability of the server-side data.
+
+===== Controllers and Views
 
 TBD
 
 TIP: You can view and test Ext JS components against bundled themes browsing the Theme Viewer at the http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html[Ext JS 4.2 Examples] page.
-
-==== Best Practice: MVC 
-
-Conventions over configuration.
-
-http://docs.sencha.com/ext-js/4-0/#!/guide/application_architecture
 
 
 ==== The Component's Lifecycle
