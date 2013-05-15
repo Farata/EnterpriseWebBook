@@ -458,26 +458,14 @@ But the class `SSC.view.LoginBox` also includes `xtype: 'loginbox'`  - we decide
    // more items go here
    ]
 ----
+ 
+TIP: Ext JS UI components allows you to use `alias`, which have similar to `xtype` use. Each of the aliases have to have a `widget` prefix, e.g. `alias: 'widget.DonatePanel'` in a definition of the component that extends `Ext.panel.Panel`.  
 
-Ext JS supports multiple inheritance via mixins, which Java doesn't. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly. 
-
-TBD
-
-==== DOM Manipulations 
-
-Ext.Element
-
-Ext.DomQuery, or Ext.select() that uses internally DomQuery 
-
-
-.JavaScript Mixins
-***************************
+===== Ext JS Mixins
 
 Object-oriented languages Java and C# can be considered as simpler version of C++. One of the C++ features that didn't make it into Java and C# was support of multiple inheritance: a class can extend only one other class. This was done for a good reason - debugging of the C++ programs that were written with multiple inheritance was difficult. 
-***************************
 
-
-Ext JS supports multiple inheritance by implementing mixins. The following code snippet shows how to define a `classB` that will have features defined in classes `classA`,`classC`, and `classD`.
+Ext JS supports multiple inheritance via JavaScript mixins. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly. The following code snippet shows how to define a `classB` that will have features defined in classes `classA`,`classC`, and `classD`.
 
 [source, javascript]
 ----
@@ -495,13 +483,13 @@ WARNING: If more than one mixin has a method with the same name, the first metho
 
 ==== MVC in Ext JS
 
-While Ext JS doesn't force you to architect your application based on the MVC paradigm, it's a really good idea to do so. Earlier in the section on Sencha CMD you've seen how this tool generates a project, which separates model, views, controllers and stores into separate directories as in <<FIG6-1>> that depicted the structure of the Hello World project. But later in this chapter we'll build our Save Sick Child application the same way. <<FIG6-8>> presents a diagram illustration how the Ext JS application is linked to the Model-View-Controller tiers.
+While Ext JS doesn't force you to architect your application based on the MVC paradigm, it's a really good idea to do so. Earlier in the section on Sencha CMD you've seen how this tool generates a project, which separates model, views, controllers and stores into separate directories as in <<FIG6-1>> that depicted the structure of the Hello World project. But later in this chapter we'll build our Save Sick Child application the same way. <<FIG6-8>> presents a diagram illustration how the Ext JS application that contains all Model-View-Controller tiers.
 
 [[FIG6-8]]
 .Model-View-Controller in Ext JS 
 image::images/fig_06_08.png[image]
 
-* Controller is an objects that serves as an intermediary between the data and the views. The data has arrived to your application, and controller has to notify the appropriate view. The user changed the data on the view - the controller should pass the changes to the model (or stores in the Ext JS world). Controller is the place to write event listeners reaction to some important events of your application (e.g. a user clicked on the button). In other words, Controller maps the events to actions to be performed on the data or the view.
+* Controller is an object that serves as an intermediary between the data and the views. The data has arrived to your application, and controller has to notify the appropriate view. The user changed the data on the view - the controller should pass the changes to the model (or stores in the Ext JS world). Controller is the place to write event listeners reaction to some important events of your application (e.g. a user clicked on the button). In other words, Controller maps the events to actions to be performed on the data or the view.
 
 * View is a certain portion of the UI that the user sees. The view is populated with the data from the model (or stores).
 
@@ -533,14 +521,11 @@ Ext.application({
 
     controllers: [
         'Donate'
-    ],
-
-    autoCreateViewport: true
+    ]
 });
-
 ----
 
-It's a clean and simple to read/write code helps Ext JS framework in generating additional code required for wiring views, models, controllers and stores together. For better understanding of the rest of this chapter you should read the http://docs.sencha.com/extjs/4.2.0/#!/guide/application_architecture[MVC Architecture] section from Ext JS documentation. We don't want to repeat the content of Sencha product documentation, but rather will be giving you brief descriptions while doing code review of the Save Sick Child application. 
+The above code is a clean and simple to read/write code helps Ext JS framework in generating additional code required for wiring views, models, controllers and stores together. For better understanding of the rest of this chapter you should read the http://docs.sencha.com/extjs/4.2.0/#!/guide/application_architecture[MVC Architecture] section from Ext JS documentation. We don't want to repeat the content of Sencha product documentation, but rather will be giving you brief descriptions while doing code review of the Save Sick Child application. 
 
 ===== Models and Stores
 
@@ -550,16 +535,18 @@ When you create a class to be served as a model, it must be a subclass of `Ext.d
 ----
 Ext.define('HR.model.Donor',{
     extend: 'Ext.data.Model',
+    requires: [
+        'Ext.data.Types'
+    ],
 
     fields: [
-        { name: 'donors',   type: 'int' },
-        { name: 'location', type: 'string' }
+        { name: 'donors',   type: Ext.data.Types.INT },
+        { name: 'location', type: Ext.data.Types.STRING}
     ]
 });
-
 ----
 
-Ext JS generate getters and setters for the models, so if an instance of the model is represented by a variable `sscDonor`, you can set or get the data as follows:
+Think of an instance of a model is a of one record representing some business entity, e.g. Donor.  Ext JS generate getters and setters for models, so if an instance of the model is represented by a variable `sscDonor`, you can set or get its value as follows:
 
 [source, javascript]
 ----
@@ -567,28 +554,145 @@ sscDonor.set('name', 'Farata Systems');
 var donorName= sscDonor.get('name');
 ----
 
+A store in Ext JS holds a collection of instances of some model. For example, if you the application has retrieved the information about ten donors, it'll be represented in Ext JS as a collection of yen instances of the class `Donor`. A custom store in your application has to extend from the class `Ext.data.Store`. 
 
+If you need to quickly create a mock store for testing purposes, you can declare a store with inline data that you can specify using the config option `data`. The next code sample shows a declaration of the store for providing the information about the donors as inline data:
 
+[source, javascript]
+----
+Ext.define('SSC.store.Donors', {
+    extend: 'Ext.data.Store',
 
-TIP: To be more productive, always have a mock store with the test data located right on your computer. This way you won't depend on the readiness and availability of the server-side data.
+    fields: [
+        { name: 'donors',   type: 'int' },
+        { name: 'location', type: 'string' }
+    ],
+
+    data: [
+        { donors: 48, location: 'Chicago, IL' },
+        { donors: 60, location: 'New York, NY' },
+        { donors: 90, location: 'Dallas, TX' }
+    ]
+});
+----
+
+It's a good idea to have a mock store with the test data located right on your computer. This way you won't depend on the readiness and availability of the server-side data. But usually, a store makes some AJAX call to a server and retrieves the data via the object `Ext.data.reader.Reader` or one of its descendants, for example: 
+
+[source, javascript]
+----
+Ext.define('SSC.store.Donors', {
+    extend: 'Ext.data.Store',
+    
+    model: 'SSC.model.Donor',           // <1>
+    proxy: {                  // <2>
+        type: 'ajax',
+        url: 'donors.json',   // <3>
+        reader: {             // <4>
+           type: 'json' 
+        }
+    }
+});
+----
+
+<1> The model `SSC.model.Donor` has to be described in your application as a separate class and contain only the fields defined, no data.
+
+<2> Unless you need to load some raw data from a third-party server provider, wrap your reader into a http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.Proxy[Proxy object]. Server proxies are used for implementing CRUD operations and include the corresponding methods - `create()`, `read()`, `update()`, `destroy()`. 
+
+<3> The name of the json-formated data file that contains an array of object literals (each object represents one donor).
+
+<4> The `Reader` object will consume JSON. Read the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.reader.Json[Ext JS documentation] to decide how to properly configure your JSON reader. The reader knows how to convert the data into the model.
+
+Populating of a store with the external data is usually done via a `Proxy` object, and Ext JS offers several server side proxies: `Ajax`, `JsonP`, `Rest`, and `Direct`. To retrieve the data from the server you'd be calling the method `load()` on your `Store` object. To send the data to the server - call the method `sync()`.
+
+The most frequently used proxy is `Ajax`, which uses `XMLHttpRequest` to communicate with the server. The code fragment below shows another way of defining the store `Donors`.  It specifies via the config `api` the server sides URIs responsible for the four CRUD operations. We've ommitted the `reader` section here because the default data type is JSON anyway. 
+
+[source, javascript]
+----
+Ext.define('SSC.store.Donors', {
+    extend: 'Ext.data.Store',
+    
+    model: 'SSC.model.Donor', 
+    proxy: {                  
+        type: 'ajax',
+        url: 'donors.json',   
+        api: {             
+           create: '/create_donors',
+           read: '/read_donors',
+           update: '/update_donors',
+           destroy: '/destroy_donors', 
+        }
+    }
+});
+----
+
+When you create an instance of the data store you can specify the `autoload` parameter. It it's `true`, the store will be populated the store automatically. Otherwise, explicitly call the method `load()` whenever the data retrieval is needed. For example, you can call the method `myStore.load({callback:someCallback})` passing it some callback to be executed.    
 
 ===== Controllers and Views
 
-TBD
+Your application controller is a liaison between the data and the views. This class has to extend `Ext.app.Controller`, and will include references to the views and, possibly stores. Controller will automatically load every class mentioned in its code, create an instance of each store and register each instance with the class [`Ext.StoreManager`].
+
+[source, javascript]
+----
+Ext.define('SSC.controller.Donate', {
+    extend: 'Ext.app.Controller',
+    stores: ['SSC.store.Campaigns', 'SSC.store.Donors']  // <1>
+
+    refs: [{                                      // <2>
+        ref: 'donatePanel',                        
+        selector: '[cls=donate-panel]'
+        // more views go here
+    }],
+
+    init: function () {                            // <3>
+
+        this.control({
+            'button[action=showform]': {
+                click: this.showDonateForm
+            }
+            // more event listeners go here
+        });
+    },
+
+    showDonateForm: function () {                  // <4>
+        this.getDonatePanel().getLayout().setActiveItem(1);
+    }
+});
+----
+
+<1> Listing stores in your controller. Actually, in most cases you'd  list stores is the `Ext.application` singleton as we did earlier. But if you need to, say dynamically create controllers, you don't have a choice but declare stores in such controllers.
+
+<2> Listing one or more views of your application in the `refs` property, which simplifies the search of the component globally or within some container. 
+
+<3> Registering event listeners in the function `init()`
+
+<4> An event handler to process clicks on the button that has an attribute `action=showform`
+
+`Ext.StoreManager` provides a convenience method to look up the store by store ID. If stores were automatically injected into `Ext.StoreManager` by the comntroller, the default store ID is it's short name, e.g. `Donors` for `SSC.store.Donors`:
+
+[source, javascript]
+----
+var donorsStore = Ext.data.StoreManager.lookup('Donors');
+
+// An alternative syntax to use StoreManager lookup 
+var donorsStore = Ext.getStore('Donors'); 
+----
+
+
 
 TIP: You can view and test Ext JS components against bundled themes browsing the Theme Viewer at the http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html[Ext JS 4.2 Examples] page.
 
 
-==== The Component's Lifecycle
+==== Component's Lifecycle
 
 In previous chapters CSS was responsible for all of the layouts of our Save Sick Child application. In Chapter 11 you'll be learning about responsive design techniques and CSS media queries that will allow to create fluid layouts that automatically adjust to the size of the viewport. 
 
-But this section is about Ext JS proprietary way of creating and adding UI components to your Web pages. Before the user will see a component, Ext JS framework will go through the following phases for each component:
+But this section is about Ext JS proprietary way of creating and adding UI components to Web pages. Before the user will see a component, Ext JS framework will go through the following phases for each component:
 
 * Load - load the required (or all) Ext JS classes and their dependencies 
 * Initialize components when the DOM is ready
 * Rendering  - convert components to HTML elements
-* Layout - measuring and assigning sizes 
+* Layout - measuring and assigning sizes
+* Destruction - removing the reference from DOM, removing event listeners and unregistering from the component manager. 
 
 Rendering and layout are the most time consuming phases. The rendering does a lot of preparations to give the browser's rendering engine HTML elements and not Ext JS classes. The layout phase is slow because the calculation of sizes and positions (unless they are in absolute coordinates) and applying of cascading stylesheets takes time. Ext JS 4.1 was redesigned to minimize the number of reflows, which happen when  the code reads-measures-writes to the DOM and makes dynamic style modifications. Now a large portion or recalculations is done in a batch before modifying the DOM.
 
@@ -605,21 +709,12 @@ WARNING: Even though you can manually assign an ID to the component via configur
 
 TIP: At any time your program can get from the `ComponentManager` a reference to a component by ID, for example, `var donationForma = Ext.getCmp();`
 
+==== Events
+
 
 ==== Layouts
 
 Border layout - is typically used for a home page.
-
-TBD
-
-==== Grid
-
-Grid is probably the most used component in enterprise applications. Displaying rows of data is important and the performance of a grid component is crucial for any UI platform. Large grids are infamous for poor scrolling performance, which is defined by how the grid data is being rendered. Grid-centric Web application should be using Ext JS 4.2 and you'll see a sample grid application in this section.  
-
-TBD
-
-
-==== Overrides
 
 TBD
 
