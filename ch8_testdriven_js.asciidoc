@@ -14,7 +14,7 @@ Introduction of test-driven development may substantially improve you code quali
 
 There are many testing frameworks in JavaScript world, and in this chapter we'll give you a brief overview of two of them: http://qunitjs.com/[Qunit] and http://pivotal.github.com/jasmine/[Jasmine]. The main goal of each framework to is to test small pieces of code a.k.a. _units_.  We will also show how to abstract your JavaScript project lifecycle from any specific frameworks or libraries using Grunt tool.
 
-We will go through the basic testing techniques such as "Test-driver development" and "Test First". You'll learn how to automate the testing process in multiple browsers with https://github.com/airportyh/testem[Testem Runner] or by running tests in so called _headless_ mode with http://phantomjs.org/[PhantomJS]. You'll learn how to mock and stub selected artifacts of the environment (such as `XMLHTTPRequiest` object or timer) with http://sinonjs.org/[Sinon.js] and how to unit test the DOM manipulation code.
+We will go through the basic testing techniques such as "Test-driven development" and "Test First". You'll learn how to automate the testing process in multiple browsers with https://github.com/airportyh/testem[Testem Runner] or by running tests in so called _headless_ mode with http://phantomjs.org/[PhantomJS]. You'll learn how to mock and stub selected artifacts of the environment (such as `XMLHTTPRequiest` object or timer) with http://sinonjs.org/[Sinon.js] and how to unit test the DOM manipulation code.
 
 The second part of this chapter is dedicated to setting up a new Save Sick Child project in the IDE with selected test frameworks.
 
@@ -46,9 +46,26 @@ Integration testing is a phase when already tested units are combined into a mod
 
 Functional testing (or acceptance testing) is aimed at finding out whether the application properly implements business logic. For example, if the user clicks on a row in the customer data grid, the program should display a form view with specific details about the selected customer. In functional testing business users should define what has to be tested, unlike unit or integration testing where tests are created by software developers. Functional tests can be performed manually, in which a real person clicks through each and every view of the web application, confirming that it operates properly or reporting discrepancies with the functional specifications.
 
-// Will use Casper.js as an example to demonstrate functional testing of web apps
-// http://casperjs.org/quickstart.html
+// <vik>
+Here is couple tools that you want look to perform functional testing of your web application.
 
+* http://docs.seleniumhq.org/[Selenium ]
++
+
+Selenium is advanced browser automation tool. Selenium tool suite has capabilities to run and record user scenarios without learning any scripting languages. Also Selenium has integration with many programming languages like Java, C# and etc. Selenium uses technology called WebDriver to talk to the browsers and receive running context information. WebDriver is becoming https://dvcs.w3.org/hg/webdriver/raw-file/default/webdriver-spec.html[the standard API for browser automation]. Selenium has wide range of http://docs.seleniumhq.org/about/platforms.jsp[supported browsers and platforms].
+
+* http://casperjs.org/quickstart.html[Casper.js]
++
+
+CasperJS is a scripting framework written on JavaScript. CasperJS allows to create the interaction scenarios like defining and ordering the navigation steps, filling and submitting the forms or even scrapping web content and making the page screenshots. CasperJS works on the top of PhantomJS. That is why CasperJS is limited use WebKit only as runtime environment. But it's very useful then you want to run the tests on Continuous Integration environment. You can read more about <<WHAT_IS_PHANTOMJS,PhantomJS>> and <<WHAT_IS_CI,CI>> later in corresponding sidebars later in this chapter.
+
+[[WHAT_IS_PHANTOMJS]]
+.What is PhantomJS?
+****
+PhantomJS is a headless WebKit-based rendering engine with JavaScript API.  Think of PhantomJS as a browser that doesn't have any graphical user interface. PhantomJS can execute HTML, CSS, JavaScript code. Because PhantomJS is not required to render GUI, it can be used in display-less environments (e.g.  Continuous Integration server) to run tests. In our case, Grunt automatically spawns PhantomJS instance, executes the code of our tests, reads the execution results using PhantomJS API, and prints them out in the console.
+****
+
+//</vik>
 ==== Load Testing
 
 Load testing is a process that can help in answering the following questions:
@@ -66,12 +83,55 @@ Stress testing software also allows you to prerecord the action of the business 
 
 Professional stress-testing software allows simulating the load close to the real-world usage patterns. You should be able to create and run mixed scripts simulating a situation in which some users are logging on to your application while others are retrieving the data and performing data modifications. 
 
+// <vik>
+Here is bunch of tools that you would like to check for the purpose of load testing.
+
 * http://httpd.apache.org/docs/2.2/programs/ab.html[Apache Benchmark]
++
+
+Apache Benchmark is command line tool and it's fairy simple to use. For example, with a command `ab -n 10 -c 10 -t 60 http://savesickchild.org:8080/ssc_extjs/` Apache Benchmark will open 10 concurrent connection and in each connection will send 10 requests (this simulates the number of visitors to your webapp) for 60 sec. Number of concurrent connections are the actual number of users that are using the application at exactly the same time. You can find a sample report in <<AB_REPORT,following snippet>>.
+
+[[AB_REPORT]]
+.A sample Apache Benchmark report
+[source,bash]
+----
+This is ApacheBench, Version 2.3 <$Revision: 655654 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+Server Software:    GlassFish
+Server Hostname:    savesickchild.org
+Server Port:    8080
+Document Path:  /ssc_extjs/
+Document Length:    306 bytes
+Concurrency Level:  10
+Time taken for tests:   60.003 seconds
+Complete requests:  17526
+Failed requests:    0
+Total transferred:  11988468 bytes
+HTML transferred:   5363262 bytes
+Requests per second:    292086.73
+Transfer rate:  199798.72 kb/s received
+Connnection Times (ms)
+             min avg max
+Connect:     10  13  1305
+Processing:  11  14  12
+Total:       21  27  1317
+----
+
 * http://jmeter.apache.org/[jMeter]
-* http://wesleyhales.com/slides/html5devconf2013/[Browser Performance metering with PhantomJS]
++
 
-// TBD
+Apache JMeter is graphic user interface tool. It can be used to simulate a heavy load on a server, network or object to test its strength or to analyze overall performance under different load types. You can find more about testing web applications using JMeter in http://jmeter.apache.org/usermanual/build-web-test-plan.html[official documentation].
 
+.JMeter test results output example
+image::fig_08_17.png[]
+
+* http://phantomjs.org/[PhantomJS]
++
+
+PhantomJS is headless WebKit-based browser. Please, refer the sidebar called <<WHAT_IS_PHANTOMJS,What is PhantomJS>> to make yourself familiar with this tool. You can read more how you can use PhantomJS for performance testing our your application in presentation called http://wesleyhales.com/slides/html5devconf2013/["Browser Performance metering with PhantomJS"].
+
+// </vik>
 [[TDD]]
 === Test Driven Development
 
@@ -500,13 +560,9 @@ Testing jasmine specs via phantom
 Done, without errors.
 ----
 
-In this example, Grunt successfully executed the tests with PhantomJS of all five specifications defined in +PlayerSpec.js+. 
+In this example, Grunt successfully executed the tests with <<WHAT_IS_PHANTOMJS,PhantomJS>> of all five specifications defined in +PlayerSpec.js+. 
 
-.What is PhantomJS?
-****
-PhantomJS is a headless WebKit-based rendering engine with JavaScript API.  Think of PhantomJS as a browser that doesn't have any graphical user interface. PhantomJS can execute HTML, CSS, JavaScript code. Because PhantomJS is not required to render GUI, it can be used in display-less environments (e.g.  Continuous Integration server) to run tests. In our case, Grunt automatically spawns PhantomJS instance, executes the code of our tests, reads the execution results using PhantomJS API, and prints them out in the console.
-****
-
+[[WHAT_IS_CI]]
 .What is Continuous Integration?
 ****
 Continuous Integration (CI) is a software development practice where members of a team integrate their work frequently, which results in multiple integrations per day.
