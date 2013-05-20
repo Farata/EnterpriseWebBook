@@ -158,8 +158,6 @@ A failed unit test indicates that your code change introduced regression, which 
 
 TDD allows to receive feedback from your code almost immediately. It's better to find that something is broken during development rather than in the application deployed in production.
 
-// TODO - develop the idea of receiving feedback from code. http://vimeo.com/36579366
-
 [NOTE]
 ===============================
 And learn by heart The Golden Rule Of TDD:
@@ -167,10 +165,6 @@ ____
 Never write new functionality without a failing test
 ____
 ===============================
-
-Say, you want to test validation logic in Donation entry form.
-
-//TODO - here should be code example with
 
 In addition to business logic, web applications should be tested for proper rendering of UI components, changing view states, dispatching, and handling events.
 
@@ -456,24 +450,51 @@ module.exports = function (grunt) {
 };
 ----
 
-TODO:
+// <vik>
+Let's briefly review QUnit API components. 
+You can find a typical QUnit in <<QUNIT_TEST,following listing>>.
 
-Test methods:
-         module(name, {[setup][ ,teardown]})
-         test(name, callback)
-         expect(numberOfAssertions)
-         stop(increment)
-         start(decrement)
-Test assertions:
-         ok(value, [message])
-         equal(actual, expected, [message])
-         notEqual(actual, expected, [message])
-         deepEqual(actual, expected, [message])
-         notDeepEqual(actual, expected, [message])
-         strictEqual(actual, expected, [message])
-         notStrictEqual(actual, expected, [message])
-         throws(block, [expected], [message])
+[[QUNIT_TEST]]
+.A sample QUnint test
+[source,javascript]
+----
+(function($) {  
+    module('SaveSickChild: login component test', { // <1>
+        setup: function() { // <2>
+            // test setup code goes here
+        },
+        teardown: function() {  // <3>
+            // test cleanup code goes here
+        }
+    });
+    test('jquery is here', function() {     // <4>
+        ok($, "yes, it's here");
+    });
+    test("2 add 2 equals 4", function() {
+        ok(2 + 2 === 4, "Passed!");     // <5>
+    });
+    test('2 add 2 not equals 5', function() {
+        notEqual(2 + 2, 5, "failed");       // <6>
+    });
+}(jQuery));     // <6>
+----
+<1> A `module` function allows to combine related tests as group.
 
+<2> Here we can run _Arrange_ phase. A `setup` function will be called before each test.
+
+<3> A `teardown` function will be call after each test respectively. This is our _Reset_ phase.
+
+<4> You need to place code of your test in corresponding `test` function.
+
+<5> Typically, you need to use assertions to check to make sure code under the test gives expected result. Function http://api.qunitjs.com/ok/[`ok`] will examine first argument to by `true`. 
+
+<6> A pair of functions `equal` and `notEqual` will check equivalence of the first and second arguments. Arguments could be an expressions as well.
+
+<7> A code of the test is wrapped in immediate-invoked function expression (IIFE) and passes `jQuery` object as `$` variable.
+
+More details about QUnit API you can find in http://api.qunitjs.com/[official documentation] and http://qunitjs.com/cookbook/[QUnit Cookbook].         
+
+// </vik>
 
 ==== Behavior-Driven Development With Jasmine
 
@@ -580,7 +601,6 @@ We use it to ensure continuous builds of the internal and open source projects.
 .Jenkins CI server running at savesichild.org website and used to build the sample applications for this book.
 image::fig_08_07.png[Jenkins]
 ****
-
 
 In the next section you will learn how write your own specifications.
 
@@ -738,8 +758,6 @@ Test fixture refers to the fixed state used as a baseline for running tests. The
 
 Jasmine framework is easily extendable, and it allows you to define your own matchers if for some reasons you're unable to find the appropriate matchers in the Jasmine distribution. In such cases you'd need to write a custom matcher. Let's write a matcher that check if a string contains name of the "secret agent" from the defined list of agents. 
 
-// TBD
-
 .Custom `toBeSecretAgent` matcher
 [source,javascript]
 ----
@@ -809,20 +827,52 @@ Aborted due to warnings.
 
 ===== Spies
 
-Test spies are objects and functions that record information about their usage through the systems under test. They are useful when determining a function's success is not easily accomplished by inspecting its return value or changes to the state of objects with witch it interacts.
+Test spies are objects and functions that record information about their usage through the systems under test. They are useful when determining a function's success is not easily accomplished by inspecting its return value or changes to the state of objects with witch it interacts. 
 
-// Specifications Anatomy TODO
-// Write Jasmine specs in test-first manner (write test -> test fail -> write implementation -> test pass -> refactor )
+//<vik>
+Consider the following example of login functionality. A `showAuthorizedSection` function will be invoked within `login` function after user entered correct username and password. We need to test that it's true.
 
-===== BDD Best Practices
+[[LOGIN_SNIP]]
+.Production code of `login` function.
+[source,javascript]
+----
+var ssc = {};
+(function() {
+    'use strict';
+    ssc.showAuthorizedSection = function() {
+        console.log("showAuthorizedSection");
+    };
+    ssc.login = function(usernameInput, passwordInput) {
+        // username and password check logic is omitted
+        this.showAuthorizedSection();
+    };
+})();
+----
 
+And here is how we can test it using Jasmine's spies.
+
+[source,javascript]
+----
+describe("login module", function() {
+    it("showAuthorizedSection has been called", function() {
+        spyOn(ssc, "showAuthorizedSection"); // <1>
+        ssc.login("admin", "1234"); // <2>
+        expect(ssc.showAuthorizedSection).toHaveBeenCalled(); // <3>
+    });
+});
+----
+<1> A `spyOn` function will replace `showAuthorizedSection` function with corresponded spy.
+<2> `showAuthorizedSection` function will be invoked within `login` function in case of successful login.
+<3> Assertion `toHaveBeenCalled()` would be not possible without spy.
+
+// </vik>
+
+// ===== BDD Best Practices
 // TBD
 // Organize Tests As If Reading a Story
 // Test method names should be sentences
 // Developers discovered it could do at least some of their documentation for them, so they started to write test methods that were real sentences. What's more, they found that when they wrote the method name in the language of the business domain, the generated documents made sense to business users, analysts, and testers.
-
 // A simple sentence template keeps test methods focused 
-
 // An expressive test name is helpful when a test fails 
 
 ==== Multi-Browser Testing
@@ -862,7 +912,6 @@ You can configure Testem to specify which files should be included in testing. T
 <2>  The list of test and production code source files. 
 
 ===== Running Tests 
-
 
 Testem supports two running modes: test-driven-development mode (_tdd-mode_)  and continuous integration (_ci-mode_). In tdd-mode, testem starta the  development server.
 
@@ -952,7 +1001,6 @@ ok 8 - Opera Basic Assumptions:  something truthy.
 
 Testem uses http://en.wikipedia.org/wiki/Test_Anything_Protocol[TAP] format to report test results. 
 
-
 ==== Testing DOM
 
 Document Object Model is a standard browser API that allows a developer to access and manipulate page elements. As you have seen in previous chapters, pretty often your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing the DOM is the crucial part of testing your client side JavaScript. 
@@ -1018,9 +1066,7 @@ As you can see, testing of the DOM manipulation code is much like any other type
 
 === Save Sick Child With TDD
 
-
 ==== Test-drive ExtJS version of _SaveSickChild.org_
-
 
 WARNING: This section is under active development
 
@@ -1136,8 +1182,46 @@ Ext.define('Test.spec.BasicAssumptions', {}, function() {   // <1>
 
 <2> The rest of the code is very similar to the Jasmine code sample shown earlier in this chapter.
 
-// TBD
+//<vik>
 
+After setup the testing harness for SaveSickChild application we will explain the testing strategy for ExtJS application. We will start with testing the models and controllers, after that we will test our views. And 
+
+===== Testing The Models
+
+_SaveSichChild.org_ home page displays information about the fundraising campaigns using a chart and a table views backed by collection of `Campaign` models. 
+A `Campaign` model should have three properties: `title`, `description`, `location`. The `title` property of the model should have a default value - `Default Campaign Title`. The `location` property of the model is required field.
+In a spirit of TDD, let's write the <<CAMPMOD_SPEC,specification>> what will meet described above requirements.
+
+[[CAMPMOD_SPEC]]
+.CampaignModelAssumptions specification
+[source,javascript]
+----
+include::include/CampaignModelAssumptions.js[]
+----
+<1> By default, `Ext.data.Model` caches every model created by the application in a global in-memory array. We need to clean up ExtJS model cache after each test run.
+
+<2> Let's instantiate `Campaign` model class to check that model class exists.
+
+<3> Next we need to check if model has all required properties. 
+
+<4> Property `title` has default value.
+
+<5> Validation will fail on empty `location` property
+
+[source,javascript]
+----
+include::include/Campaign.js[]
+----
+
+
+
+* Test model / controller first.
+
+
+* Test views
+* Test whole application
+
+//</vik>
 
 ==== Setting up the IDE for TDD
 
