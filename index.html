@@ -7972,7 +7972,7 @@ Finding the children of the container can be done using the method <span class="
 <td class="icon">
 <img src="images/icons/tip.png" alt="Tip">
 </td>
-<td class="content">Since MVC paradigm splits the code into separate layers, you can unit test them separately, e.g. test your controllers separately from the Views. Chapter 8 is dedicated to JavaSctipr testing.</td>
+<td class="content">Since MVC paradigm splits the code into separate layers, you can unit test them separately, e.g. test your controllers separately from the Views. Chapter 8 is dedicated to JavaSctipr testing, and it contains a section that illustrates how to arrange for testing of the model in the Ext JS version of the Save Sick Child application.</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>The top level window is a <span class="monospaced">SSC.view.Viewport</span>, which will contain the <span class="monospaced">Header</span> and the <span class="monospaced">Donate</span> form views.</p></div>
@@ -10766,7 +10766,7 @@ Now when all requirements for our production code (<span class="monospaced">logi
 <div class="sect2">
 <h3 id="_save_sick_child_with_tdd">Save Sick Child With TDD</h3>
 <div class="sect3">
-<h4 id="_test_drive_extjs_version_of_em_savesickchild_org_em">Test-drive ExtJS version of <em>SaveSickChild.org</em></h4>
+<h4 id="_the_test_driven_extjs_version_of_em_savesickchild_org_em">The Test-Driven ExtJS version of <em>SaveSickChild.org</em></h4>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -10905,7 +10905,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="colist arabic"><table>
 <tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
-Wrap the Jasmine suite into the Ext JS class
+Wrap the Jasmine suite into an Ext JS class
 </td></tr>
 <tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
 The rest of the code is very similar to the Jasmine code sample shown earlier in this chapter.
@@ -11166,7 +11166,7 @@ You can configure how to access the external tool launcher.
 </div>
 <div class="sect2">
 <h3 id="_server_sent_events">Server-Sent Events</h3>
-<div class="paragraph"><p>Before diving into the WebSocket protocol lets get familiar with the standardized way of implementing  <a href="http://dev.w3.org/html5/eventsource/">Server-Sent Events</a>. W3C introduces API for Web browsers and the <span class="monospaced">EventSource</span> object. SSE allows browsers to subscribe to the server events arriving in the form of DOM events. The following code snippet shows the JavaScript code that can be used in a Web browser.</p></div>
+<div class="paragraph"><p>Before diving into the WebSocket protocol lets get familiar with the standardized way of implementing  <a href="http://dev.w3.org/html5/eventsource/">Server-Sent Events</a>. W3C has published an API for Web browsers to allow them to subscribe to the events sent by the server. All modern browsers support the <span class="monospaced">EventSource</span> object, which can handle events arriving in the form of DOM events. This is not a reqiest-response paradigm, but rather a unidirectional data push - from server to browser. The following code snippet shows how a Web browser can subscribe and listen to server-sent events.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
@@ -11204,13 +11204,29 @@ Create a new <span class="monospaced">EventSource</span> object. At this point t
 Add handlers for the <span class="monospaced">open</span> and <span class="monospaced">error</span> events.
 </td></tr>
 <tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
-Handle messages in <span class="monospaced">create</span> events.
+Handle messages in <span class="monospaced">create</span> events by processing of the <span class="monospaced">e.data</span> content.
 </td></tr>
 <tr><td><img src="images/icons/callouts/4.png" alt="4"></td><td>
-Handle messages in <span class="monospaced">update</span> events.
+Handle messages in <span class="monospaced">update</span> events by processing of the <span class="monospaced">e.data</span> content.
 </td></tr>
 </table></div>
-<div class="paragraph"><p>Using SSE is a good technique for the use cases when the client doesn&#8217;t need to send the data to the server. In the above example the server sends two types of custom events <span class="monospaced">create</span> and <span class="monospaced">update</span> to notify subscribed clients about updated donation data so the active clients can monitor the fund-raising process. We can create as many custom events as needed by the application.</p></div>
+<div class="paragraph"><p>The above samples create listeners to subscribe specifically <span class="monospaced">create</span> and <span class="monospaced">update</span> events, but if you&#8217;d like to subscribe to any events, you could have used the following syntax:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>source<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">onmessage</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span><span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// process the content of e.data here</span></span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>SSE is a good technique for the use cases when the client doesn&#8217;t need to send the data to the server. In the above example the server sends two types of custom events <span class="monospaced">create</span> and <span class="monospaced">update</span> to notify subscribed clients about updated donation data so the active clients can monitor the fund-raising process. You can create as many custom events as needed by the application.</p></div>
+<div class="paragraph"><p>The server sends events as text messages that start with <span class="monospaced">data:</span> and end with a pair of new line characters, for example:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #FF0000">'data: {"price": "123.45"}/n/n`</span></tt></pre></div></div>
 <div class="paragraph"><p>SSE is still HTTP-based, and it requires server&#8217;s support of the combination of HTTP 1.1 keep-alive connections and the <span class="monospaced">text/event-stream</span> content type in HTTP response. The overhead is minimal - instead of hundreds of bytes in request and response headers, the server sends only the responses when the data has changed.</p></div>
 </div>
 <div class="sect2">
@@ -11364,7 +11380,7 @@ Handle errors.
     Connection: Upgrade
     Host: echo.websocket.org
     Origin: http://www.websocket.org
-    Sec-WebSocket-Key: i9ri+AfOgSsKwUlmLjIkGA==
+    Sec-WebSocket-Key: i9ri`AfOgSsKwUlmLjIkGA==
     Sec-WebSocket-Version: 13
     Sec-WebSocket-Protocol: chat</pre>
 </div></div>
@@ -11542,7 +11558,7 @@ The WebSocket specification makes it easier because it puts a frame around every
 <div class="sect4">
 <h5 id="_the_heartbeats">The Heartbeats</h5>
 <div class="paragraph"><p>Properly design distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so called <em>heartbeats</em> - a small messages that simply ask the other party, "Are you there?". For example, proxy servers and content-filtering hardware can terminate idle connections or the server could simply go down. If a client doesn&#8217;t send any requests, say for 20 seconds, but the server went down, the client will know about it only when it does the next <span class="monospaced">send()</span>. Heartbeats will keep the connection alive to ensure that it won&#8217;t look idling. In the WebSocket jargon heartbeats are implemented with <em>ping and pong</em> . The browser sends the <em>ping</em> opcode <span class="monospaced">0x9</span> at any time to ask the other side to <em>pong</em> back (the opcode <span class="monospaced">0xA</span>).</p></div>
-<div class="paragraph"><p>The Web browser can ping the server when required, but a pong may sent at server&#8217;s discretion. If the  endpoint receives a ping frame before responding the the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (can be up to 125 bytes) and pong must have identical data in its message body.</p></div>
+<div class="paragraph"><p>The Web browser can ping the server when required, but a pong may be sent at server&#8217;s discretion. If the  endpoint receives a ping frame before responding the the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (can be up to 125 bytes) and pong must have identical data in its message body.</p></div>
 <div class="paragraph"><p>There is no JavaScript API to send pings or receive pong <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames">frames</a>. Pings and pongs may or may not be supported by the user&#8217;s browser. <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104">There is also no API</a> to enable, configure or detect whether the browser supports pings and pongs.</p></div>
 </div>
 <div class="sect4">
@@ -11688,7 +11704,7 @@ may need to support different WebSocket APIs. At the time of this writing, there
 </div>
 </div>
 <div class="sect2">
-<h3 id="_when_using_websocket">When Using WebSocket</h3>
+<h3 id="_when_use_websocket">When Use WebSocket</h3>
 <div class="paragraph"><p>Since WebSocket protocol has literally no overhead it should be considered for the following types of applications:</p></div>
 <div class="ulist"><ul>
 <li>
