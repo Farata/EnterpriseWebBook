@@ -4,23 +4,23 @@
 
 == Test-Driven Development with JavaScript
 
-To shorten the development cycle of your Web application you need to start testing it on the early stages of the project. It seems obvious, but many enterprise IT organizations haven't adopted the agile testing methodologies, which costs them dearly. JavaScript is dynamically typed interpreted language, which means that there is no compiler to help to identifying errors as it's done in compiled languages like Java. This means that a lot more time should be allocated for testing for JavaScript Web applications. Moreover, a programmer who didn't introduce unit testing techniques into his daily routine can't be 100% sure that his code is working properly.
+To shorten the development cycle of your Web application you need to start testing it on the early stages of the project. It seems obvious, but many enterprise IT organizations haven't adopted agile testing methodologies, which costs them dearly. JavaScript is dynamically typed interpreted language, which means that there is no compiler to help in  identifying errors as it's done in compiled languages like Java. This means that a lot more time should be allocated for testing for JavaScript Web applications. Moreover, a programmer who didn't introduce testing techniques into his daily routine can't be 100% sure that his code works properly.
 
-The static code analysis and code quality tools such as http://esprima.org/[Esprima] and http://www.jshint.com/[JSHint] will help in reducing the number of syntax errors and improve the quality of your code. Later in this chapter we will demonstrate how to setup +JSHint+ for your JavaScript project and check your code for the syntax errors automatically. 
+The static code analysis and code quality tools such as http://esprima.org/[Esprima] and http://www.jshint.com/[JSHint] will help in reducing the number of syntax errors and improve quality of your code. Later in this chapter we will demonstrate how to setup +JSHint+ for your JavaScript project and automate the process of checking your code for the syntax errors. 
 
 To switch to a test-driven development mode, make testing a part of your development process in its early stages rather than scheduling testing after the development cycle is complete.
 
-Introduction of test-driven development may substantially improve you code quality. It is very important to receive the feedback about your code on a regular basis. That's why unit tests must be automated. Ideally, the tests should run as soon as you've changed the code. In this chapter we are going to introduce Grunt - the task runner tool - that can help you with automation of repetitive operations like running unit tests when the code changes. 
+Introduction of test-driven development may substantially improve your code quality. It is very important to receive the feedback about your code on a regular basis. That's why tests must be automated and should run as soon as you've changed the code. In this chapter we are going to introduce Grunt - the task runner tool - that can help you with automation of repetitive operations like running tests when the code changes. 
 
-There are many testing frameworks in JavaScript world, and in this chapter we'll give you a brief overview of two of them: http://qunitjs.com/[Qunit] and http://pivotal.github.com/jasmine/[Jasmine]. The main goal of each framework to is to test small pieces of code a.k.a. _units_.  We will also show how to abstract your JavaScript project lifecycle from any specific frameworks or libraries using Grunt tool.
+There are many testing frameworks in JavaScript world, but we'll give you a brief overview of two of them: http://qunitjs.com/[QUnit] and http://pivotal.github.com/jasmine/[Jasmine]. The main goal of each framework is to test small pieces of code a.k.a. _units_.  You'll learn how to make your JavaScript project lifecycle independent from any specific frameworks or libraries using Grunt tool.
 
-We will go through the basic testing techniques such as "Test-driven development" and "Test First". You'll learn how to automate the testing process in multiple browsers with https://github.com/airportyh/testem[Testem Runner] or by running tests in so called _headless_ mode with http://phantomjs.org/[PhantomJS]. You'll learn how to mock and stub selected artifacts of the environment (such as `XMLHTTPRequiest` object or timer) with http://sinonjs.org/[Sinon.js] and how to unit test the DOM manipulation code.
+We will go through basic testing techniques known as "Test-Driven Development" and "Test First". You'll learn how to automate the testing process in multiple browsers with https://github.com/airportyh/testem[Testem Runner] or by running tests in so called _headless_ mode with http://phantomjs.org/[PhantomJS]. You'll learn how to mock and stub selected artifacts of the environment (such as `XMLHTTPRequiest` object or a timer) with http://sinonjs.org/[Sinon.js] and how to unit test the DOM manipulation code.
 
 The second part of this chapter is dedicated to setting up a new Save Sick Child project in the IDE with selected test frameworks.
 
 === Why Testing
 
-Any software has bugs. But in interpreted languages like JavaScript you don't have help of compilers that could have pointed you at the potential issues on early stages of development. You need to continue testing the code over and over again to catch regression errors, to be able to add new features without breaking the existing ones. The code covered with tests is easy to refactor. Tests help to prove correctness of your code. A well tested code leads to the better overall design of your programs.
+Any software has bugs. But in interpreted languages like JavaScript you don't have help of compilers that could have pointed you at the potential issues on early stages of development. You need to continue testing code over and over again to catch regression errors, to be able to add new features without breaking the existing ones. The code covered with tests is easy to refactor. Tests help to prove correctness of your code. A well tested code leads to better overall design of your programs.
 
 === Testing Basics
 
@@ -35,28 +35,30 @@ Let's go over the strategies, approaches, and tools that will help you in automa
 
 ==== Unit Testing
 
-The _unit test_ is a piece of code that invokes the method or class being tested. It _asserts_ some assumptions about the application logic and behavior of the  method or class. You'll be writing unit tests using a unit-testing framework. The test should run fast, be automated and readable. For example you can test that if a function is called with a particular arguments, it should return an expected result.
+The _unit test_ is a piece of code that invokes a method being tested. It _asserts_ some assumptions about the application logic and behavior of the  method. Typically you'll be writing such tests using unit-testing framework of your choice. Tests should run fast, be automated with clear output. For example you can test if a function is called with particular arguments, it should return expected result.
 We will take a closer look on unit testing terminology and vocabulary in a <<TDD>> section.
 
 ==== Integration Testing
 
-Integration testing is a phase when already tested units are combined into a module to test the interfaces between them. You may want to test the integration of your code with the code written by other developers, e.g. some framework. Integration tests ensures that any abstractions we build over the third-party code work as expected. Both unit and integration tests are written by application developers. 
+Integration testing is a phase when already tested units are combined into a module to test the interfaces between them. You may want to test the integration of your code with the code written by other developers, e.g. some third-party framework. Integration tests ensure that any abstraction layers we build over the third-party code work as expected. Both unit and integration tests are written by application developers. 
 
 ==== Functional Testing
 
-Functional testing (or acceptance testing) is aimed at finding out whether the application properly implements business logic. For example, if the user clicks on a row in the customer data grid, the program should display a form view with specific details about the selected customer. In functional testing business users should define what has to be tested, unlike unit or integration testing where tests are created by software developers. Functional tests can be performed manually by a real person clicking through each and every view of the web application, confirming that it operates properly or reporting discrepancies with the functional specifications.
+Functional testing (or user acceptance testing) is aimed at finding out whether the application properly implements business logic. For example, if the user clicks on a row in the grid with customers, the program should display a form view with specific details about the selected customer. In functional testing business users should define what has to be tested, unlike unit or integration testing where tests are created by software developers. 
 
-But there are tools to automate the process of functional testing of Web applications. Below are brief descriptions of two of such tools - Selenium and CasperJS. 
+Functional tests can be performed manually by a real person clicking through each and every view of the web application confirming that it operates properly or reporting discrepancies with the functional specifications.
+
+But there are tools to automate the process of functional testing of Web applications. Such tools allow to record the users' actions and replay them in the automatic mode. Below are brief descriptions of two of such tools - Selenium and CasperJS. 
 
 * http://docs.seleniumhq.org/[Selenium ]
 +
 
-Selenium is an advanced browser test automation tool. Selenium tool suite has capabilities to run and record user scenarios without learning any scripting languages. Also Selenium has and API for integration with many programming languages like Java, C# and etc. Selenium uses the WebDriver API to talk to the browsers and receive running context information. WebDriver is becoming https://dvcs.w3.org/hg/webdriver/raw-file/default/webdriver-spec.html[the standard API for browser automation]. Selenium supports a wide range of http://docs.seleniumhq.org/about/platforms.jsp[browsers and platforms].
+Selenium is an advanced browser automation tool suite that has capabilities to run and record user scenarios without requiring developers to learn any scripting languages. Also Selenium has an API for integration with many programming languages like Java, C# and etc. Selenium uses the WebDriver API to talk to the browsers and receive running context information. WebDriver is becoming https://dvcs.w3.org/hg/webdriver/raw-file/default/webdriver-spec.html[the standard API for browser automation]. Selenium supports a wide range of http://docs.seleniumhq.org/about/platforms.jsp[browsers and platforms].
 
 * http://casperjs.org/quickstart.html[Casper.js]
 +
 
-CasperJS is a scripting framework written in JavaScript. CasperJS allows to create the interaction scenarios like defining and ordering the navigation steps, filling and submitting forms or even scrapping the web content and making Web page screenshots. CasperJS works on top of PhantomJS browser, which limits he testing runtime environment to WebKit-based browsers only. Still it's a very useful tool when you want to run the tests in a Continuous Integration (CI)environment. You can read more about <<WHAT_IS_PHANTOMJS,PhantomJS>> and <<WHAT_IS_CI,CI>> later in the corresponding sidebars later in this chapter.
+CasperJS is a scripting framework written in JavaScript. CasperJS allows to create interaction scenarios like defining and ordering the navigation steps, filling and submitting forms or even scrapping Web content and making Web page screenshots. CasperJS works on top of PhantomJS browser, which limits he testing runtime environment to WebKit-based browsers only. Still it's a very useful tool when you want to run tests in a Continuous Integration (CI)environment. You can read more about <<WHAT_IS_PHANTOMJS,PhantomJS>> and <<WHAT_IS_CI,CI>> later in the corresponding sidebars later in this chapter.
 
 [[WHAT_IS_PHANTOMJS]]
 .What is PhantomJS?
@@ -71,21 +73,20 @@ Load testing is a process that can help in answering the following questions:
 
 * How many concurrent users can work with your application without bringing your server to its knees? 
 
-* Even if your server is capable of serving a thousand users, is your application performance in a compliance with the Service Level Agreement (SLA), if any. 
+* Even if your server is capable of serving a thousand users, is your application performance in a compliance with the Service Level Agreement (SLA), if any? 
 
-It all comes down to two factors: availability and response time of your application. Ideally, these requirements should be well defined in the Service Level Agreement (SLA) document, which should clearly state what's acceptable from the user's perspective.For example, the SLA can include a clause stating that the initial download of your application shouldn't take longer than 10 seconds for users with a slow connections (under 1Mbps). SLA can also state that the query to display a list of customers shouldn't run for more than five seconds, and the application should be operational 99.9 percent of the time.
+It all comes down to two factors: availability and response time of your application. Ideally, these requirements should be well defined in the SLA document, which should clearly state what metrics are acceptable from the user's perspective. For example, the SLA can include a clause stating that the initial download of your application shouldn't take longer than 10 seconds for users with a slow connections (under 1Mbps). SLA can also state that the query to display a list of customers shouldn't run for more than five seconds, and the application should be operational 99.9 percent of the time.
 
-To avoid surprises after going live with your new mission-critical web application, don't forget to include in your project plan an item to create and run a set of heavy stress tests, and do this well in advance before your project  goes live. You don't need to hire a thousand of interns play the roles of concurrent users to find out whether your application will meet the SLA requirements.
+To avoid surprises after going live with your new mission-critical web application, don't forget to include in your project plan an item to create and run a set of heavy stress tests. Do this well in advance before your project goes live. You don't need to hire a thousand of interns to play the roles of concurrent users to find out whether your application will meet the SLA.
 
-The automated load testing software allows you to emulate required number of users, set up the throttling to emulate a slower connection, and configure the ramp-up speed. For example, you can simulate a situation where the number of users logged on to your system grows at the speed of 50 users every 10 seconds.
-Stress testing software also allows you to prerecord the action of the business users, and then you can run these scripts emulating a heavy load.
+Automated load testing software allows you to emulate required number of users, set up the throttling to emulate a slower connection, and configure the ramp-up speed. For example, you can simulate a situation where the number of users logged on to your system grows at the speed of 50 users every 10 seconds. Stress testing software also allows you to pre-record the users interactions, and then you can run these scripts emulating a heavy load.
 
 Professional stress-testing software allows simulating the load close to the real-world usage patterns. You should be able to create and run mixed scripts simulating a situation in which some users are logging on to your application while others are retrieving the data and performing data modifications. Below are some tools worth considering for load testing.
 
 * http://httpd.apache.org/docs/2.2/programs/ab.html[Apache Benchmark]
 +
 
-Apache Benchmark is a simple to use command line tool. For example, with a command `ab -n 10 -c 10 -t 60 http://savesickchild.org:8080/ssc_extjs/` Apache Benchmark will open 10 concurrent connection with the server and will send 10 requests via each connection to simulate 10 visitors working with your webapp during 60 seconds. The number of concurrent connections is the actual number of concurrent users. You can find an Apache Benchmark sample report in <<AB_REPORT,following snippet>>.
+Apache Benchmark is a simple to use command line tool. For example, with a command `ab -n 10 -c 10 -t 60 http://savesickchild.org:8080/ssc_extjs/` Apache Benchmark will open 10 concurrent connection with the server and will send 10 requests via each connection to simulate 10 visitors working with your Web application during 60 seconds. The number of concurrent connections is the actual number of concurrent users. You can find an Apache Benchmark sample report in <<AB_REPORT,following snippet>>.
 
 [[AB_REPORT]]
 .A sample Apache Benchmark report
@@ -125,29 +126,29 @@ image::fig_08_17.png[]
 * http://phantomjs.org/[PhantomJS]
 +
 
-Please, refer the sidebar called <<WHAT_IS_PHANTOMJS,What is PhantomJS>> to make yourself familiar with this tool. You can read more how you can use PhantomJS for performance testing of your application in presentation called http://wesleyhales.com/slides/html5devconf2013/["Browser Performance metering with PhantomJS"].
+Please, refer the sidebar called <<WHAT_IS_PHANTOMJS,What is PhantomJS>> to make yourself familiar with this tool. The slide deck titled http://wesleyhales.com/slides/html5devconf2013/["Browser Performance metering with PhantomJS"] is yet another good resource for seeing how  PhantomJS can be used for performance testing.
 
 [[TDD]]
 === Test Driven Development
 
-The methodology known as Test-Driven Development (TDD) substantially changes the way a "classic" software development is done. This methodology wants you to write tests _even before_ writing the application code. Instead of just using testing to verify our work _after it's done_, TDD moves the testing into the earlier application design phase. You should use the tests to clarify your ideas about what you are about to program. Here is fundamental mantra of TDD:
+The methodology known as Test-Driven Development (TDD) substantially changes the way a traditional software development is done. This methodology wants you to write tests _even before_ writing the application code. Instead of just using testing to verify our work _after it's done_, TDD moves the testing into the earlier application design phase. You should use the tests to clarify your ideas about what you are about to program. Here is fundamental mantra of TDD:
 
 - Write a test and make it fail.
 - Make the test pass.
 - Refactor.
 - Repeat.
 
-This technique also referred as "Red-Green-Refactoring" because IDE's and test runners use red color to indicate failed test and green color to indicate passed tests.
+This technique also referred as "Red-Green-Refactoring" because IDE's and test runners use red color to indicate failed tests and green color to indicate the tests that passed.
 
-When you are about to start programming a class with some business logic, ask yourself, "How can I ensure that this function works fine?" After you know the answer, write a test JavaScript class that calls this function _to assert_ that the business logic gives the expected result. 
+When you are about to start programming a class with some business logic, ask yourself, "How can I ensure that this function works as expected?" After you know the answer, write a test JavaScript class that calls this function _to assert_ that the business logic gives the expected result. 
 
 An assertion is a true-false statement that represents what a programmer assumes about program state, e.g.  *customerID >0* is an assertion. 
 
-According to <<fowler, 'Martin Fowler'>>, an assertion is a sections of code work only if certain conditions are true. An assertion is a conditional statement that is assumed to be always true. Failure of an assertion results in test failure. 
+According to <<fowler, 'Martin Fowler'>>, an assertion is a section of code that works only if certain conditions are true. An assertion is a conditional statement that is assumed to be always true. Failure of an assertion results in test failure. 
 
-Run your test, and it  will immediately fail because no application code is written yet! Only after the test is written, start programming the business logic of your application 
+Run your test, and it will immediately fail because no application code is written yet! Only after the test is written, start programming the business logic of your application 
 
-You should write a simplest possible piece of code to make the test pass. Don't try to find a generic solution at this step. For example, if you want to test calculator that needs to return `4` as result of `2+2` write the code what simply returns `4`. Don't worry about performance or optimization on this step. Just make the test pass. Once you made it, you can refactor your application code. Now you might want to introduce a real algorithm for implementing the application logic without worrying about breaking the  contract with other components of your application. 
+You should write a simplest possible piece of code to make the test pass. Don't try to find a generic solution at this step. For example, if you want to test a calculator that needs to return `4` as result of `2+2` write the code what simply returns `4`. Don't worry about the performance or optimization at this point in time. Just make the test pass. Once you made it, you can refactor your application code to make it more efficient. Now you might want to introduce a real algorithm for implementing the application logic without worrying about breaking the  contract with other components of your application. 
 
 A failed unit test indicates that your code change introduced regression, which is a new bug in a previously worked software. Automated testing and well-written test cases can reduce the likelihood of a regression in your code.
 
@@ -181,23 +182,23 @@ Later in this chapter, you'll see how different frameworks implements _AAAR_ pat
 
 ==== Automate Everything
 
-You should automate testing as much as you can to reduce the costs of building, deploying, and maintaining your application. 
+You should automate testing as much as you can to reduce the cost of building, deploying, and maintaining your application. 
 
 Now lets start building the foundation for our refactored application. We are going to use the tasks running framework for the JavaScript project called http://gruntjs.com/[Grunt]. With Grunt's help we'll automate process of running tests once the code changes. The tests should help in assessing the quality of our code. You'll learn how to setup Grunt to watch your code changes and run tests right after you modified the code and saved the changes. 
 
-With the Grunt tool you can have a script to run all your tests. In you came from the Java world, you know about Apache Ant, a general-purpose command-line tool for drive processes described in build files as targets. Grunt also running the tasks described in. There is a wide range of tasks available today - starting with running automated unit tests and ending with JavaScript code minification. Grunt provides a separate layer of abstraction where you can define tasks in special DSL (domain-specific language) in Gruntfile and Grunt will execute it.
+With the Grunt tool you can have a script to run all your tests. If you came from the Java world, you know about Apache Ant, a general-purpose command-line tool to drive processes described in _build files_ as _targets_. Grunt also running the tasks described in scripts. There is a wide range of tasks available today - starting with running automated unit tests and ending with JavaScript code minification. Grunt provides a separate layer of abstraction where you can define tasks in special DSL (domain-specific language) in Gruntfile for execution.
 
 ===== The Simplest Grunt File
 
 .Node.js, V8, and NPM
 ****
-Node.js (or simply Node) is a server-side event-driven framework. Node uses V8, the JavaScript engine by Google used in Chrome/Chromium. The V8 engine provides JavaScript API for accessing the file system, sockets and  running processes. The Grunt tool is built on top of Node JavaScript APIs. You can find more information about Node.js at  http://nodejs.org/about/[their website].
+Node.js (or simply Node) is a server-side JavaScript framework. Node uses V8, the JavaScript engine by Google used in Chrome/Chromium. The V8 engine provides JavaScript API for accessing the file system, sockets and  running processes. The Grunt tool is built on top of Node JavaScript APIs. You can find more information about Node.js at  http://nodejs.org/about/[their website].
 
 Node Package Manager (NPM) is a utility as well as https://npmjs.org/[community repository] for open source JavaScript projects. NPM provides unified API and metadata model for managing dependencies in JavaScript projects. A `package.json` file is the project's dependencies descriptor. NPM installs project dependencies using information from `package.json`.
 
 Node and NPM are cross-platform software and binaries available for Windows, Linux and Mac OS X operating systems. 
 
-To use examples in you need to download and install Node from http://nodejs.org/download/[official web site]. Then follow http://gruntjs.com/getting-started[ the instructions from Grunt's  website] to install it on your machine.
+To use code samples from this chapter you need to download and install Node from http://nodejs.org/download/[their web site]. Then follow http://gruntjs.com/getting-started[ the instructions from Grunt's  website] to install it on your machine.
 ****
 
 Let's start with the simplest Grunt project setup. The following two files must be present in the project directory:
@@ -228,7 +229,7 @@ module.exports = function (grunt) {
 
 <3> With `grunt.registerTask` we define a default task to run when Grunt is called without any parameters. 
 
-Each task can be called separately from the command line by passing the task's name as a command line parameter: For example `grunt hello` would only execute the task named hello from the above script.
+Each task can be called separately from the command line by passing the task's name as a command line parameter. For example, `grunt hello` would only execute the task named "hello" from the above script.
 
 Let's run this `hello` task with the following command 
 `grunt --gruntfile Grunt_simple.js hello`.
@@ -241,7 +242,7 @@ Hello from grunt
 Done, without errors.
 ----------------------------------------------------------------------
 
-Now after you have learned of basics of Grunt tool we can use it for something more interesting than just printing "_hello world_" string on the screen. Since JavaScript is a interpreted language there is no compiler to help catch syntax errors. But you can use http://www.jshint.com/[JSHint], an open source tool, which helps with identifying errors in JavaScript code in lieu of compiler. Consider the following JavaScript <<LISTING_WITH_ERRORS,code>>.
+Now after covering the basics of Grunt tool we can use it for something more interesting than just printing "_hello world_" on the screen. Since JavaScript is a interpreted language there is no compiler to help catch syntax errors. But you can use http://www.jshint.com/[JSHint], an open source tool, which helps with identifying errors in JavaScript code in lieu of compiler. Consider the following JavaScript <<LISTING_WITH_ERRORS,code>>.
 
 .A JavaScript array with a couple typos
 [[LISTING_WITH_ERRORS]]
@@ -249,19 +250,18 @@ Now after you have learned of basics of Grunt tool we can use it for something m
 ----
 include::include/jshint_example.js[]
 ----
-<1> We want to define array that contains names of actors who played James Bond in a canonical series.
+<1> We want to define an array that contains names of actors who played James Bond in a canonical series.
 
-<2> Here is example of typical typo. Developer commented line contains array element but left coma in previous line.
+<2> Here is example of a typical typo. A developer commented out the line containing an array element but kept the coma in previous line.
 
-<3> A missing semicolon is a typical typo. It is not actual error, but omitting semicolon is not a good habit. An automatic semicolon insertion (ASI) will get you covered in this case.
+<3> A missing semicolon is a typical typo. It is not an actual error, but omitting semicolon is not a good habit. An automatic semicolon insertion (ASI) will get you covered in this case.
 
 .What is a Automatic Semicolon Insertion?
 ****
 In JavaScript, you can omit a semicolon between two statements written in separate lines. Automatic semicolon insertion is a source code parsing procedure that infers omitted semicolons in certain contexts into your program. You can read more about optional semicolons in JavaScript in the chapter "Optional Semicolons" in  <<flanagan, 'JavaScript. Definitive Guide. 6th Edition'>> book.
 ****
 
-The above code snippet is a fairly simple example that can cause trouble and frustration if you don't have proper tools to check the code semantics and syntax. 
-Let's see how JSHint can help with it. JSHint as well as many other JavaScript open source projects can be installed via NPM with command `npm install jshint -g`. Now you can run JSHint against our code snippet:
+The above code snippet is a fairly simple example that can cause trouble and frustration if you don't have proper tools to check the code semantics and syntax. Let's see how JSHint can help in this situation. JSHint can be installed via NPM with command `npm install jshint -g`. Now you can run JSHint against our code snippet:
 
 [source,bash]
 ----
@@ -272,6 +272,7 @@ jshint_example.js: line 9, col 10, Missing semicolon. # <1>
 2 errors            # <2>
 ----
 <1> JSHint reports the location of error and a short description of the problem.
+
 <2> The total count of errors 
 
 TIP: WebStorm IDE has http://blogs.jetbrains.com/idea/2012/05/lint-your-javascript-with-jslintjshint-in-real-time/[built-in support] for JSHint tool. There is 3rd party plugin for Eclipse - http://github.eclipsesource.com/jshint-eclipse/[jshint-eclipse].
@@ -313,7 +314,7 @@ Running "jshint:app" (jshint) task
 Done, without errors.
 ----
 
-Another handy task that to use in developer's environment is the `watch` task. A purpose of this task is to monitor files in pre-configured locations. When the watcher detects any changes in those files it will run the configured task. Here is how a <<LIST_WATCH_TASK,watch task config>> looks like:
+Another handy task that to use in developer's environment is the `watch` task. The purpose of this task is to monitor files in pre-configured locations. When the watcher detects any changes in those files it will run the configured task. Here is how a <<LIST_WATCH_TASK,watch task config>> looks like:
 
 .A `watch` task config 
 [source,javascript]
@@ -336,7 +337,7 @@ module.exports = function(grunt) {
 };
 ----
 
-<1> Watch task configuration starts here
+<1> The `watch` task configuration starts here
 
 <2> The list of the files that need to be monitored for changes
 
@@ -362,19 +363,17 @@ Completed in 0.50s at Tue May 07 2013 00:41:42 GMT-0400 (EDT) - Waiting...
 
 Later in this chapter we will use the `watch` task to automatically run tests after the production code or the code of the tests is changed.
 
-In this section we've introduced a convenient tool - the task runner Grunt - that can be used to automate different aspects of the JavaScript development workflow. We will use Grunt to perform syntax and semantic checks of your code with JSHint. Also, to minimize repetitive tasks we showed hot to setup `watch` task to monitor changes in our code base.
+In this section we've introduced a convenient tool - the task runner Grunt - that can be used to automate different aspects of the JavaScript development workflow. Grunt will perform syntax and semantic checks of your code with JSHint. Also, to minimize repetitive tasks we showed how to setup `watch` task to monitor changes in our code base.
 
 In next sections we will dive into the testing frameworks for JavaScript. Our fist stop is QUnit.
 
 ==== Test-Driven Development With QUnit
 
-We'll start our journey to JavaScript testing frameworks with http://qunitjs.com/[QUnit], which was originally developed by http://ejohn.org/about/[John Resig] as part of jQuery. QUnit now runs completely standalone and doesn't have any jQuery dependency. While it's still being used by the jQuery Project itself for testing jQuery, jQuery UI and jQuery Mobile code, QUnit can be used to test any generic JavaScript code.
+We'll start our journey to JavaScript testing frameworks with http://qunitjs.com/[QUnit], which was originally developed by http://ejohn.org/about/[John Resig] as part of jQuery. QUnit now runs completely standalone and doesn't have any jQuery dependencies. While it's still being used by the jQuery Project itself for testing jQuery, jQuery UI and jQuery Mobile code, QUnit can be used to test any generic JavaScript code.
 
 ===== Setup Grunt With Qunit
 
-WARNING: Section is in active development
-
-In this section you're going learn how to automatically run the Qunit tests using Grunt. Let's setup our project by adding the Qunit framework and tests file. We'll start with downloading the latest version from http://qunitjs.com/[QUint Web site]. We need to get only two files - `qunit-*.js` and `qunit-*.css`.
+In this section you're going learn how to automatically run the Qunit tests using Grunt. Let's setup our project by adding the Qunit framework and tests file. Start with downloading the latest version from http://qunitjs.com/[QUint Web site]. You need to get only two files - `qunit-*.js` and `qunit-*.css`.
 
 .A download section on QUnit website
 image::fig_08_04.png[]
@@ -391,7 +390,7 @@ test("my first qunit test", function () {
 });
 ----
 
-We'll also need a test runner for the test setup. 
+You'll also need a test runner for the test setup. 
 
 .A test runner
 [source,html]
@@ -417,7 +416,7 @@ We'll also need a test runner for the test setup.
 
 <1> A test runner is an html file contains links to QUnit framework JavaScript file.
 
-<2> In this chapter we continue working on the jQuery-based version of the Save Sick Child application. Hence our "production environment" depends on availability of jQuery, so we need to include jQuery in the test runner.
+<2> In this section we continue working on the jQuery-based version of the Save Sick Child application. Hence our "production environment" depends on availability of jQuery, so we need to include jQuery in the test runner.
 
 <3> Test files are included too.
 
@@ -481,24 +480,22 @@ Now let's briefly review QUnit API components. You can find a typical QUnit scri
 
 <5> Typically, you need to use assertions to make sure the code being tested  gives expected results. The function http://api.qunitjs.com/ok/[`ok`] will examine the first argument to be `true`. 
 
-<6> A pair of functions `equal` and `notEqual` will check for the equivalence of the first and second arguments. Arguments could be expressions as well.
+<6> A pair of functions `equal` and `notEqual` will check for the equivalence of the first and second arguments, which could be expressions as well.
 
 <7> A code of the test is wrapped in immediate-invoked function expression (IIFE) and passes `jQuery` object as `$` variable.
 
 You can find more details about QUnit in http://api.qunitjs.com/[product  documentation] and http://qunitjs.com/cookbook/[QUnit Cookbook].         
 
-
 ==== Behavior-Driven Development With Jasmine
 
-The idea behind _behavior-driven development_ (BDD) is to use the "natural language" constructs to describe what you think your code should be doing or more specifically, what your functions should be returning.
+The idea behind _behavior-driven development_ (BDD) is to use the natural language constructs to describe what you think your code should be doing or more specifically, what your functions should be returning.
 
-Similarly to unit tests, with BDD you write short specifications that test one feature at a time. Specifications should be sentences. For example, "Calculator adds two positive numbers". Such sentences will help you to easy identify the failed test by simply reading this sentence in test results report. Now we'll demonstrate this concept using Jasmine - the BDD frameworks for JavaScript. Jasmine provides a very nice way to group, execute, and report JavaScript unit tests. 
+Similarly to unit tests, with BDD you write short specifications that test one feature at a time. Specifications should be sentences. For example, "Calculator adds two positive numbers". Such sentences will help you to easy identify the failed test by simply reading this sentence in the resulting report. Now we'll demonstrate this concept using Jasmine - the BDD frameworks for JavaScript. Jasmine provides a very nice way to group, execute, and report JavaScript unit tests. 
 
-// TBD
 
 ===== Setup Grunt with Jasmine
 
-You've learned already how to use Grunt tool to automate boilerplate tasks. In this section we're going to show how you can execute a Jasmine specification with Grunt. We'll cover the Jasmine basics in the next section, but for now think of Jasmine as a piece of code that should be executed by Grunt.
+You've learned already how to use the Grunt tool to automate boilerplate tasks. Now let's execute a Jasmine specification with Grunt. The next section covers Jasmine basics, but for now think of Jasmine as a piece of code that should be executed by Grunt.
 
 Let's start with downloading the latest version of Jasmine from https://github.com/pivotal/jasmine/downloads[its github repository]. Unzip the archive. The content of unzipped folder will look similar to the screenshot <<FIG-1>>.
 
@@ -512,7 +509,7 @@ Jasmine comes with an example spec (_spec_ folder) and an html test runner - Spe
 [[FIG-2]]
 image::fig_08_02.png["SpectRunner.html"]
 
-The SpecRunner.html is structured similarly to qunit html runner. You can run specifications by opening the runner file in browser.  
+The SpecRunner.html is structured similarly to QUnit html runner. You can run specifications by opening the runner file in browser.  
 
 [source, html]
 ----------------------------------------------------------------------
@@ -520,11 +517,14 @@ include::include/SpecRunner.html[]
 ----------------------------------------------------------------------
 
 <1> Required Jasmine framework library
-<2> Include source files
-<3> Include specs code
-<4> Initialize Jasmine and run all specifications when the page is loaded
 
-Now let's update our Grunfile to run the same sample specifications with the headless browser. Copy the content of +src+ folder of your Jasmine distribution into the `app/js` folder of our project, and then copy the content of the `spec` folder into the `test/spec` folder of your project. Also create a folder `test/lib/jasmine` and copy the content of Jasmine distribution `lib` folder there. <<FIG-3>>
+<2> Include the source files.
+
+<3> Include the specification code.
+
+<4> Initialize Jasmine and run all specifications when the page is loaded.
+
+Now let's update the Grunfile to run the same sample specifications with the headless browser. Copy the content of _src_ folder of your Jasmine distribution into the _app/js_ folder of our project, and then copy the content of the _spec_ folder into the _test/spec_ folder of your project. Also create a folder _test/lib/jasmine_ and copy the content of Jasmine distribution _lib_ folder there. <<FIG-3>>
 
 .Jasmine Specifications in Our Project
 [[FIG-3]]
@@ -555,10 +555,13 @@ module.exports = function (grunt) {
 };
 ----------------------------------------------------------------------
 
-<1> Configuring Jasmine task
+<1> Configuring the Jasmine task
+
 <2> Specifying the location of the source files
+
 <3> Specifying the location of Jasmine specs
-<4> Specifying the location of Jasmine helpers (will be covered later in this chapter)
+
+<4> Specifying the location of Jasmine helpers, which will be covered later in this chapter.
 
 To execute tests, run the command `grunt --gruntfile Gruntfile_jasmine.js jasmine`, and you should see something like this:
 
@@ -578,11 +581,12 @@ In this example, Grunt successfully executed the tests with <<WHAT_IS_PHANTOMJS,
 [[WHAT_IS_CI]]
 .What is Continuous Integration?
 ****
-Continuous Integration (CI) is a software development practice where members of a team integrate their work frequently, which results in multiple integrations per day.
+Continuous Integration is a software development practice where members of a team integrate their work frequently, which results in multiple integrations per day.
+
 Introduced by Martin Fowler and Matthew Foemmel, the theory of continuous integration footnote:[http://martinfowler.com/articles/continuousIntegration.html[Continuous Integration by Martin Fowler]] recommends creating scripts and running automated builds (including tests) of your application at least once a day.
 This allows you to identify issues in the code early.
 
-The authors of this book successfully use an open source framework called http://jenkins-ci.org/[Jenkins] (there are other similar CI servers) for establishing continuous build process.
+Authors of this book successfully use an open source framework called http://jenkins-ci.org/[Jenkins] (there are other similar CI servers) for establishing continuous build process.
 
 With Jenkins, you can have scripts that run either at a specified time interval or on each source code repository check-in of the new code. You may also force an additional build process whenever you like. The Grunt command line tool should be installed and be available on CI machine to allow the Jenkins server invoke Grunt scrips and publish test results.
 
@@ -623,15 +627,15 @@ describe("My function under test should", function () {     // <1>
 });
 ----
 
-<1> The function `describe` accepts two parameters - the name of the test suite, and the callback function. The function is a block of code that implements the suite. If for some reasons you would like to skip the suite from execution you can just use method `xdescribe` and a whole suite will be excluded until you rename it back to `describe`.
+<1> The function `describe()` accepts two parameters - the name of the test suite, and the callback function. The function is a block of code that implements the suite. If for some reasons you would like to skip the suite from execution you can just use method `xdescribe()` and a whole suite will be excluded until you rename it back to `describe()`.
 
-<2> The function `it` also accepts similar parameters - the name of the test specification, and the function that implements this specification. Like in case with suites, Jasmine has a corresponding `xit` method to exclude specification from execution.
+<2> The function `it()` also accepts similar parameters - the name of the test specification, and the function that implements this specification. Like in case with suites, Jasmine has a corresponding `xit` method to exclude specification from execution.
 
 <3> Each suite can have any number of nested suites.
 
 <4> Each suite can have any number of specifications.
 
-<5> The code checks to see if `2+2` equals `4`. We used the function `toEqual()`, which is a _matcher_. Define expectations with the function `expect`, which takes a value, called the actual. It's chained with a Matcher function, which takes the expected value (in our case it's 4) and checks if it satisfies the criterion defined in the matcher. Various flavors of matchers are shipped with Jasmine framework, and we're going to review a couple the frequently used matchers functions.
+<5> The code checks to see if `2+2` equals `4`. We used the function `toEqual()`, which is a _matcher_. Define expectations with the function `expect()`, which takes a value, called the actual. It's chained with a matcher function, which takes the expected value (in our case it's 4) and checks if it satisfies the criterion defined in the matcher. Various flavors of matchers are shipped with Jasmine framework, and we're going to review a couple the frequently used matchers functions.
 
 * Equality
 +
@@ -651,7 +655,7 @@ Function `toBe()` checks if two things are _the same object_.
 * Nullness
 +
 
-Function `toBeNull()` checks if something is +null+.
+Function `toBeNull()` checks if something is `null`.
 
 * Is Element Present
 +
@@ -667,7 +671,7 @@ expect(["James Bond", "Austin Powers", "Jack Reacher", "Duck"]).toContain("Duck"
 * Negate Other Matchers
 +
 
-This function is used to reverse matchers to ensure that they aren't +true+. To do that, simply prefix things with `.not`:
+This function is used to reverse matchers to ensure that they aren't `true`. To do that, simply prefix things with `.not`:
 +
 
 [source, javascript]
@@ -819,9 +823,9 @@ Aborted due to warnings.
 
 ===== Spies
 
-Test spies are objects and functions that record information about their usage through the systems under test. They are useful when determining a function's success is not easily accomplished by inspecting its return value or changes to the state of objects with witch it interacts. 
+Test spies are objects that replace the actual functions with the code to record information about the function's usage through the systems being tested. Spies are useful when determining a function's success is not easily accomplished by inspecting its return value or changes to the state of objects with witch it interacts. 
 
-Consider the following example of login functionality. A `showAuthorizedSection()` function will be invoked within `login` function after the user entered the correct username and password. We need to test that the invocation of the `showAuthorizedSection()` is happening in this sequence.
+Consider the following example of login functionality. A `showAuthorizedSection()` function will be invoked within `login` function after the user entered the correct user name and password. We need to test that the invocation of the `showAuthorizedSection()` is happening in this sequence.
 
 [[LOGIN_SNIP]]
 .Production code of `login` function.
@@ -852,8 +856,10 @@ describe("login module", function() {
     });
 });
 ----
-<1> A `spyOn` function will replace `showAuthorizedSection` function with corresponded spy.
-<2> `showAuthorizedSection` function will be invoked within `login` function in case of successful login.
+<1> The `spyOn` function will replace `showAuthorizedSection()` function with corresponded spy.
+
+<2> The `showAuthorizedSection()` function will be invoked within `login()` function in case of successful login.
+
 <3> Assertion `toHaveBeenCalled()` would be not possible without spy.
 
 
@@ -867,7 +873,7 @@ describe("login module", function() {
 
 ==== Multi-Browser Testing
 
-The previous section was about executing your test and specification in a headless mode using PhantomJS, which is very useful for running tests in the Continuous Integration environments. While PhantomJS uses WebKit rendering engine, there are browsers that don't use WebKit. It's obvious that running tests manually in each browser is tedious and not productive.
+The previous section was about executing your test and specification in a headless mode using PhantomJS, which is very useful for running tests in the CI environments. While PhantomJS uses WebKit rendering engine, there are browsers that don't use WebKit. It's obvious that running tests manually in each browser is tedious and not productive.
 To automate testing in all Web browsers, you can use Testem Runner. In this section you'll learn how to install and configure `Testem` to run Jasmine tests.
 
 ===== Installation
@@ -881,8 +887,9 @@ npm install testem -g
 
 ===== Testem Configuration file
 
-Testem runner will just pick any of JavaScript in your project directory. If testem can identify any tests among that +.js+ files it will run it.
-But Testem tasks can be customize using a configuration file. 
+Testem runner will just pick any of JavaScript in your project directory. If testem can identify any tests among that _.js_ files it will run it.
+But Testem tasks can be customized using a configuration file. 
+
 You can configure Testem to specify which files should be included in testing. Testem starts with trying to find the configuration file _testem.json_ in the project directory. A sample `testem.json` is shown in <<TESTEM_JSON,following listing>>. 
 
 [[TESTEM_JSON]]
@@ -897,24 +904,24 @@ You can configure Testem to specify which files should be included in testing. T
     ]
 }
 ----
-<1> The `framework` directive is used to specify the test framework. Testem supports Qunit, Jasmine and many more frameworks. You can find full list of supported frameworks on testem https://github.com/airportyh/testem#features[github page].
+<1> The `framework` directive is used to specify the test framework. Testem supports QUnit, Jasmine and many more frameworks. You can find full list of supported frameworks on testem https://github.com/airportyh/testem#features[github page].
 
 <2>  The list of test and production code source files. 
 
 ===== Running Tests 
 
-Testem supports two running modes: test-driven-development mode (_tdd-mode_)  and continuous integration (_ci-mode_). In tdd-mode, testem starta the  development server.
+Testem supports two running modes: test-driven development mode (_tdd-mode_)  and continuous integration (_ci-mode_). In tdd-mode, testem starts the  development server.
 
 .Testem tdd-mode.
 image::fig_08_13.png[]
 
-In tdd-mode, Testem doesn't spawn any browser automatically. On the contrary, you'd need to open this url in the browser you want run test against to connect it to testem server. From this point on, testem will execute tests in all connected browsers.  On the next <<TESTEM_MULTI,screeshot>> you can see we added different browsers including mobile version of Safari (running on iOS simulator).
+In tdd-mode, Testem doesn't spawn any browser automatically. On the contrary, you'd need to open this url in the browser you want run test against to connect it to Testem server. From this point on, Testem will execute tests in all connected browsers.  On the next <<TESTEM_MULTI,screeshot>> you can see we added different browsers including mobile version of Safari (running on iOS simulator).
 
 [[TESTEM_MULTI]]
 .Testem is running the tests on the multiple browsers.
 image::fig_08_14.png[]
 
-Because testem server itself is an HTTP server, you can connect remote browsers to it as well. For example, the <<TESTEM_IE, following screenshot>> shows Internet Explorer 10 running under Windows 7 virtual machine connected to the testem server.
+Because the Testem server itself is an HTTP server, you can connect remote browsers to it as well. For example, the <<TESTEM_IE, following screenshot>> shows Internet Explorer 10 running under Windows 7 virtual machine connected to the testem server.
 
 [[TESTEM_IE]]
 .Using testem to test code on remote IE 10
@@ -926,10 +933,9 @@ Running the tests with testem runner can be combined with previously introduced 
 .Using testem and `grunt watch` side-by-side 
 image::fig_08_15.png[]
 
-As you seen in <<TESTEM_IE, previous screenshot>>, we can use 
-But Testem itself supports live reloading mode. This means that testem will watch file system for changes and will execute tests in all connected browsers automatically. You can force to test run by switching to console and hitting the _Enter_ key.
+Testem supports live reloading mode. This means that Testem will watch file system for changes and will execute tests in all connected browsers automatically. You can force to test run by switching to console and hitting the _Enter_ key.
 
-In the continuous integration mode testem will examine system for all of the available browsers in your system and will execute tests on it. You can get list of the browsers that testem can use to run tests with the `testem launchers` command. <<TESTEM_L,Here is sample output>> after runnin this command. 
+In CI mode testem will examine system for all of the available browsers in your system and will execute tests on it. You can get list of the browsers that testem can use to run tests with the `testem launchers` command. <<TESTEM_L,Here is sample output>> after running this command. 
 
 [[TESTEM_L]]
 ----
@@ -945,7 +951,7 @@ Opera         browser       ✔
 PhantomJS     browser       ✔
 ----
 
-Now you can run our test simultaneously in all browsers installed on  your computer - Google Chrome, Safari, Firefox, Opera and PhantomJS - with one command:
+Now you can run our test simultaneously in all browsers installed in  your computer - Google Chrome, Safari, Firefox, Opera and PhantomJS - with one command:
 
 `testem ci`
 
@@ -993,8 +999,8 @@ Testem uses http://en.wikipedia.org/wiki/Test_Anything_Protocol[TAP] format to r
 
 ==== Testing DOM
 
-Document Object Model is a standard browser API that allows a developer to access and manipulate page elements. As you have seen in previous chapters, pretty often your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing the DOM is the crucial part of testing your client side JavaScript. 
-By design, DOM is a browser-agnostic API. But in the real world, if you want to make sure that your code works in the particular browser you need to run the test inside this browser.
+Document Object Model is a standard browser API that allows a developer to access and manipulate page elements. Pretty often your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing DOM is the crucial part of testing your client side JavaScript. 
+By design, the DOM standard defines a browser-agnostic API. But in the real world, if you want to make sure that your code works in the particular browser you need to run the test inside this browser.
 
 Earlier in this chapter we've introduced the Jasmine method `beforeEach()`, which is the right place for setting all required DOM elements and making them available in the specifications.
 
@@ -1013,7 +1019,7 @@ describe("spec", function() {
     });
 });
 ----
-<1> Inside the `beforeEach()` method we're using the API to manipulate the DOM programatically. Also, if you're using an HTML test runner you can add the fixture using HTML tags. But we don't recommend this approach. Very soon you will find your HTML test runner will become unmaintainable because it's going to get clogged with tons of fixture HTML code.
+<1> Inside the `beforeEach()` method we're using the API to manipulate the DOM programatically. Also, if you're using an HTML test runner you can add the fixture using HTML tags. But we don't recommend this approach because pretty soon you will find that the test runner will become unmaintainable and clogged with tons of fixture HTML code.
 
 <2> Create an `<input>` element using jQuery APIs, which will turn into the following HTML:   
 
@@ -1022,7 +1028,7 @@ describe("spec", function() {
 <input type=​"text" id=​"password" name=​"password" placeholder=​"password" autocomplete=​"off">​
 ----
 
-The jQuery API is more convenient than a plain DOM API. But in the future examples we will use the https://github.com/searls/jasmine-fixture[jasmine-fixture] library for easier setup of the DOM fixture. Jasmine-fixture uses similar to jQuery selectors syntax for injecting HTML fixtures. With this library you will significantly decrease the amount of repetitive code while creating the fixtures.
+The jQuery selectors API is more convenient for working with DOM than a standard JavaScript DOM API. But in the future examples we will use the https://github.com/searls/jasmine-fixture[jasmine-fixture] library for easier setup of the DOM fixture. Jasmine-fixture uses similar to jQuery selectors syntax for injecting HTML fixtures. With this library you will significantly decrease the amount of repetitive code while creating the fixtures.
 
 // TODO: add jasmine-fixture setup, how to download and add to jasmine Grunts's task
 
@@ -1043,7 +1049,7 @@ describe("spec", function() {
     });
 });
 ----
-<1> Using the `affix()` function provided by the jasmine-fixture library and expressiveness of CSS selectors we can easily setup required DOM elements. More examples of possible selectors could be found at the https://github.com/searls/jasmine-fixture#more-examples[documentation page] of jasmine-fixture.
+<1> Using the `affix()` function provided by the _jasmine-fixture_ library and expressiveness of CSS selectors we can easily setup required DOM elements. More examples of possible selectors could be found at the https://github.com/searls/jasmine-fixture#more-examples[documentation page] of jasmine-fixture.
 
 <2> Now when all requirements for our production code (`login()` function) are satisfied we can run it in the context of a test and assert the results.
 
@@ -1058,11 +1064,8 @@ As you can see, testing of the DOM manipulation code is much like any other type
 
 ==== The Test-Driven ExtJS version of _SaveSickChild.org_
 
-WARNING: This section is under active development
+We assume that you've read the materials from Chapter 6, and in this section you'll apply your newly acquired Ext JS skills. As a reminder, Ext JS framework encourages using MVC architecture. The separation of responsibilities between Views, Models and Controllers makes an ExtJS application a perfect candidate for unit testing.  In this section you'll learn how to test the Ext JS version of the Save Sick Child application from Chapter 6.
 
-In this section we will use your newly acquired Ext JS skills - we assume that you've read the materials from Chapter 6. As a reminder, Ext JS framework encourages using MVC architecture. The separation of responsibilities between Views, Models and Controllers makes an ExtJS application a perfect candidate for unit testing.  In this section we'll show how to test the Ext JS version of the Save Sick Child application from Chapter 6.
-
-//TBD
 ===== Harnessing ExtJS application
 
 Let's create a skeleton application that can provide for our classes under the test familiar environment. 
@@ -1089,11 +1092,11 @@ Let's create a skeleton application that can provide for our classes under the t
 </body>
 </html>
 ----
-<1> Adding the Jasmine framework dependencies
+<1> Adding the Jasmine framework dependencies.
 
-<2> Adding ExtJS framework dependencies
+<2> Adding ExtJS framework dependencies.
 
-<3> This is our skeleton ExtJS application that will setup "friendly" environment for components under the test. You can see content of `test.js` in the <<SKELETON_EXTJS_APP,following listing>>.
+<3> This is our skeleton ExtJS application that will setup "friendly" environment for components under the test. You can see content of test.js in the <<SKELETON_EXTJS_APP,following listing>>.
 
 [[SKELETON_EXTJS_APP]]
 .A ExtJS testing endpoint
@@ -1132,7 +1135,7 @@ Ext.onReady(function() {
 
 <2> ... and about location of production code.
 
-<3> Create skeleton application in the namespace of the production code to provide the execution environment.
+<3> Create a skeleton application in the namespace of the production code to provide the execution environment.
 
 <4> The `AllSpec` class will be requesting loading of the rest of the specs. We will show code of `AllSpec` class in <<ALL_SPEC,next listing>>
 
@@ -1168,16 +1171,17 @@ Ext.define('Test.spec.BasicAssumptions', {}, function() {   // <1>
     });
 });
 ----
-<1> Wrap the Jasmine suite into an Ext JS class
+<1> Wrap the Jasmine suite into an Ext JS class.
 
 <2> The rest of the code is very similar to the Jasmine code sample shown earlier in this chapter.
 
 
-After setup the testing harness for SaveSickChild application we will suggest testing strategy for ExtJS applications. We will start with testing the models and controllers, after that we will test our views.
+After setting up the testing harness for SaveSickChild application we will suggest testing strategy for ExtJS applications. Let's start with testing the models and controllers followed by testing the views.
 
 ===== Testing The Models
 
-_SaveSichChild.org_ home page displays information about the fund raising campaigns using a chart and a table views backed by collection of `Campaign` models. A `Campaign` model should have three properties: `title`, `description`, and `location`. The `title` property of the model should have a default value - `Default Campaign Title`. The `location` property of the model is required field.
+_SaveSichChild.org_ home page displays the information about fund raising campaigns using chart and table views backed by collection of `Campaign` models. A `Campaign` model should have three properties: `title`, `description`, and `location`. The `title` property of the model should have a default value - `Default Campaign Title`. The `location` property of the model is required field.
+
 In a spirit of TDD, let's write the <<CAMPMOD_SPEC,specification>> what will meet the requirements described above.
 
 [[CAMPMOD_SPEC]]
@@ -1194,31 +1198,22 @@ include::include/CampaignModelAssumptions.js[]
 
 <4> The property `title` has a default value.
 
-<5> Validation will fail on empty `location` property.
+<5> Validation will fail on the empty `location` property.
 
 [source,javascript]
 ----
 include::include/Campaign.js[]
 ----
 
-* Test model / controller first.
-
-
-* Test views
-* Test whole application
-
+// TBD
 
 ==== Setting up the IDE for TDD
 
-WARNING: Section under active development
-
 In this section we will setup WebStorm to use the described above tools inside this IDE. We will show how to integrate Grunt tool with WebStrom to run grunt tasks from there. 
 
-// TDB
+===== Integrate the Grunt Tool with WebStorm
 
-===== Integrate the Grunt tool with WebStorm
-
-Let's start with the Grunt setup. Currently, there is no native support of the Grunt tool in WebStorm IDE. But since Grunt can be launched from a command line, we can use a universal feature of the WebStorm IDE and configure it as an _External Tool_. Open WebStorm preferences and navigate to _External Tools_ section to get access to the external tools configuration as in <<FIG_SO_AND_SO>>.
+Let's start with the Grunt setup. Currently, there is no native support of the Grunt tool in WebStorm IDE. Since Grunt is a command line tool, you can use a general launching feature of the WebStorm IDE and configure it as an _External Tool_. Open the WebStorm preferences and navigate to _External Tools_ section to get access to the external tools configuration as in <<FIG_SO_AND_SO>>.
 
 .External Tools configuration window in WebStorm
 image::fig_08_08.png[]
@@ -1230,7 +1225,7 @@ image::fig_08_09.png[]
 
 1. You need to specify the full path to the application executable.
 
-2. Some tools require to have the command line parameters. In this example, we explicitly specify the task runner configuration file (with the `--gruntifle` command line option) and thet task to be executed.
+2. Some tools require command line parameters. In this example, we explicitly specify the task runner configuration file (with the `--gruntifle` command line option) and the task to be executed.
 
 3. Also you need to specify the _Working Directory_ to run the Grunt tool. In our case, grunt configuration file is located in the root of our project. WebStorm allows to use macros to avoid hard-coded paths. Most likely, you don't want to setup external tools for each new project, just create a universal setup. In our example we use the `$ProjectFileDir$` macros will be resolved as current WebStorm project folder root.
 
@@ -1255,19 +1250,15 @@ By pressing a combination of keys specified in the previous screen, you will be 
 .Grunt output in WebStorm
 image::fig_08_12.png[]
 
-===== Setup WebStorm support for Jasmine library
-
-//TBD
-
 === Summary
 
-Testing is one of the most important processes of software development. Well organized testing helps keeping the code of an application in a good and working state. It's especially important in interpreted languages like JavaSctipt where there is no compiler to provide a helping hand to find lots of errors on very early stages. 
+Testing is one of the most important processes of software development. Well organized testing helps keeping the code in a good and working state. It's especially important in interpreted languages like JavaSctipt where there is no compiler to provide a helping hand to find lots of errors on very early stages. 
 
 In this situation, static code analysis tools, like JSHint, could become very handy in helping with identifying typos and enforcing best practices accepted by the JavaScript community.
 
 In enterprise projects developed with compiled languages people often debate if test-driven development is really beneficial. With JavaScript it's non-debatable unless you have unlimited time and budget and are ready to live with unmaintainable JavaScript. 
 
-The enterprises that have adopted test-driven development (as well as behavior-driven development) can make the application development process more bulletproof by including test scripts in the continuous integration build process. 
+The enterprises that have adopted test-driven development (as well as behavior-driven development) routines make the application development process safer by including test scripts in the continuous integration build process. 
 
 Automating unit tests reduces the number of bugs and decreases the amount of time developers need to spend manually testing their code. If automatically launched test scripts (unit, integration, functional, and load testing) don't reveal any issues, you can rest assured that the latest code changes did not break the application logic, and that the application performs according to SLA. 
 
