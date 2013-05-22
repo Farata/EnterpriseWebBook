@@ -150,7 +150,7 @@ image::images/fig_06_01.png[image]
 
 The generated project is created with the assumption that your application will be built using the MVC paradigm discussed in the section Best Practice:MVC. The JavaScript is located in the _app_ folder, which includes the _view_ subfolder with the visual portion of your application, the _controller_ folder with controller classes, and the _model_ is for data. The _ext_ folder contains multiple distributions of the Ext JS framework. The _sass_ folder is a place for your application's CSS files (see the sidebar titled SASS and CSS later in this chapter).
 
-The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js, which contains the mapping of the long names if the framework and application classes to the shorter names (_xtypes_).
+The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js, which contains the mapping of the long names if the framework and application classes to their shorter names (_xtypes_).
 
 [source, html]
 ----
@@ -192,7 +192,7 @@ Ext.application({
 });
 ----
 
-Finally, if you'll open index.html in your Web browser, you'll see our Hello World initial Web page that looks as in <<Fig6-2>>. Without going into details, we'll just say that this view uses so called `Border` layout and shows a `panel` on the west and a `tabpanel` in the central region of the view. 
+Finally, if you'll open index.html in your Web browser, you'll see our Hello World initial Web page that looks as in <<Fig6-2>>. This view uses so called `border` layout and shows a `panel` on the west and a `tabpanel` in the central region of the view. 
 
 [[FIG6-2]]
 .Running the Generated Application 
@@ -402,7 +402,6 @@ Then the manual loading of a class can be done using Ext.require('SSC.SomeClass'
 For each class Ext JS creates one instance of special class `Ext.Class`, which will be shared by all objects instantiated from this class. 
 
 TIP: The instance of any object has access to its class via a special variable http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.Base-property-self[`self`]. 
-
 
 Prior to creating a class, Ext JS will run some pre-processors and some post-processors based on the class definition. For example, the class `'SSC.view.Viewport'` from the code sample above uses `extend: 'Ext.container.Viewport'`, which will engage the _extend_ pre-processor that will do some background work to properly build a subclass of extend: `Viewport`. If your class includes the `config` section, the _config_ preprocessor will be engaged. 
 
@@ -625,7 +624,10 @@ Ext.define('SSC.store.Donors', {
 });
 ----
 
-When you create an instance of the data store you can specify the `autoload` parameter. It it's `true`, the store will be populated the store automatically. Otherwise, explicitly call the method `load()` whenever the data retrieval is needed. For example, you can call the method `myStore.load({callback:someCallback})` passing it some callback to be executed.    
+When you create an instance of the data store you can specify the `autoload` parameter. It it's `true`, the store will be populated the store automatically. Otherwise, explicitly call the method `load()` whenever the data retrieval is needed. For example, you can call the method `myStore.load({callback:someCallback})` passing it some callback to be executed. 
+
+TIP: In Chapter 1 we were discussing HTML5 local storage aAPI. Ext JS has a class http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.LocalStorage[Ext.data.proxy.LocalStorage] that saves the model data locally if the Web browser supports it.
+
 
 ===== Controllers and Views
 
@@ -659,7 +661,7 @@ Ext.define('SSC.controller.Donate', {
 });
 ----
 
-<1> Listing stores in your controller. Actually, in most cases you'd  list stores is the `Ext.application` singleton as we did earlier. But if you need to, say dynamically create controllers, you don't have a choice but declare stores in such controllers.
+<1> Listing stores in your controller. Actually, in most cases you'd list stores is the `Ext.application` singleton as we did earlier. But if you need to, say dynamically create controllers, you don't have a choice but declare stores in such controllers.
 
 <2> Listing one or more views of your application in the `refs` property, which simplifies the search of the component globally or within some container. 
 
@@ -677,14 +679,12 @@ var donorsStore = Ext.data.StoreManager.lookup('Donors');
 var donorsStore = Ext.getStore('Donors'); 
 ----
 
-
-
 TIP: You can view and test Ext JS components against bundled themes browsing the Theme Viewer at the http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html[Ext JS 4.2 Examples] page.
 
 
 ==== Component's Lifecycle
 
-In previous chapters CSS was responsible for all of the layouts of our Save Sick Child application. In Chapter 11 you'll be learning about responsive design techniques and CSS media queries that will allow to create fluid layouts that automatically adjust to the size of the viewport. 
+In previous versions of our Save Sick Chils application CSS was responsible for all layouts of the UI components. In Chapter 11 you'll be learning about the _responsive design_ techniques and CSS media queries, which allow to create fluid layouts that automatically adjust to the size of the viewport. 
 
 But this section is about Ext JS proprietary way of creating and adding UI components to Web pages. Before the user will see a component, Ext JS framework will go through the following phases for each component:
 
@@ -698,8 +698,7 @@ Rendering and layout are the most time consuming phases. The rendering does a lo
 
 Each Web page consists of one or more containers, which include some children - components (in Ext JS they are subclasses of http://bit.ly/Zy3iZU[`Ext.Component`]), for example, `Ext.button.Button`. If a component can contain other components, it's a container (e.g. `Ext.panel.Panel`) and will have http://bit.ly/13QH0TG[`Ext.container.Container`] as one of its ancestors. In Ext JS class hierarchy, `Container` is a subclass of `Component`, so all methods and properties defined for a component are available for a container too. 
 
-You'll be defining your container class with as a subclass of a container by including 
-`extend: Ext.container.Container`. The child elements of a container are accessible via its property `items`. In the `Ext.define()` statement of the container you may specify the code that will loop through this `items` array and, say style the components, but actual instances of the children will be provided during the `Ext.create()` call via configuration object. 
+You'll be defining your container class with as a subclass of a container by including `extend: Ext.container.Container`. The child elements of a container are accessible via its property `items`. In the `Ext.define()` statement of the container you may specify the code that will loop through this `items` array and, say style the components, but actual instances of the children will be provided during the `Ext.create()` call via configuration object. 
 
 The process of adding a component to a container will typically consist of invoking `Ext.create()` and specifying in a configuration object where to render the component to, for example `renderTo: Ext.getBody()`.
 
@@ -711,16 +710,102 @@ TIP: At any time your program can get from the `ComponentManager` a reference to
 
 ==== Events
 
+Events in Ext JS are defined in the mixin `Ext.util.Observable`. Components interested in receiving events can subscribe to them using on of the following methods:
 
+* By calling the method `addListener()` 
+* By using the method `on()`. 
+* Declaratively
 
+The next code snippet shows two different ways of how a combobox can subscribe to the event `change`. The handler function is a callback that will be invoked if the event `change` will be dispatched on this combobox:  
+
+[source, javascript]
+----
+combobox.addListener('change', myEventHandlerFunction);
+
+combobox.on('change', myEventHandlerFunction);
+----
+
+To unsubscribe from the event call the method `removeListener()` or its shorter version `un()`:
+
+[source, javascript]
+----
+combobox.removeListener('change', myEventHandlerFunction);
+combobox.un('change', myEventHandlerFunction);
+----
+
+You can also declarativly subscribe to events using `listeners` property of the component:
+
+[source, javascript]
+----
+Ext.create('Ext.button.Button', {
+   listeners: {
+       click: function() { // handle event here }
+   }
+}
+----
 
 ==== Layouts
 
-Border layout - is typically used for a home page.
+In Ext JS each container has a property `items`, which stores references to its child components. The container's property `layout` controls how its children are
+laid out inside. If you won't explicitly set the `layout` property, its default value is `Auto`, which is just placing components inside the container top to bottom regardless of the component size.
 
-TBD
+Usually you'll be explicitly specifying the layout. For example, the `hbox` layout would arrange all components inside the container horizontally next to each other, but `vbox` layout would arrange them vertically. The `card` layout places the components one under another, but only the top component is visible (think of a tab folder, where the content of only one tab is visible at any given time).
 
-TIP: In Chapter 1 we were discussing HTML5 local storage aAPI. Ext JS has a class http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.LocalStorage[Ext.data.proxy.LocalStorage] that saves the model data locally if the Web browser supports it.
+The `border` layout is often used to arrange the components in the main viewport (a.k.a. home page) of your application. This layout allows you to split the container's real estate into five imaginary regions: `north`, `east`, `west`, `south`, and `center`. If you need to allocate the top menu items, place them to the region `north`. The footer of the page is in the `south` as shown in the code sample below. 
+
+[source, javascript]
+----
+Ext.define('MyApp.view.Viewport', {
+  extend: 'Ext.container.Viewport',
+  
+  layout: 'border',                 
+
+  items: [{
+    width: 980,
+    height: 200,    
+    title: "Top Menu",
+    region: "north",
+    xtype:  "panel"},
+   {
+    width: 980,
+    height: 600,
+    title: "Page Content",
+    region: "center",
+    xtype:  "panel"},
+   },
+   {
+    width: 980,
+    height: 100,
+    title: "The footer",
+    region: "south",
+    xtype:  "panel"},
+   }]
+});
+----
+
+===== The flex Property
+
+Ext JS has a property `flex` that allows make your layout more flexible. Instead of specifying the width or height of a child component in absolute values you can split the available space proportionally. For example if the space has to be divided between two components having the `flex` values 2 and 1, this means that the 2/3 of the container's space will be allocated to the first component, and 1/3 to the second one as illustrated in the following code snippet.
+
+[source, javascript]
+----
+ layout: 'vbox',
+
+ items: [{
+   xtype: 'component',
+   html: 'Lorem ipsum dolor',
+   flex: 2
+   }, 
+   {
+   xtype: 'button',
+   action: 'showform',
+   text: 'DONATE NOW',
+   flex: 1
+ }]
+----
+
+In the next section you'll see Ext JS layouts in action while working on the Save Sick Child application.
+
 
 === Developing Save Sick Child With Ext JS
 
