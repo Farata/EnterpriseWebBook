@@ -626,12 +626,14 @@ Ext.define('SSC.store.Donors', {
 
 When you create an instance of the data store you can specify the `autoload` parameter. It it's `true`, the store will be populated the store automatically. Otherwise, explicitly call the method `load()` whenever the data retrieval is needed. For example, you can call the method `myStore.load({callback:someCallback})` passing it some callback to be executed. 
 
-TIP: In Chapter 1 we were discussing HTML5 local storage aAPI. Ext JS has a class http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.LocalStorage[Ext.data.proxy.LocalStorage] that saves the model data locally if the Web browser supports it.
+TIP: In Chapter 1 we were discussing HTML5 local storage API. Ext JS has a class http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.LocalStorage[Ext.data.proxy.LocalStorage] that saves the model data locally if the Web browser supports it.
 
 
 ===== Controllers and Views
 
-Your application controller is a liaison between the data and the views. This class has to extend `Ext.app.Controller`, and will include references to the views and, possibly stores. Controller will automatically load every class mentioned in its code, create an instance of each store and register each instance with the class [`Ext.StoreManager`].
+Your application controller is a liaison between the data and the views. This class has to extend `Ext.app.Controller`, and will include references to the views and, possibly stores. Controller will automatically load every class mentioned in its code, create an instance of each store and register each instance with the class [`Ext.StoreManager`]. 
+
+A controller class has config properties `stores`, `models`,  and `views`, where you can list stores, models, and views that controller should know about. For example, the next code listing shows the controller `SSC.controller.Donate` includes the names of two stores - `SSC.store.Campaigns` and `SSC.store.Donors`.
 
 [source, javascript]
 ----
@@ -661,7 +663,7 @@ Ext.define('SSC.controller.Donate', {
 });
 ----
 
-<1> Listing stores in your controller. Actually, in most cases you'd list stores is the `Ext.application` singleton as we did earlier. But if you need to, say dynamically create controllers, you don't have a choice but declare stores in such controllers.
+<1> Listing stores in your controller. Actually, in most cases you'd list stores is the `Ext.application` singleton as we did earlier. But if you need to dynamically create controllers, you don't have a choice but declare stores in such controllers.
 
 <2> Listing one or more views of your application in the `refs` property, which simplifies the search of the component globally or within some container. 
 
@@ -669,15 +671,17 @@ Ext.define('SSC.controller.Donate', {
 
 <4> An event handler to process clicks on the button that has an attribute `action=showform`
 
-`Ext.StoreManager` provides a convenience method to look up the store by store ID. If stores were automatically injected into `Ext.StoreManager` by the comntroller, the default store ID is it's short name, e.g. `Donors` for `SSC.store.Donors`:
+`Ext.StoreManager` provides a convenience method to look up the store by store ID. If stores were automatically injected into `Ext.StoreManager` by the controller, the default store ID is its name, e.g. `SSC.store.Donors`:
 
 [source, javascript]
 ----
-var donorsStore = Ext.data.StoreManager.lookup('Donors');
+var donorsStore = Ext.data.StoreManager.lookup('SSC.store.Donors');
 
 // An alternative syntax to use StoreManager lookup 
-var donorsStore = Ext.getStore('Donors'); 
+var donorsStore = Ext.getStore('SSC.store.Donors'); 
 ----
+
+The above `SSC.controller.Donate` doesn't use the config properties `views`, but it it did, Ext JS would generate getters and setters for every view (the same is true for stores and models). It uses `refs` instead to reference components, and getters and setters will be generated for each components listed in `refs`, e.g. `getDonatePanel()`. Lookup of such components is done based on the value in `selector` using the syntax compatible with http://docs-devel.sencha.com/extjs/4.2.1/#!/api/Ext.ComponentQuery[`ComponentQuery`].
 
 TIP: You can view and test Ext JS components against bundled themes browsing the Theme Viewer at the http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html[Ext JS 4.2 Examples] page.
 
@@ -744,6 +748,23 @@ Ext.create('Ext.button.Button', {
 }
 ----
 
+In Chapter 2 we've explained what event bubbling is. In Ext JS event bubbling mechanism enables events dispatched by components that include `Ext.util.Observable` bubble up through all enclosing containers. For components it means that you can handle component’s event on container level. It can be handy to subscribe and handle multiple similar events in one place. To enable bubbling for selected events use the `enableBubble()` method, for example: 
+
+[source, javascript]
+----
+this.enableBubble(['textchange', 'validitychange']);
+----
+
+To define custom events use the method `addEvents()`, where you can provide one or more of the custom event names:
+
+[source, javascript]
+----
+this.addEvents('messagesent', 'updatecompleted');
+----
+
+For components you have to define custom events inside the `initComponent()` method. For controllers - inside `init()`, and for any other class – inside its constructor.
+
+
 ==== Layouts
 
 In Ext JS each container has a property `items`, which stores references to its child components. The container's property `layout` controls how its children are
@@ -803,6 +824,8 @@ Ext JS has a property `flex` that allows make your layout more flexible. Instead
    flex: 1
  }]
 ----
+
+Tip: the format of this book doesn't allow us to include detailed description of major Ext JS component. If you are planning to use Ext JS for development of enterprise Web applications, allocate some extra time to learn the data grid `Ext.grid.Panel` that's used for rendering of tabular data. You should also master working with forms with `Ext.form.Panel`.
 
 In the next section you'll see Ext JS layouts in action while working on the Save Sick Child application.
 
