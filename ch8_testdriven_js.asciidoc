@@ -468,7 +468,7 @@ Now let's briefly review QUnit API components. You can find a typical QUnit scri
     test('2 add 2 not equals 5', function() {
         notEqual(2 + 2, 5, "failed");       // <6>
     });
-}(jQuery));     // <6>
+}(jQuery));     // <7>
 ----
 <1> A `module` function allows to combine related tests as group.
 
@@ -1064,7 +1064,7 @@ As you can see, testing of the DOM manipulation code is much like any other type
 
 ==== The Test-Driven ExtJS version of _SaveSickChild.org_
 
-We assume that you've read the materials from Chapter 6, and in this section you'll apply your newly acquired Ext JS skills. As a reminder, Ext JS framework encourages using MVC architecture. The separation of responsibilities between Views, Models and Controllers makes an ExtJS application a perfect candidate for unit testing.  In this section you'll learn how to test the Ext JS version of the Save Sick Child application from Chapter 6.
+We assume that you've read the materials from Chapter 6, and in this section you'll apply your newly acquired Ext JS skills. As a reminder, Ext JS framework encourages using MVC architecture. The separation of responsibilities between Views, Models and Controllers makes an ExtJS application a perfect candidate for unit testing. In this section you'll learn how to test the Ext JS version of the Save Sick Child application from Chapter 6.
 
 ===== Harnessing ExtJS application
 
@@ -1175,7 +1175,6 @@ Ext.define('Test.spec.BasicAssumptions', {}, function() {   // <1>
 
 <2> The rest of the code is very similar to the Jasmine code sample shown earlier in this chapter.
 
-
 After setting up the testing harness for SaveSickChild application we will suggest testing strategy for ExtJS applications. Let's start with testing the models and controllers followed by testing the views.
 
 ===== Testing The Models
@@ -1205,8 +1204,150 @@ include::include/CampaignModelAssumptions.js[]
 include::include/Campaign.js[]
 ----
 
-// TBD
+// <vik>
+[[CONTROLLER_TEST]]
+===== Testing The Controllers
 
+In worth to remind you that controllers in ExtJS are classes like any others. That is why controllers should be tested the same way. In the next example, let's test _Donate NOW_ functionality. When user clicks _Donate Now_ button of the `Donate` panel controller's code should validate the user input and submit data to the server. Because, we need to test controller's behavior, we're not going to submit actual data. Instead you'll use Jasmine spies. 
+
+.Donate controller specification
+[source,javascript]
+----
+Ext.define("Test.spec.DonateControllerSpec", {}, function () {
+    describe("Donate controller", function () {
+        beforeEach(function () {
+            // controller's setup code is omitted
+        });
+        it('should exists', function () {       // <1>
+            var controller = Ext.create('SSC.controller.Donate');
+            expect(controller.$className).toEqual('SSC.controller.Donate');
+        });
+        describe('donateNow button', function () {
+            it('calls donate on DonorInfo if form is valid', function () {
+                var donorInfo = Ext.create('SSC.model.DonorInfo', {});
+                var donateForm = Ext.create('SSC.view.DonateForm', {});
+                var controller = Ext.create('SSC.controller.Donate');
+                spyOn(donorInfo, 'donate');     // <2>
+                spyOn(controller, 'getDonatePanel').andCallFake(function () {   // <3>
+                    donateForm.down = function () {
+                        return {
+                            isValid: function () {
+                                return true;
+                            },
+                            getValues: function () {
+                                return {};
+                            }
+                        };
+                    };
+                    return donateForm;
+                });
+                spyOn(controller, 'newDonorInfo').andCallFake(function () { //<4>
+                    return donorInfo;
+                });
+                controller.submitDonateForm();  
+                expect(donorInfo.donate).toHaveBeenCalled();    // <5>
+            });
+        });
+    });
+});
+----
+<1> First of all, you need to test if controller's class is available and can be instantiated.
+
+<2> With help of Jasmine's `spyOn()` function you substitute `DonorInfo` model's `donate()` function. 
+
+<3> We're not interesting in view's interaction, only contract. At this point, some methods can be substituted with fake implementation to let the test pass. In this case, the specification tests situation when form s valid.
+
+<4> Next you need to inject emulated controller dependencies. Function `donate()` was replaced by spy.
+
+<5> Finally, you can assert created spy to check if function was called by controller.
+
+Here is how the function under the test looks like.
+
+[source,javascript]
+----
+Ext.define('SSC.controller.Donate', {
+    extend: 'Ext.app.Controller',
+    refs: [{
+            ref: 'donatePanel',
+            selector: '[cls=donate-panel]'
+        }
+    ],
+    init: function() {
+        'use strict';
+        this.control({
+            'button[action=donate]': {
+                click: this.submitDonateForm
+            }
+        });
+    },
+    newDonorInfo: function() {          // <1>
+        return Ext.create('SSC.model.DonorInfo', {});
+    },
+    submitDonateForm: function() {
+        var form = this.getDonatePanel().down('form');      
+        if (form.isValid()) {       //<2>
+            var donorInfo = this.newDonorInfo();
+            Ext.iterate(form.getValues(), function(key, value) {  //<3>
+                donorInfo.set(key, value);
+            }, this);
+            donorInfo.donate();   // <4>
+        }
+    }
+});
+----
+<1> Factory method for creating new instance of the `SSC.model.DonorInfo` class.
+
+<2> In case form is valid, you can read data from the form fields...
+
+<3> ... and populate properties of corresponding object.
+
+<4> `DonorInfo` can be submitted by calling `donate` method.
+
+===== Testing The Views
+
+UI Tests can be divided into two constituent parts: interaction tests and component tests.
+Interactions tests simulate real-world scenarios of application usage as if a user is using the application. Interaction testing is better delegate to the functional testing tools like Selenium or CasperJS.
+
+****
+There is another UI testing tool worth to mention. Especially, in context of testing ExtJS applications - http://bryntum.com/products/siesta/[Siesta]. Siesta allows to perform testing of the DOM and simulate user interactions. Siesta written in JavaScript and uses Siesta for unit and UI testing. There are two editions of Siesta - lite and professional. 
+****
+
+Component Tests isolate independent and reusable pieces of your application to verify their display, behavior and contract with other components (see <<CONTROLLER_TEST,testing of the controllers>>).
+Let's see how we can do that. Please, consider <<EXT_VIEW_TEST,following example>>
+
+[[EXT_VIEW_TEST]]
+[source,jaascript]
+----
+Ext.define('Test.spec.ViewsAssumptions', {}, function () {
+    function prepareDOM(obj) {      //<1>
+        Ext.DomHelper.append(Ext.getBody(), obj);
+    }
+    describe('DonateForm ', function () {
+        var donateForm = null;  //<2>
+        beforeEach(function () {
+            prepareDOM({tag: 'div', id: 'test-donate'}); // <3>
+            donateForm = Ext.create('SSC.view.DonateForm', {    //<4>
+                renderTo: 'test-donate'
+            });
+        });
+        afterEach(function () {
+            donateForm.destroy();   // <5>
+            donateForm = null;
+        });
+        it('should have donateform xtype', function () {
+            expect(donateForm.isXType('donateform')).toEqual(true); // <6>
+        });
+    });
+});
+----
+<1> A helper function for fixture DOM elements creation.
+<2> A reusable scoped variable.
+<3> Create fixture `test` div.
+<4> Create a fresh form for every test to avoid test pollution.
+<5> Destroy the form after every test so we don't pollute the environment.
+<6> In this test, you need to make sure that `DonateForm` component has `donateform` xtype.
+
+//</vik>
 ==== Setting up the IDE for TDD
 
 In this section we will setup WebStorm to use the described above tools inside this IDE. We will show how to integrate Grunt tool with WebStrom to run grunt tasks from there. 
