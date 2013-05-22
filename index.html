@@ -7139,7 +7139,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Figure 60. CMD-generated project</div>
 </div>
 <div class="paragraph"><p>The generated project is created with the assumption that your application will be built using the MVC paradigm discussed in the section Best Practice:MVC. The JavaScript is located in the <em>app</em> folder, which includes the <em>view</em> subfolder with the visual portion of your application, the <em>controller</em> folder with controller classes, and the <em>model</em> is for data. The <em>ext</em> folder contains multiple distributions of the Ext JS framework. The <em>sass</em> folder is a place for your application&#8217;s CSS files (see the sidebar titled SASS and CSS later in this chapter).</p></div>
-<div class="paragraph"><p>The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js, which contains the mapping of the long names if the framework and application classes to the shorter names (<em>xtypes</em>).</p></div>
+<div class="paragraph"><p>The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js, which contains the mapping of the long names if the framework and application classes to their shorter names (<em>xtypes</em>).</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
@@ -7181,7 +7181,7 @@ http://www.gnu.org/software/src-highlite -->
 
     autoCreateViewport<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
-<div class="paragraph"><p>Finally, if you&#8217;ll open index.html in your Web browser, you&#8217;ll see our Hello World initial Web page that looks as in <a href="#Fig6-2">[Fig6-2]</a>. Without going into details, we&#8217;ll just say that this view uses so called <span class="monospaced">Border</span> layout and shows a <span class="monospaced">panel</span> on the west and a <span class="monospaced">tabpanel</span> in the central region of the view.</p></div>
+<div class="paragraph"><p>Finally, if you&#8217;ll open index.html in your Web browser, you&#8217;ll see our Hello World initial Web page that looks as in <a href="#Fig6-2">[Fig6-2]</a>. This view uses so called <span class="monospaced">border</span> layout and shows a <span class="monospaced">panel</span> on the west and a <span class="monospaced">tabpanel</span> in the central region of the view.</p></div>
 <div class="imageblock" id="FIG6-2">
 <div class="content">
 <img src="images/fig_06_02.png" alt="image">
@@ -7676,10 +7676,19 @@ http://www.gnu.org/software/src-highlite -->
     <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>When you create an instance of the data store you can specify the <span class="monospaced">autoload</span> parameter. It it&#8217;s <span class="monospaced">true</span>, the store will be populated the store automatically. Otherwise, explicitly call the method <span class="monospaced">load()</span> whenever the data retrieval is needed. For example, you can call the method <span class="monospaced">myStore.load({callback:someCallback})</span> passing it some callback to be executed.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/icons/tip.png" alt="Tip">
+</td>
+<td class="content">In Chapter 1 we were discussing HTML5 local storage API. Ext JS has a class <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.LocalStorage">Ext.data.proxy.LocalStorage</a> that saves the model data locally if the Web browser supports it.</td>
+</tr></table>
+</div>
 </div>
 <div class="sect4">
 <h5 id="_controllers_and_views">Controllers and Views</h5>
 <div class="paragraph"><p>Your application controller is a liaison between the data and the views. This class has to extend <span class="monospaced">Ext.app.Controller</span>, and will include references to the views and, possibly stores. Controller will automatically load every class mentioned in its code, create an instance of each store and register each instance with the class [<span class="monospaced">Ext.StoreManager</span>].</p></div>
+<div class="paragraph"><p>A controller class has config properties <span class="monospaced">stores</span>, <span class="monospaced">models</span>,  and <span class="monospaced">views</span>, where you can list stores, models, and views that controller should know about. For example, the next code listing shows the controller <span class="monospaced">SSC.controller.Donate</span> includes the names of two stores - <span class="monospaced">SSC.store.Campaigns</span> and <span class="monospaced">SSC.store.Donors</span>.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
@@ -7711,7 +7720,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="colist arabic"><table>
 <tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
-Listing stores in your controller. Actually, in most cases you&#8217;d  list stores is the <span class="monospaced">Ext.application</span> singleton as we did earlier. But if you need to, say dynamically create controllers, you don&#8217;t have a choice but declare stores in such controllers.
+Listing stores in your controller. Actually, in most cases you&#8217;d list stores is the <span class="monospaced">Ext.application</span> singleton as we did earlier. But if you need to dynamically create controllers, you don&#8217;t have a choice but declare stores in such controllers.
 </td></tr>
 <tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
 Listing one or more views of your application in the <span class="monospaced">refs</span> property, which simplifies the search of the component globally or within some container.
@@ -7723,16 +7732,17 @@ Registering event listeners in the function <span class="monospaced">init()</spa
 An event handler to process clicks on the button that has an attribute <span class="monospaced">action=showform</span>
 </td></tr>
 </table></div>
-<div class="paragraph"><p><span class="monospaced">Ext.StoreManager</span> provides a convenience method to look up the store by store ID. If stores were automatically injected into <span class="monospaced">Ext.StoreManager</span> by the comntroller, the default store ID is it&#8217;s short name, e.g. <span class="monospaced">Donors</span> for <span class="monospaced">SSC.store.Donors</span>:</p></div>
+<div class="paragraph"><p><span class="monospaced">Ext.StoreManager</span> provides a convenience method to look up the store by store ID. If stores were automatically injected into <span class="monospaced">Ext.StoreManager</span> by the controller, the default store ID is its name, e.g. <span class="monospaced">SSC.store.Donors</span>:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> donorsStore <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span>data<span style="color: #990000">.</span>StoreManager<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">lookup</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Donors'</span><span style="color: #990000">);</span>
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> donorsStore <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span>data<span style="color: #990000">.</span>StoreManager<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">lookup</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.store.Donors'</span><span style="color: #990000">);</span>
 
 <span style="font-style: italic"><span style="color: #9A1900">// An alternative syntax to use StoreManager lookup</span></span>
-<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> donorsStore <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getStore</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Donors'</span><span style="color: #990000">);</span></tt></pre></div></div>
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> donorsStore <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getStore</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.store.Donors'</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>The above <span class="monospaced">SSC.controller.Donate</span> doesn&#8217;t use the config properties <span class="monospaced">views</span>, but it it did, Ext JS would generate getters and setters for every view (the same is true for stores and models). It uses <span class="monospaced">refs</span> instead to reference components, and getters and setters will be generated for each components listed in <span class="monospaced">refs</span>, e.g. <span class="monospaced">getDonatePanel()</span>. Lookup of such components is done based on the value in <span class="monospaced">selector</span> using the syntax compatible with <a href="http://docs-devel.sencha.com/extjs/4.2.1/#!/api/Ext.ComponentQuery"><span class="monospaced">ComponentQuery</span></a>.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -7745,7 +7755,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 <div class="sect3">
 <h4 id="_component_8217_s_lifecycle">Component&#8217;s Lifecycle</h4>
-<div class="paragraph"><p>In previous chapters CSS was responsible for all of the layouts of our Save Sick Child application. In Chapter 11 you&#8217;ll be learning about responsive design techniques and CSS media queries that will allow to create fluid layouts that automatically adjust to the size of the viewport.</p></div>
+<div class="paragraph"><p>In previous versions of our Save Sick Chils application CSS was responsible for all layouts of the UI components. In Chapter 11 you&#8217;ll be learning about the <em>responsive design</em> techniques and CSS media queries, which allow to create fluid layouts that automatically adjust to the size of the viewport.</p></div>
 <div class="paragraph"><p>But this section is about Ext JS proprietary way of creating and adding UI components to Web pages. Before the user will see a component, Ext JS framework will go through the following phases for each component:</p></div>
 <div class="ulist"><ul>
 <li>
@@ -7776,8 +7786,7 @@ Destruction - removing the reference from DOM, removing event listeners and unre
 </ul></div>
 <div class="paragraph"><p>Rendering and layout are the most time consuming phases. The rendering does a lot of preparations to give the browser&#8217;s rendering engine HTML elements and not Ext JS classes. The layout phase is slow because the calculation of sizes and positions (unless they are in absolute coordinates) and applying of cascading stylesheets takes time. Ext JS 4.1 was redesigned to minimize the number of reflows, which happen when  the code reads-measures-writes to the DOM and makes dynamic style modifications. Now a large portion or recalculations is done in a batch before modifying the DOM.</p></div>
 <div class="paragraph"><p>Each Web page consists of one or more containers, which include some children - components (in Ext JS they are subclasses of <a href="http://bit.ly/Zy3iZU"><span class="monospaced">Ext.Component</span></a>), for example, <span class="monospaced">Ext.button.Button</span>. If a component can contain other components, it&#8217;s a container (e.g. <span class="monospaced">Ext.panel.Panel</span>) and will have <a href="http://bit.ly/13QH0TG"><span class="monospaced">Ext.container.Container</span></a> as one of its ancestors. In Ext JS class hierarchy, <span class="monospaced">Container</span> is a subclass of <span class="monospaced">Component</span>, so all methods and properties defined for a component are available for a container too.</p></div>
-<div class="paragraph"><p>You&#8217;ll be defining your container class with as a subclass of a container by including
-<span class="monospaced">extend: Ext.container.Container</span>. The child elements of a container are accessible via its property <span class="monospaced">items</span>. In the <span class="monospaced">Ext.define()</span> statement of the container you may specify the code that will loop through this <span class="monospaced">items</span> array and, say style the components, but actual instances of the children will be provided during the <span class="monospaced">Ext.create()</span> call via configuration object.</p></div>
+<div class="paragraph"><p>You&#8217;ll be defining your container class with as a subclass of a container by including <span class="monospaced">extend: Ext.container.Container</span>. The child elements of a container are accessible via its property <span class="monospaced">items</span>. In the <span class="monospaced">Ext.define()</span> statement of the container you may specify the code that will loop through this <span class="monospaced">items</span> array and, say style the components, but actual instances of the children will be provided during the <span class="monospaced">Ext.create()</span> call via configuration object.</p></div>
 <div class="paragraph"><p>The process of adding a component to a container will typically consist of invoking <span class="monospaced">Ext.create()</span> and specifying in a configuration object where to render the component to, for example <span class="monospaced">renderTo: Ext.getBody()</span>.</p></div>
 <div class="paragraph"><p>But under the hood Ext JS will do a lot more work. The framework will auto-generate a unique ID for the component, assign some event listeners, instantiate component plugins if specified, invoke the <span class="monospaced">initComponent()</span>, and add the component to <span class="monospaced">Ext.ComponentManager</span>.</p></div>
 <div class="admonitionblock">
@@ -7799,18 +7808,128 @@ Destruction - removing the reference from DOM, removing event listeners and unre
 </div>
 <div class="sect3">
 <h4 id="_events_2">Events</h4>
+<div class="paragraph"><p>Events in Ext JS are defined in the mixin <span class="monospaced">Ext.util.Observable</span>. Components interested in receiving events can subscribe to them using on of the following methods:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+By calling the method <span class="monospaced">addListener()</span>
+</p>
+</li>
+<li>
+<p>
+By using the method <span class="monospaced">on()</span>.
+</p>
+</li>
+<li>
+<p>
+Declaratively
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The next code snippet shows two different ways of how a combobox can subscribe to the event <span class="monospaced">change</span>. The handler function is a callback that will be invoked if the event <span class="monospaced">change</span> will be dispatched on this combobox:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>combobox<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addListener</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'change'</span><span style="color: #990000">,</span> myEventHandlerFunction<span style="color: #990000">);</span>
+
+combobox<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">on</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'change'</span><span style="color: #990000">,</span> myEventHandlerFunction<span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>To unsubscribe from the event call the method <span class="monospaced">removeListener()</span> or its shorter version <span class="monospaced">un()</span>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>combobox<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">removeListener</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'change'</span><span style="color: #990000">,</span> myEventHandlerFunction<span style="color: #990000">);</span>
+combobox<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">un</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'change'</span><span style="color: #990000">,</span> myEventHandlerFunction<span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>You can also declarativly subscribe to events using <span class="monospaced">listeners</span> property of the component:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Ext.button.Button'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+   listeners<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+       click<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span> <span style="font-style: italic"><span style="color: #9A1900">// handle event here }</span></span>
+   <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span></tt></pre></div></div>
+<div class="paragraph"><p>In Chapter 2 we&#8217;ve explained what event bubbling is. In Ext JS event bubbling mechanism enables events dispatched by components that include <span class="monospaced">Ext.util.Observable</span> bubble up through all enclosing containers. For components it means that you can handle component’s event on container level. It can be handy to subscribe and handle multiple similar events in one place. To enable bubbling for selected events use the <span class="monospaced">enableBubble()</span> method, for example:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">enableBubble</span></span><span style="color: #990000">([</span><span style="color: #FF0000">'textchange'</span><span style="color: #990000">,</span> <span style="color: #FF0000">'validitychange'</span><span style="color: #990000">]);</span></tt></pre></div></div>
+<div class="paragraph"><p>To define custom events use the method <span class="monospaced">addEvents()</span>, where you can provide one or more of the custom event names:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addEvents</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'messagesent'</span><span style="color: #990000">,</span> <span style="color: #FF0000">'updatecompleted'</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>For components you have to define custom events inside the <span class="monospaced">initComponent()</span> method. For controllers - inside <span class="monospaced">init()</span>, and for any other class – inside its constructor.</p></div>
 </div>
 <div class="sect3">
 <h4 id="_layouts">Layouts</h4>
-<div class="paragraph"><p>Border layout - is typically used for a home page.</p></div>
-<div class="paragraph"><p>TBD</p></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<img src="images/icons/tip.png" alt="Tip">
-</td>
-<td class="content">In Chapter 1 we were discussing HTML5 local storage aAPI. Ext JS has a class <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.LocalStorage">Ext.data.proxy.LocalStorage</a> that saves the model data locally if the Web browser supports it.</td>
-</tr></table>
+<div class="paragraph"><p>In Ext JS each container has a property <span class="monospaced">items</span>, which stores references to its child components. The container&#8217;s property <span class="monospaced">layout</span> controls how its children are
+laid out inside. If you won&#8217;t explicitly set the <span class="monospaced">layout</span> property, its default value is <span class="monospaced">Auto</span>, which is just placing components inside the container top to bottom regardless of the component size.</p></div>
+<div class="paragraph"><p>Usually you&#8217;ll be explicitly specifying the layout. For example, the <span class="monospaced">hbox</span> layout would arrange all components inside the container horizontally next to each other, but <span class="monospaced">vbox</span> layout would arrange them vertically. The <span class="monospaced">card</span> layout places the components one under another, but only the top component is visible (think of a tab folder, where the content of only one tab is visible at any given time).</p></div>
+<div class="paragraph"><p>The <span class="monospaced">border</span> layout is often used to arrange the components in the main viewport (a.k.a. home page) of your application. This layout allows you to split the container&#8217;s real estate into five imaginary regions: <span class="monospaced">north</span>, <span class="monospaced">east</span>, <span class="monospaced">west</span>, <span class="monospaced">south</span>, and <span class="monospaced">center</span>. If you need to allocate the top menu items, place them to the region <span class="monospaced">north</span>. The footer of the page is in the <span class="monospaced">south</span> as shown in the code sample below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">define</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'MyApp.view.Viewport'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+  extend<span style="color: #990000">:</span> <span style="color: #FF0000">'Ext.container.Viewport'</span><span style="color: #990000">,</span>
+
+  layout<span style="color: #990000">:</span> <span style="color: #FF0000">'border'</span><span style="color: #990000">,</span>
+
+  items<span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">{</span>
+    width<span style="color: #990000">:</span> <span style="color: #993399">980</span><span style="color: #990000">,</span>
+    height<span style="color: #990000">:</span> <span style="color: #993399">200</span><span style="color: #990000">,</span>
+    title<span style="color: #990000">:</span> <span style="color: #FF0000">"Top Menu"</span><span style="color: #990000">,</span>
+    region<span style="color: #990000">:</span> <span style="color: #FF0000">"north"</span><span style="color: #990000">,</span>
+    xtype<span style="color: #990000">:</span>  <span style="color: #FF0000">"panel"</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+   <span style="color: #FF0000">{</span>
+    width<span style="color: #990000">:</span> <span style="color: #993399">980</span><span style="color: #990000">,</span>
+    height<span style="color: #990000">:</span> <span style="color: #993399">600</span><span style="color: #990000">,</span>
+    title<span style="color: #990000">:</span> <span style="color: #FF0000">"Page Content"</span><span style="color: #990000">,</span>
+    region<span style="color: #990000">:</span> <span style="color: #FF0000">"center"</span><span style="color: #990000">,</span>
+    xtype<span style="color: #990000">:</span>  <span style="color: #FF0000">"panel"</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+   <span style="color: #FF0000">{</span>
+    width<span style="color: #990000">:</span> <span style="color: #993399">980</span><span style="color: #990000">,</span>
+    height<span style="color: #990000">:</span> <span style="color: #993399">100</span><span style="color: #990000">,</span>
+    title<span style="color: #990000">:</span> <span style="color: #FF0000">"The footer"</span><span style="color: #990000">,</span>
+    region<span style="color: #990000">:</span> <span style="color: #FF0000">"south"</span><span style="color: #990000">,</span>
+    xtype<span style="color: #990000">:</span>  <span style="color: #FF0000">"panel"</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+   <span style="color: #FF0000">}</span><span style="color: #990000">]</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="sect4">
+<h5 id="_the_flex_property">The flex Property</h5>
+<div class="paragraph"><p>Ext JS has a property <span class="monospaced">flex</span> that allows make your layout more flexible. Instead of specifying the width or height of a child component in absolute values you can split the available space proportionally. For example if the space has to be divided between two components having the <span class="monospaced">flex</span> values 2 and 1, this means that the 2/3 of the container&#8217;s space will be allocated to the first component, and 1/3 to the second one as illustrated in the following code snippet.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt> layout<span style="color: #990000">:</span> <span style="color: #FF0000">'vbox'</span><span style="color: #990000">,</span>
+
+ items<span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">{</span>
+   xtype<span style="color: #990000">:</span> <span style="color: #FF0000">'component'</span><span style="color: #990000">,</span>
+   html<span style="color: #990000">:</span> <span style="color: #FF0000">'Lorem ipsum dolor'</span><span style="color: #990000">,</span>
+   flex<span style="color: #990000">:</span> <span style="color: #993399">2</span>
+   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+   <span style="color: #FF0000">{</span>
+   xtype<span style="color: #990000">:</span> <span style="color: #FF0000">'button'</span><span style="color: #990000">,</span>
+   action<span style="color: #990000">:</span> <span style="color: #FF0000">'showform'</span><span style="color: #990000">,</span>
+   text<span style="color: #990000">:</span> <span style="color: #FF0000">'DONATE NOW'</span><span style="color: #990000">,</span>
+   flex<span style="color: #990000">:</span> <span style="color: #993399">1</span>
+ <span style="color: #FF0000">}</span><span style="color: #990000">]</span></tt></pre></div></div>
+<div class="paragraph"><p>Tip: the format of this book doesn&#8217;t allow us to include detailed description of major Ext JS component. If you are planning to use Ext JS for development of enterprise Web applications, allocate some extra time to learn the data grid <span class="monospaced">Ext.grid.Panel</span> that&#8217;s used for rendering of tabular data. You should also master working with forms with <span class="monospaced">Ext.form.Panel</span>.</p></div>
+<div class="paragraph"><p>In the next section you&#8217;ll see Ext JS layouts in action while working on the Save Sick Child application.</p></div>
 </div>
 </div>
 </div>
@@ -10041,7 +10160,7 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #000000">test</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'2 add 2 not equals 5'</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
         <span style="font-weight: bold"><span style="color: #000000">notEqual</span></span><span style="color: #990000">(</span><span style="color: #993399">2</span> <span style="color: #990000">+</span> <span style="color: #993399">2</span><span style="color: #990000">,</span> <span style="color: #993399">5</span><span style="color: #990000">,</span> <span style="color: #FF0000">"failed"</span><span style="color: #990000">);</span>       <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/6.png" alt="6"></span></span>
     <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
-<span style="color: #FF0000">}</span><span style="color: #990000">(</span>jQuery<span style="color: #990000">));</span>     <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/6.png" alt="6"></span></span></tt></pre></div></div>
+<span style="color: #FF0000">}</span><span style="color: #990000">(</span>jQuery<span style="color: #990000">));</span>     <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/7.png" alt="7"></span></span></tt></pre></div></div>
 <div class="colist arabic"><table>
 <tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
 A <span class="monospaced">module</span> function allows to combine related tests as group.
@@ -10757,7 +10876,7 @@ Now when all requirements for our production code (<span class="monospaced">logi
 <h3 id="_save_sick_child_with_tdd">Save Sick Child With TDD</h3>
 <div class="sect3">
 <h4 id="_the_test_driven_extjs_version_of_em_savesickchild_org_em">The Test-Driven ExtJS version of <em>SaveSickChild.org</em></h4>
-<div class="paragraph"><p>We assume that you&#8217;ve read the materials from Chapter 6, and in this section you&#8217;ll apply your newly acquired Ext JS skills. As a reminder, Ext JS framework encourages using MVC architecture. The separation of responsibilities between Views, Models and Controllers makes an ExtJS application a perfect candidate for unit testing.  In this section you&#8217;ll learn how to test the Ext JS version of the Save Sick Child application from Chapter 6.</p></div>
+<div class="paragraph"><p>We assume that you&#8217;ve read the materials from Chapter 6, and in this section you&#8217;ll apply your newly acquired Ext JS skills. As a reminder, Ext JS framework encourages using MVC architecture. The separation of responsibilities between Views, Models and Controllers makes an ExtJS application a perfect candidate for unit testing. In this section you&#8217;ll learn how to test the Ext JS version of the Save Sick Child application from Chapter 6.</p></div>
 <div class="sect4">
 <h5 id="_harnessing_extjs_application">Harnessing ExtJS application</h5>
 <div class="paragraph"><p>Let&#8217;s create a skeleton application that can provide for our classes under the test familiar environment.</p></div>
@@ -10988,6 +11107,151 @@ http://www.gnu.org/software/src-highlite -->
         <span style="color: #FF0000">}</span>
     <span style="color: #990000">]</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+<div class="sect4">
+<h5 id="CONTROLLER_TEST">Testing The Controllers</h5>
+<div class="paragraph"><p>Controllers in ExtJS are classes like any others and should be tested the same way. In the next example, let&#8217;s test <em>Donate Now</em> functionality. When the user clicks <em>Donate Now</em> button of the <span class="monospaced">Donate</span> panel controller&#8217;s code should validate the user input and submit the data to the server. Since we are just  testing controller&#8217;s behavior, we&#8217;re not going to submit the actual data. We&#8217;ll use Jasmine spies instead.</p></div>
+<div class="listingblock">
+<div class="title">Donate controller specification</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">define</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Test.spec.DonateControllerSpec"</span><span style="color: #990000">,</span> <span style="color: #FF0000">{}</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #000000">describe</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Donate controller"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+        <span style="font-weight: bold"><span style="color: #000000">beforeEach</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+            <span style="font-style: italic"><span style="color: #9A1900">// controller's setup code is omitted</span></span>
+        <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+        <span style="font-weight: bold"><span style="color: #000000">it</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'should exists'</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>       <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/1.png" alt="1"></span></span>
+            <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> controller <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.controller.Donate'</span><span style="color: #990000">);</span>
+            <span style="font-weight: bold"><span style="color: #000000">expect</span></span><span style="color: #990000">(</span>controller<span style="color: #990000">.</span>$className<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">toEqual</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.controller.Donate'</span><span style="color: #990000">);</span>
+        <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+        <span style="font-weight: bold"><span style="color: #000000">describe</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'donateNow button'</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+            <span style="font-weight: bold"><span style="color: #000000">it</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'calls donate on DonorInfo if form is valid'</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+                <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> donorInfo <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.model.DonorInfo'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{}</span><span style="color: #990000">);</span>
+                <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> donateForm <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.view.DonateForm'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{}</span><span style="color: #990000">);</span>
+                <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> controller <span style="color: #990000">=</span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.controller.Donate'</span><span style="color: #990000">);</span>
+                <span style="font-weight: bold"><span style="color: #000000">spyOn</span></span><span style="color: #990000">(</span>donorInfo<span style="color: #990000">,</span> <span style="color: #FF0000">'donate'</span><span style="color: #990000">);</span>     <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/2.png" alt="2"></span></span>
+                <span style="font-weight: bold"><span style="color: #000000">spyOn</span></span><span style="color: #990000">(</span>controller<span style="color: #990000">,</span> <span style="color: #FF0000">'getDonatePanel'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">andCallFake</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>   <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/3.png" alt="3"></span></span>
+                    donateForm<span style="color: #990000">.</span>down <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+                        <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="color: #FF0000">{</span>
+                            isValid<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+                                <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">;</span>
+                            <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+                            getValues<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+                                <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="color: #FF0000">{}</span><span style="color: #990000">;</span>
+                            <span style="color: #FF0000">}</span>
+                        <span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+                    <span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+                    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> donateForm<span style="color: #990000">;</span>
+                <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+                <span style="font-weight: bold"><span style="color: #000000">spyOn</span></span><span style="color: #990000">(</span>controller<span style="color: #990000">,</span> <span style="color: #FF0000">'newDonorInfo'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">andCallFake</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span> <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/4.png" alt="4"></span></span>
+                    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> donorInfo<span style="color: #990000">;</span>
+                <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+                controller<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">submitDonateForm</span></span><span style="color: #990000">();</span>
+                <span style="font-weight: bold"><span style="color: #000000">expect</span></span><span style="color: #990000">(</span>donorInfo<span style="color: #990000">.</span>donate<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">toHaveBeenCalled</span></span><span style="color: #990000">();</span>    <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/5.png" alt="5"></span></span>
+            <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+        <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="colist arabic"><table>
+<tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
+First, you need to test if controller&#8217;s class is available and can be instantiated.
+</td></tr>
+<tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
+With the help of Jasmine&#8217;s <span class="monospaced">spyOn()</span> function substitute the <span class="monospaced">DonorInfo</span> model&#8217;s <span class="monospaced">donate()</span> function.
+</td></tr>
+<tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
+We&#8217;re not interested in the view&#8217;s interaction -  only the contract should be tested. At this point, some methods can be substituted with the fake implementation to let the test pass. In this case, the specification tests the situation when form&#8217;s valid.
+</td></tr>
+<tr><td><img src="images/icons/callouts/4.png" alt="4"></td><td>
+Next you need to inject emulated controller dependencies. The function <span class="monospaced">donate()</span> was replaced by the spy.
+</td></tr>
+<tr><td><img src="images/icons/callouts/5.png" alt="5"></td><td>
+Finally, you can assert if the function was called by the controller.
+</td></tr>
+</table></div>
+<div class="paragraph"><p>The function under the test looks as follows:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">define</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.controller.Donate'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+    extend<span style="color: #990000">:</span> <span style="color: #FF0000">'Ext.app.Controller'</span><span style="color: #990000">,</span>
+    refs<span style="color: #990000">:</span> <span style="color: #990000">[</span><span style="color: #FF0000">{</span>
+            ref<span style="color: #990000">:</span> <span style="color: #FF0000">'donatePanel'</span><span style="color: #990000">,</span>
+            selector<span style="color: #990000">:</span> <span style="color: #FF0000">'[cls=donate-panel]'</span>
+        <span style="color: #FF0000">}</span>
+    <span style="color: #990000">],</span>
+    init<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+        <span style="color: #FF0000">'use strict'</span><span style="color: #990000">;</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">control</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+            <span style="color: #FF0000">'button[action=donate]'</span><span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+                click<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>submitDonateForm
+            <span style="color: #FF0000">}</span>
+        <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+    newDonorInfo<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>          <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/1.png" alt="1"></span></span>
+        <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'SSC.model.DonorInfo'</span><span style="color: #990000">,</span> <span style="color: #FF0000">{}</span><span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+    submitDonateForm<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> form <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getDonatePanel</span></span><span style="color: #990000">().</span><span style="font-weight: bold"><span style="color: #000000">down</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'form'</span><span style="color: #990000">);</span>
+        <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>form<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">isValid</span></span><span style="color: #990000">())</span> <span style="color: #FF0000">{</span>       <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/2.png" alt="2"></span></span>
+            <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> donorInfo <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">newDonorInfo</span></span><span style="color: #990000">();</span>
+            Ext<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">iterate</span></span><span style="color: #990000">(</span>form<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getValues</span></span><span style="color: #990000">(),</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>key<span style="color: #990000">,</span> value<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">//<img src="images/icons/callouts/3.png" alt="3"></span></span>
+                donorInfo<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">set</span></span><span style="color: #990000">(</span>key<span style="color: #990000">,</span> value<span style="color: #990000">);</span>
+            <span style="color: #FF0000">}</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">);</span>
+            donorInfo<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">donate</span></span><span style="color: #990000">();</span>   <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/4.png" alt="4"></span></span>
+        <span style="color: #FF0000">}</span>
+    <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="colist arabic"><table>
+<tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
+The factory method for creating a new instance of the <span class="monospaced">SSC.model.DonorInfo</span> class.
+</td></tr>
+<tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
+If the form is valid, read data from the form fields&#8230;
+</td></tr>
+<tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
+&#8230; and populate properties of corresponding object.
+</td></tr>
+<tr><td><img src="images/icons/callouts/4.png" alt="4"></td><td>
+<span class="monospaced">DonorInfo</span> can be submitted by calling the <span class="monospaced">donate()</span> method.
+</td></tr>
+</table></div>
+</div>
+<div class="sect4">
+<h5 id="_testing_the_views">Testing The Views</h5>
+<div class="paragraph"><p>UI Tests can be divided into two constituent parts: interaction tests and component tests.Interactions tests simulate real-world scenarios of application usage as if a user is using the application. It&#8217;s better to delegate the interaction tests to the functional testing tools like Selenium or CasperJS.</p></div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph"><p>There is another UI testing tool worth to mention especially, in the context of testing ExtJS applications - <a href="http://bryntum.com/products/siesta/">Siesta</a>. Siesta allows to perform testing of the DOM and simulate user interactions. Siesta written in JavaScript and uses Siesta for unit and UI testing. There are two editions of Siesta - lite and professional.</p></div>
+</div></div>
+<div class="paragraph"><p>Component Tests isolate independent and reusable pieces of your application to verify their display, behavior and contract with other components (see <a href="#CONTROLLER_TEST">testing of the controllers</a>). Let&#8217;s see how we can do that. Consider <a href="#EXT_VIEW_TEST">following example</a></p></div>
+<div class="listingblock">
+<a id="EXT_VIEW_TEST"></a>
+<div class="content"></div></div>
+<div class="colist arabic"><table>
+<tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
+A helper function for fixture DOM elements creation.
+</td></tr>
+<tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
+A reusable scoped variable.
+</td></tr>
+<tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
+Create fixture <span class="monospaced">test</span> div.
+</td></tr>
+<tr><td><img src="images/icons/callouts/4.png" alt="4"></td><td>
+Create a fresh form for every test to avoid test pollution.
+</td></tr>
+<tr><td><img src="images/icons/callouts/5.png" alt="5"></td><td>
+Destroy the form after every test so we don&#8217;t pollute the environment.
+</td></tr>
+<tr><td><img src="images/icons/callouts/6.png" alt="6"></td><td>
+In this test, you need to make sure that the <span class="monospaced">DonateForm</span> component has <span class="monospaced">donateform</span> xtype.
+</td></tr>
+</table></div>
 </div>
 </div>
 <div class="sect3">
