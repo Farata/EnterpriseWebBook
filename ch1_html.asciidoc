@@ -2,7 +2,9 @@
 
 This chapter is a brief review of selected HTML5 APIs. But what is HTML5? To put it simple, it's an umbrella name for a combination of HTML, JavaScript, CSS, and several new APIs that appeared during the last several years. Five years ago people were using the term _Web 2.0_ to define modern looking applications. These days HTML5 is almost a household name, and we'll go along with it. But let's just remember that it's about the same old development in JavaScript plus latest advances in HTML and CSS.
 
-This chapter differs from all others because it includes less code, and is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, WebSQL, WebSockets, Web Workers, and History API.
+This chapter differs from all others because it includes less code, and is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, WebSQL, WebSockets, Web Workers, and History API. 
+
+NOTE: To understand code samples included in this chapter you have to be familiar with JavaScript and some monitoring tools like Chrome Developers Tool. Consider reading Chapter 2 first if you're new to Web development.
 
 The majority of the modern Web browsers already support the current version of http://www.w3.org/html/wg/drafts/html/master/[HTML5 specification], which will become a W3C standard in 2014. The question is if the users of your Web application can use a modern browser installed on their device? There are two groups of users that will stick to the outdated browsers for some time:
 
@@ -17,8 +19,7 @@ Does it mean that enterprise Web developers shouldn't even bother using HTML5 th
 Do you believe it would be a good idea for Amazon or Facebook to re-write their UI in Java? Of course not unless they want to loose most of their customers who will be scared to death after seeing the message
 of the 20-step Java installer asking for the access to the internals of their computer. Each author of this book is a Java developer, and we love using Java… on the server side. But when it comes to the consumer facing Web applications it's just not there yet.
 
-So what's the bottom line? We have to learn how to develop Web applications that won't require installing any new software on the user's machines. In the Web browsers it's DHTML or in the modern terminology it's 
-HTML5 stack.
+So what's the bottom line? We have to learn how to develop Web applications that won't require installing any new software on the user's machines. In the Web browsers it's DHTML or in the modern terminology it's HTML5 stack.
 
 In the unfortunate event of needing to support both new and old HTML and CSS implementations you can use http://html5boilerplate.com/[HTML5 Boilerplate] that is not a framework, but a template for creating a new
 HTML project that will support HTML5 and CSS3 elements but will work even in the hostile environments of the older browsers. It's like broadcasting a TV show in HD, but letting the cavemen with the 50-year old black-and-white tubes watching it too.
@@ -34,7 +35,7 @@ https://github.com/h5bp/html5-boilerplate/blob/v4.0.0/doc/usage.md[Getting start
 
 In this section we'll overview a small set of the new HTML5 tags and attributes that are very practical for enterprise Web developers. For example, we are not going to review the `<canvas>` tag that allows you to draw freely in a predefined rectangular area. But we will show you some HTML5 goodies that are practical and useful for Web forms.
 
-==== HTML5 Forms: Brief Overview
+=== HTML5 Forms: Brief Overview
 
 It's hard to imagine an enterprise Web application that is not using forms. At the very minimum the Contact Us form has to be there. A login view is yet another example of the HTML form that almost every enterprise application needs. Our sample application Save Sick Child will need it too.
 
@@ -49,11 +50,11 @@ TODO
 
 TODO
 
-==== Web Messaging
+=== Web Messaging
 
 TODO
 
-==== History API
+=== History API
 
 To put is simple, http://www.w3.org/TR/html5/browsers.html#the-history-interface[History API] is about ensuring that the Back/Forward  buttons on the browser toolbar can be controlled programmatically. Each Web browser has the `window.history` object. The History API is not a new HTML5 API,and the `history` object had such methods as `back()`, `forward()`, and `go()` for many years. But HTML5 adds new methods `pushState()` and `replaceState()`, which allow to modify the browser's address bar without reloading the Web page. 
 
@@ -61,14 +62,98 @@ Imagine a Single Page Application (SPA) that has a navigational menu to open var
 
 The perfect user would always navigate your application using the menus and controls you provided, but what if she clicks on the Back button of the Web browser?  If the navigation controls were not changing the URL in the browser's address bar, the browser obediently will show the Web page that the user has visited before even launching your application, which is not what she intended to do. 
 
-If the URL of your application is http://myapp.com and the user clicked on the menu item Get Customers, which made an AJAX call loading the cucustomers, you can programmatically change the URL on the browser's address line to be http://myapp.com/customers without asking to Web browser to load anything from this URL. You do this by invoking the `pushState()` method. The browser will just remember that the current URL is http://myapp.com/customers, while the previous was http://myapp.com. So pressing the Back button would change the address back to http://myapp.com, and not some unrelated Web application. The Forward button will also behave properly as per the history chain set by your application.
+==== Modifying the Browser's History with pushState()
 
+If the URL of your application is http://myapp.com and the user clicked on the menu item Get Customers, which made an AJAX call loading the cucustomers, you can programmatically change the URL on the browser's address line to be http://myapp.com/customers without asking to Web browser to load anything from this URL. You do this by invoking the `pushState()` method. 
 
+The browser will just remember that the current URL is http://myapp.com/customers, while the previous was http://myapp.com. So pressing the Back button would change the address back to http://myapp.com, and not some unrelated Web application. The Forward button will also behave properly as per the history chain set by your application.
 
-You can update the title of the Web page too and memorize a small amount of data representing the state of the page that becomes history.
+The `pushState()` takes three arguments: 
 
-Whenever the browser's navigation history changes as the result of clicking on the Back/Forward buttons or calling `history.back()`, the event `window.popstate` is dispatched. This event will contain a copy of the history's entry state object.  
+* The application specific state to be associated with the current view of the Web page
+
+* The title of the current view of the Web page. It's currently not supported  
+
+* The suffix to be associated with the current view of the page. It'll be added to the address bar of the browser.  
+
+[source, javascript]
+----
+<head>
+	<meta charset="utf-8">
+	<title>History API</title>
+ </head>
+ <body>
+  <div id="main-container">
+  	 <h1>Click on Link and watch the address bar...</h1>
+
+    <button type="button" onclick="whoWeAre()">Who we are</buton>  // <1>
+
+    <button type="button" onclick="whatWeDo()">What we do</buton>	
+  
+  </div>
+  
+  <script>
+    
+     function whoWeAre(){
+     	var locationID= {locID: 123,                            // <2>
+     		        uri: '/whoweare'};
+     	
+     	history.pushState(locationID,'', 'who_we_are' );       // <3> 
+     }
+     
+     function whatWeDo(){
+     	var actionID= {actID: 123,                              // <4>
+     		          uri: '/whatwedo'};
+
+     	history.pushState(actionID,'', 'what_we_do' );          // <5>
+     }	
+  </script>
+ </body>
+</html>
+----
+
+<1> On click of the button call the event handler function. Call the `pushState()` to modify the browser's history. Some other processing like making an AJAX request to the server can be done `in whoWeAre()` too.
+
+<2> Prepare the custom state object to be used in server side requests. The information about _who we are_ depends on location id. 
+
+<3> Calling `pushState()` to remember the customer id, the page titleis empty (not supported yet), and adding the suffix _/whoweare_ will serve as a path to the server-side REST request.
+
+<4> Prepare the custom state object to be used in server side requests. The information about _what we do_ depends on customer id. 
+
+<3> Calling `pushState()` to remember the customer id, the page titleis empty (not supported yet), and adding the suffix _/whatwedo_ will serve as a path to the server-side REST request.
+
+This above sample is a simplified example and would require more code to properly form the server request, but our goal here is just to clearly illustrate the use of History API.
+
+<<FIG1-11>> depicts the view after the user clicked on the button Who We Are. The URL now looks as http://127.0.0.1:8020/HistoryAPI/who_we_are, but keep in mind that if you try to reload the page while this URL is shown, the browser will give you a Not Found error and rightly so. There is no resource that represents the URL that ends with _who_we_are_ - it's just the name of the view in the browser's history.
+
+[[FIG1-11]]
+.Testing pushState()
+image::images/fig_01_11.png[]
 
 Using the `replaceState()` you can technically "change the history". We are talking about the browser's history, of course.
 
 
+==== Processing the popstate Event
+
+But changing the URL when the user clicks on the Back or Forward button is just the half of the job to be done. The content of the page has to be refreshed accordingly. The browser dispatches the event `window.popstate` whenever the browser's navigation history changes either on initial page load, as a result of clicking on the Back/Forward buttons, or by invoking `history.back()` or `history.forward()`. 
+
+Your code has to include an event handler function that will  perform the actions that must be dome whenever the application gets into the state represented by the current suffix, e.g. make a server request to retrieve the data associated with the state _who_we_are_. The `popstate` event will contain a copy of the history's entry state object. Let's add the following event listener to the `<script>` part of the code sample from previous section:
+
+[source, javascript]
+----
+addEventListener('popstate',function (evt){
+  console.log(evt);
+});
+----	  
+
+<<FIG1-12>> depicts the view of the Chrome Developers Tool when the debugger stopped in the listener of the `popstate` event after the user clicked on the buttons Who We Are, then What We Do, and then the browser's button Back. On the right hand side you can see that the event object contains the `evt.state` object with the right values of `locID` and `uri`. In the real world scenario these values could have been used in, say AJAX call to the server to recreate the view for the location ID 123.
+
+[[FIG1-12]]
+.Monitoring popState with Chrome Developers Tool
+image::images/fig_01_12.png[]
+
+TIP: If you'll run into a browser that doesn't support HTML5 History API, consider using the https://github.com/browserstate/History.js[History.js] library. For the up-to-date information on which browsers support History API visit http://caniuse.com/#search=History[caniuse.com]. 
+
+=== Summary
+
+In Chapter 3 you can read about the feature-detection tool Modernizr that allows you  to check if any particular HTML5 API is supported by the browser being used.
