@@ -1,3 +1,6 @@
+:toc:
+:toclevels: 4
+
 == HTML5 and its New APIs
 
 This chapter is a brief review of selected HTML5 APIs. But what is HTML5? To put it simple, it's an umbrella name for a combination of HTML, JavaScript, CSS, and several new APIs that appeared during the last several years. Five years ago people were using the term _Web 2.0_ to define modern looking applications. These days HTML5 is almost a household name, and we'll go along with it. But let's just remember that it's about the same old development in JavaScript plus latest advances in HTML and CSS.
@@ -6,7 +9,7 @@ This chapter differs from all others because it includes less code, and is more 
 
 NOTE: To understand code samples included in this chapter you have to be familiar with JavaScript and some monitoring tools like Chrome Developers Tool. Consider reading Chapter 2 first if you're new to Web development.
 
-The majority of the modern Web browsers already support the current version of http://www.w3.org/html/wg/drafts/html/master/[HTML5 specification], which will become a W3C standard in 2014. The question is if the users of your Web application can use a modern browser installed on their device? There are two groups of users that will stick to the outdated browsers for some time:
+The majority of the modern Web browsers already support the current version of http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers[HTML5 specification], which will become a W3C standard in 2014. The question is if the users of your Web application can use a modern browser installed on their device? There are two groups of users that will stick to the outdated browsers for some time:
 
 1.  Computer illiterate people who are afraid of installing any new software one their PCs, especially, people of the older generation. _"John, after the last visit of our grandson our computer works even slower than before. Please don't let him install these new fancy browsers here. I just need my old Internet Explorer, access to Hotmail and Facebook"._
 
@@ -17,14 +20,14 @@ In the worst case scenario, Web developers need to make both of the above  group
 Does it mean that enterprise Web developers shouldn't even bother using HTML5 that's not 100% supported? Not at all. This means that a substantial portion of their application's code will be bloated with if-statements figuring out what this specific Web browser supports and providing several solutions that keep your application on float in any Web browser. This what makes the job of DHTML developers a lot more difficult than of, say Java developers who know exactly the VM where their code will work. If you don't install the JavaRuntime of version 1.6 our application won't work. As simple as that. How about asking Java developers writing applications that will work in any runtime released during the last 10 years? No, we're not that nasty.
 
 Do you believe it would be a good idea for Amazon or Facebook to re-write their UI in Java? Of course not unless they want to loose most of their customers who will be scared to death after seeing the message
-of the 20-step Java installer asking for the access to the internals of their computer. Each author of this book is a Java developer, and we love using Java… on the server side. But when it comes to the consumer facing Web applications it's just not there yet.
+of the 20-step Java installer asking for the access to the internals of their computer. Each author of this book is a Java developer, and we love using Java, but on the server side. But when it comes to the consumer facing Web applications there are better than Java choices.
 
 So what's the bottom line? We have to learn how to develop Web applications that won't require installing any new software on the user's machines. In the Web browsers it's DHTML or in the modern terminology it's HTML5 stack.
 
 In the unfortunate event of needing to support both new and old HTML and CSS implementations you can use http://html5boilerplate.com/[HTML5 Boilerplate] that is not a framework, but a template for creating a new
 HTML project that will support HTML5 and CSS3 elements but will work even in the hostile environments of the older browsers. It's like broadcasting a TV show in HD, but letting the cavemen with the 50-year old black-and-white tubes watching it too.
 
-HTML Boilerplate comes with a simple way to start your project pre-packaged with solutions and workarounds offered by well known gurus in the industry. Make no mistake, your codebase may be larger that you wanted - for example, the initial CSS starts with 500 lines accommodating the old and new browsers, but it may be your safety net.
+HTML Boilerplate comes with a simple way to start your project pre-packaged with solutions and workarounds offered by well known gurus in the industry. Make no mistake, your code base may be larger that you wanted - for example, the initial CSS starts with 500 lines accommodating the old and new browsers, but it may be your safety net.
 
 TIP: Watch
 http://net.tutsplus.com/tutorials/html-css-techniques/the-official-guide-to-html5-boilerplate/[this
@@ -44,13 +47,143 @@ We'll start with the prompts. Showing the hints or prompts right inside the inpu
 
 === HTML5 New APIs
 
-TODO
+This chapter is about selected HTML APIs that we find important to understand in Web applications. But before using any of the API's listed here you want to check if the versions of the Web browsers you have to user support these APIs. The Web site http://caniuse.com[http://caniuse.com] will give you the up-to-date information about all major browsers and their versions that do (or don't) support the API in question. For example, to see which browsers support Worker API visit http://caniuse.com/#search=Worker[caniuse.com].  
+
+It's a good practice to include in your code a line that test it an API is supported. For example, if the following if-statement returns false, the Web Worker is not supported and the code should fallback to a single-threaded processing mode:
+
+[source, javascript]
+----
+if (window.Worker) {
+   // create a Worker instance to execute your 
+   // script in a separate thread
+) else{
+	// tough luck, fallback to a single–threaded mode
+}
+----
+
+In Chapter 3 you'll learn about the feature-detection tool _Modernizr_ that allows to programmatically check if any particular HTML5 API is supported by the browser being used.
+
+[source, javascript]
+----
+if (Modernizr.Worker) {
+   // create a Worker instance to execute your 
+   // script in a separate thread
+)
+----
+
 
 ==== Web Workers
 
-TODO
+When you start a Web Browser or any other application on your computer or other device, you start _a task_ or _a process_. _A thread_ is a lighter process within another process. While JavaScript doesn't support multi-threaded mode, HTML5 has a way to run a script as a separate thread in background. 
+
+A typical Web application has a UI part (HTML) and a processing part (JavaScript). If a user clicks on a button, which starts a JavaScript function that runs, say for a hundred mili-seconds, there won't be any noticeable delays in user interaction. But if the JavaScript will run a couple of seconds, user experience will suffer. In some cases the Web browser will assume that the script became _unresponsive_ and will offer the user to kill it. 
+
+Imagine an HTML5 game where a click on the button has to do some major recalculation of coordinates and repainting of multiple images in the browser's window. Ideally, we'd like to parallelize the execution of UI interactions and background JavaScript functions as much as possible, so the user won't notice any delays.  Another example is a CPU-intensive spell checker function that find errors while the user keeps typing. Parsing JSON object is yet another candidate to be done in background. In other words, we want to be able to run multiple parallel _threads of execution_ within the same task 
+
+On a multi-processor computer parallel threads can run on different CPU’s.On a single-processor computer, threads will take turn in getting _slices_ of CPU's time. Since switching CPU cycles between threads happens fast, the user won’t notice tiny delays in each thread’s execution getting a feeling of smooth interaction.
+
+===== Creating and Communicating with Workers
+ 
+HTML5 offers http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers[a solution] for multi-threaded execution of a script with the help of the `Worker` object. To start a separate thread of execution you'll need to create an instance of a `Worker` object passing it the name of the script to run in a separate thread, for example:
+
+[source, javascript]
+----
+var mySpellChecker = new Worker(spellChecker.js);
+---- 
+
+The `Worker` thread runs asynchronously and can't directly communicate with the UI components (i.e. DOM elements) of the browser. When the `Worker`s script finishes execution, it can send a message using the `postMessage()` method. Accordingly, an HTML container(s) can listen for the event from the worker and process them in the event handler. Such event object will contain the data received from the worker in its property `data`, for example: 
+
+[source, javascript]
+----
+var mySpellChecker = new Worker(spellChecker.js);
+    mySpellChecker.onmessage = function(event){
+        document.getElementById('myEditorArea').textContent = event.data;
+    };
+---- 
+
+You can use an alternative and preferred JavaScript function `addEventListener()` to assign the message handler:
+
+[source, javascript]
+----
+var mySpellChecker = new Worker(spellChecker.js);
+    mySpellChecker.addEventListener("message", function(event){
+        document.getElementById('myEditorArea').textContent = event.data;
+    });
+----  
+
+On the other hand, the HTML page can also send any message to the worker forcing it to start performing its duties like start the spell checking process:
+
+[source, javascript]
+----
+    mySpellChecker.postMessage(wordToCheckSpelling);
+---- 
+
+The data in the arguments of `postMessage()` can be any object, and they are being passed by value, not by reference.
+
+Inside the worker you also need to define an event handler to process the data sent from outside. To continue the previous example the spellChecker.js will have inside the code that receives the text to check, performs the spell check, and returns the result back:
+
+[source, javascript]
+----
+self.onmesage = function(event){
+     
+     // The code that performs spell check goes here
+	 
+	 var resultOfSpellCheck = checkSpelling(event.data);
+     
+     // Send the results back to the window that listens
+     // for the messages from this spell checker
+
+	 self.postMessage(resultOfSpellCheck);
+};
+----
+
+If you want to run a certain code in the background repeatedly, you can create a wrapper function (e.g. `doSpellCheck()`) that internally invokes `postMesage()` and then gives such a wrapper to `setTimeout()` or `setInterval()`to run every second or so: `var timer = setTimout(doSpellCheck, 1000);`.
+
+If an error occurs in a worker thread, your Web application will get a notification in a form of an event, and you need to provide a function handler for `onerror`:
+
+[source, javascript]
+----
+mySpellChecker.onerror = function(event){
+    // The error handling code goes here
+};
+----
+
+===== Dedicated and Shared Workers
+
+If a window creates a worker thread for its own use, we call it _a dedicated worker_.  A window creates an event listener, which gets the messages from the worker. On the other hand, the worker can have a listener too to react to the events received from its creator.   
+
+A _shared worker_ thread can be used by several scripts as long as they have the same origin. For example, if you want to reuse a spell checker feature in several views of your Web application, you can create a shared worker as follows:
+
+[source, javascript]
+----
+var mySpellChecker = new SharedWorker(spellChecker.js);
+---- 
+
+Another example is to funnel all requests from multiple windows to the server through a shared worker. You can also place into a shared worker a number of reusable utility function that may be needed in several windows - such architecture can reduce or eliminate repeatable code. 
+
+[[FIG1-01]]
+.Interacting with shared Web Worker
+image::images/fig_01_01.png[]
+
+TIP: Using JavaScript `apply()` you can pass the name of the method to call along with its arguments.
+
+TIP: Since the script running inside the `Worker` thread doesn't have access to the browser's UI components, you can't debug such scripts by printing messages onto browser's console with `console.log()`. But the Chrome Browser includes the http://blog.chromium.org/2012/04/debugging-web-workers-with-chrome.html[_Workers_ panel] that can be used for debugging the code that's launched in worker threads. You'll see multiple examples of using Chrome Developers Tools starting from Chapter 2.   
+
+To get a more detailed coverage of Web Workers, read a 60-page O'Reilly book titled "Web Workers" by Ido Green.
 
 === Web Messaging
+
+TODO
+
+=== WebSockets
+
+Authors of this book believe that WebSocket API is so important, that we dedicated the entire chapter of this book to it. In this section we'll just introduce this API very briefly.
+
+=== Local Storage
+
+TODO
+
+=== Web SQL
 
 TODO
 
@@ -120,7 +253,7 @@ The `pushState()` takes three arguments:
 
 <4> Prepare the custom state object to be used in server side requests. The information about _what we do_ depends on customer id. 
 
-<3> Calling `pushState()` to remember the customer id, the page titleis empty (not supported yet), and adding the suffix _/whatwedo_ will serve as a path to the server-side REST request.
+<5> Calling `pushState()` to remember the customer id, the page titleis empty (not supported yet), and adding the suffix _/whatwedo_ will serve as a path to the server-side REST request.
 
 This above sample is a simplified example and would require more code to properly form the server request, but our goal here is just to clearly illustrate the use of History API.
 
@@ -152,8 +285,23 @@ addEventListener('popstate',function (evt){
 .Monitoring popState with Chrome Developers Tool
 image::images/fig_01_12.png[]
 
-TIP: If you'll run into a browser that doesn't support HTML5 History API, consider using the https://github.com/browserstate/History.js[History.js] library. For the up-to-date information on which browsers support History API visit http://caniuse.com/#search=History[caniuse.com]. 
+TIP: If you'll run into a browser that doesn't support HTML5 History API, consider using the https://github.com/browserstate/History.js[History.js] library.
+
+=== Application Cache
+
+
 
 === Summary
 
-In Chapter 3 you can read about the feature-detection tool Modernizr that allows you  to check if any particular HTML5 API is supported by the browser being used.
+In this chapter you've got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0?
+In this case http://www.google.com/chromeframe[Google Chrome Frame] plugin for Internet Explorer.
+
+The users have to install Google Frame on their machines, and Web developers just need to add the following line to their Web pages:
+
+[source, html]
+----
+<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+----
+
+After that the Web page rendering will be done by Chrome Frame while your Web application will run in Internet Explorer.
+
