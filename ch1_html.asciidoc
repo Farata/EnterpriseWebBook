@@ -73,11 +73,11 @@ if (Modernizr.Worker) {
 
 ==== HTML5 Web Messaging
 
-http://www.w3.org/TR/webmessaging/[HTML5 Web Messaging] allows you to arrange for communication between different Web pages of the same Web application. More officially, it's about "communicating between browsing context in HTML documents". Web messaging also allows you to work around _the same domain policy_ that would result in security error if a window A has one origin (the combination of URL scheme, host name and port, e.g. http://myserver.com:8080) would try to access property of a window B that was downloaded from another origin.
+http://www.w3.org/TR/webmessaging/[HTML5 Web Messaging] allows you to arrange for communication between different Web pages of the same Web application. More officially, it's about "communicating between browsing contexts in HTML documents". Web messaging also allows you to work around _the same domain policy_ that would result in security error if a window A has one origin (the combination of URL scheme, host name and port, e.g. http://myserver.com:8080) would try to access property of a window B that was downloaded from another origin.
 
 The API is pretty straightforward: if a script in `WindowA` has a reference to `myWindowB` to which you want to send a message, invoke the method `myWindowB.postMesage(someData)`. The object referenced by `myWindowB` will receive an event object with the content of payload `someData` in the event's property `data`.  
 
-Accordingly, `myWindowB` has to define event handler for processing such an external event `message`. , for example:
+Accordingly, `myWindowB` has to define an event handler for processing of this external event `message`, for example:
 
 [source, javascript]
 ----
@@ -88,7 +88,113 @@ function myEventHandler(event){
 }
 ----
 
-The window-receiver can reject messages from untrusted origins. The event's property `origin` contains the scheme, host name and the port of the message sender. A simple `if event.origin == 'http://mytrusteddomain:8080'` will ensure that only the messages arrived from the trusted origin are processed.
+//The window-receiver can reject messages from untrusted origins. The event's property `origin` contains the scheme, host name and the port of the message sender (not the full URI). A simple statement like `if event.origin == 'http://mytrusteddomain:8080'` will ensure that only the messages arrived from the trusted origin are processed.
+
+Let's consider an example where an HTML Window creates an iFrame and needs to communicate with it. In particular, the iFrame will notify the main window that it has loaded, and the main window will acknowledge receiving of this message.  
+
+The iFrame will have two button emulating the case of some trading system with two buttons: Buy and Sell. When the use clicks on one of these iFrame's buttons the main window has to confirm receiving of the buy or sell request. <<FIG1-1>> is a snapshot from a Chrome browser where Developers Tools panel
+ shows the output on the console after the iFrame was loaded and the user clicked on the Buy and Sell buttons.
+
+[[FIG1-1]]
+.Message exchange between the window and iFrame
+image::images/fig_01_01.png[]
+
+The source code of this example is shown next. It's just two HTML files: mainWindow.html and myFrame.html. Here;s the code of the mainWindow:
+
+[source, html]
+----
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>The main Window</title>
+</head>
+
+<body bgcolor="cyan">
+
+    <h1>This is Main Window </h1>
+
+    <p id="message"></p>
+    <div id="pageResults"></div>
+
+    <iframe id="myFrame">
+        <p>....</p>
+    </iframe>
+  
+   <script type="text/javascript">
+        var theiFrame;
+        
+        function handleMessage(event) {
+                console.log('Main Window got the message ' +  event.data );
+                
+             // Reply to the frame here
+             switch (event.data) {
+                	
+                case 'loaded':
+                   theiFrame.contentWindow.postMessage("Hello my frame! Glad you loaded! ",  
+                               event.origin);
+                   break;
+                case 'buy':
+                   theiFrame.contentWindow.postMessage("Main Window confirms the buy request ",  
+                               event.origin);
+                   break;
+                case 'sell':
+                   theiFrame.contentWindow.postMessage("Main Window confirms the sell request. ",  
+                               event.origin);
+                   break;       
+             } 
+        }
+        
+        window.onload = function() {
+            window.addEventListener('message', handleMessage, false);
+            theiFrame = document.getElementById('myFrame');
+            theiFrame.src = "myFrame.html";		
+        }
+
+   </script>
+
+ </body>
+</html>
+----
+
+
+The iFrame window comes next.
+
+[source, html]
+----
+<!DOCTYPE html>
+<html lang="en">
+	
+ <body bgcolor="white">
+
+    <h2> This is My Frame Window </h2>
+    
+    <button type="buy" onclick="sendToParent('buy')">Buy</button> 
+    <button type="sell" onclick="sendToParent('sell')">Sell</button> 
+  
+  <script type="text/javascript">
+        
+        var senderOrigin;
+        
+        function handleMessageInFrame(event) {
+                console.log('   My Frame got the message from ' + event.origin +": " + event.data);
+                senderOrigin = event.origin;
+        }
+
+        window.onload = function(){
+        	window.addEventListener('message', handleMessageInFrame, false);
+            parent.postMessage('loaded', 'http://127.0.0.1:8020');
+        };
+        
+        function sendToParent(action){
+        	parent.postMessage(action,  senderOrigin);
+        }
+
+    </script>
+ </body>
+</html>
+
+----
 
 
 
@@ -99,8 +205,9 @@ When you start a Web Browser or any other application on your computer or other 
 
 A typical Web application has a UI part (HTML) and a processing part (JavaScript). If a user clicks on a button, which starts a JavaScript function that runs, say for a hundred mili-seconds, there won't be any noticeable delays in user interaction. But if the JavaScript will run a couple of seconds, user experience will suffer. In some cases the Web browser will assume that the script became _unresponsive_ and will offer the user to kill it. 
 
-Imagine an HTML5 game where a click on the button has to do some major recalculation of coordinates and repainting of multiple images in the browser's window. Ideally, we'd like to parallelize the execution of UI interactions and background JavaScript functions as much as possible, so the user won't notice any delays.  Another example is a CPU-intensive spell checker function that find errors while the user keeps typing. Parsing JSON object is yet another candidate to be done in background. In other words, we want to be able to run multiple parallel _threads of execution_ within the same task 
+Imagine an HTML5 game where a click on the button has to do some major recalculation of coordinates and repainting of multiple images in the browser's window. Ideally, we'd like to parallelize the execution of UI interactions and background JavaScript functions as much as possible, so the user won't notice any delays.  Another example is a CPU-intensive spell checker function that find errors while the user keeps typing. Parsing JSON object is yet another candidate to be done in background. Polling a server for some data is yet another use case where Web workers fit well. 
 
+In other words, use Web workers when you want to be able to run multiple parallel _threads of execution_ within the same task. 
 On a multi-processor computer parallel threads can run on different CPU’s.On a single-processor computer, threads will take turn in getting _slices_ of CPU's time. Since switching CPU cycles between threads happens fast, the user won’t notice tiny delays in each thread’s execution getting a feeling of smooth interaction.
 
 ===== Creating and Communicating with Workers
@@ -112,12 +219,14 @@ HTML5 offers http://www.whatwg.org/specs/web-apps/current-work/multipage/workers
 var mySpellChecker = new Worker(spellChecker.js);
 ---- 
 
-The `Worker` thread runs asynchronously and can't directly communicate with the UI components (i.e. DOM elements) of the browser. When the `Worker`s script finishes execution, it can send a message using the `postMessage()` method. Accordingly, an HTML container(s) can listen for the event from the worker and process them in the event handler. Such event object will contain the data received from the worker in its property `data`, for example: 
+The `Worker` thread runs asynchronously and can't directly communicate with the UI components (i.e. DOM elements) of the browser. When the `Worker`s script finishes execution, it can send back a message using the `postMessage()` method. Accordingly, the script that created the worker thread can listen for the event from the worker and process its responses in the event handler. Such event object will contain the data received from the worker in its property `data`, for example: 
 
 [source, javascript]
 ----
 var mySpellChecker = new Worker(spellChecker.js);
     mySpellChecker.onmessage = function(event){
+        
+        // processing the worker's response 
         document.getElementById('myEditorArea').textContent = event.data;
     };
 ---- 
@@ -128,6 +237,8 @@ You can use an alternative and preferred JavaScript function `addEventListener()
 ----
 var mySpellChecker = new Worker(spellChecker.js);
     mySpellChecker.addEventListener("message", function(event){
+        
+        // processing the worker's response
         document.getElementById('myEditorArea').textContent = event.data;
     });
 ----  
@@ -139,7 +250,7 @@ On the other hand, the HTML page can also send any message to the worker forcing
     mySpellChecker.postMessage(wordToCheckSpelling);
 ---- 
 
-The data in the arguments of `postMessage()` can be any object, and they are being passed by value, not by reference.
+The argument of `postMessage()` can contain any object, and it's  being passed by value, not by reference.
 
 Inside the worker you also need to define an event handler to process the data sent from outside. To continue the previous example the spellChecker.js will have inside the code that receives the text to check, performs the spell check, and returns the result back:
 
@@ -202,7 +313,14 @@ The event handler becomes connected to the `port` property, and now you can post
 
 Each new script that will connect to the shared worker by attaching an event handler to the port results in incrementing the number of active connections that the shared worker maintains.  If the script of the shared worker will invoke `port.postMessage("Hello scripts!")`, all listeners that are connected to this port will get it. 
 
-If a shared worker needs to stop communicating with the external world it can call `self.close()`. On the same note, the external scripts have to remove event listeners when they don't want to communicate with the shared worker any longer.
+TIP: if a shared thread is interesting in processing the moments when a new script connects to it, add an event listener to the `connect` event in the code of the shared worker.
+
+If a worker needs to stop communicating with the external world it can call `self.close()`. The external script can kill the worker thread by calling the method `terminate()`, for example:
+
+[source, javascript]
+----
+mySpellChecker.terminate();
+----
 
 // TIP: Using JavaScript `apply()` you can pass the name of the method to call along with its arguments.
 
