@@ -45,7 +45,7 @@ It's hard to imagine an enterprise Web application that is not using forms. At t
 We'll start with the prompts. Showing the hints or prompts right inside the input field will save you some screen space. HTML5 has a special attribute `placeholder`.
 
 
-=== HTML5 New APIs
+=== Selected HTML5 APIs
 
 This chapter is about selected HTML APIs that we find important to understand in Web applications. But before using any of the API's listed here you want to check if the versions of the Web browsers you have to user support these APIs. The Web site http://caniuse.com[http://caniuse.com] will give you the up-to-date information about all major browsers and their versions that do (or don't) support the API in question. For example, to see which browsers support Worker API visit http://caniuse.com/#search=Worker[caniuse.com].  
 
@@ -71,6 +71,27 @@ if (Modernizr.Worker) {
 )
 ----
 
+==== HTML5 Web Messaging
+
+http://www.w3.org/TR/webmessaging/[HTML5 Web Messaging] allows you to arrange for communication between different Web pages of the same Web application. More officially, it's about "communicating between browsing context in HTML documents". Web messaging also allows you to work around _the same domain policy_ that would result in security error if a window A has one origin (the combination of URL scheme, host name and port, e.g. http://myserver.com:8080) would try to access property of a window B that was downloaded from another origin.
+
+The API is pretty straightforward: if a script in `WindowA` has a reference to `myWindowB` to which you want to send a message, invoke the method `myWindowB.postMesage(someData)`. The object referenced by `myWindowB` will receive an event object with the content of payload `someData` in the event's property `data`.  
+
+Accordingly, `myWindowB` has to define event handler for processing such an external event `message`. , for example:
+
+[source, javascript]
+----
+window.addEventListener('message', myEventHanler, false);
+
+function myEventHandler(event){
+	console.log(`Received something: ` + event.data);
+}
+----
+
+The window-receiver can reject messages from untrusted origins. The event's property `origin` contains the scheme, host name and the port of the message sender. A simple `if event.origin == 'http://mytrusteddomain:8080'` will ensure that only the messages arrived from the trusted origin are processed.
+
+
+
 
 ==== Web Workers
 
@@ -83,8 +104,8 @@ Imagine an HTML5 game where a click on the button has to do some major recalcula
 On a multi-processor computer parallel threads can run on different CPU’s.On a single-processor computer, threads will take turn in getting _slices_ of CPU's time. Since switching CPU cycles between threads happens fast, the user won’t notice tiny delays in each thread’s execution getting a feeling of smooth interaction.
 
 ===== Creating and Communicating with Workers
- 
-HTML5 offers http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers[a solution] for multi-threaded execution of a script with the help of the `Worker` object. To start a separate thread of execution you'll need to create an instance of a `Worker` object passing it the name of the script to run in a separate thread, for example:
+
+HTML5 offers http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers[a solution] for multi-threaded execution of a script with the help of the `Worker` object. To start a separate thread of execution you'll need to create an instance of a `Worker` object passing it the name of the file with the script to run in a separate thread, for example:
 
 [source, javascript]
 ----
@@ -150,7 +171,7 @@ mySpellChecker.onerror = function(event){
 
 ===== Dedicated and Shared Workers
 
-If a window creates a worker thread for its own use, we call it _a dedicated worker_.  A window creates an event listener, which gets the messages from the worker. On the other hand, the worker can have a listener too to react to the events received from its creator.   
+If a window's script creates a worker thread for its own use, we call it _a dedicated worker_.  A window creates an event listener, which gets the messages from the worker. On the other hand, the worker can have a listener too to react to the events received from its creator.   
 
 A _shared worker_ thread can be used by several scripts as long as they have the same origin. For example, if you want to reuse a spell checker feature in several views of your Web application, you can create a shared worker as follows:
 
@@ -159,21 +180,36 @@ A _shared worker_ thread can be used by several scripts as long as they have the
 var mySpellChecker = new SharedWorker(spellChecker.js);
 ---- 
 
-Another example is to funnel all requests from multiple windows to the server through a shared worker. You can also place into a shared worker a number of reusable utility function that may be needed in several windows - such architecture can reduce or eliminate repeatable code. 
+Another use case is funneling all requests from multiple windows to the server through a shared worker. You can also place into a shared worker a number of reusable utility function that may be needed in several windows - such architecture can reduce or eliminate repeatable code. 
 
-[[FIG1-01]]
-.Interacting with shared Web Worker
-image::images/fig_01_01.png[]
+One or more scripts can communicate with a shared worker, and it's done slightly different that with the dedicated one. Communication is done through the `port` property and the `start()` method has to be invoked to be able to use `postMessage()` first time:
 
-TIP: Using JavaScript `apply()` you can pass the name of the method to call along with its arguments.
+[source, javascript]
+----
+var mySpellChecker = new SharedWorker(spellChecker.js);
+    mySpellChecker.port.addEventListener("message", function(event){
+        document.getElementById('myEditorArea').textContent = event.data;
+    });
+    mySpellChecker.port.start()
+----
+
+The event handler becomes connected to the `port` property, and now you can post the message to this shared worker using the same `postMessage()` method.
+
+[source, javascript]
+----
+    mySpellChecker.postMessage(wordToCheckSpelling);
+---- 
+
+Each new script that will connect to the shared worker by attaching an event handler to the port results in incrementing the number of active connections that the shared worker maintains.  If the script of the shared worker will invoke `port.postMessage("Hello scripts!")`, all listeners that are connected to this port will get it. 
+
+If a shared worker needs to stop communicating with the external world it can call `self.close()`. On the same note, the external scripts have to remove event listeners when they don't want to communicate with the shared worker any longer.
+
+// TIP: Using JavaScript `apply()` you can pass the name of the method to call along with its arguments.
 
 TIP: Since the script running inside the `Worker` thread doesn't have access to the browser's UI components, you can't debug such scripts by printing messages onto browser's console with `console.log()`. But the Chrome Browser includes the http://blog.chromium.org/2012/04/debugging-web-workers-with-chrome.html[_Workers_ panel] that can be used for debugging the code that's launched in worker threads. You'll see multiple examples of using Chrome Developers Tools starting from Chapter 2.   
 
 To get a more detailed coverage of Web Workers, read a 60-page O'Reilly book titled "Web Workers" by Ido Green.
 
-=== Web Messaging
-
-TODO
 
 === WebSockets
 
@@ -219,9 +255,9 @@ The `pushState()` takes three arguments:
   <div id="main-container">
   	 <h1>Click on Link and watch the address bar...</h1>
 
-    <button type="button" onclick="whoWeAre()">Who we are</buton>  // <1>
+    <button type="button" onclick="whoWeAre()">Who we are</button>  <1> 
 
-    <button type="button" onclick="whatWeDo()">What we do</buton>	
+    <button type="button" onclick="whatWeDo()">What we do</button>	
   
   </div>
   
@@ -245,7 +281,7 @@ The `pushState()` takes three arguments:
 </html>
 ----
 
-<1> On click of the button call the event handler function. Call the `pushState()` to modify the browser's history. Some other processing like making an AJAX request to the server can be done `in whoWeAre()` too.
+<1> On a click of the button call the event handler function. Call the `pushState()` to modify the browser's history. Some other processing like making an AJAX request to the server can be done `in whoWeAre()` too.
 
 <2> Prepare the custom state object to be used in server side requests. The information about _who we are_ depends on location id. 
 
