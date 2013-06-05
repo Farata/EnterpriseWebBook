@@ -1244,7 +1244,7 @@ http://www.gnu.org/software/src-highlite -->
 
                 <span style="font-weight: bold"><span style="color: #0000FF">case</span></span> <span style="color: #FF0000">'loaded'</span><span style="color: #990000">:</span>
                    theiFrame<span style="color: #990000">.</span>contentWindow<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">postMessage</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Hello my frame! Glad you loaded! "</span><span style="color: #990000">,</span>
-                               event<span style="color: #990000">.</span>origin<span style="color: #990000">);</span>
+                                    event<span style="color: #990000">.</span>origin<span style="color: #990000">);</span>  <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/3.png" alt="3"></span></span>
                    <span style="font-weight: bold"><span style="color: #0000FF">break</span></span><span style="color: #990000">;</span>
                 <span style="font-weight: bold"><span style="color: #0000FF">case</span></span> <span style="color: #FF0000">'buy'</span><span style="color: #990000">:</span>
                    theiFrame<span style="color: #990000">.</span>contentWindow<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">postMessage</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Main Window confirms the buy request "</span><span style="color: #990000">,</span>
@@ -1257,7 +1257,7 @@ http://www.gnu.org/software/src-highlite -->
              <span style="color: #FF0000">}</span>
         <span style="color: #FF0000">}</span>
 
-        window<span style="color: #990000">.</span>onload <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>                  <span style="font-style: italic"><span style="color: #9A1900">//  <img src="images/icons/callouts/3.png" alt="3"></span></span>
+        window<span style="color: #990000">.</span>onload <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>                  <span style="font-style: italic"><span style="color: #9A1900">//  <img src="images/icons/callouts/4.png" alt="4"></span></span>
             window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addEventListener</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'message'</span><span style="color: #990000">,</span> handleMessage<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">);</span>
             theiFrame <span style="color: #990000">=</span> document<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">getElementById</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'myFrame'</span><span style="color: #990000">);</span>
             theiFrame<span style="color: #990000">.</span>src <span style="color: #990000">=</span> <span style="color: #FF0000">"myFrame.html"</span><span style="color: #990000">;</span>
@@ -1272,13 +1272,31 @@ http://www.gnu.org/software/src-highlite -->
 This function is an event handler for messages received from the iFrame window. The main window is the parent of iFrame, and whenever the latter will invoke <span class="monospaced">parent.postMessage()</span> this even handler will be engaged.
 </td></tr>
 <tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
-Depending on the content of the message payload (<span class="monospaced">event.data</span>)      respond back to the sender with acknowledgment.  If the payload is <span class="monospaced">loaded</span>, this means that the iFrame has finished loading. If it&#8217;s <span class="monospaced">buy</span> or <span class="monospaced">sell</span> - this means that the corresponding button in the iFrame has been clicked.
+Depending on the content of the message payload (<span class="monospaced">event.data</span>)      respond back to the sender with acknowledgment.  If the payload is <span class="monospaced">loaded</span>, this means that the iFrame has finished loading. If it&#8217;s <span class="monospaced">buy</span> or <span class="monospaced">sell</span> - this means that the corresponding button in the iFrame has been clicked. As an additional precaution, you can ensure that <span class="monospaced">event.origin</span> has the expected URI before even starting processing received events.
 </td></tr>
 <tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
+While this code shows how a window sends a message to an iPrame, you can send messages to any other windows as long as you have a reference to it. For example:
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>  <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myPopupWindow <span style="color: #990000">=</span> window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">open</span></span><span style="color: #990000">(...);</span>
+  myPopupWindow<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">postMessage</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Hello Popup"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"*"</span><span style="color: #990000">);</span></tt></pre></div></div>
+</td></tr>
+<tr><td><img src="images/icons/callouts/4.png" alt="4"></td><td>
 On load the main window starts listening to the messages from other windows and loads the content of the iFrame.
 </td></tr>
 </table></div>
-<div class="paragraph"><p>The code of the myFrame.html comes next.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/icons/tip.png" alt="Tip">
+</td>
+<td class="content">To implement error processing add a handler for the <span class="monospaced">window.onerror</span> property.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>The code of the myFrame.html comes next. This frame contains two buttons Buy and Sell, but there is no business logic to buy or sell anything. The role of these buttons is just to deliver the message to the creator of thie iFrame that it&#8217;s time to buy or sell.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
@@ -1327,15 +1345,15 @@ Send the message to parent window when the user clicks on Buy or Sell button.
 </td></tr>
 </table></div>
 <div class="paragraph"><p>If you&#8217;ll need to build a UI of the application from reusable components, applying messaging techniques allows you to create loosely coupled components. Say you&#8217;ve created a window for a financial trader. This windows get the data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be is implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important.</p></div>
-<div class="paragraph"><p>Three years ago O&#8217;Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we&#8217;ve described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending/receiving events from the mediator object.  The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can&#8217;t be underestimated.</p></div>
-<div class="paragraph"><p><a href="#FIG1-2">[FIG1-2]</a> is an illustration from that Enterprise Flex book. The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask panel, the Pricing Panel just sends the event with the relevant information - symbol, price, buy/sell, date, etc. In HTML5 realm, we can say that the Pricing Panel invokes <span class="monospaced">parent.postMessage()</span> and shoots the message to the mediator (a.k.a. main window).</p></div>
+<div class="paragraph"><p>Three years ago O&#8217;Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we&#8217;ve described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending-receiving events from the mediator object.  The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can&#8217;t be underestimated.</p></div>
+<div class="paragraph"><p><a href="#FIG1-2">[FIG1-2]</a> is an illustration from that Enterprise Flex book. The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask panel, the Pricing Panel just sends the event with the relevant information like JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc. In HTML5 realm, we can say that the Pricing Panel invokes <span class="monospaced">parent.postMessage()</span> and shoots the message to the mediator (a.k.a. main window).</p></div>
 <div class="imageblock" id="FIG1-2">
 <div class="content">
 <img src="images/fig_01_02.png" alt="images/fig_01_02.png">
 </div>
 <div class="title">Figure 2. Before and after the trader clicked on the Price Panel</div>
 </div>
-<div class="paragraph"><p>The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending/receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some protal that&#8217;s used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it&#8217;s easy to reuse the existing code in such a dashboard.</p></div>
+<div class="paragraph"><p>The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending-receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some portal that&#8217;s used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it&#8217;s easy to reuse the existing code in such a dashboard.</p></div>
 </div>
 <div class="sect3">
 <h4 id="_web_workers">Web Workers</h4>
@@ -1475,12 +1493,41 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>Authors of this book believe that WebSocket API is so important, that we dedicated the entire chapter of this book to it. In this section we&#8217;ll just introduce this API very briefly.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_local_storage">Local Storage</h3>
-<div class="paragraph"><p>TODO</p></div>
+<h3 id="_offline_web_applications">Offline Web Applications</h3>
+<div class="paragraph"><p>The common misconception about Web applications is that they are useless if there is no connection to the Internet. Everyone knows that native application can be written in a way that they have everything they need installed on your device&#8217;s data storage - both the application code and the data storage.  With HTML5, Web applications can be designed to be functional even when the user&#8217;s device is disconnecte. The offline version of a Web application may not offer full functionality, but certain functions can still be available.</p></div>
+<div class="sect3">
+<h4 id="_prerequisites_for_developing_offline_web_applications">Prerequisites for developing Offline Web Applications</h4>
+<div class="paragraph"><p>To be useful in a disconnected mod HTML-based application need to have access to some local storage on the device, in which case the data entered by the user in the HTML windows can be saved locally with further synchronization with the server when connection becomes available. Think of a salesman of a pharmaceutical visiting medical offices trying to sell new pills. What if connection is not available at certain point? She can still use her tablet demonstrate the marketing materials and more importantly, collect some data about this visit and save them locally. When the Internet connection becomes  available again, the Web application should support automatic or manual data synchronization so the information about the salesman activity will be stored in a central database.</p></div>
+<div class="paragraph"><p>We can agree that having a local storage accessible from HTML/JavaScript UI is a prerequisite for building offline Web applications. The other important design decision is to ensure that the server sends to the client only the data, no HTML markup. So all these server-side frameworks that prepare the data heavily sprinkled with HTML markup should not be used. For example, the front-end should be developed in HTML/JavaScript/CSS, the back end in your favorite language (Java, .Net, PHP, etc.), and the JSON-formatted data are being sent from the server to the client and back.</p></div>
+<div class="paragraph"><p>Finally, the business logic that supports the functionality available offline should be developed in JavaScript.</p></div>
 </div>
-<div class="sect2">
-<h3 id="_web_sql">Web SQL</h3>
-<div class="paragraph"><p>TODO</p></div>
+<div class="sect3">
+<h4 id="_html5_storing_data_locally">HTML5: Storing Data Locally</h4>
+<div class="paragraph"><p>In the past, Web browsers could only store their own cache and application&#8217;s cookies on the user&#8217;s computer. HTML5 offers several a lot more advanced solutions for storing data locally, namely:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Local Storage: <span class="monospaced">window.localStorage</span>
+</p>
+</li>
+<li>
+<p>
+Session Storage: <span class="monospaced">window.sessionStorage</span>
+</p>
+</li>
+<li>
+<p>
+<a href="http://www.w3.org/TR/webdatabase/">Web SQL Database</a>: the local database that supports SQL syntax
+</p>
+</li>
+<li>
+<p>
+Indexed DB: a NoSQL database that stores key-value pairs
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>TBD</p></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_history_api">History API</h3>
