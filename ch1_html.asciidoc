@@ -136,8 +136,8 @@ The source code of this example is shown next. It's just two HTML files: mainWin
              switch (event.data) {                // <2> 
                 	
                 case 'loaded':
-                   theiFrame.contentWindow.postMessage("Hello my frame! Glad you loaded! ",  
-                               event.origin);
+                   theiFrame.contentWindow.postMessage("Hello my frame! Glad you loaded! ", 
+                                    event.origin);  // <3>
                    break;
                 case 'buy':
                    theiFrame.contentWindow.postMessage("Main Window confirms the buy request ",  
@@ -150,7 +150,7 @@ The source code of this example is shown next. It's just two HTML files: mainWin
              } 
         }
         
-        window.onload = function() {                  //  <3>
+        window.onload = function() {                  //  <4>
             window.addEventListener('message', handleMessage, false);
             theiFrame = document.getElementById('myFrame');
             theiFrame.src = "myFrame.html";		
@@ -164,12 +164,22 @@ The source code of this example is shown next. It's just two HTML files: mainWin
 
 <1> This function is an event handler for messages received from the iFrame window. The main window is the parent of iFrame, and whenever the latter will invoke `parent.postMessage()` this even handler will be engaged.
 
-<2> Depending on the content of the message payload (`event.data`)	respond back to the sender with acknowledgment.  If the payload is `loaded`, this means that the iFrame has finished loading. If it's `buy` or `sell` - this means that the corresponding button in the iFrame has been clicked.
+<2> Depending on the content of the message payload (`event.data`)	respond back to the sender with acknowledgment.  If the payload is `loaded`, this means that the iFrame has finished loading. If it's `buy` or `sell` - this means that the corresponding button in the iFrame has been clicked. As an additional precaution, you can ensure that `event.origin` has the expected URI before even starting processing received events.
 
-<3>	On load the main window starts listening to the messages from other windows and loads the content of the iFrame. 
-	
+<3> While this code shows how a window sends a message to an iPrame, you can send messages to any other windows as long as you have a reference to it. For example:
++
 
-The code of the myFrame.html comes next.
+[source, javascript]
+----
+  var myPopupWindow = window.open(...);
+  myPopupWindow.postMessage("Hello Popup", "*");
+----
++
+<4>	On load the main window starts listening to the messages from other windows and loads the content of the iFrame. 
+
+TIP: To implement error processing add a handler for the `window.onerror` property. 
+
+The code of the myFrame.html comes next. This frame contains two buttons Buy and Sell, but there is no business logic to buy or sell anything. The role of these buttons is just to deliver the message to the creator of thie iFrame that it's time to buy or sell.
 
 [source, html]
 ----
@@ -214,15 +224,15 @@ The code of the myFrame.html comes next.
 
 If you'll need to build a UI of the application from reusable components, applying messaging techniques allows you to create loosely coupled components. Say you've created a window for a financial trader. This windows get the data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be is implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
 
-Three years ago O'Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we've described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending/receiving events from the mediator object.  The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can't be underestimated. 
+Three years ago O'Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we've described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending-receiving events from the mediator object.  The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can't be underestimated. 
 
-<<FIG1-2>> is an illustration from that Enterprise Flex book. The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask panel, the Pricing Panel just sends the event with the relevant information - symbol, price, buy/sell, date, etc. In HTML5 realm, we can say that the Pricing Panel invokes `parent.postMessage()` and shoots the message to the mediator (a.k.a. main window).    
+<<FIG1-2>> is an illustration from that Enterprise Flex book. The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask panel, the Pricing Panel just sends the event with the relevant information like JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc. In HTML5 realm, we can say that the Pricing Panel invokes `parent.postMessage()` and shoots the message to the mediator (a.k.a. main window).    
 
 [[FIG1-2]]
 .Before and after the trader clicked on the Price Panel
 image::images/fig_01_02.png[]
 
-The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending/receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some protal that's used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it's easy to reuse the existing code in such a dashboard.
+The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending-receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some portal that's used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it's easy to reuse the existing code in such a dashboard.
 
 
 ==== Web Workers
@@ -359,13 +369,28 @@ To get a more detailed coverage of Web Workers, read a 60-page O'Reilly book tit
 
 Authors of this book believe that WebSocket API is so important, that we dedicated the entire chapter of this book to it. In this section we'll just introduce this API very briefly.
 
-=== Local Storage
+=== Offline Web Applications
 
-TODO
+The common misconception about Web applications is that they are useless if there is no connection to the Internet. Everyone knows that native application can be written in a way that they have everything they need installed on your device's data storage - both the application code and the data storage.  With HTML5, Web applications can be designed to be functional even when the user's device is disconnecte. The offline version of a Web application may not offer full functionality, but certain functions can still be available. 
 
-=== Web SQL
+==== Prerequisites for developing Offline Web Applications 
 
-TODO
+To be useful in a disconnected mod HTML-based application need to have access to some local storage on the device, in which case the data entered by the user in the HTML windows can be saved locally with further synchronization with the server when connection becomes available. Think of a salesman of a pharmaceutical visiting medical offices trying to sell new pills. What if connection is not available at certain point? She can still use her tablet demonstrate the marketing materials and more importantly, collect some data about this visit and save them locally. When the Internet connection becomes  available again, the Web application should support automatic or manual data synchronization so the information about the salesman activity will be stored in a central database.
+
+We can agree that having a local storage accessible from HTML/JavaScript UI is a prerequisite for building offline Web applications. The other important design decision is to ensure that the server sends to the client only the data, no HTML markup. So all these server-side frameworks that prepare the data heavily sprinkled with HTML markup should not be used. For example, the front-end should be developed in HTML/JavaScript/CSS, the back end in your favorite language (Java, .Net, PHP, etc.), and the JSON-formatted data are being sent from the server to the client and back.
+
+Finally, the business logic that supports the functionality available offline should be developed in JavaScript.
+
+==== HTML5: Storing Data Locally 
+
+In the past, Web browsers could only store their own cache and application's cookies on the user's computer. HTML5 offers several a lot more advanced solutions for storing data locally, namely: 
+
+* Local Storage: `window.localStorage`
+* Session Storage: `window.sessionStorage`
+* http://www.w3.org/TR/webdatabase/[Web SQL Database]: the local database that supports SQL syntax
+* Indexed DB: a NoSQL database that stores key-value pairs
+
+TBD
 
 === History API
 
