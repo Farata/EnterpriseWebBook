@@ -73,9 +73,16 @@ if (Modernizr.Worker) {
 
 ==== HTML5 Web Messaging
 
-http://www.w3.org/TR/webmessaging/[HTML5 Web Messaging] allows you to arrange for communication between different Web pages of the same Web application. More officially, it's about "communicating between browsing contexts in HTML documents". Web messaging also allows you to work around _the same domain policy_ that would result in security error if a window A has one origin (the combination of URL scheme, host name and port, e.g. http://myserver.com:8080) would try to access property of a window B that was downloaded from another origin.
+http://www.w3.org/TR/webmessaging/[HTML5 Web Messaging] allows you to arrange for communication between different Web pages of the same Web application. More officially, it's about "communicating between browsing contexts in HTML documents". Web messaging also allows you to work around _the same domain policy_ that would result in security error if a window A has one origin (the combination of URL scheme, host name and port, e.g. http://myserver.com:8080) would try to access property of a window B that was downloaded from another origin. But with messaging API windows downloaded from different origins can send messages to each other.
 
-The API is pretty straightforward: if a script in `WindowA` has a reference to `myWindowB` to which you want to send a message, invoke the method `myWindowB.postMesage(someData)`. The object referenced by `myWindowB` will receive an event object with the content of payload `someData` in the event's property `data`.  
+The API is pretty straightforward: if a script in `WindowA` has a reference to `WindowB` where you want to send a message, invoke the following method:
+
+[source, javascript]
+----
+ myWindowB.postMesage(someData, targetOrigin);
+----
+
+The object referenced by `myWindowB` will receive an event object with the content of payload `someData` in the event's property `data`.  The `targetOrigin` specifies the origin where `myWindowB` was downloaded from. Specifying a concrete URI of the destination window in `targetOrigin` is the right way to do messaging. This way if a malicious site will try to intercept the message it won't be delivered since the URI specified in `targetOrigin` would be different from the malicious site's URI. But if you're absolutely sure that your application is operating in absolutely safe environment, you can specify `"*"` as `targetOrigin`.
 
 Accordingly, `myWindowB` has to define an event handler for processing of this external event `message`, for example:
 
@@ -99,7 +106,7 @@ The iFrame will have two button emulating the case of some trading system with t
 .Message exchange between the window and iFrame
 image::images/fig_01_01.png[]
 
-The source code of this example is shown next. It's just two HTML files: mainWindow.html and myFrame.html. Here;s the code of the mainWindow:
+The source code of this example is shown next. It's just two HTML files: mainWindow.html and myFrame.html. Here's the code of mainWindow.html
 
 [source, html]
 ----
@@ -114,18 +121,19 @@ The source code of this example is shown next. It's just two HTML files: mainWin
 
     <h1>This is Main Window </h1>
 
-    <iframe id="myFrame">
+    <iframe id="myFrame">                   
         <p>....</p>
     </iframe>
   
    <script type="text/javascript">
         var theiFrame;
         
-        function handleMessage(event) {
-                console.log('Main Window got the message ' +  event.data );
+        function handleMessage(event) {            // <1>
+                console.log('Main Window got the message ' +
+                                     event.data );
                 
              // Reply to the frame here
-             switch (event.data) {
+             switch (event.data) {                // <2> 
                 	
                 case 'loaded':
                    theiFrame.contentWindow.postMessage("Hello my frame! Glad you loaded! ",  
@@ -142,7 +150,7 @@ The source code of this example is shown next. It's just two HTML files: mainWin
              } 
         }
         
-        window.onload = function() {
+        window.onload = function() {                  //  <3>
             window.addEventListener('message', handleMessage, false);
             theiFrame = document.getElementById('myFrame');
             theiFrame.src = "myFrame.html";		
@@ -154,8 +162,14 @@ The source code of this example is shown next. It's just two HTML files: mainWin
 </html>
 ----
 
+<1> This function is an event handler for messages received from the iFrame window. The main window is the parent of iFrame, and whenever the latter will invoke `parent.postMessage()` this even handler will be engaged.
 
-The iFrame window comes next.
+<2> Depending on the content of the message payload (`event.data`)	respond back to the sender with acknowledgment.  If the payload is `loaded`, this means that the iFrame has finished loading. If it's `buy` or `sell` - this means that the corresponding button in the iFrame has been clicked.
+
+<3>	On load the main window starts listening to the messages from other windows and loads the content of the iFrame. 
+	
+
+The code of the myFrame.html comes next.
 
 [source, html]
 ----
@@ -171,29 +185,44 @@ The iFrame window comes next.
   
   <script type="text/javascript">
         
-        var senderOrigin;
+        var senderOrigin = null;
         
         function handleMessageInFrame(event) {
                 console.log('   My Frame got the message from ' + event.origin +": " + event.data);
-                senderOrigin = event.origin;
+                if (senderOrigin == null) senderOrigin = event.origin; // <1>
         }
 
-        window.onload = function(){
+        window.onload = function(){                    
         	window.addEventListener('message', handleMessageInFrame, false);
-            parent.postMessage('loaded', 'http://127.0.0.1:8020');
+            parent.postMessage('loaded', "*");  // <2>
         };
         
         function sendToParent(action){
-        	parent.postMessage(action,  senderOrigin);
+        	parent.postMessage(action,  senderOrigin);        // <3>
         }
 
     </script>
  </body>
 </html>
-
 ----
 
+<1> When the iFrame receives the first message from the parent, store the reference to the sender's origin.
 
+<2> Notify the parent that the iFrame is loaded. The target origin is specified as `"*"` here as an illustration of how to send messages without worrying about malicious sites-interceptors - always specify the target URI as it's done in the function `sendToParent()`.
+
+<3> Send the message to parent window when the user clicks on Buy or Sell button.
+
+If you'll need to build a UI of the application from reusable components, applying messaging techniques allows you to create loosely coupled components. Say you've created a window for a financial trader. This windows get the data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be is implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
+
+Three years ago O'Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we've described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending/receiving events from the mediator object.  The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can't be underestimated. 
+
+<<FIG1-2>> is an illustration from that Enterprise Flex book. The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask panel, the Pricing Panel just sends the event with the relevant information - symbol, price, buy/sell, date, etc. In HTML5 realm, we can say that the Pricing Panel invokes `parent.postMessage()` and shoots the message to the mediator (a.k.a. main window).    
+
+[[FIG1-2]]
+.Before and after the trader clicked on the Price Panel
+image::images/fig_01_02.png[]
+
+The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending/receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some protal that's used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it's easy to reuse the existing code in such a dashboard.
 
 
 ==== Web Workers
