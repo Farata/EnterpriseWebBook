@@ -427,7 +427,7 @@ In the past, Web browsers could only store their own cache and application's coo
 
 At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL Database is not supported by Firefox and Internet Explorer. IndexedDB is not supported by Safari. To get the current status visit caniuse.com and search for the API you're interested in.
 
-IMPORTANT: As opposed to cookies, the Web browser doesn't send the data saved in a local storage back to the server. The saved data is used only on the user's device.
+IMPORTANT: As opposed to cookies, the Web browser doesn't send the data saved in a local storage back to the server. The saved data is used only on the user's device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.
 
 With `window.localStorage` or `window.sessionStorage` (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with `window.localStorage` will survive while the data saved via `window.sessionStorage` won't. Another distinction is that the data from `window.localStorage` is available for any page loaded from the same origin as the page that saved the data.  In case of `window.sessionStorage`, the data is available only to the window or a browser's tab that saved it.
 
@@ -451,13 +451,114 @@ var notes = localStorage.getItem('notes');
 
 This code sample are pretty simple as they store single values. In the real life scenarios we often need to store multiple objects. What it our salesperson has visited several medical offices and needs to save the information about all these visits in the Web Store?  For each visit we can create a key-value combination, where a _key_ will include the unique id (e.g. office ID), and the _value_ will be a JavaScript object (e.g. Visit) turned into a JSON-formatted string (see Chapter 4 for details) using `JSON.stringify()`. 
 
-The following code sample illustrates how to store and retrieve the custom Visit object. 
+The following code sample illustrates how to store and retrieve the custom `Visit` objects. Each visit to a medical office is represented by on instance of the `Visit` object. To keep the code simple, we've have not included there any HTML components - its JavaScript functions get invoked and print their output on the browser's console.  
 
+[source, javascript]
+----
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>My Today's Visits</title>
+</head>
+<body>
+ <script>
+  
+  // Saving in local storage
+  var saveVisitInfo = function (officeVisit) {            
+          var visitStr=JSON.stringify(officeVisit);      // <1>
+          window.localStorage.setItem("Visit:"+ visitNo, visitStr);
+          window.localStorage.setItem("Visits:total", ++visitNo);
+          
+          console.log("saveVisitInfo: Saved in local storage " + visitStr);
+ };
 
+// Reading from local storage
+  var readVisitInfo = function () {                      
+           
+     var totalVisits = window.localStorage.getItem("Visits:total");
+     console.log("readVisitInfo: total visits " + totalVisits);
+     
+     for (var i = 0; i < totalVisits; i++) {    // <2>
+       
+         var visit = JSON.parse(window.localStorage.getItem("Visit:" + i));
+         console.log("readVisitInfo: Office " + visit.officeId + 
+                     " Spoke to " + visit.contactPerson + ": " + visit.notes);
+  }
+ };
 
+// Removing the visit info from local storage
+var removeAllVisitInfo = function (){             // <3>
+          var totalVisits = window.localStorage.getItem("Visits:total");  
+          
+          for (i = 0; i < totalVisits; i++) {
+              window.localStorage.removeItem("Visit:" + i);
+      } 
+  
+      window.localStorage.removeItem("Visits:total");
+      
+      console.log("removeVisits: removed all visit info"); 
+}
 
+   var visitNo = 0;
+   
+   // Saving the first visit's info                   
+   var visit = {                                // <4>
+         officeId: 123,
+         contactPerson: "Mary Lou",
+         notes: "Drop the samples of XYZin on 12/15/2013"
+    };     
+    saveVisitInfo(visit);
+    
+    // Saving the second visit's info           // <5>
+    visit = {
+         officeId: 987,
+         contactPerson: "John Smith",
+         notes: "They don't like XYZin - people die from it"
+    };
+    saveVisitInfo(visit);   
+    
+   // Retrieving visit info from local storage
+   readVisitInfo();                             // <6>
+   
+   // Removing all visit info from local storage   
+   removeAllVisitInfo();                        // <7>
+   
+   // Retrieving visit info from local storage - should be no records
+   readVisitInfo();                             // <8> 
+        
+  </script>
+</body>
+</html>
+----
 
+<1> The function `saveVisitInfo()` uses JSON object to turn the visit object into a string with `JSON.stringify()`, and then saves this string in the local storage. This function also increments the total number of visits and saves it in the local storage under the key `Visits:total`.
 
+<2> The function `readVisitInfo()` gets the total number of visits from the local storage and then reads each visit record recreating the JavaScript object from JSON srting using `JSON.parse()`.
+
+<3> The function `removeAllVisitInfo()` reads the number of visit records, removes each of them, and then removed the `Visits:total` too.  
+
+<4> Creating and saving the first visit record
+
+<5> Creating and saving the second visit record
+
+<6> Reading saved visit info
+
+<7> Removing saved visit info
+
+<8> Re-reading visit info after removal
+
+<<FIG1-4>> shows the output on the console of Chrome Developers Tools. Two visit records were saved in local storage, then they were retrieved and removed from the storage. Finally, the program attempted to read the value of the previously saved `Visits:total`, but it's null now - we've removed from the `localStorage` all the records related to visits.
+
+[[FIG1-4]]
+.Chrome's console after running the Visits sample
+image::images/fig_01_04.png[]
+
+TIP: If you are interested in intercepting the moments when the content of local storage gets modified, listen to the DOM `storage` event, which carries the old and new values and the URL of the page whose data is being changed. 
+
+=== GeoLocation
+
+Covered in ch3
 
 === History API
 
