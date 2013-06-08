@@ -375,7 +375,7 @@ The common misconception about Web applications is that they are useless if ther
 
 ==== Prerequisites for developing Offline Web Applications 
 
-To be useful in a disconnected mod HTML-based application need to have access to some local storage on the device, in which case the data entered by the user in the HTML windows can be saved locally with further synchronization with the server when connection becomes available. Think of a salesman of a pharmaceutical visiting medical offices trying to sell new pills. What if connection is not available at certain point? She can still use her tablet demonstrate the marketing materials and more importantly, collect some data about this visit and save them locally. When the Internet connection becomes  available again, the Web application should support automatic or manual data synchronization so the information about the salesman activity will be stored in a central database.
+To be useful in a disconnected mode, HTML-based application needs to have access to some local storage on the device, in which case the data entered by the user in the HTML windows can be saved locally with further synchronization with the server when connection becomes available. Think of a salesman of a pharmaceutical visiting medical offices trying to sell new pills. What if connection is not available at certain point? She can still use her tablet demonstrate the marketing materials and more importantly, collect some data about this visit and save them locally. When the Internet connection becomes  available again, the Web application should support automatic or manual data synchronization so the information about the salesman activity will be stored in a central database.
 
 Having a local storage accessible from HTML/JavaScript UI is a prerequisite for building offline Web applications. The other important design decision is to ensure that the server sends to the client only the data, no HTML markup (see <<FIG1-3>>). So all these server-side frameworks that prepare the data heavily sprinkled with HTML markup should not be used. For example, the front-end should be developed in HTML/JavaScript/CSS, the back end in your favorite language (Java, .Net, PHP, etc.), and the JSON-formatted data are being sent from the server to the client and back.
 
@@ -386,6 +386,8 @@ image::images/fig_01_03.png[]
 The business logic that supports the client's offline functionality should be developed in JavaScript and run in the Web browser. While most of the business logic of Web applications remains on the server side, the Web client is not as thin as it used to be in legacy HTML-based applications. The client becomes fatter and it can have state. 
 
 ==== Application Cache
+
+The goal is to have your Web application running even if there is no Internet connection. The user will still go to her browser and enter the URL, but the trick is that the main and some other Web pages were saved locally in the application cache. So even if you're not online, the application will start. 
 
 If your Web application consists of multiple files, you need to specify in _Cache Manifest_ those files that have to be present on the user's computer in the offline mode. Cache Manifest is a plain text file that lists such resources. Storing some resources in the application cache can be a good idea not only in the disconnected mode, but also to lower the amount of code that has to be downloaded from the server each time the user starts your application. Here's an example of the file mycache.manifest, which includes one CSS file, two JavaScript files, and one image to be stored locally on the user's computer:
 
@@ -418,14 +420,15 @@ The Web server must serve the manifest file with a MIME type "text/cache-manifes
 
 In the past, Web browsers could only store their own cache and application's cookies on the user's computer. Cookies are small files (up to 4Kb) that a Web browser would automatically save locally if the server's `HTTPResponse` would include them. On the next visit of the same URL, the Web browser would send all non-expired cookies back to the browser as a part of `HTTPRequest` object. Cookies were used for arranging HTTP session management and couldn't be considered a solution for setting up a local storage. HTML5 offers a lot more advanced solutions for storing data locally, namely: 
 
-* Local Storage: `window.localStorage`
+* http://www.w3.org/TR/webstorage/[Web Storage] that includes Local Storage and Session Storage. 
 
-* Session Storage: `window.sessionStorage`
+* http://www.w3.org/TR/IndexedDB/[IndexedDB]: a NoSQL database that stores key-value pairs.
 
-* http://www.w3.org/TR/webdatabase/[Web SQL Database]: the local database that supports SQL syntax
-* IndexedDB: a NoSQL database that stores key-value pairs
+WARNING: http://www.w3.org/TR/webdatabase/[Web SQL Database], is being used as the local database supporting SQL syntax. The work on this specification is stopped and future versions of the browser may not support it. 
 
-At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL Database is not supported by Firefox and Internet Explorer. IndexedDB is not supported by Safari. To get the current status visit caniuse.com and search for the API you're interested in.
+At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL Database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn't support it yet. Consider using a polyfill for indexedDB using Web SQL - it's called https://github.com/axemclion/IndexedDBShim[IndexedDBShim].
+
+To get the current status visit caniuse.com and search for the API you're interested in.
 
 IMPORTANT: As opposed to cookies, the Web browser doesn't send the data saved in a local storage back to the server. The saved data is used only on the user's device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.
 
@@ -544,7 +547,7 @@ var removeAllVisitInfo = function (){             // <3>
 
 <6> Reading saved visit info
 
-<7> Removing saved visit info
+<7> Removing saved visit info. To remove the entire content that was saved for a specific origin call the method `localStorage.clear()`.
 
 <8> Re-reading visit info after removal
 
