@@ -262,6 +262,10 @@ The `number` type shows a numeric stepper icon on the right side of the input fi
 If the type is `search`, at the very minimum you'll see a little cross on the right of this input field. It allows the user quickly clear the field. On mobile devices, bringing the focus to the search field brings up a virtual keyboard with the Search button. Consider adding the attributes `placeholder` and `autofocus` to the search field. 
 
 If the browser doesn't support new input type, it'll render it as a text field.
+
+To validate the input values, use the `required` attribute. It doesn't include any logic, but won't allow submitting the form until the input field marked as `required` has something in it. 
+
+The `pattern` attribute allows you to write a regular expression that ensures that the field contains certain symbols or words. For example, adding `pattern="http:.+"` won't consider the input data valid, unless it starts with `http://` followed by one or more characters, one of which has to be period. It's a good idea to include a `pattern` attribute with a regular expression most of the input fields. 
 *********
 
 ==== Web Workers
@@ -453,13 +457,13 @@ In the past, Web browsers could only store their own cache and application's coo
 
 * http://www.w3.org/TR/IndexedDB/[IndexedDB]: a NoSQL database that stores key-value pairs.
 
-WARNING: http://www.w3.org/TR/webdatabase/[Web SQL Database], is being used as the local database supporting SQL syntax. The work on this specification is stopped and future versions of the browser may not support it. 
+WARNING: http://www.w3.org/TR/webdatabase/[Web SQL Database], may still be used as the local database, but the work on this specification is stopped and future versions of the browser may not support it. 
 
 At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL Database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn't support it yet. Consider using a polyfill for indexedDB using Web SQL - it's called https://github.com/axemclion/IndexedDBShim[IndexedDBShim].
 
 To get the current status visit caniuse.com and search for the API you're interested in.
 
-IMPORTANT: As opposed to cookies, the Web browser doesn't send the data saved in a local storage back to the server. The saved data is used only on the user's device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.
+IMPORTANT: While Web browsers send cookies to the Web server, they  don't send there the data saved in a local storage. The saved data is used only on the user's device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.
 
 With `window.localStorage` or `window.sessionStorage` (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with `window.localStorage` will survive while the data saved via `window.sessionStorage` won't. Another distinction is that the data from `window.localStorage` is available for any page loaded from the same origin as the page that saved the data.  In case of `window.sessionStorage`, the data is available only to the window or a browser's tab that saved it.
 
