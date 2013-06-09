@@ -3167,13 +3167,13 @@ Got the click event in bubble phase</tt></pre></div></div>
 <h2 id="_html5_and_its_new_apis">HTML5 and its New APIs</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>This chapter is a brief review of selected HTML5 APIs. But what is HTML5? To put it simple, it&#8217;s an umbrella name for a combination of HTML, JavaScript, CSS, and several new APIs that appeared during the last several years. Five years ago people were using the term <em>Web 2.0</em> to define modern looking applications. These days HTML5 is almost a household name, and we&#8217;ll go along with it. But let&#8217;s just remember that it&#8217;s about the same old development in JavaScript plus latest advances in HTML and CSS.</p></div>
-<div class="paragraph"><p>This chapter differs from all others because it includes less code, and is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, WebSQL, WebSockets, Web Workers, and History API.</p></div>
+<div class="paragraph"><p>This chapter differs from all others because it includes less code, and is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, offline Web applications, Web Workers, and History API.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
 <img src="images/icons/note.png" alt="Note">
 </td>
-<td class="content">To understand code samples included in this chapter you have to be familiar with JavaScript and some monitoring tools like Chrome Developers Tool. Consider reading Chapter 2 first if you&#8217;re new to Web development.</td>
+<td class="content">To understand code samples included in this chapter you have to be familiar with JavaScript and some monitoring tools like Chrome Developers Tool. We assume that you are familiar with the materials covered in Chapter 1.</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>The majority of the modern Web browsers already support the current version of <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers">HTML5 specification</a>, which will become a W3C standard in 2014. The question is if the users of your Web application can use a modern browser installed on their device? There are two groups of users that will stick to the outdated browsers for some time:</p></div>
@@ -3618,7 +3618,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The Web server must serve the manifest file with a MIME type "text/cache-manifest", and you need to refer to the documentation of your Web server to see how to see where to make a configuration change so all files with extension .manifest are served as "text/cache-manifest".</p></div>
 </div>
 <div class="sect3">
-<h4 id="_html5_storing_data_locally">HTML5: Storing Data Locally</h4>
+<h4 id="_options_for_storing_data_locally">Options for Storing Data Locally</h4>
 <div class="paragraph"><p>In the past, Web browsers could only store their own cache and application&#8217;s cookies on the user&#8217;s computer. Cookies are small files (up to 4Kb) that a Web browser would automatically save locally if the server&#8217;s <span class="monospaced">HTTPResponse</span> would include them. On the next visit of the same URL, the Web browser would send all non-expired cookies back to the browser as a part of <span class="monospaced">HTTPRequest</span> object. Cookies were used for arranging HTTP session management and couldn&#8217;t be considered a solution for setting up a local storage. HTML5 offers a lot more advanced solutions for storing data locally, namely:</p></div>
 <div class="ulist"><ul>
 <li>
@@ -3632,15 +3632,8 @@ http://www.gnu.org/software/src-highlite -->
 </p>
 </li>
 </ul></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<img src="images/icons/warning.png" alt="Warning">
-</td>
-<td class="content"><a href="http://www.w3.org/TR/webdatabase/">Web SQL Database</a>, may still be used as the local database, but the work on this specification is stopped and future versions of the browser may not support it.</td>
-</tr></table>
-</div>
-<div class="paragraph"><p>At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL Database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn&#8217;t support it yet. Consider using a polyfill for indexedDB using Web SQL - it&#8217;s called <a href="https://github.com/axemclion/IndexedDBShim">IndexedDBShim</a>.</p></div>
+<div class="paragraph"><p>There is another option worth mentioning - <a href="http://www.w3.org/TR/webdatabase/">Web SQL Database</a>. It&#8217;s based on the open source SQLite database, but the work on this specification is stopped and future versions of the browsers may not support it. That&#8217;s why we are not going to discuss Web SQL here.</p></div>
+<div class="paragraph"><p>At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn&#8217;t support it yet, so if your main development platform is iOS, you may need to stick to Web SQL database. Consider using a polyfill for indexedDB using Web SQL API called <a href="https://github.com/axemclion/IndexedDBShim">IndexedDBShim</a>.</p></div>
 <div class="paragraph"><p>To get the current status visit caniuse.com and search for the API you&#8217;re interested in.</p></div>
 <div class="admonitionblock">
 <table><tr>
@@ -3650,8 +3643,12 @@ http://www.gnu.org/software/src-highlite -->
 <td class="content">While Web browsers send cookies to the Web server, they  don&#8217;t send there the data saved in a local storage. The saved data is used only on the user&#8217;s device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.</td>
 </tr></table>
 </div>
-<div class="paragraph"><p>With <span class="monospaced">window.localStorage</span> or <span class="monospaced">window.sessionStorage</span> (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with <span class="monospaced">window.localStorage</span> will survive while the data saved via <span class="monospaced">window.sessionStorage</span> won&#8217;t. Another distinction is that the data from <span class="monospaced">window.localStorage</span> is available for any page loaded from the same origin as the page that saved the data.  In case of <span class="monospaced">window.sessionStorage</span>, the data is available only to the window or a browser&#8217;s tab that saved it.</p></div>
-<div class="paragraph"><p>Currently we use JavaScript API to work with Web Storage, but in the future any other programming language that can run in the browser will be able to work with the storage.  Saving the application state is the main use of the local storage. Coming back to a use case with the pharmaceutical salesman, in the offline mode you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for example,</p></div>
+</div>
+<div class="sect3">
+<h4 id="_localstorage_and_sessionstorage">localStorage and sessionStorage</h4>
+<div class="paragraph"><p>With <span class="monospaced">window.localStorage</span> or <span class="monospaced">window.sessionStorage</span> (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. Both objects implement <span class="monospaced">Storage</span> interface. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with <span class="monospaced">window.localStorage</span> will survive while the data saved via <span class="monospaced">window.sessionStorage</span> won&#8217;t.</p></div>
+<div class="paragraph"><p>Another distinction is that the data from <span class="monospaced">window.localStorage</span> is available for any page loaded from the same origin as the page that saved the data.  In case of <span class="monospaced">window.sessionStorage</span>, the data is available only to the window or a browser&#8217;s tab that saved it.</p></div>
+<div class="paragraph"><p>Currently we use JavaScript API to work with Web Storage, but in the future any other programming language that can run in the browser will be able to work with the storage.  Saving the application state is the main use of the local storage. Coming back to a use case with the pharmaceutical salesman, in the offline mode you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for example:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
@@ -3793,10 +3790,41 @@ Re-reading visit info after removal
 </tr></table>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_indexeddb">IndexedDB</h4>
+<div class="paragraph"><p><a href="http://www.w3.org/TR/IndexedDB/">Indexed Database API</a> (a.k.a. IndexedDB) is a solution based on the NoSql database. The data is stored as key-value objects, and API offers a lot more advanced transactional handling of objects than with <span class="monospaced">Storage</span> interface. IndexedDB creates indexes of the stored objects for fast retrieval.
+With Web Storage you can only store strings, and we had to do these tricks with JSON <span class="monospaced">stingify()</span> and <span class="monospaced">parse()</span> to give some structure to these strings. With IndexedDB you store and index regular JavaScript objects.</p></div>
+<div class="paragraph"><p>Another important feature of IndexedDB is that it accesses data asynchronously, so there won&#8217;t be UI freezes while accessing large objects on disk. You make a request to the database and define the event handlers that should process errors or result when ready. Use Web Workers for long running data access, and since it asynchronous, the users will have a feeling that the application is pretty responsive, which is not the case if you&#8217;ll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy.</p></div>
+<div class="paragraph"><p>Since not every browser supports IndexedDB yet, you can use Modernizr (see Chapter 3) to detect if your browsers supports it. If it does, you still may need to account for the fact that browser vendors name the IndexedDB related object differently. Hence to be on the safe side, at the top of your script include the statements like these:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>window<span style="color: #990000">.</span>indexedDB <span style="color: #990000">=</span> window<span style="color: #990000">.</span>indexedDB <span style="color: #990000">||</span> window<span style="color: #990000">.</span>mozIndexedDB
+      <span style="color: #990000">||</span> window<span style="color: #990000">.</span>msIndexedDB <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIndexedDB <span style="color: #990000">;</span>
+window<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBTransaction<span style="color: #990000">;</span>
+window<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBCursor<span style="color: #990000">;</span>
+window<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBKeyRange<span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide if you want to maintain the value in this property manually, or use the the autoincrement option where the values to this property will be assigned automatically.</p></div>
+<div class="paragraph"><p>IndexedDB doesn&#8217;t require you to describe a formal structure of your stored object - any JavaScript object can be stored there. This is also an advantage comparing to the relational databases where you can&#8217;t store the data until the structure of the tables is defined.</p></div>
+<div class="paragraph"><p>Similarly to relational databases you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the Visits database, create an index on the property <span class="monospaced">contactPerson</span> of the <span class="monospaced">Visit</span> object. But if in relational database creation of index was optional, with IndexedDB you can&#8217;t run a query unless the index on the relevant property exists.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> indexedDB <span style="color: #990000">=</span> window<span style="color: #990000">.</span>indexedDB<span style="color: #990000">;</span>
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> visits <span style="color: #990000">=</span> indexedDB<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">open</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Visits'</span><span style="color: #990000">);</span>
+
+visits<span style="color: #990000">.</span>onsuccess <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>response<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myVisits <span style="color: #990000">=</span> visits<span style="color: #990000">.</span>result<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+
+visits<span style="color: #990000">.</span>onerror <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">(</span>response<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Can't retrieve visits info: "</span> <span style="color: #990000">+</span> response<span style="color: #990000">.</span>target<span style="color: #990000">.</span>errorCode<span style="color: #990000">);</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
 </div>
-<div class="sect2">
-<h3 id="_geolocation">GeoLocation</h3>
-<div class="paragraph"><p>Covered in ch3</p></div>
 </div>
 <div class="sect2">
 <h3 id="_history_api">History API</h3>
@@ -3836,9 +3864,10 @@ http://www.gnu.org/software/src-highlite -->
  <span style="color: #990000">&lt;/</span>head<span style="color: #990000">&gt;</span>
  <span style="color: #990000">&lt;</span>body<span style="color: #990000">&gt;</span>
   <span style="color: #990000">&lt;</span>div id<span style="color: #990000">=</span><span style="color: #FF0000">"main-container"</span><span style="color: #990000">&gt;</span>
+
          <span style="color: #990000">&lt;</span>h1<span style="color: #990000">&gt;</span>Click on Link and watch the address bar<span style="color: #990000">...&lt;/</span>h1<span style="color: #990000">&gt;</span>
 
-    <span style="color: #990000">&lt;</span>button type<span style="color: #990000">=</span><span style="color: #FF0000">"button"</span> onclick<span style="color: #990000">=</span><span style="color: #FF0000">"whoWeAre()"</span><span style="color: #990000">&gt;</span>Who we are<span style="color: #990000">&lt;/</span>button<span style="color: #990000">&gt;</span>  <span style="color: #990000">&lt;</span><span style="color: #993399">1</span><span style="color: #990000">&gt;</span>
+    <span style="color: #990000">&lt;</span>button type<span style="color: #990000">=</span><span style="color: #FF0000">"button"</span> onclick<span style="color: #990000">=</span><span style="color: #FF0000">"whoWeAre()"</span><span style="color: #990000">&gt;</span>Who we are<span style="color: #990000">&lt;/</span>button<span style="color: #990000">&gt;</span>  <span style="color: #990000">&lt;!--</span> <span style="color: #990000">&lt;</span><span style="color: #993399">1</span><span style="color: #990000">&gt;</span>  <span style="color: #990000">--&gt;</span>
 
     <span style="color: #990000">&lt;</span>button type<span style="color: #990000">=</span><span style="color: #FF0000">"button"</span> onclick<span style="color: #990000">=</span><span style="color: #FF0000">"whatWeDo()"</span><span style="color: #990000">&gt;</span>What we <span style="font-weight: bold"><span style="color: #0000FF">do</span></span><span style="color: #990000">&lt;/</span>button<span style="color: #990000">&gt;</span>
 
@@ -3923,8 +3952,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 <div class="sect2">
 <h3 id="_summary_3">Summary</h3>
-<div class="paragraph"><p>In this chapter you&#8217;ve got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0?
-In this case <a href="http://www.google.com/chromeframe">Google Chrome Frame</a> plugin for Internet Explorer.</p></div>
+<div class="paragraph"><p>In this chapter you&#8217;ve got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0? In this case <a href="http://www.google.com/chromeframe">Google Chrome Frame</a> plugin for Internet Explorer.</p></div>
 <div class="paragraph"><p>The users have to install Google Frame on their machines, and Web developers just need to add the following line to their Web pages:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
@@ -3933,6 +3961,7 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #0000FF">&lt;meta</span></span> <span style="color: #009900">http-equiv</span><span style="color: #990000">=</span><span style="color: #FF0000">"X-UA-Compatible"</span> <span style="color: #009900">content</span><span style="color: #990000">=</span><span style="color: #FF0000">"chrome=1"</span> <span style="font-weight: bold"><span style="color: #0000FF">/&gt;</span></span></tt></pre></div></div>
 <div class="paragraph"><p>After that the Web page rendering will be done by Chrome Frame while your Web application will run in Internet Explorer.</p></div>
+<div class="paragraph"><p>In Chapter 3 you&#8217;ll learn how to use HTML5 GeoLocation API, and Chapter 9 is completely devoted to working with WebSocket API.</p></div>
 </div>
 </div>
 </div>
