@@ -5,9 +5,9 @@
 
 This chapter is a brief review of selected HTML5 APIs. But what is HTML5? To put it simple, it's an umbrella name for a combination of HTML, JavaScript, CSS, and several new APIs that appeared during the last several years. Five years ago people were using the term _Web 2.0_ to define modern looking applications. These days HTML5 is almost a household name, and we'll go along with it. But let's just remember that it's about the same old development in JavaScript plus latest advances in HTML and CSS.
 
-This chapter differs from all others because it includes less code, and is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, WebSQL, WebSockets, Web Workers, and History API. 
+This chapter differs from all others because it includes less code, and is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, offline Web applications, Web Workers, and History API. 
 
-NOTE: To understand code samples included in this chapter you have to be familiar with JavaScript and some monitoring tools like Chrome Developers Tool. Consider reading Chapter 2 first if you're new to Web development.
+NOTE: To understand code samples included in this chapter you have to be familiar with JavaScript and some monitoring tools like Chrome Developers Tool. We assume that you are familiar with the materials covered in Chapter 1.
 
 The majority of the modern Web browsers already support the current version of http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers[HTML5 specification], which will become a W3C standard in 2014. The question is if the users of your Web application can use a modern browser installed on their device? There are two groups of users that will stick to the outdated browsers for some time:
 
@@ -413,10 +413,12 @@ To be useful in a disconnected mode, HTML-based application needs to have access
 Having a local storage accessible from HTML/JavaScript UI is a prerequisite for building offline Web applications. The other important design decision is to ensure that the server sends to the client only the data, no HTML markup (see <<FIG1-3>>). So all these server-side frameworks that prepare the data heavily sprinkled with HTML markup should not be used. For example, the front-end should be developed in HTML/JavaScript/CSS, the back end in your favorite language (Java, .Net, PHP, etc.), and the JSON-formatted data are being sent from the server to the client and back.
 
 [[FIG1-3]]
-.A sample Design with Offline Use
+.Design with Offline Use in Mind 
 image::images/fig_01_03.png[]
 
 The business logic that supports the client's offline functionality should be developed in JavaScript and run in the Web browser. While most of the business logic of Web applications remains on the server side, the Web client is not as thin as it used to be in legacy HTML-based applications. The client becomes fatter and it can have state. 
+
+It's a good idea to create a data layer in your JavaScript code that will be responsible for all data communications. If the Internet connection is available, the data layer will be making  requests to the server, otherwise it'll get the data from the local storage. 
 
 ==== Application Cache
 
@@ -447,9 +449,30 @@ The landing page of your Web application has to specify an explicit reference to
 
 The Web server must serve the manifest file with a MIME type "text/cache-manifest", and you need to refer to the documentation of your Web server to see how to see where to make a configuration change so all files with extension .manifest are served as "text/cache-manifest".
 
+===== Is Your Application Offline?
+
+Web browsers have a `boolean` property `window.navigator.onLine`, which should be used to check if there is no connection to the Internet. The HTML5 specification states that _"The navigator.onLine attribute must return false if the user agent will not contact the network when the user follows links or when a script requests a remote page (or knows that such an attempt would fail), and must return true otherwise."_ Unfortunately, major Web browsers deal with this property differently so you need to do a thorough testing to see if it works as expected with the browser you care about. 
+
+To intercept the changes in the connectivity status, you can also assign event listeners to the `online` and `offline` events, for example:
+
+[source, javascript]
+----
+window.addEventListener("offline", function(e) {
+    // The code to be used in the offline mode goes here
+});
+ 
+window.addEventListener("online", function(e) {
+    // The code to synchronize the data saved in the offline mode 
+    // (if any) goes here
+});
+----
+
+You can also add the `onoffline` and `ononline` event handlers to the `<body>` tag of your HTML page or to the `document` object. Again, test the support of these event in your browsers.
+
+What if the browser's support of the offline/online events is still not stable? In this you'll have to write your own script that will periodically make an AJAX call (see Chapter 4) trying to connect to a remote server that's always up and running, e.g. google.com. If this request fails, it's a good indication that your application is disconnected from the Internet.
 
 
-==== HTML5: Storing Data Locally 
+==== Options for Storing Data Locally 
 
 In the past, Web browsers could only store their own cache and application's cookies on the user's computer. Cookies are small files (up to 4Kb) that a Web browser would automatically save locally if the server's `HTTPResponse` would include them. On the next visit of the same URL, the Web browser would send all non-expired cookies back to the browser as a part of `HTTPRequest` object. Cookies were used for arranging HTTP session management and couldn't be considered a solution for setting up a local storage. HTML5 offers a lot more advanced solutions for storing data locally, namely: 
 
@@ -457,17 +480,21 @@ In the past, Web browsers could only store their own cache and application's coo
 
 * http://www.w3.org/TR/IndexedDB/[IndexedDB]: a NoSQL database that stores key-value pairs.
 
-WARNING: http://www.w3.org/TR/webdatabase/[Web SQL Database], may still be used as the local database, but the work on this specification is stopped and future versions of the browser may not support it. 
+There is another option worth mentioning - http://www.w3.org/TR/webdatabase/[Web SQL Database]. The specification was based on the open source SQLite database, which probably was the wrong decision in the foirst place.  But the work on this specification is stopped and future versions of the browsers may not support it. That's why we are not going to discuss Web SQL Database in this book. 
 
-At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL Database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn't support it yet. Consider using a polyfill for indexedDB using Web SQL - it's called https://github.com/axemclion/IndexedDBShim[IndexedDBShim].
+At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn't support it yet, so if your main development platform is iOS, you may need to stick to Web SQL database. Consider using a polyfill for indexedDB using Web SQL API called https://github.com/axemclion/IndexedDBShim[IndexedDBShim].
 
 To get the current status visit caniuse.com and search for the API you're interested in.
 
 IMPORTANT: While Web browsers send cookies to the Web server, they  don't send there the data saved in a local storage. The saved data is used only on the user's device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.
 
-With `window.localStorage` or `window.sessionStorage` (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with `window.localStorage` will survive while the data saved via `window.sessionStorage` won't. Another distinction is that the data from `window.localStorage` is available for any page loaded from the same origin as the page that saved the data.  In case of `window.sessionStorage`, the data is available only to the window or a browser's tab that saved it.
+==== localStorage and sessionStorage
 
-Currently we use JavaScript API to work with Web Storage, but in the future any other programming language that can run in the browser will be able to work with the storage.  Saving the application state is the main use of the local storage. Coming back to a use case with the pharmaceutical salesman, in the offline mode you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for example,
+With `window.localStorage` or `window.sessionStorage` (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. Both objects implement `Storage` interface. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with `window.localStorage` will survive while the data saved via `window.sessionStorage` won't.
+
+Another distinction is that the data from `window.localStorage` is available for any page loaded from the same origin as the page that saved the data.  In case of `window.sessionStorage`, the data is available only to the window or a browser's tab that saved it.
+
+Currently we use JavaScript API to work with Web Storage, but in the future any other programming language that can run in the browser will be able to work with the storage.  Saving the application state is the main use of the local storage. Coming back to a use case with the pharmaceutical salesman, in the offline mode you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for example:
 
 [source, javascript]
 ----
@@ -592,9 +619,77 @@ image::images/fig_01_04.png[]
 
 TIP: If you are interested in intercepting the moments when the content of local storage gets modified, listen to the DOM `storage` event, which carries the old and new values and the URL of the page whose data is being changed. 
 
-=== GeoLocation
+The Web storage API is pretty simple to use, but its major drawbacks are that it doesn't give you a way to put any structure to your stored data, you always have to store strings, and the API is synchronous, which may case delays in the user interaction when your application is accessing the disk. In the next section you'll learn about a more advanced way of storing data on the user's computer.
 
-Covered in ch3
+==== IndexedDB
+
+http://www.w3.org/TR/IndexedDB/[Indexed Database API] (a.k.a. IndexedDB) is a solution based on the NoSql database. The data is stored as key-value objects, and API offers a lot more advanced transactional handling of objects than with `Storage` interface. IndexedDB creates indexes of the stored objects for fast retrieval.
+With Web Storage you can only store strings, and we had to do these tricks with JSON `stingify()` and `parse()` to give some structure to these strings. With IndexedDB you store and index regular JavaScript objects. 
+
+Another important feature of IndexedDB is that it accesses data asynchronously, so there won't be UI freezes while accessing large objects on disk. You make a request to the database and define the event handlers that should process errors or result when ready. Use Web Workers for long running data access, and since it asynchronous, the users will have a feeling that the application is pretty responsive, which is not the case if you'll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy. 
+
+Since not every browser supports IndexedDB yet, you can use Modernizr (see Chapter 3) to detect if your browsers supports it. If it does, you still may need to account for the fact that browser vendors name the IndexedDB related object differently. Hence to be on the safe side, at the top of your script include the statements like these:
+
+[source, javascript]
+----
+window.indexedDB = window.indexedDB || window.mozIndexedDB
+      || window.msIndexedDB || window.webkitIndexedDB ;
+if (!window.indexedDB){
+   // this browser doesn't support IndexedDB
+} else {
+  window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+  window.IDBCursor = window.IDBCursor || window.webkitIDBCursor;
+  window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+}
+----
+
+IndexedDB doesn't require you to describe a formal structure of your stored object - any JavaScript object can be stored there. Think of a database as an _object store_ that allows to store similar objects, e.g. representing salesman's visits. Not having a formal definition of a database scheme is an advantage comparing to the relational databases where you can't store the data until the structure of the tables is defined.
+
+Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide if you want to maintain the value in this property manually, or use the the `autoIncrement` option where the values to this property will be assigned automatically. Coming back to our Visits example, you can either maintain the unique values of the `officeId` on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as surrogate keys never decreases, and starts with the value of 1 in each object store.
+
+Similarly to relational databases you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the Visits database, create an index on the property `contactPerson` of the `Visit` object. But if in relational databases creation of indexes is done for performance reasons, with IndexedDB you can't run a query unless the index on the relevant property exists. The following code sample shows how to connect to the existing or create a new database `Visits`.   
+
+[source, javascript]
+----
+var indexedDB = window.indexedDB;
+var request = indexedDB.open('Visits');     // <1>
+
+request.onsuccess = function(event) {       // <2>
+    var myVisitsDB = request.result;
+
+};
+
+request.onerror = function (event) {        // <3>
+    console.log("Can't retrieve visits info: " + event.target.errorCode);
+};
+
+request.onupgradeneeded = function(event){  // <4> 
+  
+}
+----
+
+<1> The browser invokes the method `open()` asynchronously requesting to establish the connection with the database. It doesn't wait for the  completion of this request, and the user can continue working with the Web page without any delays or interruptions. 
+
+<2> When the connection is successfully obtained, the `onsuccess` function handler will be invoked, otherwise the control goes to the `onerror` handler. 
+
+<3> Error handling is done here. The event object given to the `onerror` handler will contain the information about the error.
+
+<4> The `onupgradeneeded` handler is the place to create a new storage or process the event when the database has to be modified.  
+
+===== Creating a new Database and Versioning
+
+In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted and the users start working with the _new version_ of the database. With IndexedDB it works differently. Each database has a version assigned to it, and if the `onupgradeneeded` event is triggered, this means that the local user's version is older that needed for the freshly loaded application. 
+
+The initial creation of the database has to be controlled in the  `onupgradeneeded` handler - the absence of the database also falls under the "upgrade is needed" case.  
+
+The version of the IndexDB may need to be upgraded, and the method `open()` takes a second parameter - the database version to be used.The object returned by the method `open()` has a property `onupgradeneeded`, and you can assign an event handler to it in which you should create a database with `createObjectStore()` method. 
+
+WARNING: IndexedDB doesn't offer a secure way of storing data. Anyone who has access to the user's computer can get a hold of the data stored in IndexedDB. Do not store locally any sensitive data. 
+
+===== Transactions Support
+
+
+TBD
 
 === History API
 
@@ -626,9 +721,11 @@ The `pushState()` takes three arguments:
  </head>
  <body>
   <div id="main-container">
+
   	 <h1>Click on Link and watch the address bar...</h1>
 
-    <button type="button" onclick="whoWeAre()">Who we are</button>  <1> 
+    <button type="button" onclick="whoWeAre()">Who we are</button>  
+<!-- <1> -->
 
     <button type="button" onclick="whatWeDo()">What we do</button>	
   
@@ -702,8 +799,7 @@ TIP: If you'll run into a browser that doesn't support HTML5 History API, consid
 
 === Summary
 
-In this chapter you've got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0?
-In this case http://www.google.com/chromeframe[Google Chrome Frame] plugin for Internet Explorer.
+In this chapter you've got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0? In this case http://www.google.com/chromeframe[Google Chrome Frame] plugin for Internet Explorer.
 
 The users have to install Google Frame on their machines, and Web developers just need to add the following line to their Web pages:
 
@@ -714,3 +810,4 @@ The users have to install Google Frame on their machines, and Web developers jus
 
 After that the Web page rendering will be done by Chrome Frame while your Web application will run in Internet Explorer.
 
+In Chapter 3 you'll learn how to use HTML5 GeoLocation API, and Chapter 9 is completely devoted to working with WebSocket API.
