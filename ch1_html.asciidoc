@@ -626,70 +626,124 @@ The Web storage API is pretty simple to use, but its major drawbacks are that it
 http://www.w3.org/TR/IndexedDB/[Indexed Database API] (a.k.a. IndexedDB) is a solution based on the NoSql database. The data is stored as key-value objects, and API offers a lot more advanced transactional handling of objects than with `Storage` interface. IndexedDB creates indexes of the stored objects for fast retrieval.
 With Web Storage you can only store strings, and we had to do these tricks with JSON `stingify()` and `parse()` to give some structure to these strings. With IndexedDB you store and index regular JavaScript objects. 
 
-Another important feature of IndexedDB is that it accesses data asynchronously, so there won't be UI freezes while accessing large objects on disk. You make a request to the database and define the event handlers that should process errors or result when ready. Use Web Workers for long running data access, and since it asynchronous, the users will have a feeling that the application is pretty responsive, which is not the case if you'll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy. 
+Another important feature of IndexedDB is that it allows you to accesses data asynchronously, so there won't be UI freezes while accessing large objects on disk. You make a request to the database and define the event handlers that should process errors or result when ready. The users will have a feeling that the application is pretty responsive, which is not the case if you'll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy. 
 
-Since not every browser supports IndexedDB yet, you can use Modernizr (see Chapter 3) to detect if your browsers supports it. If it does, you still may need to account for the fact that browser vendors name the IndexedDB related object differently. Hence to be on the safe side, at the top of your script include the statements like these:
+TIP: If you'll be using Web Workers for long running data access, use the synchronous IndexedDB API.
+
+Since not every browser supports IndexedDB yet, you can use Modernizr (see Chapter 3) to detect if your browsers supports it. If it does, you still may need to account for the fact that browser vendors name the IndexedDB related object differently. Hence to be on the safe side, at the top of your script include the statements to account for the prefixed vendor-specific implementations of `indexedDB` and related objects:
 
 [source, javascript]
 ----
-window.indexedDB = window.indexedDB || window.mozIndexedDB
+var medicalDB = {};   // just an object to store references 
+
+medicalDB.indexedDB = window.indexedDB || window.mozIndexedDB
       || window.msIndexedDB || window.webkitIndexedDB ;
 if (!window.indexedDB){
    // this browser doesn't support IndexedDB
 } else {
-  window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
-  window.IDBCursor = window.IDBCursor || window.webkitIDBCursor;
-  window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+  medical.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+  medicalDB.IDBCursor = window.IDBCursor || window.webkitIDBCursor;
+  medicalDB.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 }
 ----
 
-IndexedDB doesn't require you to describe a formal structure of your stored object - any JavaScript object can be stored there. Think of a database as an _object store_ that allows to store similar objects, e.g. representing salesman's visits. Not having a formal definition of a database scheme is an advantage comparing to the relational databases where you can't store the data until the structure of the tables is defined.
+In the above code snippet the https://developer.mozilla.org/en-US/docs/Web/API/IDBKeyRange[`IDBKeyRange`] is an object that allows to restrict the range for the continuous keys while iterating through the objects. https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction[`IDBTransaction`] is an implementation of transaction support. The https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor[`IDBCursor`] is an object that represents a cursor for traversing over multiple objects in the database.
+
+IndexedDB doesn't require you to describe a formal structure of your stored objects - any JavaScript object can be stored there.  Not having a formal definition of a database scheme is an advantage comparing to the relational databases where you can't store the data until the structure of the tables is defined.
+
+Your Web application can have one or more databases, and each of them can contain one or more _object stores_.  Each of the object stores will contain similar objects, e.g. one store is for salesman's visits, while another has upcoming promotions.
 
 Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide if you want to maintain the value in this property manually, or use the the `autoIncrement` option where the values to this property will be assigned automatically. Coming back to our Visits example, you can either maintain the unique values of the `officeId` on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as surrogate keys never decreases, and starts with the value of 1 in each object store.
 
-Similarly to relational databases you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the Visits database, create an index on the property `contactPerson` of the `Visit` object. But if in relational databases creation of indexes is done for performance reasons, with IndexedDB you can't run a query unless the index on the relevant property exists. The following code sample shows how to connect to the existing or create a new database `Visits`.   
+Similarly to relational databases you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the Visits store, create an index on the property `contactPerson` of the `Visit` objects. But if in relational databases creation of indexes is done for performance reasons, with IndexedDB you can't run a query unless the index on the relevant property exists. The following code sample shows how to connect to the existing or create a new object store `Visits` in a database called Medical_DB.   
 
 [source, javascript]
 ----
-var indexedDB = window.indexedDB;
-var request = indexedDB.open('Visits');     // <1>
+
+var request = medicalDB.indexedDB.open('Medical_DB');     // <1>
 
 request.onsuccess = function(event) {       // <2>
-    var myVisitsDB = request.result;
+    var myDB = request.result;
 
 };
 
 request.onerror = function (event) {        // <3>
-    console.log("Can't retrieve visits info: " + event.target.errorCode);
+    console.log("Can't access Medical_DB: " + event.target.errorCode);
 };
 
 request.onupgradeneeded = function(event){  // <4> 
-  
-}
+     event.currentTarget.result.createObjectStore ("Visits",
+            {keypath='id', autoIncrement: true});
+};
 ----
 
-<1> The browser invokes the method `open()` asynchronously requesting to establish the connection with the database. It doesn't wait for the  completion of this request, and the user can continue working with the Web page without any delays or interruptions. 
+<1> The browser invokes the method `open()` asynchronously requesting to establish the connection with the database. It doesn't wait for the  completion of this request, and the user can continue working with the Web page without any delays or interruptions. The method `open()` returns an instance of the https://developer.mozilla.org/en-US/docs/Web/API/IDBRequest[`IDBRequest`] object.
 
-<2> When the connection is successfully obtained, the `onsuccess` function handler will be invoked, otherwise the control goes to the `onerror` handler. 
+<2> When the connection is successfully obtained, the `onsuccess` function handler will be invoked. The result is available through the `IDBRequest.result` property.  
 
 <3> Error handling is done here. The event object given to the `onerror` handler will contain the information about the error.
 
-<4> The `onupgradeneeded` handler is the place to create a new storage or process the event when the database has to be modified.  
+<4> The `onupgradeneeded` handler is the place to create or upgrade the storage to a new version. This is explained next.  
 
-===== Creating a new Database and Versioning
+===== Object Stores and Versioning
 
-In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted and the users start working with the _new version_ of the database. With IndexedDB it works differently. Each database has a version assigned to it, and if the `onupgradeneeded` event is triggered, this means that the local user's version is older that needed for the freshly loaded application. 
+In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the _new version_ of the database. With IndexedDB it works differently. Each object store has a version assigned to it, and if the `onupgradeneeded` event is triggered, this means that the local object store's version is older that required by the freshly loaded application. 
 
-The initial creation of the database has to be controlled in the  `onupgradeneeded` handler - the absence of the database also falls under the "upgrade is needed" case.  
+After successful connection to the database, the version number is available in `IDBRequest.result.version` property. The starting version of any database is 1.
 
-The version of the IndexDB may need to be upgraded, and the method `open()` takes a second parameter - the database version to be used.The object returned by the method `open()` has a property `onupgradeneeded`, and you can assign an event handler to it in which you should create a database with `createObjectStore()` method. 
+The method `open()` takes a second parameter - the database version to be used. If you don't specify the version - the latest one will be used. The following line shows how the application's code can request connect to the version 3 of the database `Visits`:
+
+[source, javascript]
+----
+var request = indexedDB.open('Visits',3);
+----
+
+If the user's computer has already the `Visits` database of one of the earlier versions (1 or 2), the `onupgradeneeded` handler will be invoked.  The initial creation of the database is triggered the same way - the absence of the database also falls under the "upgrade is needed" case, and the  `onupgradeneeded` handler has to invoke the `createObjectStore()` method. If upgrade is needed, the `onupgradeneeded` will be invoked before the `onsuccess` event. 
+
+The following code snippet creates a new or initial version of the object store `Visits`, requesting auto-generation of the surrogate keys named `id`. It also creates indexes to allow search by office ID, contact name and notes. Indexes are updated automatically as soon as the Web application makes any changes to the stored data.
+
+[source, javascript]
+----
+request.onupgradeneeded = function(event){  // <4> 
+  var visitsStore = 
+     event.currentTarget.result.createObjectStore ("Visits",
+         {keypath='id', 
+         autoIncrement: true
+         });
+
+  visitsStore.createIndex("officeIDindex", "officeID",
+                                         {unique: true});       
+  visitsStore.createIndex("contactsIndex", "contactPerson",
+                                         {unique: false});
+  visitsStore.createIndex("notesIndex", "notes",
+                                         {unique: false});
+};
+----
+
+Note that while creating the object store for visits, we could have used a unique property officeID as a `keypath` value by using the following syntax:
+
+[source, javascript]
+----
+ var visitsStore = 
+     event.currentTarget.result.createObjectStore ("Visits",
+         {keypath='officeID'});
+----
+
+The `event.currentTarget.result` (as well as `IDBRequest.result`) points at the instance of the `IDBDatabase` object, which has a number of useful properties such as `name`, that contains the name of the current database and the array `objectStoreNames`, which has the names of all object stores that exist in this database. Its property `version` has the database version number. If you'd like to create a new database, just call the method `open()` specifying the version number that's higher than the current one.  
+
+To remove the existing database, call the method `indexedDB.deleteDatabase()`. To delete the existing object store invoke `indexedDB.deleteObjectStore()`.
 
 WARNING: IndexedDB doesn't offer a secure way of storing data. Anyone who has access to the user's computer can get a hold of the data stored in IndexedDB. Do not store locally any sensitive data. 
 
 ===== Transactions Support
 
+Transaction is a logical unit of work. Executing several database operation in one transaction guarantees that the changes will be committed to the database only if all operations finished successfully. If at least one of the operations fails, the entire transaction will be rolled back (undone). 
 
-TBD
+IndexDB supports three transaction modes: 
+
+TBD  
+
+
 
 === History API
 
