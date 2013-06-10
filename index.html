@@ -3816,64 +3816,115 @@ Re-reading visit info after removal
 <h4 id="_indexeddb">IndexedDB</h4>
 <div class="paragraph"><p><a href="http://www.w3.org/TR/IndexedDB/">Indexed Database API</a> (a.k.a. IndexedDB) is a solution based on the NoSql database. The data is stored as key-value objects, and API offers a lot more advanced transactional handling of objects than with <span class="monospaced">Storage</span> interface. IndexedDB creates indexes of the stored objects for fast retrieval.
 With Web Storage you can only store strings, and we had to do these tricks with JSON <span class="monospaced">stingify()</span> and <span class="monospaced">parse()</span> to give some structure to these strings. With IndexedDB you store and index regular JavaScript objects.</p></div>
-<div class="paragraph"><p>Another important feature of IndexedDB is that it accesses data asynchronously, so there won&#8217;t be UI freezes while accessing large objects on disk. You make a request to the database and define the event handlers that should process errors or result when ready. Use Web Workers for long running data access, and since it asynchronous, the users will have a feeling that the application is pretty responsive, which is not the case if you&#8217;ll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy.</p></div>
-<div class="paragraph"><p>Since not every browser supports IndexedDB yet, you can use Modernizr (see Chapter 3) to detect if your browsers supports it. If it does, you still may need to account for the fact that browser vendors name the IndexedDB related object differently. Hence to be on the safe side, at the top of your script include the statements like these:</p></div>
+<div class="paragraph"><p>Another important feature of IndexedDB is that it allows you to accesses data asynchronously, so there won&#8217;t be UI freezes while accessing large objects on disk. You make a request to the database and define the event handlers that should process errors or result when ready. The users will have a feeling that the application is pretty responsive, which is not the case if you&#8217;ll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/icons/tip.png" alt="Tip">
+</td>
+<td class="content">If you&#8217;ll be using Web Workers for long running data access, use the synchronous IndexedDB API.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>Since not every browser supports IndexedDB yet, you can use Modernizr (see Chapter 3) to detect if your browsers supports it. If it does, you still may need to account for the fact that browser vendors name the IndexedDB related object differently. Hence to be on the safe side, at the top of your script include the statements to account for the prefixed vendor-specific implementations of <span class="monospaced">indexedDB</span> and related objects:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt>window<span style="color: #990000">.</span>indexedDB <span style="color: #990000">=</span> window<span style="color: #990000">.</span>indexedDB <span style="color: #990000">||</span> window<span style="color: #990000">.</span>mozIndexedDB
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> medicalDB <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">;</span>   <span style="font-style: italic"><span style="color: #9A1900">// just an object to store references</span></span>
+
+medicalDB<span style="color: #990000">.</span>indexedDB <span style="color: #990000">=</span> window<span style="color: #990000">.</span>indexedDB <span style="color: #990000">||</span> window<span style="color: #990000">.</span>mozIndexedDB
       <span style="color: #990000">||</span> window<span style="color: #990000">.</span>msIndexedDB <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIndexedDB <span style="color: #990000">;</span>
 <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(!</span>window<span style="color: #990000">.</span>indexedDB<span style="color: #990000">)</span><span style="color: #FF0000">{</span>
    <span style="font-style: italic"><span style="color: #9A1900">// this browser doesn't support IndexedDB</span></span>
 <span style="color: #FF0000">}</span> <span style="font-weight: bold"><span style="color: #0000FF">else</span></span> <span style="color: #FF0000">{</span>
-  window<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBTransaction<span style="color: #990000">;</span>
-  window<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBCursor<span style="color: #990000">;</span>
-  window<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBKeyRange<span style="color: #990000">;</span>
+  medical<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBTransaction<span style="color: #990000">;</span>
+  medicalDB<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBCursor<span style="color: #990000">;</span>
+  medicalDB<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBKeyRange<span style="color: #990000">;</span>
 <span style="color: #FF0000">}</span></tt></pre></div></div>
-<div class="paragraph"><p>IndexedDB doesn&#8217;t require you to describe a formal structure of your stored object - any JavaScript object can be stored there. Think of a database as an <em>object store</em> that allows to store similar objects, e.g. representing salesman&#8217;s visits. Not having a formal definition of a database scheme is an advantage comparing to the relational databases where you can&#8217;t store the data until the structure of the tables is defined.</p></div>
+<div class="paragraph"><p>In the above code snippet the <a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBKeyRange"><span class="monospaced">IDBKeyRange</span></a> is an object that allows to restrict the range for the continuous keys while iterating through the objects. <a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction"><span class="monospaced">IDBTransaction</span></a> is an implementation of transaction support. The <a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor"><span class="monospaced">IDBCursor</span></a> is an object that represents a cursor for traversing over multiple objects in the database.</p></div>
+<div class="paragraph"><p>IndexedDB doesn&#8217;t require you to describe a formal structure of your stored objects - any JavaScript object can be stored there.  Not having a formal definition of a database scheme is an advantage comparing to the relational databases where you can&#8217;t store the data until the structure of the tables is defined.</p></div>
+<div class="paragraph"><p>Your Web application can have one or more databases, and each of them can contain one or more <em>object stores</em>.  Each of the object stores will contain similar objects, e.g. one store is for salesman&#8217;s visits, while another has upcoming promotions.</p></div>
 <div class="paragraph"><p>Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide if you want to maintain the value in this property manually, or use the the <span class="monospaced">autoIncrement</span> option where the values to this property will be assigned automatically. Coming back to our Visits example, you can either maintain the unique values of the <span class="monospaced">officeId</span> on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as surrogate keys never decreases, and starts with the value of 1 in each object store.</p></div>
-<div class="paragraph"><p>Similarly to relational databases you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the Visits database, create an index on the property <span class="monospaced">contactPerson</span> of the <span class="monospaced">Visit</span> object. But if in relational databases creation of indexes is done for performance reasons, with IndexedDB you can&#8217;t run a query unless the index on the relevant property exists. The following code sample shows how to connect to the existing or create a new database <span class="monospaced">Visits</span>.</p></div>
+<div class="paragraph"><p>Similarly to relational databases you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the Visits store, create an index on the property <span class="monospaced">contactPerson</span> of the <span class="monospaced">Visit</span> objects. But if in relational databases creation of indexes is done for performance reasons, with IndexedDB you can&#8217;t run a query unless the index on the relevant property exists. The following code sample shows how to connect to the existing or create a new object store <span class="monospaced">Visits</span> in a database called Medical_DB.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> indexedDB <span style="color: #990000">=</span> window<span style="color: #990000">.</span>indexedDB<span style="color: #990000">;</span>
-<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> request <span style="color: #990000">=</span> indexedDB<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">open</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Visits'</span><span style="color: #990000">);</span>     <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/1.png" alt="1"></span></span>
+<pre><tt>
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> request <span style="color: #990000">=</span> medicalDB<span style="color: #990000">.</span>indexedDB<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">open</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Medical_DB'</span><span style="color: #990000">);</span>     <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/1.png" alt="1"></span></span>
 
 request<span style="color: #990000">.</span>onsuccess <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>event<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>       <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/2.png" alt="2"></span></span>
-    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myVisitsDB <span style="color: #990000">=</span> request<span style="color: #990000">.</span>result<span style="color: #990000">;</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myDB <span style="color: #990000">=</span> request<span style="color: #990000">.</span>result<span style="color: #990000">;</span>
 
 <span style="color: #FF0000">}</span><span style="color: #990000">;</span>
 
 request<span style="color: #990000">.</span>onerror <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">(</span>event<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>        <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/3.png" alt="3"></span></span>
-    console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Can't retrieve visits info: "</span> <span style="color: #990000">+</span> event<span style="color: #990000">.</span>target<span style="color: #990000">.</span>errorCode<span style="color: #990000">);</span>
+    console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Can't access Medical_DB: "</span> <span style="color: #990000">+</span> event<span style="color: #990000">.</span>target<span style="color: #990000">.</span>errorCode<span style="color: #990000">);</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">;</span>
 
 request<span style="color: #990000">.</span>onupgradeneeded <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>event<span style="color: #990000">)</span><span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/4.png" alt="4"></span></span>
-
-<span style="color: #FF0000">}</span></tt></pre></div></div>
+     event<span style="color: #990000">.</span>currentTarget<span style="color: #990000">.</span>result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">createObjectStore</span></span> <span style="color: #990000">(</span><span style="color: #FF0000">"Visits"</span><span style="color: #990000">,</span>
+            <span style="color: #FF0000">{</span>keypath<span style="color: #990000">=</span><span style="color: #FF0000">'id'</span><span style="color: #990000">,</span> autoIncrement<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
 <div class="colist arabic"><table>
 <tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
-The browser invokes the method <span class="monospaced">open()</span> asynchronously requesting to establish the connection with the database. It doesn&#8217;t wait for the  completion of this request, and the user can continue working with the Web page without any delays or interruptions.
+The browser invokes the method <span class="monospaced">open()</span> asynchronously requesting to establish the connection with the database. It doesn&#8217;t wait for the  completion of this request, and the user can continue working with the Web page without any delays or interruptions. The method <span class="monospaced">open()</span> returns an instance of the <a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBRequest"><span class="monospaced">IDBRequest</span></a> object.
 </td></tr>
 <tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
-When the connection is successfully obtained, the <span class="monospaced">onsuccess</span> function handler will be invoked, otherwise the control goes to the <span class="monospaced">onerror</span> handler.
+When the connection is successfully obtained, the <span class="monospaced">onsuccess</span> function handler will be invoked. The result is available through the <span class="monospaced">IDBRequest.result</span> property.
 </td></tr>
 <tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
 Error handling is done here. The event object given to the <span class="monospaced">onerror</span> handler will contain the information about the error.
 </td></tr>
 <tr><td><img src="images/icons/callouts/4.png" alt="4"></td><td>
-The <span class="monospaced">onupgradeneeded</span> handler is the place to create a new storage or process the event when the database has to be modified.
+The <span class="monospaced">onupgradeneeded</span> handler is the place to create or upgrade the storage to a new version. This is explained next.
 </td></tr>
 </table></div>
 <div class="sect4">
-<h5 id="_creating_a_new_database_and_versioning">Creating a new Database and Versioning</h5>
-<div class="paragraph"><p>In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted and the users start working with the <em>new version</em> of the database. With IndexedDB it works differently. Each database has a version assigned to it, and if the <span class="monospaced">onupgradeneeded</span> event is triggered, this means that the local user&#8217;s version is older that needed for the freshly loaded application.</p></div>
-<div class="paragraph"><p>The initial creation of the database has to be controlled in the  <span class="monospaced">onupgradeneeded</span> handler - the absence of the database also falls under the "upgrade is needed" case.</p></div>
-<div class="paragraph"><p>The version of the IndexDB may need to be upgraded, and the method <span class="monospaced">open()</span> takes a second parameter - the database version to be used.The object returned by the method <span class="monospaced">open()</span> has a property <span class="monospaced">onupgradeneeded</span>, and you can assign an event handler to it in which you should create a database with <span class="monospaced">createObjectStore()</span> method.</p></div>
+<h5 id="_object_stores_and_versioning">Object Stores and Versioning</h5>
+<div class="paragraph"><p>In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the <em>new version</em> of the database. With IndexedDB it works differently. Each object store has a version assigned to it, and if the <span class="monospaced">onupgradeneeded</span> event is triggered, this means that the local object store&#8217;s version is older that required by the freshly loaded application.</p></div>
+<div class="paragraph"><p>After successful connection to the database, the version number is available in <span class="monospaced">IDBRequest.result.version</span> property. The starting version of any database is 1.</p></div>
+<div class="paragraph"><p>The method <span class="monospaced">open()</span> takes a second parameter - the database version to be used. If you don&#8217;t specify the version - the latest one will be used. The following line shows how the application&#8217;s code can request connect to the version 3 of the database <span class="monospaced">Visits</span>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> request <span style="color: #990000">=</span> indexedDB<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">open</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Visits'</span><span style="color: #990000">,</span><span style="color: #993399">3</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>If the user&#8217;s computer has already the <span class="monospaced">Visits</span> database of one of the earlier versions (1 or 2), the <span class="monospaced">onupgradeneeded</span> handler will be invoked.  The initial creation of the database is triggered the same way - the absence of the database also falls under the "upgrade is needed" case, and the  <span class="monospaced">onupgradeneeded</span> handler has to invoke the <span class="monospaced">createObjectStore()</span> method. If upgrade is needed, the <span class="monospaced">onupgradeneeded</span> will be invoked before the <span class="monospaced">onsuccess</span> event.</p></div>
+<div class="paragraph"><p>The following code snippet creates a new or initial version of the object store <span class="monospaced">Visits</span>, requesting auto-generation of the surrogate keys named <span class="monospaced">id</span>. It also creates indexes to allow search by office ID, contact name and notes. Indexes are updated automatically as soon as the Web application makes any changes to the stored data.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>request<span style="color: #990000">.</span>onupgradeneeded <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>event<span style="color: #990000">)</span><span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/4.png" alt="4"></span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> visitsStore <span style="color: #990000">=</span>
+     event<span style="color: #990000">.</span>currentTarget<span style="color: #990000">.</span>result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">createObjectStore</span></span> <span style="color: #990000">(</span><span style="color: #FF0000">"Visits"</span><span style="color: #990000">,</span>
+         <span style="color: #FF0000">{</span>keypath<span style="color: #990000">=</span><span style="color: #FF0000">'id'</span><span style="color: #990000">,</span>
+         autoIncrement<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span>
+         <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+  visitsStore<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">createIndex</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"officeIDindex"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"officeID"</span><span style="color: #990000">,</span>
+                                         <span style="color: #FF0000">{</span>unique<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+  visitsStore<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">createIndex</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"contactsIndex"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"contactPerson"</span><span style="color: #990000">,</span>
+                                         <span style="color: #FF0000">{</span>unique<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+  visitsStore<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">createIndex</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"notesIndex"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"notes"</span><span style="color: #990000">,</span>
+                                         <span style="color: #FF0000">{</span>unique<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>Note that while creating the object store for visits, we could have used a unique property officeID as a <span class="monospaced">keypath</span> value by using the following syntax:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt> <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> visitsStore <span style="color: #990000">=</span>
+     event<span style="color: #990000">.</span>currentTarget<span style="color: #990000">.</span>result<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">createObjectStore</span></span> <span style="color: #990000">(</span><span style="color: #FF0000">"Visits"</span><span style="color: #990000">,</span>
+         <span style="color: #FF0000">{</span>keypath<span style="color: #990000">=</span><span style="color: #FF0000">'officeID'</span><span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>The <span class="monospaced">event.currentTarget.result</span> (as well as <span class="monospaced">IDBRequest.result</span>) points at the instance of the <span class="monospaced">IDBDatabase</span> object, which has a number of useful properties such as <span class="monospaced">name</span>, that contains the name of the current database and the array <span class="monospaced">objectStoreNames</span>, which has the names of all object stores that exist in this database. Its property <span class="monospaced">version</span> has the database version number. If you&#8217;d like to create a new database, just call the method <span class="monospaced">open()</span> specifying the version number that&#8217;s higher than the current one.</p></div>
+<div class="paragraph"><p>To remove the existing database, call the method <span class="monospaced">indexedDB.deleteDatabase()</span>. To delete the existing object store invoke <span class="monospaced">indexedDB.deleteObjectStore()</span>.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -3885,6 +3936,8 @@ The <span class="monospaced">onupgradeneeded</span> handler is the place to crea
 </div>
 <div class="sect4">
 <h5 id="_transactions_support">Transactions Support</h5>
+<div class="paragraph"><p>Transaction is a logical unit of work. Executing several database operation in one transaction guarantees that the changes will be committed to the database only if all operations finished successfully. If at least one of the operations fails, the entire transaction will be rolled back (undone).</p></div>
+<div class="paragraph"><p>IndexDB supports three transaction modes:</p></div>
 <div class="paragraph"><p>TBD</p></div>
 </div>
 </div>
