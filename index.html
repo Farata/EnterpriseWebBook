@@ -3586,9 +3586,10 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <img src="images/fig_01_03.png" alt="images/fig_01_03.png">
 </div>
-<div class="title">Figure 26. A sample Design with Offline Use</div>
+<div class="title">Figure 26. Design with Offline Use in Mind</div>
 </div>
 <div class="paragraph"><p>The business logic that supports the client&#8217;s offline functionality should be developed in JavaScript and run in the Web browser. While most of the business logic of Web applications remains on the server side, the Web client is not as thin as it used to be in legacy HTML-based applications. The client becomes fatter and it can have state.</p></div>
+<div class="paragraph"><p>It&#8217;s a good idea to create a data layer in your JavaScript code that will be responsible for all data communications. If the Internet connection is available, the data layer will be making  requests to the server, otherwise it&#8217;ll get the data from the local storage.</p></div>
 </div>
 <div class="sect3">
 <h4 id="_application_cache">Application Cache</h4>
@@ -3616,6 +3617,26 @@ http://www.gnu.org/software/src-highlite -->
   ...
 <span style="font-weight: bold"><span style="color: #0000FF">&lt;/html&gt;</span></span></tt></pre></div></div>
 <div class="paragraph"><p>The Web server must serve the manifest file with a MIME type "text/cache-manifest", and you need to refer to the documentation of your Web server to see how to see where to make a configuration change so all files with extension .manifest are served as "text/cache-manifest".</p></div>
+<div class="sect4">
+<h5 id="_is_your_application_offline">Is Your Application Offline?</h5>
+<div class="paragraph"><p>Web browsers have a <span class="monospaced">boolean</span> property <span class="monospaced">window.navigator.onLine</span>, which should be used to check if there is no connection to the Internet. The HTML5 specification states that <em>"The navigator.onLine attribute must return false if the user agent will not contact the network when the user follows links or when a script requests a remote page (or knows that such an attempt would fail), and must return true otherwise."</em> Unfortunately, major Web browsers deal with this property differently so you need to do a thorough testing to see if it works as expected with the browser you care about.</p></div>
+<div class="paragraph"><p>To intercept the changes in the connectivity status, you can also assign event listeners to the <span class="monospaced">online</span> and <span class="monospaced">offline</span> events, for example:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addEventListener</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"offline"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// The code to be used in the offline mode goes here</span></span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+window<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">addEventListener</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"online"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>e<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// The code to synchronize the data saved in the offline mode</span></span>
+    <span style="font-style: italic"><span style="color: #9A1900">// (if any) goes here</span></span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>You can also add the <span class="monospaced">onoffline</span> and <span class="monospaced">ononline</span> event handlers to the <span class="monospaced">&lt;body&gt;</span> tag of your HTML page or to the <span class="monospaced">document</span> object. Again, test the support of these event in your browsers.</p></div>
+<div class="paragraph"><p>What if the browser&#8217;s support of the offline/online events is still not stable? In this you&#8217;ll have to write your own script that will periodically make an AJAX call (see Chapter 4) trying to connect to a remote server that&#8217;s always up and running, e.g. google.com. If this request fails, it&#8217;s a good indication that your application is disconnected from the Internet.</p></div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_options_for_storing_data_locally">Options for Storing Data Locally</h4>
@@ -3632,7 +3653,7 @@ http://www.gnu.org/software/src-highlite -->
 </p>
 </li>
 </ul></div>
-<div class="paragraph"><p>There is another option worth mentioning - <a href="http://www.w3.org/TR/webdatabase/">Web SQL Database</a>. It&#8217;s based on the open source SQLite database, but the work on this specification is stopped and future versions of the browsers may not support it. That&#8217;s why we are not going to discuss Web SQL here.</p></div>
+<div class="paragraph"><p>There is another option worth mentioning - <a href="http://www.w3.org/TR/webdatabase/">Web SQL Database</a>. The specification was based on the open source SQLite database, which probably was the wrong decision in the foirst place.  But the work on this specification is stopped and future versions of the browsers may not support it. That&#8217;s why we are not going to discuss Web SQL Database in this book.</p></div>
 <div class="paragraph"><p>At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn&#8217;t support it yet, so if your main development platform is iOS, you may need to stick to Web SQL database. Consider using a polyfill for indexedDB using Web SQL API called <a href="https://github.com/axemclion/IndexedDBShim">IndexedDBShim</a>.</p></div>
 <div class="paragraph"><p>To get the current status visit caniuse.com and search for the API you&#8217;re interested in.</p></div>
 <div class="admonitionblock">
@@ -3789,6 +3810,7 @@ Re-reading visit info after removal
 <td class="content">If you are interested in intercepting the moments when the content of local storage gets modified, listen to the DOM <span class="monospaced">storage</span> event, which carries the old and new values and the URL of the page whose data is being changed.</td>
 </tr></table>
 </div>
+<div class="paragraph"><p>The Web storage API is pretty simple to use, but its major drawbacks are that it doesn&#8217;t give you a way to put any structure to your stored data, you always have to store strings, and the API is synchronous, which may case delays in the user interaction when your application is accessing the disk. In the next section you&#8217;ll learn about a more advanced way of storing data on the user&#8217;s computer.</p></div>
 </div>
 <div class="sect3">
 <h4 id="_indexeddb">IndexedDB</h4>
@@ -3803,27 +3825,68 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>window<span style="color: #990000">.</span>indexedDB <span style="color: #990000">=</span> window<span style="color: #990000">.</span>indexedDB <span style="color: #990000">||</span> window<span style="color: #990000">.</span>mozIndexedDB
       <span style="color: #990000">||</span> window<span style="color: #990000">.</span>msIndexedDB <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIndexedDB <span style="color: #990000">;</span>
-window<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBTransaction<span style="color: #990000">;</span>
-window<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBCursor<span style="color: #990000">;</span>
-window<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBKeyRange<span style="color: #990000">;</span></tt></pre></div></div>
-<div class="paragraph"><p>Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide if you want to maintain the value in this property manually, or use the the autoincrement option where the values to this property will be assigned automatically.</p></div>
-<div class="paragraph"><p>IndexedDB doesn&#8217;t require you to describe a formal structure of your stored object - any JavaScript object can be stored there. This is also an advantage comparing to the relational databases where you can&#8217;t store the data until the structure of the tables is defined.</p></div>
-<div class="paragraph"><p>Similarly to relational databases you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the Visits database, create an index on the property <span class="monospaced">contactPerson</span> of the <span class="monospaced">Visit</span> object. But if in relational database creation of index was optional, with IndexedDB you can&#8217;t run a query unless the index on the relevant property exists.</p></div>
+<span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(!</span>window<span style="color: #990000">.</span>indexedDB<span style="color: #990000">)</span><span style="color: #FF0000">{</span>
+   <span style="font-style: italic"><span style="color: #9A1900">// this browser doesn't support IndexedDB</span></span>
+<span style="color: #FF0000">}</span> <span style="font-weight: bold"><span style="color: #0000FF">else</span></span> <span style="color: #FF0000">{</span>
+  window<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBTransaction <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBTransaction<span style="color: #990000">;</span>
+  window<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBCursor <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBCursor<span style="color: #990000">;</span>
+  window<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">=</span> window<span style="color: #990000">.</span>IDBKeyRange <span style="color: #990000">||</span> window<span style="color: #990000">.</span>webkitIDBKeyRange<span style="color: #990000">;</span>
+<span style="color: #FF0000">}</span></tt></pre></div></div>
+<div class="paragraph"><p>IndexedDB doesn&#8217;t require you to describe a formal structure of your stored object - any JavaScript object can be stored there. Think of a database as an <em>object store</em> that allows to store similar objects, e.g. representing salesman&#8217;s visits. Not having a formal definition of a database scheme is an advantage comparing to the relational databases where you can&#8217;t store the data until the structure of the tables is defined.</p></div>
+<div class="paragraph"><p>Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide if you want to maintain the value in this property manually, or use the the <span class="monospaced">autoIncrement</span> option where the values to this property will be assigned automatically. Coming back to our Visits example, you can either maintain the unique values of the <span class="monospaced">officeId</span> on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as surrogate keys never decreases, and starts with the value of 1 in each object store.</p></div>
+<div class="paragraph"><p>Similarly to relational databases you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the Visits database, create an index on the property <span class="monospaced">contactPerson</span> of the <span class="monospaced">Visit</span> object. But if in relational databases creation of indexes is done for performance reasons, with IndexedDB you can&#8217;t run a query unless the index on the relevant property exists. The following code sample shows how to connect to the existing or create a new database <span class="monospaced">Visits</span>.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> indexedDB <span style="color: #990000">=</span> window<span style="color: #990000">.</span>indexedDB<span style="color: #990000">;</span>
-<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> visits <span style="color: #990000">=</span> indexedDB<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">open</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Visits'</span><span style="color: #990000">);</span>
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> request <span style="color: #990000">=</span> indexedDB<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">open</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Visits'</span><span style="color: #990000">);</span>     <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/1.png" alt="1"></span></span>
 
-visits<span style="color: #990000">.</span>onsuccess <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>response<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
-    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myVisits <span style="color: #990000">=</span> visits<span style="color: #990000">.</span>result<span style="color: #990000">;</span>
+request<span style="color: #990000">.</span>onsuccess <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>event<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>       <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/2.png" alt="2"></span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myVisitsDB <span style="color: #990000">=</span> request<span style="color: #990000">.</span>result<span style="color: #990000">;</span>
+
 <span style="color: #FF0000">}</span><span style="color: #990000">;</span>
 
-visits<span style="color: #990000">.</span>onerror <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">(</span>response<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
-    console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Can't retrieve visits info: "</span> <span style="color: #990000">+</span> response<span style="color: #990000">.</span>target<span style="color: #990000">.</span>errorCode<span style="color: #990000">);</span>
-<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+request<span style="color: #990000">.</span>onerror <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">(</span>event<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>        <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/3.png" alt="3"></span></span>
+    console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Can't retrieve visits info: "</span> <span style="color: #990000">+</span> event<span style="color: #990000">.</span>target<span style="color: #990000">.</span>errorCode<span style="color: #990000">);</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+
+request<span style="color: #990000">.</span>onupgradeneeded <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>event<span style="color: #990000">)</span><span style="color: #FF0000">{</span>  <span style="font-style: italic"><span style="color: #9A1900">// <img src="images/icons/callouts/4.png" alt="4"></span></span>
+
+<span style="color: #FF0000">}</span></tt></pre></div></div>
+<div class="colist arabic"><table>
+<tr><td><img src="images/icons/callouts/1.png" alt="1"></td><td>
+The browser invokes the method <span class="monospaced">open()</span> asynchronously requesting to establish the connection with the database. It doesn&#8217;t wait for the  completion of this request, and the user can continue working with the Web page without any delays or interruptions.
+</td></tr>
+<tr><td><img src="images/icons/callouts/2.png" alt="2"></td><td>
+When the connection is successfully obtained, the <span class="monospaced">onsuccess</span> function handler will be invoked, otherwise the control goes to the <span class="monospaced">onerror</span> handler.
+</td></tr>
+<tr><td><img src="images/icons/callouts/3.png" alt="3"></td><td>
+Error handling is done here. The event object given to the <span class="monospaced">onerror</span> handler will contain the information about the error.
+</td></tr>
+<tr><td><img src="images/icons/callouts/4.png" alt="4"></td><td>
+The <span class="monospaced">onupgradeneeded</span> handler is the place to create a new storage or process the event when the database has to be modified.
+</td></tr>
+</table></div>
+<div class="sect4">
+<h5 id="_creating_a_new_database_and_versioning">Creating a new Database and Versioning</h5>
+<div class="paragraph"><p>In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted and the users start working with the <em>new version</em> of the database. With IndexedDB it works differently. Each database has a version assigned to it, and if the <span class="monospaced">onupgradeneeded</span> event is triggered, this means that the local user&#8217;s version is older that needed for the freshly loaded application.</p></div>
+<div class="paragraph"><p>The initial creation of the database has to be controlled in the  <span class="monospaced">onupgradeneeded</span> handler - the absence of the database also falls under the "upgrade is needed" case.</p></div>
+<div class="paragraph"><p>The version of the IndexDB may need to be upgraded, and the method <span class="monospaced">open()</span> takes a second parameter - the database version to be used.The object returned by the method <span class="monospaced">open()</span> has a property <span class="monospaced">onupgradeneeded</span>, and you can assign an event handler to it in which you should create a database with <span class="monospaced">createObjectStore()</span> method.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/icons/warning.png" alt="Warning">
+</td>
+<td class="content">IndexedDB doesn&#8217;t offer a secure way of storing data. Anyone who has access to the user&#8217;s computer can get a hold of the data stored in IndexedDB. Do not store locally any sensitive data.</td>
+</tr></table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_transactions_support">Transactions Support</h5>
+<div class="paragraph"><p>TBD</p></div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -3867,7 +3930,8 @@ http://www.gnu.org/software/src-highlite -->
 
          <span style="color: #990000">&lt;</span>h1<span style="color: #990000">&gt;</span>Click on Link and watch the address bar<span style="color: #990000">...&lt;/</span>h1<span style="color: #990000">&gt;</span>
 
-    <span style="color: #990000">&lt;</span>button type<span style="color: #990000">=</span><span style="color: #FF0000">"button"</span> onclick<span style="color: #990000">=</span><span style="color: #FF0000">"whoWeAre()"</span><span style="color: #990000">&gt;</span>Who we are<span style="color: #990000">&lt;/</span>button<span style="color: #990000">&gt;</span>  <span style="color: #990000">&lt;!--</span> <span style="color: #990000">&lt;</span><span style="color: #993399">1</span><span style="color: #990000">&gt;</span>  <span style="color: #990000">--&gt;</span>
+    <span style="color: #990000">&lt;</span>button type<span style="color: #990000">=</span><span style="color: #FF0000">"button"</span> onclick<span style="color: #990000">=</span><span style="color: #FF0000">"whoWeAre()"</span><span style="color: #990000">&gt;</span>Who we are<span style="color: #990000">&lt;/</span>button<span style="color: #990000">&gt;</span>
+<span style="color: #990000">&lt;!--</span> <span style="color: #990000">&lt;</span><span style="color: #993399">1</span><span style="color: #990000">&gt;</span> <span style="color: #990000">--&gt;</span>
 
     <span style="color: #990000">&lt;</span>button type<span style="color: #990000">=</span><span style="color: #FF0000">"button"</span> onclick<span style="color: #990000">=</span><span style="color: #FF0000">"whatWeDo()"</span><span style="color: #990000">&gt;</span>What we <span style="font-weight: bold"><span style="color: #0000FF">do</span></span><span style="color: #990000">&lt;/</span>button<span style="color: #990000">&gt;</span>
 
