@@ -865,66 +865,67 @@ Introduction
 <p>
 Part 1. Desktop
 </p>
-</li>
+<div class="ulist"><ul>
 <li>
 <p>
-Ch1. Advanced Intro to JavaScript            (draft&#8217;s ready, not edited)
+Ch1. Advanced Intro to JavaScript            <em>(draft&#8217;s ready, not edited)</em>
 </p>
 </li>
 <li>
 <p>
-Ch2. HTML5 and its New APIs                  (draft&#8217;s ready, not edited)
+Ch2. HTML5 and its New APIs                  <em>(draft&#8217;s ready, not edited)</em>
 </p>
 </li>
 <li>
 <p>
-Ch3. Mocking Up the Save Sick Child              (draft&#8217;s ready, not edited)
+Ch3. Mocking Up the Save Sick Child              <em>(draft&#8217;s ready, not edited)</em>
 </p>
 </li>
 <li>
 <p>
-Ch4. Using Ajax and JSON                     (draft&#8217;s ready, not edited)
+Ch4. Using Ajax and JSON                     <em>(draft&#8217;s ready, not edited)</em>
 </p>
 </li>
 <li>
 <p>
-Ch5. Save Sick Child with jQuery             (draft&#8217;s ready, not edited)
+Ch5. Save Sick Child with jQuery             <em>(draft&#8217;s ready, not edited)</em>
 </p>
 </li>
 <li>
 <p>
-Ch6. Save Sick Child with Ext JS             (draft&#8217;s ready, not edited)
+Ch6. Save Sick Child with Ext JS             <em>(draft&#8217;s ready, not edited)</em>
 </p>
 </li>
 <li>
 <p>
-Ch7. Large Scale JavaScript Project          (work in progress)
+Ch7. Large Scale JavaScript Project          <em>(work in progress)</em>
 </p>
 </li>
 <li>
 <p>
-Ch8. Test-Driven Development with JavaScript (draft&#8217;s ready, not edited)
+Ch8. Test-Driven Development with JavaScript <em>(draft&#8217;s ready, not edited)</em>
 </p>
 </li>
 <li>
 <p>
-Ch9. Replacing HTTP with WebSockets          (draft&#8217;s ready, not edited)
+Ch9. Replacing HTTP with WebSockets          <em>(draft&#8217;s ready, not edited)</em>
 </p>
 </li>
 <li>
 <p>
 Ch10. Securing Web Applications
-s
 </p>
+</li>
+</ul></div>
 </li>
 <li>
 <p>
 Part 2. Mobile
 </p>
-</li>
+<div class="ulist"><ul>
 <li>
 <p>
-Ch11. Responsive Design: One Site Fits All   (draft&#8217;s ready, not edited)
+Ch11. Responsive Design: One Site Fits All   <em>(draft&#8217;s ready, not edited)</em>
 </p>
 </li>
 <li>
@@ -941,6 +942,8 @@ Ch13. Save Sick Child With Sencha Touch
 <p>
 Ch14. Hybrid Applications: HTML + Native API
 </p>
+</li>
+</ul></div>
 </li>
 </ul></div>
 </div>
@@ -3884,17 +3887,17 @@ The <span class="monospaced">onupgradeneeded</span> handler is the place to crea
 </table></div>
 <div class="sect4">
 <h5 id="_object_stores_and_versioning">Object Stores and Versioning</h5>
-<div class="paragraph"><p>In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the <em>new version</em> of the database. With IndexedDB it works differently. Each object store has a version assigned to it, and if the <span class="monospaced">onupgradeneeded</span> event is triggered, this means that the local object store&#8217;s version is older that required by the freshly loaded application.</p></div>
+<div class="paragraph"><p>In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the <em>new version</em> of the database. With IndexedDB it works differently. Each database has a version, and when the new version of the database (e.g. Medical_DB) is created, the <span class="monospaced">onupgradeneeded</span> is dispatched, which is where object store(s) are created. But if you already had object stores in the older version of the database, and they don&#8217;t need to be changed - there is no need to re-create them.</p></div>
 <div class="paragraph"><p>After successful connection to the database, the version number is available in <span class="monospaced">IDBRequest.result.version</span> property. The starting version of any database is 1.</p></div>
-<div class="paragraph"><p>The method <span class="monospaced">open()</span> takes a second parameter - the database version to be used. If you don&#8217;t specify the version - the latest one will be used. The following line shows how the application&#8217;s code can request connect to the version 3 of the database <span class="monospaced">Visits</span>:</p></div>
+<div class="paragraph"><p>The method <span class="monospaced">open()</span> takes a second parameter - the database version to be used. If you don&#8217;t specify the version - the latest one will be used. The following line shows how the application&#8217;s code can request connect to the version 3 of the database <span class="monospaced">Medical_DB</span>:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> request <span style="color: #990000">=</span> indexedDB<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">open</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Visits'</span><span style="color: #990000">,</span><span style="color: #993399">3</span><span style="color: #990000">);</span></tt></pre></div></div>
-<div class="paragraph"><p>If the user&#8217;s computer has already the <span class="monospaced">Visits</span> database of one of the earlier versions (1 or 2), the <span class="monospaced">onupgradeneeded</span> handler will be invoked.  The initial creation of the database is triggered the same way - the absence of the database also falls under the "upgrade is needed" case, and the  <span class="monospaced">onupgradeneeded</span> handler has to invoke the <span class="monospaced">createObjectStore()</span> method. If upgrade is needed, the <span class="monospaced">onupgradeneeded</span> will be invoked before the <span class="monospaced">onsuccess</span> event.</p></div>
-<div class="paragraph"><p>The following code snippet creates a new or initial version of the object store <span class="monospaced">Visits</span>, requesting auto-generation of the surrogate keys named <span class="monospaced">id</span>. It also creates indexes to allow search by office ID, contact name and notes. Indexes are updated automatically as soon as the Web application makes any changes to the stored data.</p></div>
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> request <span style="color: #990000">=</span> indexedDB<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">open</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Medical_DB'</span><span style="color: #990000">,</span><span style="color: #993399">3</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>If the user&#8217;s computer has already the <span class="monospaced">Medical_DB</span> database of one of the earlier versions (1 or 2), the <span class="monospaced">onupgradeneeded</span> handler will be invoked.  The initial creation of the database is triggered the same way - the absence of the database also falls under the "upgrade is needed" case, and the  <span class="monospaced">onupgradeneeded</span> handler has to invoke the <span class="monospaced">createObjectStore()</span> method. If upgrade is needed, the <span class="monospaced">onupgradeneeded</span> will be invoked before the <span class="monospaced">onsuccess</span> event.</p></div>
+<div class="paragraph"><p>The following code snippet creates a new or initial version of the object store <span class="monospaced">Visits</span>, requesting auto-generation of the surrogate keys named <span class="monospaced">id</span>. It also creates indexes to allow search by office ID, contact name and notes. Indexes are updated automatically as soon as the Web application makes any changes to the stored data. If you wouldn&#8217;t create indexes, you&#8217;d be able to look up objects only by the value of key.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
@@ -3914,7 +3917,7 @@ http://www.gnu.org/software/src-highlite -->
   visitsStore<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">createIndex</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"notesIndex"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"notes"</span><span style="color: #990000">,</span>
                                          <span style="color: #FF0000">{</span>unique<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #FF0000">}</span><span style="color: #990000">);</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
-<div class="paragraph"><p>Note that while creating the object store for visits, we could have used a unique property officeID as a <span class="monospaced">keypath</span> value by using the following syntax:</p></div>
+<div class="paragraph"><p>Note that while creating the object store for visits, we could have used a unique property <span class="monospaced">officeID</span> as a <span class="monospaced">keypath</span> value by using the following syntax:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.7
 by Lorenzo Bettini
@@ -3930,15 +3933,72 @@ http://www.gnu.org/software/src-highlite -->
 <td class="icon">
 <img src="images/icons/warning.png" alt="Warning">
 </td>
-<td class="content">IndexedDB doesn&#8217;t offer a secure way of storing data. Anyone who has access to the user&#8217;s computer can get a hold of the data stored in IndexedDB. Do not store locally any sensitive data.</td>
+<td class="content">IndexedDB doesn&#8217;t offer a secure way of storing data. Anyone who has access to the user&#8217;s computer can get a hold of the data stored in IndexedDB. Do not store any sensitive data locally.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_transactions_support">Transactions Support</h5>
-<div class="paragraph"><p>Transaction is a logical unit of work. Executing several database operation in one transaction guarantees that the changes will be committed to the database only if all operations finished successfully. If at least one of the operations fails, the entire transaction will be rolled back (undone).</p></div>
-<div class="paragraph"><p>IndexDB supports three transaction modes:</p></div>
-<div class="paragraph"><p>TBD</p></div>
+<h5 id="_transactions">Transactions</h5>
+<div class="paragraph"><p>Transaction is a logical unit of work. Executing several database operation in one transaction guarantees that the changes will be committed to the database only if all operations finished successfully. If at least one of the operations fails, the entire transaction will be rolled back (undone). IndexDB supports three transaction modes: <span class="monospaced">readonly</span>, <span class="monospaced">readwrite</span>, and <span class="monospaced">versionchange</span>.</p></div>
+<div class="paragraph"><p>To start any manipulations with the database you need to open a transaction in one of these modes. The <span class="monospaced">readonly</span> transaction allows multiple scripts to read from the database concurrently. This statement may raise a question - why would the user need a concurrent access to his local database is he&#8217;s the only user of the application?  The reason being that the same application can be opened in more than one tab, or spawning more than one worker thread that need to access the local database. The <span class="monospaced">readonly</span> is the least restrictive mode.</p></div>
+<div class="paragraph"><p>If the application needs to modify or add objects to the database, open transaction in the <span class="monospaced">readwrite</span> mode. And if the database upgrade has to be done, use the <span class="monospaced">versionchange</span> mode.</p></div>
+<div class="paragraph"><p>When a transaction is created, you should assign listeners to its <span class="monospaced">complete</span>, <span class="monospaced">error</span>, and <span class="monospaced">abort</span> events. If the <span class="monospaced">error</span> event is dispatched, the entire transaction is rolled back. Calling the method <span class="monospaced">abort()</span> will fire the <span class="monospaced">abort</span> event and will roll back transaction too.</p></div>
+<div class="paragraph"><p>Here&#8217;s a sample scenario. Open the database and in the <span class="monospaced">onsuccess</span> handler create a transaction. Then open a transaction by calling the method <span class="monospaced">objectStore()</span> and perform data manipulations. in the next section you&#8217;ll see how to add objects to an object store using transactions.</p></div>
+</div>
+<div class="sect4">
+<h5 id="_modyfying_the_object_store_data">Modyfying the Object Store Data</h5>
+<div class="paragraph"><p>The following code snippet creates the transaction that allows updates of the store <span class="monospaced">visits</span> (you could create a transaction for more than one store) and add add two visit object by invoking the method <span class="monospaced">add()</span>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>request<span style="color: #990000">.</span>onsuccess <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>event<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> myDB <span style="color: #990000">=</span> request<span style="color: #990000">.</span>result<span style="color: #990000">;</span>
+
+  <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> visitsData <span style="color: #990000">=</span> <span style="color: #990000">[</span><span style="color: #FF0000">{</span>
+         officeId<span style="color: #990000">:</span> <span style="color: #993399">123</span><span style="color: #990000">,</span>
+         contactPerson<span style="color: #990000">:</span> <span style="color: #FF0000">"Mary Lou"</span><span style="color: #990000">,</span>
+         notes<span style="color: #990000">:</span> <span style="color: #FF0000">"Drop the samples of XYZin on 12/15/2013"</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+    <span style="color: #FF0000">{</span>
+         officeId<span style="color: #990000">:</span> <span style="color: #993399">987</span><span style="color: #990000">,</span>
+         contactPerson<span style="color: #990000">:</span> <span style="color: #FF0000">"John Smith"</span><span style="color: #990000">,</span>
+         notes<span style="color: #990000">:</span> <span style="color: #FF0000">"They don't like XYZin - people die from it"</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">];</span>
+
+   <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> transaction <span style="color: #990000">=</span> myDB<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">transaction</span></span><span style="color: #990000">([</span><span style="color: #FF0000">"visits"</span><span style="color: #990000">],</span> <span style="color: #FF0000">"readwrite"</span><span style="color: #990000">);</span>
+   <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> visitsStore <span style="color: #990000">=</span> transaction<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">objectStore</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"visits"</span><span style="color: #990000">);</span>
+
+  <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> <span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> i <span style="font-weight: bold"><span style="color: #0000FF">in</span></span> visitsData<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> addRequest <span style="color: #990000">=</span> visitsStore<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">add</span></span><span style="color: #990000">(</span>visitsData<span style="color: #990000">[</span>i<span style="color: #990000">]);</span>
+
+        addRequest<span style="color: #990000">.</span>onsuccess <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>event<span style="color: #990000">)</span><span style="color: #FF0000">{</span>
+          console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Added visit "</span> <span style="color: #990000">+</span> event<span style="color: #990000">.</span>result<span style="color: #990000">);</span>
+        <span style="color: #FF0000">}</span>
+
+        addRequest<span style="color: #990000">.</span>onerror <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>event<span style="color: #990000">)</span><span style="color: #FF0000">{</span>
+          console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"Adding visit failed"</span> <span style="color: #990000">+</span> event<span style="color: #990000">.</span>result<span style="color: #990000">);</span>
+        <span style="color: #FF0000">}</span>
+  <span style="color: #FF0000">}</span></tt></pre></div></div>
+<div class="paragraph"><p>The method <span class="monospaced">put()</span> allows you to update an existing object in a record store. It takes two parameters: the new object and the key of the existing object to be replaced, for example:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> putRequest <span style="color: #990000">=</span> visitsStore<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">put</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>officeID<span style="color: #990000">:</span> <span style="color: #993399">123</span><span style="color: #990000">,</span> contactName<span style="color: #990000">:</span> <span style="color: #FF0000">"Mary Lee"</span><span style="color: #FF0000">}</span><span style="color: #990000">,</span> <span style="color: #993399">1</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>To delete and object specify its id:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.7
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> deleteRequest <span style="color: #990000">=</span> visitsStore<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">delete</span></span><span style="color: #990000">(</span><span style="color: #993399">1</span><span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+<div class="sect4">
+<h5 id="_retrieving_the_data">Retrieving the Data</h5>
 </div>
 </div>
 </div>
@@ -3947,6 +4007,14 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>To put is simple, <a href="http://www.w3.org/TR/html5/browsers.html#the-history-interface">History API</a> is about ensuring that the Back/Forward  buttons on the browser toolbar can be controlled programmatically. Each Web browser has the <span class="monospaced">window.history</span> object. The History API is not a new HTML5 API,and the <span class="monospaced">history</span> object had such methods as <span class="monospaced">back()</span>, <span class="monospaced">forward()</span>, and <span class="monospaced">go()</span> for many years. But HTML5 adds new methods <span class="monospaced">pushState()</span> and <span class="monospaced">replaceState()</span>, which allow to modify the browser&#8217;s address bar without reloading the Web page.</p></div>
 <div class="paragraph"><p>Imagine a Single Page Application (SPA) that has a navigational menu to open various views as based on the user&#8217;s interaction. Since these views represents some URLs loaded by making AJAX calls from your code, the Web browser still shows the original URL of the home page of your Web application.</p></div>
 <div class="paragraph"><p>The perfect user would always navigate your application using the menus and controls you provided, but what if she clicks on the Back button of the Web browser?  If the navigation controls were not changing the URL in the browser&#8217;s address bar, the browser obediently will show the Web page that the user has visited before even launching your application, which is not what she intended to do.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/icons/tip.png" alt="Tip">
+</td>
+<td class="content">Not writing any code that would process clicks on the Back and Forward buttons is the easiest way to frustrate your users.</td>
+</tr></table>
+</div>
 <div class="sect3">
 <h4 id="_modifying_the_browser_8217_s_history_with_pushstate">Modifying the Browser&#8217;s History with pushState()</h4>
 <div class="paragraph"><p>If the URL of your application is <a href="http://myapp.com">http://myapp.com</a> and the user clicked on the menu item Get Customers, which made an AJAX call loading the cucustomers, you can programmatically change the URL on the browser&#8217;s address line to be <a href="http://myapp.com/customers">http://myapp.com/customers</a> without asking to Web browser to load anything from this URL. You do this by invoking the <span class="monospaced">pushState()</span> method.</p></div>
