@@ -1,0 +1,190 @@
+:toc:
+:toclevels: 4
+
+== jQuery Mobile
+
+Today most of the enterprise applications are developed for desktop computers. The situation is changing, but it's a slow process. BYOD stands for Bring Your Own Device, and if five years ago it would be close to impossible to get a permission to bring your own computer to work and use it as for work related activities, the situation is a lot better now. Sales people want to use tablets while dealing with prospective clients. Business analysts want to be able to run familiar Web applications on their smartphones. Enterprises want to offer access to their valuable data to external clients from a variety of different devices. 
+
+If you just finished reading the chapter on responsive design, you may be wondering, why not just build every Web application this way having a single code base? The reason being that small-screen devices are not too good in cases when the user not just browses the Web site but has to interact with it by entering data. In some cases the UI and the navigation for the mobile devices has to be custom designed to include only partial functionality where each page view is carefully designed to provide the best user experience. Besides, with responsive design the entire code and CSS for all devices is loaded to the user's smartphone making the application  unnecessary heavy and slow when the connection speed is not great.
+
+With small screens you have to re-think carefully what are the must have  widgets and functionality that's really important for the business you're creating a Web application for. If it's a restaurant, you need to provide an easy way to find the menu, phone, address, and directions to your place. If it's a site to collect donations like our Save Sick Child the design should provide an easy way to donate, while the rest of the information should be hidden by simple navigational menus.
+
+In rare occasions an enterprise application is created solely for the mobile platform. More often the task is to migrate an existing application to mobile platform or develop of separate versions of the same application for desktops and mobile devices. If a decision is made to develop native mobile applications then the choice of the programming languages is dictated by the mobile hardware. 
+
+If it's a Web application then using the same framework for desktop and mobile platforms may shorten the development cycle.That's why we decided to cover such pairs in this book. The first pair are libraries, and the second - frameworks: 
+
+* jQuery and jQuery Mobile 
+
+* Ext JS and Sencha Touch
+
+WARNING: Even though each of these pairs shares the same code for the core components, do not expect that each counterpart will behave the same way. You are still going to use different version of the code, for example, jQuery 2.0 and jQuery Mobile 1.3.1.
+
+What's better jQuery Mobile or Sencha Touch? There is no general answer to this question. It all depends on the application you're building. If you need a simple mobile application for displaying various information (a publishing type of application), then jQuery Mobile will do the job with least efforts. If you are building an application that requires some serious data processing Sencha Touch is a better choice. Of course, there are lots of other frameworks and libraries that can help you with developing a mobile Web application. Do your homework and pick the one that fits your needs best. 
+
+There's a http://www.markus-falk.com/mobile-frameworks-comparison-chart/[Web site] that compares mobile frameworks. It even has a little wizard application that allows you to pick a framework that meets your needs and is supported on required devices. <<FIG12-1>> is a fragment snapshot from this site. As you can see, jQuery Mobile supports the largest number of different platforms.
+
+To start learning jQuery Mobile you need to know HTML, JavaScriot, CSS, and jQuery. In some publications you may see the statements that you could start using jQuery Mobile knowing only HTML. This is true till you'll run into the first `unexpected behavior` of your code, which will happen pretty soon in one of the Web browsers (take the statements about being a cross-browser framework with a grain of sault too). After that you need to add some event listeners, scripts, and start debugging.
+
+
+[[FIG12-1]]
+.A fragment of the Mobile Frameworks Matrix
+image::images/fig_12_01.png[]
+
+=== Where to get jQuery Mobile
+
+http://jquerymobile.com[The Web site] of jQuery Mobile has all you need to start using this library. Under the Demos section you can find tutorials, API reference, and samples of use. The Download section contains the links for the library itself.
+
+There are two ways of including jQuery Mobile in the source code of your application: either download and uncompress the zip file in your local directory and specify this location in the source code of your application or include the URLs of the CDN-hosted files. Visit the http://jquerymobile.com/download/[jQuery Mobile Download] page for the up-to-date URLs.
+
+In our code samples we'll be adding the following code snippets:
+
+[source, html]
+----
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+----
+
+
+=== Single-Page vs. Multi-Page
+
+
+=== jQuery Mobile Events
+
+* pageinit, not $(document).ready
+
+* pageshow
+
+* pagehide
+
+* tap
+
+TIP: jQuery Mobile makes it very tempting to get buy without writing JavaScript. This may result in a lot of wasted time trying to figure out why the page doesn't work as expected or even loaded. If the code base is not overly large, load your JavaScript to process all the pages first. Then create a listener at the document root to handle pageinit, pageshow, and pagehide events.
+
+
+=== The structure of a jQuery Mobile code
+
+The jQuery Mobile UI consists of a set of HTML documents where certain attributes are added to the regular HTML components. Your Web application will consists of _pages_, and the user's mobile device will show one page at a time. After the mockup of your application is ready (see section "Prototyping with Balsamiq Mockups" below), you know how many pages your application will have and how to navigate between the pages. Let's see how to define the content of each page in jQuery Mobile.
+
+HTML5 specification includes an important feature - you can add to any HTML tag any number of http://bit.ly/9Udecy[custom non-visible attributes] as long as they start with `data-` and have at least one character after the hyphen. In jQuery Mobile this feature is being used in a very smart way. For example, you can add an attribute `data-role` to the HTML tag `<div>` to specify that it's a page with id `Stats`:
+
+[source, html]
+----
+<div data-role="page" id="Stats">
+----
+
+The UI of your application will consist of multiple pages, but what's important, jQuery Mobile will show them _one page at a time_. Let's say your application consists of two pages (Stats and Donate), then HTML may be structured as follows:
+
+[source,html]
+----
+    <body> 
+		<div data-role="page" id="Donate">
+			...
+		</div>	
+		<div data-role="page" id="Stats">
+			...
+		</div>
+	</body>		
+----
+
+When this application starts, the user will see only the content of the page Donate since it was included in the code first. We'll talk about defining navigation a bit later.
+
+Let's say you want a page to be divided into the header, content and the footer. Then you can specify the corresponding roles to each of these sections.  
+
+[source,html]
+----
+    <body> 
+		<div data-role="page" id="Donate">
+		  <div data-role="header" >...</div>
+		  <div data-role="content" >...</div>
+		  <div data-role="footer" >...</div>	
+		</div>	
+		<div data-role="page" id="Stats">
+			...
+		</div>
+	</body>		
+----
+
+NOTE: It's not a must to split the page with the data roles header, content, and footer. But if you do, the code will be better structured and additional styling can be applied in the CSS based on these attributes.
+
+Let's say you want to add navigation controls to the header of the page. You can add to the header a container with a `data-role="navbar"`. In the following code sample we'll use the menus from the Save Sick Child application. 
+
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css"/>
+ </head>
+ <body>
+		
+  <div data-role="page">
+   <div data-role="header">
+  	<h1>Donate</h1>
+  	<div data-role="navbar">
+  	  <ul>
+  	  	<li>
+  	  		<a href="#Who-We-Are" data-transition="slidedown">
+  	  		Who We Are</a>
+  	  	</li>
+  	  	<li>
+  	  		<a href="#What-We-Do" data-transition="slidedown">
+  	  		What We Do</a>
+  	  	</li>
+  	  	<li>
+  	  		<a href="#Where-We-Work" data-transition="slidedown">Where We Work</a>
+  	  	</li>
+  	  	<li>
+  	  		<a href="#Way-To-Give" data-transition="slidedown">
+  	  		Way To Give</a>
+  	  	</li>
+  	  </ul>
+  	</div>
+   </div> <!-- header -->
+  
+  <div data-role="content" >
+      The content goes here
+  </div>
+  
+  <div data-role="footer" >  
+    The footer goes here
+  </div>  
+		
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+ </body>
+</html>	
+
+----
+
+
+IMPORTANT: Note the The `<viewport>` tag in the above example.
+
+The above code sample is a complete HTML document that you can test in your browser. If you'll do it in your regular Web browser, the Web page will look as in <<FIG12-2>>.
+
+[[FIG12-2]]
+.Viewing the document in Firefox
+image::images/fig_12_02.png[]
+
+But you'd rather want to see how this Web page will look one a mobile devices, right? There are several ways to do this. For example, you can use one of the emulator programs, like  http://iphone4simulator.com/[iPhone 4 Simulator]. Just copy paste the URL of your HTML document there and see if you like the look and feel shown on <<FIG12-3>>.
+
+[[FIG12-3]]
+.Viewing the document in iPhone4simulator.com
+image::images/fig_12_03.png[]
+
+
+
+
+TIP: You can find the list of all available data attributes in the http://jquerymobile.com/demos/1.2.1/docs/api/data-attributes.html[Data attribute reference] of the online documentation.
+
+=== Save Sick Child with jQuery Mobile
+
+
+==== Prototyping with Balsamiq Mockups
+
+It's time to go back to our favorite prototyping tool we've introduced in Chapter 3. Let's use Balsamiq Mockups again and create designs and layouts for each screen of the mobile version of the Save Sick Child application.
+application.
+
+
