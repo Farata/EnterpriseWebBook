@@ -32,11 +32,11 @@ image::images/fig_12_01.png[]
 
 === Where to get jQuery Mobile
 
-http://jquerymobile.com[The Web site] of jQuery Mobile has all you need to start using this library. Under the Demos section you can find tutorials, API reference, and samples of use. The Download section contains the links for the library itself.
+http://jquerymobile.com[The Web site] of jQuery Mobile has all you need to start using this library. you can find lots of learning materials under the Demos section - they have tutorials, API reference, and samples of use. The Download section contains the links for the library itself.
 
 There are two ways of including jQuery Mobile in the source code of your application: either download and uncompress the zip file in your local directory and specify this location in the source code of your application or include the URLs of the CDN-hosted files. Visit the http://jquerymobile.com/download/[jQuery Mobile Download] page for the up-to-date URLs.
 
-In our code samples we'll be adding the following code snippets:
+In our code samples we'll be adding the following code snippets, which in gzipped format will make our application only 90Kb "heavier":
 
 [source, html]
 ----
@@ -44,9 +44,6 @@ In our code samples we'll be adding the following code snippets:
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
 ----
-
-
-=== Single-Page vs. Multi-Page
 
 
 === jQuery Mobile Events
@@ -78,34 +75,46 @@ The UI of your application will consist of multiple pages, but what's important,
 [source,html]
 ----
     <body> 
+    <!--  Page 1    -->	
 		<div data-role="page" id="Donate">
 			...
-		</div>	
+		</div>
+
+	 <!--  Page 2    -->		
 		<div data-role="page" id="Stats">
 			...
 		</div>
 	</body>		
 ----
 
-When this application starts, the user will see only the content of the page Donate since it was included in the code first. We'll talk about defining navigation a bit later.
+When this application starts, the user will see only the content of the page Donate since it was included in the code first. We'll talk about defining navigation a bit later. 
+
+NOTE: The above code fragment is an example of a _multi-page template_, where a single HTML document contains multiple pages. An alternative way of organizing the code is to have the content of each page in a separate file or a _single-page template_, and you'll see the example later in this chapter.
 
 Let's say you want a page to be divided into the header, content and the footer. Then you can specify the corresponding roles to each of these sections.  
 
 [source,html]
 ----
     <body> 
+    <!--  Page 1    -->
 		<div data-role="page" id="Donate">
+
 		  <div data-role="header" >...</div>
 		  <div data-role="content" >...</div>
-		  <div data-role="footer" >...</div>	
+		  <div data-role="footer" >...</div>
+
 		</div>	
+
+    <!--  Page 2    -->
 		<div data-role="page" id="Stats">
 			...
 		</div>
 	</body>		
 ----
 
-NOTE: It's not a must to split the page with the data roles header, content, and footer. But if you do, the code will be better structured and additional styling can be applied in the CSS based on these attributes.
+It's not a must to split the page with the data roles header, content, and footer. But if you do, the code will be better structured and additional styling can be applied in the CSS based on these attributes.
+
+NOTE: It would be a good idea to replace three `<div>` tags inside the Donate page with HTML5 tags `<header>`, `<article>`, and `<footer>` but during the learning stage this could have confuse you mixing up HTML5 `<header>` and jQuery Mobile data role `header` (the footer line might have looked confusion too).  
 
 Let's say you want to add navigation controls to the header of the page. You can add to the header a container with a `data-role="navbar"`. In the following code sample we'll use the menus from the Save Sick Child application. 
 
@@ -156,28 +165,113 @@ Let's say you want to add navigation controls to the header of the page. You can
   <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
  </body>
 </html>	
-
 ----
 
+Note the The `<viewport>` tag in the above example. It instructs the browser of the mobile device to render the content to a virtual window that has to be the same as the width of the device's screen. Otherwise the mobile browser may assume that it's a Web site for desktop browsers and will minimize the content of the Web site so the user would need to zoom out. Read more about it in the sidebar titled "The Viewport Concept" in Chapter 11.
 
-IMPORTANT: Note the The `<viewport>` tag in the above example.
+TIP: You can find the list of all available data attributes in the http://jquerymobile.com/demos/1.2.1/docs/api/data-attributes.html[Data attribute reference] of the online documentation.
 
-The above code sample is a complete HTML document that you can test in your browser. If you'll do it in your regular Web browser, the Web page will look as in <<FIG12-2>>.
+The above code sample is a complete HTML document that you can test in your browser. If you'll do it in your desktop Web browser, the Web page will look as in <<FIG12-2>>.
 
 [[FIG12-2]]
 .Viewing the document in Firefox
 image::images/fig_12_02.png[]
 
-But you'd rather want to see how this Web page will look one a mobile devices, right? There are several ways to do this. For example, you can use one of the emulator programs, like  http://iphone4simulator.com/[iPhone 4 Simulator]. Just copy paste the URL of your HTML document there and see if you like the look and feel shown on <<FIG12-3>>.
+But you'd rather want to see how this Web page will look one a mobile devices, right? There are several ways to do this. For example, you can use one of the handy tools like Ripple Emulator. This Chrome browser's extension will add a green icon on the right side of the browser's toolbar - click on it and enable Ripple to run in a Web development mode. Then select the mobile device from the dropdown on the left and copy/paste the URL of your HTML document into Chrome browser's address bar. <<FIG12-3>> shows how our HTML document would look on Nokia97/5800 mobile phone.
+
 
 [[FIG12-3]]
 .Viewing the document in iPhone4simulator.com
 image::images/fig_12_03.png[]
 
+Using emulators really helps in the development, but keep in mind that emulators run in in your desktop browser, which may render the UI not exactly the same way as a mobile browser running on the user's mobile phone, for example the fonts may look a little different. Hence testing your application on a real device is highly recommended even though it's impossible to test your Web application on thousands different devices people use. 
+
+If you can afford, hire real mobile users carrying different devices. You can do it at http://www.mob4hire.com/[Mob4Hire] testing as service (TaaS) Web site. The good news is that creators of jQuery Mobile use about http://www.flickr.com/photos/filamentgroup/sets/72157625318352332/[70 physical devices] for testing of their UI components, but still, you may want to see how your application looks and feels on a variety devices.
 
 
+==== Styling in jQuery Mobile
 
-TIP: You can find the list of all available data attributes in the http://jquerymobile.com/demos/1.2.1/docs/api/data-attributes.html[Data attribute reference] of the online documentation.
+You may not like the design of the navigation bar shown on <<FIG12-2>>, but it has some style applied to it. Where the white letters on the black background are coming from? It happens because we've included the `data-role="navbar"` in the code. This is the power of the the custom `data-` attributes in action. Creators of the jQuery mobile included into their CSS predefined styling for different `data-` attributes including the inner buttons of the `navbar`.  
+
+What if you don't like this default styling? Create your own CSS, but first see if you might like some of the themes offered by jQuery Mobile off the shelf. You can have up to 26 pre-styled sets of toolbars, content and button colors called _swatches_. In the  code you'll referr them as themes lettered from A to Z.  Adding the `data-theme="a"` to the `<div data-role="page` will make change the look of the entire page. For example, the following line will change the color scheme in <<FIG12-3>> and the background of the content area will become dark gray:
+
+[source, javascript]
+----
+  <div data-role="page" data-theme="a">
+----
+
+jQuery mobile has a tool http://jquerymobile.com/themeroller/[Theme Roller] that allows you to create a unique combination of colors, fonts, backgrounds and shadows and assign it to one of the letters of the English alphabet (see <<FIG12-4>>). 
+
+
+[[FIG12-4]]
+.Theme Roller
+image::images/fig_12_04.png[]
+
+
+==== Adding Page navigation
+
+The page navigation is defined by using the HTML anchor tag `<a href="">`. If this is a multi-page document, where each page is a `<div>` with an id then the `href` attribute will include the hash tag followed by the corresponding id.  
+
+[source,html]
+----
+    <body> 
+    <!--  Page 1    -->	
+		<div data-role="page" id="Donate" data-theme="e">
+			<h1>Donate</h1>
+
+			<a href="#Stats">Show Stats</a> 
+		</div>
+
+	 <!--  Page 2    -->		
+		<div data-role="page" id="Stats">
+			<h1>Statistics<h1>
+		</div>
+	</body>		
+----
+
+Let's say that the only way to navigate from the Stats page is to go back to the page Donate. Now we'll turn the above code fragment into a working 2-page document with the Back button support. Both pages in the following HTML document have a designated areas with the `data-role="header"`, and the Stats page has yet another custom property `data-add-back-btn="true"`. This is all it takes to ensure that the button Back is displayed in the left side of the page header and when the user will _tap_ on it theapplication will navigate to the Donate page.
+
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+	</head>
+<body> 
+    <!--  Page 1    -->	
+ 	  <div data-role="page" id="Donate">
+ 	  	<div data-role="header" data-position="fixed" >
+ 	  	  <h1>Donate</h1>
+          </div> 
+ 	  	<a href="#Stats">Show Stats</a> 
+ 	  </div>
+
+	 <!--  Page 2    -->		
+       <div data-role="page" id="Stats" data-add-back-btn="true">
+       	<div data-role="header" data-position="fixed" >
+       	  <h1>Statistics</h1>
+           </div>
+           Statistics will go here
+            
+       </div>
+
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+
+  </body>
+</html>	
+----
+
+<<FIG12-5>> shows a snapshot of the Ripple emulator after the user clicked on the link on the Donate page. The Statistics page now include the fully functional Back button.
+
+[[FIG12-5]]
+.The Stats page with the Back button
+image::images/fig_12_05.png[]
+
+
 
 === Save Sick Child with jQuery Mobile
 
