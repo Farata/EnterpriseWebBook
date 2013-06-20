@@ -45,6 +45,8 @@ In our code samples we'll be adding the following code snippets, which in gzippe
 <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
 ----
 
+=== jQuery.mobile
+
 
 === jQuery Mobile Events
 
@@ -239,6 +241,10 @@ In jQuery Mobile page navigation is defined by using the HTML anchor tag `<a hre
 	</body>		
 ----
 
+If you use multi-page document, the ID of the page with a hash will be added to the URL. For example, if the name of the above document is navigation1.html, when the Stats page is open the browser's URL may look like this:
+
+_http://127.0.0.1:8020/navigation1.html#Stats_
+
 Let's say that the only way to navigate from the Stats page is to go back to the page Donate. Now we'll turn the above code fragment into a working 2-page document with the Back button support. Both pages in the following HTML document have a designated areas with the `data-role="header"`, and the Stats page has yet another custom property `data-add-back-btn="true"`. This is all it takes to ensure that the button Back is displayed in the left side of the page header and when the user will _tap_ on it the application will navigate to the Donate page.
 
 [source, html]
@@ -301,7 +307,7 @@ Now let's re-arrange the code of the above sample using a _single-page template_
 </html>	
 ----
 
-The main HTML file will contain only one home page, which is a Donate page in this example. The anchor tag will simply refer to the stats.html - no need to use hash tags or section ID any longer. This is how the main page will look like:
+The main HTML file will contain only one home page, which is a Donate page in this example. The anchor tag will simply refer to the URL of the stats.html - there is no need to use hash tags or section ID any longer. In his case jQuery Mobile will load the stats.html using internal AJAX request. This is how the main page will look like:
 
 [source, html]
 ----
@@ -332,13 +338,53 @@ The main HTML file will contain only one home page, which is a Donate page in th
 
 Running this version of our simple two-page application will produce the same results and the second page will look exactly as in <<FIG12-5>>.
 
+If you use single-page documents, the name of the file with the  page will be added to the URL. For example, when the Stats page is open the browser's URL may look like this:
+
+_http://127.0.0.1:8020/pages/stats.html_
+
+//Since in a single-page mode jQuery Mobile uses AJAX to load pages, make sure that if these pages use some custom CSS files they are pre-loaded on the application start otherwise you'll lose the styling.
+
+
+.Progressive enhancements and intrusiveness
+*****
 Web developers use technique called _progressive enhancement_, especially in the mobile field. The idea is simple - first make sure that the basic functionality works in any browser, and then apply bells and whistles to make the application as fancy as possible using CSS and or framework-specific enhancements. 
 
 Now let's delete `<script>` and `<link>` tags from the above html file and open it in the Web browser - we are testing a situation when, for whatever reason, we need to remove the jQuery Mobile from our code base. The code still works! You'll see the first page, clicking on the link will open the second page. You'll lose the styling and that nice-looking Back button, but you can still use the browser's Back button.  The Web browser ignores custom `data-` attributes without breaking anything.
 
 This wouldn't be the case if we'd be using the multi-page template, where each page is a `<div>` or an `<article>` in the same HTML file. With multi-page template the Web browser would open all pages at once - one under another. 
 
-TIP: When you're making a decision about using any particular framework or library, ask yourself a question, "How easy it is to remove the framework from the application code if it doesn't deliver as expected". On multiple occasions the authors of this book were invited to help with the project, where the first task was removal of a wrongly-selected framework from the application code. Such surgery usually lasts at least two weeks. jQuery Mobile is non-intrusive and is easily removable.
+Here's another example. With jQuery Mobile the following anchor link will look as a nice and easy to click button:
+
+[source, html]
+----
+<a data-role="button" href="http://cnn.com">CNN</a>
+----
+
+Remove jQuery Mobile, and the above line will still work as a standard HTML link.
+
+When you're making a decision about using any particular framework or library, ask yourself a question, "How easy it is to remove the framework from the application code if it doesn't deliver as expected". On multiple occasions the authors of this book were invited to help with the project, where the first task was removal of a wrongly-selected framework from the application code. Such surgery usually lasts at least two weeks. jQuery Mobile is non-intrusive and is easily removable.
+*****
+
+===== Programmatic Navigation
+
+Code samples above were illustration page navigation as a response to the user's action. Sometimes you need to change pages programmatically as a result of certain event, and the method http://api.jquerymobile.com/jQuery.mobile.changePage/[`$.mobile.changePage()`] can do this. 
+
+This method requires at least one parameter - the string defining the change-to-page, for example:
+
+[source, javascript]
+----
+$.mobile.changePage("pages/stats.html");
+----
+
+But you can also invoke this method with a second parameter, which is an object, where you can specify such parameters as `data` - the data to send with AJAX page request, `changeHash` - a boolean to control if the hash in the URL should be updated and some others. For example, the following code sample changes the page using post request (`type: "post"`) and the the new page should replace the current page in the browser's history (`changeHash: false`).
+
+[source, javascript]
+----
+$.mobile.changePage("pages/stats.html", {
+	type: "post",
+	changeHash: false
+});
+---- 
 
 
 === Save Sick Child with jQuery Mobile
@@ -367,7 +413,12 @@ image::images/fig_12_12.png[]
 .The Donate page (portrait)
 image::images/fig_12_13.png[]
 
-The small screen version of the above Donate page illustrates a term _Above the Fold_ used by Web designers. This term originated in the newspaper business where the first half of the folded newspaper contained the most important headlines - something that the potential buyer would notice immediately. In Web design the _Above the Fold_ means the first page that the user can see without the need to scroll. But if with newspapers people know that there is something to read below the fold, in Web design people may not know that the scrolling could reveal more information. In this particular case, there is a chance that a user with a 320x480 screen may not immediately understand that to see the Donate he needs to scroll.   
+The small screen version of the above Donate page illustrates a term _Above the Fold_ used by Web designers. This term originated in the newspaper business where the first half of the folded newspaper contained the most important headlines - something that the potential buyer would notice immediately. In Web design the _Above the Fold_ means the first page that the user can see without the need to scroll. But if with newspapers people know that there is something to read below the fold, in Web design people may not know that the scrolling could reveal more information. In this particular case, there is a chance that a user with a 320x480 screen may not immediately understand that to see the Donate he needs to scroll. 
+
+In general, it's a good idea to minimize the number of form fields that the user must manually fill out. Invest into analyzing the forms used in your application. See you can design the form smarter: auto-populate some of the fields and show/hide fields based on the user's inputs.   
+
+TIP: If you have a long form that has to be shown on a small screen, split it into several `<div data-role="page">` sections all located inside the `<form>` tag. Arrange the navigation between these sections as it was done for for multi-page documents in the section "Adding Page Navigation" above.
+
 
 [[FIG12-14]]
 .The Statistics page (portrait)
@@ -417,9 +468,9 @@ image::images/fig_12_23.png[]
 .The Statistics page (landscape, 320x480)
 image::images/fig_12_24.png[]
 
-
+TIP: If you want to add a link that will offer to dial a phone number, use the `tel:` scheme, for example: `<a href="tel:+12125551212">Call us</a>`. If you want the phone to look like a button, add the attribute `data-role="button"` to the anchor tag.
 
 === Summary
 
-In this chapter you've got familiar with a simple to use and non-intrusive mobile framework.
+In this chapter you've got familiar with a simple to use non-intrusive mobile framework.
 
