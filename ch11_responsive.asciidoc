@@ -69,6 +69,23 @@ The HTTP header's attribute `User-Agent` contains information about the user age
 image::images/fig_11_03.png[]
 
 
+There is an easier  way to detect on the server that the request came from a mobile device. http://wurfl.sourceforge.net/[Wireless Universal Resource File (WURF)] is a database of thousands of supported devices and their properties. Such Internet giants as Facebook and Google rely on this service and your application could too, if need be. WURF offers APIs from several programming languages to detect specific capabilities of the user devices. For example, the following code snippet is how you could access the WURF data from a Java servlet.
+
+[source, html]
+----
+ protected void processRequest(HttpServletRequest request, HttpServletResponse response) 
+          throws ServletException, IOException {
+
+   WURFLHolder wurfl = (WURFLHolder) getServletContext().getAttribute(WURFLHolder.class.getName());
+    
+   WURFLManager manager = wurfl.getWURFLManager();
+
+   Device device = manager.getDeviceForRequest(request);
+    
+   log.debug("Device: " + device.getId());
+   log.debug("Capability: " + device.getCapability("preferred_markup"));
+----
+
 It's impossible to create different layouts of a Web application for thousands of user agents. Grouping devices by screen sizes is a more practical approach for lowering the number of UI layouts supported by your application. The responsive design is a collection of techniques based upon three pillars:
 
 1. CSS _media queries_ 
@@ -76,6 +93,8 @@ It's impossible to create different layouts of a Web application for thousands o
 3. Fluid media 
 
 Media queries allows to rearrange the sections (`<div>`'s') of the page based on the screen size, fluid grids allows to properly scale the content of these sections, and the fluid media is about resizing images or videos. But before going into technical details, let's get back to the mockups to see how the UI should look like on different devices.
+
+
 
 === Back to Mockups
 
