@@ -1,22 +1,22 @@
-== Large Scale JavaScript Project
+== Large-Scale JavaScript Projects
 
-The Save a Chile site is a rather small Web project. But in the enterprise world, lots of applications have a lot larger code base. In this chapter we'll give an example of how to build  modularized Web applications that can load the code on as needed basis. We'll also give an example of how to organize the data exchange between different modules in a loosely coupled fashion.
+Our Save Sick Child application is a rather small Web project. The code base of a typical enterprise Web application is a lot larger. In this chapter we'll give an example of how to build  modularized Web applications that won't bring the monolithic five megabyte application to the client's machine, but will load the code on as needed basis. We'll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.
 
 People consider your web application fast for one of two reasons: either it's actually fast or it gives an impression of being fast. Ideally, you should do your best to create an web application that is very responsive. No matter how slow your web application is, it should never feel like freezing.
 
-In this chapter, you'll learn how to use neat modularization techniques and libraries  to make the first page of your web application appear on the display as soon as possible while loading the rest of the application in the background or on demand. We will continue refactoring the "Save Sick Child" application to introduce modules. And that's this chapter all about.
+This chapter is about modularization techniques that will quickly render the first page of your web application on the user's Browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save Sick Child application to illustrate using modules.
 
-On the contrary to Java, for instance, there is no out-of-the box modularization scheme in JavaScript language. Upcoming EcmaScript 6 specification tent to resolve this with introduction a module concept in language. But it's not here yet.
+There is no out-of-the box modularization scheme in JavaScript language. The upcoming EcmaScript 6 specification tends to resolve this with introduction a _module concept_ in the JavaScript language itself. But it's the future.
 
-Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies order manually. Moreover, each `<script>` tag directive translates into additional HTTP call to the server. With application functionality growth, latency will growth accordingly.
+Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive translates into an additional HTTP call to the server. As the application gets larger the latency will growth accordingly.
 
-In this chapter we're going to show you different approached to modular application. We will start with introduction of Module Pattern and will show how you can leverage Immediate Invoked Function Expressions (IIFE) as our first step to modularization. Next, we will introduce two popular solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD). They are exemplify opposing approaches to resolve modularization problem. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS idea implementation, and RequireJS as AMD implementation accordingly.
+We need different approach to modularizing applications. We will start with using the Module Pattern to leverage Immediately-Invoked Function Expressions (IIFE) as our first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS implementation, and http://requirejs.org/[RequireJS] as AMD implementation.
 
-We will give brief introduction how upcoming EcmaScript 6 specification going to deal with modules and how you can start using ES6 module syntax today with help of 3rd party toolings - http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. We will show ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
+YOu'll see how the upcoming EcmaScript 6 specification is dealing  with modules and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
 
-And at the very end of this chapter we're going to discuss advanced topics such as intermodule-communication and Dependency Injection in JavaScript.
+Finally, we're going to discuss such advanced topics as intermodule-communication and Dependency Injection in JavaScript.
 
-For "Save Sick Child" application we will implement module system based on RequireJS for lazy loading application components.
+The code of the Save Sick Child application will be refactored to implement module system based on RequireJS for lazy loading of the  application components.
 
 ****
 .Plan for chapter
@@ -49,7 +49,7 @@ Ultimately, it's just some code in an IIFE that:
 - Augmenting the global
 - Namespacing
 
-There is one huge disadvantage of using Module Pattern - we still need to deal with manual dependency management and manually arrange `<scrip>` tags in HTML page.
+There is one huge disadvantage of using the Module Pattern - we still need to deal with manual dependency management and manually arrange `<script>` tags in HTML page.
 
 // TDB
 
@@ -60,11 +60,10 @@ Browserify takes all of your code and concatenates it to one large file.
 
 ==== Asynchronous Module Definition (AMD)
 
-AMD API is based on a https://github.com/amdjs/amdjs-api/wiki/AMD[specification].
-AMD loaded have two main functions:
+The AMD API is based on a https://github.com/amdjs/amdjs-api/wiki/AMD[specification]. The AMD API have the following main functions:
 
 * `require` function takes two arguments
-** An array of module IDs to load. Module ID is string literal.
+** An array of module IDs to load. Module ID is a string literal.
 ** A callback to be executed once those modules are available. The modules loaded by ID are passed into the callback in their relative positions. <<LISTING_Require_func,Here is example>> of `require` function usage.
 +
 
@@ -77,7 +76,7 @@ AMD loaded have two main functions:
 
 * `define` takes two arguments
 ** An optional array of module IDs, which serve as this module's dependencies
-** A callback function (often referred to as a factory function) which will be invoked when dependencies are loaded, OR a value to use directory as the module's value.
+** A callback function (often referred to as a _factory function_), which will be invoked when dependencies are loaded, OR a value to use directory as the module's value.
 +
 
 [[LISTING_define_func]]
