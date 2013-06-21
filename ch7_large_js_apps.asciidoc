@@ -2,16 +2,132 @@
 
 The Save a Chile site is a rather small Web project. But in the enterprise world, lots of applications have a lot larger code base. In this chapter we'll give an example of how to build  modularized Web applications that can load the code on as needed basis. We'll also give an example of how to organize the data exchange between different modules in a loosely coupled fashion.
 
+People consider your web application fast for one of two reasons: either it's actually fast or it gives an impression of being fast. Ideally, you should do your best to create an web application that is very responsive. No matter how slow your web application is, it should never feel like freezing.
 
+In this chapter, you'll learn how to use neat modularization techniques and libraries  to make the first page of your web application appear on the display as soon as possible while loading the rest of the application in the background or on demand. We will continue refactoring the "Save Sick Child" application to introduce modules. And that's this chapter all about.
+
+On the contrary to Java, for instance, there is no out-of-the box modularization scheme in JavaScript language. Upcoming EcmaScript 6 specification tent to resolve this with introduction a module concept in language. But it's not here yet.
+
+Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies order manually. Moreover, each `<script>` tag directive translates into additional HTTP call to the server. With application functionality growth, latency will growth accordingly.
+
+In this chapter we're going to show you different approached to modular application. We will start with introduction of Module Pattern and will show how you can leverage Immediate Invoked Function Expressions (IIFE) as our first step to modularization. Next, we will introduce two popular solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD). They are exemplify opposing approaches to resolve modularization problem. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS idea implementation, and RequireJS as AMD implementation accordingly.
+
+We will give brief introduction how upcoming EcmaScript 6 specification going to deal with modules and how you can start using ES6 module syntax today with help of 3rd party toolings - http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. We will show ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
+
+And at the very end of this chapter we're going to discuss advanced topics such as intermodule-communication and Dependency Injection in JavaScript.
+
+For "Save Sick Child" application we will implement module system based on RequireJS for lazy loading application components.
+
+****
 .Plan for chapter
 * History: the Module pattern, namespaces
 * CommonJS
 * AMD
 * https://github.com/umdjs/umd[UMD] 
-* https://gist.github.com/wycats/51c96e3adcdb3a68cbc3[ES6 modules]
-* TypeScript
-* Inter-Module communication
-* _Dependency Injection_
-* ExtJS style 
+* Advanced topics:
+** https://gist.github.com/wycats/51c96e3adcdb3a68cbc3[ES6 modules] (http://wiki.ecmascript.org/doku.php?id=harmony:modules) and TypeScript modules
+** Inter-Module communication, Mediator pattern (???)
+** _Dependency Injection_
+* ExtJS style (sidebar example ???)
+****
 
+=== Modularization basics
 
+//Those are raw notes of thoughts 
+//Aren't Js Files Simply Modules Already?
+//Modules are pieces of code that are focused on a specific set of functionality, written using a specific pattern to facilitate modular use of the code.
+//There's several approaches one can use to create modular JS.
+//We'll be focusing on code that can be consumed by a module loader.
+
+=== The Paths To Modularization
+
+==== Module Pattern
+
+Ultimately, it's just some code in an IIFE that:
+
+- Returning the module value
+- Augmenting the global
+- Namespacing
+
+There is one huge disadvantage of using Module Pattern - we still need to deal with manual dependency management and manually arrange `<scrip>` tags in HTML page.
+
+// TDB
+
+==== CommonJS
+
+// TDB
+Browserify takes all of your code and concatenates it to one large file.
+
+==== Asynchronous Module Definition (AMD)
+
+AMD API is based on a https://github.com/amdjs/amdjs-api/wiki/AMD[specification].
+AMD loaded have two main functions:
+
+* `require` function takes two arguments
+** An array of module IDs to load. Module ID is string literal.
+** A callback to be executed once those modules are available. The modules loaded by ID are passed into the callback in their relative positions. <<LISTING_Require_func,Here is example>> of `require` function usage.
++
+
+[[LISTING_require_func]]
+.Example of `require` function usage
+[source,javascript]
+----
+//TBD
+----
+
+* `define` takes two arguments
+** An optional array of module IDs, which serve as this module's dependencies
+** A callback function (often referred to as a factory function) which will be invoked when dependencies are loaded, OR a value to use directory as the module's value.
++
+
+[[LISTING_define_func]]
+.Example of `define` function
+[source,javascript]
+----
+//TBD
+----
+
+`exports` 
+
+Distinctions from CommonJS
+
+//TDB
+Most popular AMD-complaint loaders:
+
+* http://requirejs.org/[RequireJS]
+* http://github.com/cujojs/curl[curl]
+
+RequireJS (include info about build with `r.js`)
+
+AMD pros:
+
+* Very simple API
+* Wide variety of loaders available
+* Plugins offer an immense amount of flexibility
+* easy to debug 
++
+
+_There was an error in /modules/loginModule.js on line 42_
++
+
+Vs
++
+
+_There was an error in /built-app.js on line 1984._
++
+
+* Performance: when you not require the module it's not loaded.
+
+AMD cons:
+
+* The dependency array can get rather large for complex modules (Example TBD).
+* Easy to get a mismatch between dependency array and callback arguments (Example TBD).
+
+==== Universal Module Definition (UMD)
+
+Series of patterns to support multiple modules formats.
+https://github.com/umdjs/umd[Specification]
+
+=== Summary
+
+_TDB summary of the chapter_
