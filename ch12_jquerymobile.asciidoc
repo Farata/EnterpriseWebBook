@@ -222,7 +222,12 @@ You can learn about creating custom themes with ThemeRoller by visiting http://l
 
 ==== Adding Page Navigation
 
-In jQuery Mobile page navigation is defined by using the HTML anchor tag `<a href="">`. If this is a _multi-page document_, where each page is a `<div>` with an id then the `href` attribute will include the hash tag followed by the corresponding id.  
+In jQuery Mobile page navigation is defined by using the HTML anchor tag `<a href="">`, where the `href` attribute can either points at page defined as a section in the same HTML document or at a paged defined in a separate HTML document. Accordingly, you can say that that we're using either a _multi-page template_ or a _single-page template_. 
+
+
+===== Multi-Page Template
+
+With multi-page template each page is a `<div>` (or other HTML container) with an id, and  the `href` attribute responsible for navigation will include the hash tag followed by the corresponding id.  
 
 [source,html]
 ----
@@ -241,7 +246,7 @@ In jQuery Mobile page navigation is defined by using the HTML anchor tag `<a hre
 	</body>		
 ----
 
-If you use multi-page document, the ID of the page with a hash will be added to the URL. For example, if the name of the above document is navigation1.html, when the Stats page is open the browser's URL may look like this:
+If you use multi-page document, the ID of the page with a hash (#) will be added to the URL. For example, if the name of the above document is navigation1.html, when the Stats page is open the browser's URL may look like this:
 
 _http://127.0.0.1:8020/navigation1.html#Stats_
 
@@ -251,11 +256,11 @@ Let's say that the only way to navigate from the Stats page is to go back to the
 ----
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
-	</head>
+ <head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css"/>
+ </head>
 <body> 
     <!--  Page 1    -->	
  	  <div data-role="page" id="Donate">
@@ -287,7 +292,11 @@ Let's say that the only way to navigate from the Stats page is to go back to the
 .The Stats page with the Back button
 image::images/fig_12_05.png[]
 
-Now let's re-arrange the code of the above sample using a _single-page template_. We'll create a folder pages, which can contain multiple HTML files - one per page. In our case, we'll create there one file stats.html to represent the Statistics page. Acordingly, we'll remove the section marked as Page 2 from the main HTML file. The stats.html will look as follows:
+NOTE: Even though we've included the sample of the `data-add-back-btn` in the multi-page template section, it works the same way in single-page template too.
+
+===== Single-Page Template
+
+Now let's re-arrange the code of the above sample using a single-page template. We'll create a folder pages, which can contain multiple HTML files - one per page. In our case, we'll create there one file stats.html to represent the Statistics page. Accordingly, we'll remove the section marked as Page 2 from the main HTML file. The stats.html will look as follows:
 
 [source, html]
 ----
@@ -364,6 +373,124 @@ Remove jQuery Mobile, and the above line will still work as a standard HTML link
 
 When you're making a decision about using any particular framework or library, ask yourself a question, "How easy it is to remove the framework from the application code if it doesn't deliver as expected". On multiple occasions the authors of this book were invited to help with the project, where the first task was removal of a wrongly-selected framework from the application code. Such surgery usually lasts at least two weeks. jQuery Mobile is non-intrusive and is easily removable.
 *****
+
+==== Persistent Toolbars
+
+One of the ways to arrange navigation is to add persistent toolbars that never go away while your application is running. You can dd such a toolbar in the footer or header area or in both. We'll create a simple example illustrating this technique by adding a a `navbar` to the footer area of the application.  Let's say, your application has a starting page and four other pages that can be selected by the user. <<FIG12-6>>. shows initial view of the application.
+
+[[FIG12-6]]
+.Four pages in the footer
+image::images/fig_12_06.png[]
+
+If the user taps on one of the four pages in the footer, the program has to replace the starting page with the selected one, and the title of the selected page in the footer has to be highlighted. If you're reading the electronic version of this book you'll see in <<FIG12-7>> that the rectangular area for Page #2 in the footer got the blue background. In the printed version of the book the different the background colors may not so obvious, but you have to trust us on this or run the code sample on your own. Besides, we'll be highlighting the selected page in a similar way while working on the prototype of the Save Sick Child application as per the mockups shown in the section "Prototyping Mobile Version". 
+
+[[FIG12-7]]
+.Page 2 is selected
+image::images/fig_12_07.png[]
+
+In jQuery Mobile implementing persistent toolbars is simple. The content of each of the page has to be located in a separate file and each of them has to have the footer and header with _the same_ `data_id`. Below is the code of the file page2.html, but page1, page3, and page 4 will look similar.   
+
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <div data-role="page" data-add-back-btn="true">
+      <div data-role="header" data-position="fixed" 
+           data-tap-toggle="false" data-id="persistent-header">
+        <h1>Page #2</h1>
+      </div><!-- /header -->
+      <div data-role="content" >
+        <p>
+          <b>Page #2</b> content
+        </p>
+      </div><!-- /content -->
+      <div data-role="footer" data-position="fixed" 
+         data-tap-toggle="false" data-id="persistent-footer"> // <1>
+        <div data-role="navbar">
+          <ul>
+            <li>
+              <a href="page-1.html" data-transition="slideup">Page #1</a>   // <2>
+            </li>
+            <li>
+              <a href="#" class="ui-state-persist">Page #2</a> // <3>
+            </li>
+            <li>
+              <a href="page-3.html" data-transition="slideup">Page #3</a>
+            </li>
+            <li>
+              <a href="page-4.html" data-transition="slideup">Page #4</a>
+            </li>
+          </ul>
+        </div><!-- /navbar -->
+      </div><!-- /footer -->
+    </div><!-- /page -->
+  </body>
+</html>
+----
+
+<1> The footer of page1, page2, page3, and page4 will have the same `data-id="persistent-footer"`.
+
+<2> While replacing the current page with another one, apply the transition effect so the page appears by sliding from the bottom up: `data-transition="slideup"`.
+
+<3> Since the Page 2 is already shown on the screen, tapping on the button "Page #2" in the navigation bar should not change the page, hence `href="#"`. The `class="ui-state-persist"` makes the framework to restore the active state each time when the existing in the DOM page is shown. The file page3.html will have a similar anchor for the button "Page #3" and so on.
+
+The code of the main page index.html is shown below:
+
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,
+        user-scalable=no,maximum-scale=1">
+    <title>Single-page template - start page</title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+  </head>
+  <body>
+    <!-- Start page -->
+    <div data-role="page">
+      <div data-role="header" data-position="fixed" 
+            data-tap-toggle="false" data-id="persistent-header">
+        <h1>Start page</h1>
+      </div><!-- /header -->
+      <div data-role="content" >
+        <p>
+          Single Page template. Start page content.
+        </p>
+      </div><!-- /content -->
+      <div data-role="footer" data-position="fixed" 
+            data-tap-toggle="false" data-id="persistent-footer">
+        <div data-role="navbar">
+          <ul>
+            <li>
+              <a href="pages/page-1.html" data-transition="slideup">Page #1</a>
+            </li>
+            <li>
+              <a href="pages/page-2.html" data-transition="slideup">Page #2</a>
+            </li>
+            <li>
+              <a href="pages/page-3.html" data-transition="slideup">Page #3</a>
+            </li>
+            <li>
+              <a href="pages/page-4.html" data-transition="slideup">Page #4</a>
+            </li>
+          </ul>
+        </div><!-- /navbar -->
+      </div><!-- /footer -->
+    </div><!-- /page -->
+
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+  </body>
+</html>
+----
+
+TIP: To avoid repeating the same footer in each HTML page, you may write a JavaScript function that will append the footer to each page on the `pagecreate` event.
 
 ===== Programmatic Navigation
 
