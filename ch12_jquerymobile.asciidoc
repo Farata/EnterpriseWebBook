@@ -388,7 +388,7 @@ If the user taps on one of the four pages in the footer, the program has to repl
 .Page 2 is selected
 image::images/fig_12_07.png[]
 
-In jQuery Mobile implementing persistent toolbars is simple. The content of each of the page has to be located in a separate file and each of them has to have the footer and header with _the same_ `data_id`. Below is the code of the file page2.html, but page1, page3, and page 4 will look similar.   
+In jQuery Mobile implementing persistent toolbars is simple. The content of each of the page has to be located in a separate file and each of them has to have the footer and header with _the same_ `data_id`. Below is the code of the file page2.html, but page1, page3, and page 4 look similar - check them out in the source code that comes with the book.   
 
 [source, html]
 ----
@@ -419,7 +419,7 @@ In jQuery Mobile implementing persistent toolbars is simple. The content of each
               <a href="#" class="ui-state-persist">Page #2</a> // <3>
             </li>
             <li>
-              <a href="page-3.html" data-transition="slideup">Page #3</a>
+              <a href="page-3.html" data-transition="slideup">Page #3</a> 
             </li>
             <li>
               <a href="page-4.html" data-transition="slideup">Page #4</a>
@@ -436,9 +436,9 @@ In jQuery Mobile implementing persistent toolbars is simple. The content of each
 
 <2> While replacing the current page with another one, apply the transition effect so the page appears by sliding from the bottom up: `data-transition="slideup"`.
 
-<3> Since the Page 2 is already shown on the screen, tapping on the button "Page #2" in the navigation bar should not change the page, hence `href="#"`. The `class="ui-state-persist"` makes the framework to restore the active state each time when the existing in the DOM page is shown. The file page3.html will have a similar anchor for the button "Page #3" and so on.
+<3> Since the Page 2 is already shown on the screen, tapping on the button "Page #2" in the navigation bar should not change the page, hence `href="#"`. The `class="ui-state-persist"` makes the framework to restore the active state each time when the existing in the DOM page is shown. The file page3.html will have a similar anchor for the button "Page #3". You got the idea.
 
-The code of the main page index.html is shown below:
+The code of the main page index.html is shown below - it also  defines the header, content, and footer areas:
 
 [source, html]
 ----
@@ -452,17 +452,19 @@ The code of the main page index.html is shown below:
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
   </head>
   <body>
-    <!-- Start page -->
+
     <div data-role="page">
       <div data-role="header" data-position="fixed" 
             data-tap-toggle="false" data-id="persistent-header">
         <h1>Start page</h1>
-      </div><!-- /header -->
+      </div>
+      
       <div data-role="content" >
         <p>
           Single Page template. Start page content.
         </p>
-      </div><!-- /content -->
+      </div>
+
       <div data-role="footer" data-position="fixed" 
             data-tap-toggle="false" data-id="persistent-footer">
         <div data-role="navbar">
@@ -494,7 +496,7 @@ TIP: To avoid repeating the same footer in each HTML page, you may write a JavaS
 
 ===== Programmatic Navigation
 
-Code samples above were illustration page navigation as a response to the user's action. Sometimes you need to change pages programmatically as a result of certain event, and the method http://api.jquerymobile.com/jQuery.mobile.changePage/[`$.mobile.changePage()`] can do this. 
+The above code samples were illustration page navigation as a response to the user's action. Sometimes you need to change pages programmatically as a result of certain event, and the method http://api.jquerymobile.com/jQuery.mobile.changePage/[`$.mobile.changePage()`] can do this. 
 
 This method requires at least one parameter - the string defining the change-to-page, for example:
 
@@ -577,7 +579,7 @@ image::images/fig_12_20.png[]
 
 This prototype will be used for the developing both jQuery Mobile and Sencha Touch versions of our Save Sick Child application. We've also included the design for the page that will integrate with the photo camera of the device (see <<FIG12-18>>) - this functionality will be implemented in the last chapter dedicated to hybrid applications. 
 
-All of the above images show UI layouts when the mobile device is in portrait mode, but you should ask your Web designer to prepare the mockups for landscape mode too. Below are the couple of snapshots prepared by our Web designer Jerry.
+All of the above images show UI layouts when the mobile device is in the portrait mode, but you should ask your Web designer to prepare the mockups for the landscape mode too. Below are the couple of snapshots prepared by our Web designer Jerry.
 
 [[FIG12-21]]
 .The Donate page (landscape, 640x960)
@@ -597,7 +599,278 @@ image::images/fig_12_24.png[]
 
 TIP: If you want to add a link that will offer to dial a phone number, use the `tel:` scheme, for example: `<a href="tel:+12125551212">Call us</a>`. If you want the phone to look like a button, add the attribute `data-role="button"` to the anchor tag.
 
+==== Implementing Navigation
+
+Let's start implementing the navigation based using the techniques described earlier in the section "Persistent Toolbars".
+
+
+[[FIG12-25]]
+.The project structure
+image::images/fig_12_25.png[]
+
+The index.html is the home page of our application. All other pages are located in the _pages_ folder. The javascript code is in the folder _js_, and fonts, images and CSS are in the folder _assets_. The source code of the index.html is shown below.
+
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1">
+// <1>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <title>Save Sick Child</title>
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+    <link rel="stylesheet" href="assets/css/jqm-icon-pack-3.0.0-fa.css" />
+    <link rel="stylesheet" href="assets/css/app-styles.css" /> // <2>
+  </head>
+  <body>
+
+    <div data-role="page">
+// <3>
+      <div data-role="header" data-position="fixed" data-tap-toggle="false" 
+      data-id="persistent-header">
+        <a href="pages/login.html" data-icon="chevron-down" data-iconpos="right" 
+        class="ui-btn-right login-btn" data-rel="dialog">Login</a>
+        <h1><img class="header-logo" src="assets/img/logo-20x20.png" alt="Save Sick Child Logo"/> </h1>
+      </div>
+// <4>      
+      <div data-role="content" >
+        <h2>Save Sick Child</h2>
+        <p>
+          <b>Start page</b> content.
+        </p>
+      </div>
+// <5>      
+      <div data-role="footer" data-position="fixed" data-tap-toggle="false" 
+      data-id="persistent-footer">
+        <div data-role="navbar" class="ssc-navbar">
+          <ul>
+            <li>
+              <a href="pages/about.html" data-iconshadow="false" data-icon="info-sign" 
+              data-transition="slideup">About</a>
+            </li>
+            <li>
+              <a href="pages/donate.html" data-iconshadow="false" data-icon="heart" 
+              data-transition="slideup">Donate</a>
+            </li>
+            <li>
+              <a href="pages/stats.html" data-iconshadow="false" data-icon="bar-chart" 
+              data-transition="slideup">Stats</a>
+            </li>
+            <li>
+              <a href="pages/events.html" data-iconshadow="false" data-icon="map-marker" 
+              data-transition="slideup">Events</a>
+            </li>
+            <li>
+              <a href="pages/media.html" data-iconshadow="false" data-icon="film" 
+              data-transition="slideup">Media</a>
+            </li>
+            <li>
+              <a href="pages/share.html" data-iconshadow="false" data-icon="share" 
+              data-transition="slideup">Share</a>
+            </li>
+          </ul>
+        </div><!-- /navbar -->
+      </div><!-- /footer -->
+    </div><!-- /page -->
+  
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+    <script src="js/app-main.js"></script>
+  </body>
+</html>
+----
+
+<1> The metatags to request the full screen mode and black status bar on iOS devices
+
+<2> Our CSS will override some of the jQuery Mobile classes and add new styles specific to our application.  
+
+<3> The header shows a Login button and the application logo. 
+
+<4> The content of the main page should go here
+
+<5> All the navigation buttons are located in the footer. 
+
+<<FIG12-26>> shows how the landing page of the Save Sick Child application will look in the Ripple Emulator. Run it and click on each of the buttons in the navigation bar. 
+
+[[FIG12-26]]
+.The first take on SSC home page
+image::images/fig_12_26.png[]  
+
+The content of our custom CSS file app-styles.css comes next.
+
+[source, HTML]
+----
+
+/* prevent using images for icons - overwrite default classes */
+.ui-icon-plus, .ui-icon-minus, .ui-icon-delete, .ui-icon-arrow-r, .ui-icon-arrow-l, 
+.ui-icon-arrow-u, .ui-icon-arrow-d, .ui-icon-check, .ui-icon-gear, 
+.ui-icon-refresh, .ui-icon-forward, .ui-icon-back, .ui-icon-grid, .ui-icon-star, .ui-icon-alert, 
+.ui-icon-info, .ui-icon-home, .ui-icon-search, .ui-icon-searchfield:after, .ui-icon-checkbox-off, 
+.ui-icon-checkbox-on, .ui-icon-radio-off, .ui-icon-radio-on, 
+.ui-icon-email, .ui-icon-page, .ui-icon-question, .ui-icon-foursquare, .ui-icon-dollar, 
+.ui-icon-euro, .ui-icon-pound, .ui-icon-apple, .ui-icon-chat, 
+.ui-icon-trash, .ui-icon-mappin, .ui-icon-direction, .ui-icon-heart, .ui-icon-wrench, .ui-icon-play, 
+.ui-icon-pause, .ui-icon-stop, .ui-icon-person, .ui-icon-music, .ui-icon-wifi, 
+.ui-icon-phone, .ui-icon-power, .ui-icon-lightning, .ui-icon-drink, .ui-icon-android {
+  background-image: none !important;
+}
+/* if we prevent using images, we should provide custom icon for buttons - 
+override default class via icon-font search */
+.ui-icon-arrow-l:before {
+  content: "\f053";
+  margin-top: 2px
+}
+.ui-icon-delete:before {
+  content: "\f00d";
+  margin-left: 3px;
+  margin-top: -2px
+}
+.ui-icon-arrow-r:before {
+  content: "\f054";
+  padding-left: 2px;
+}
+.ui-icon-arrow-d:before {
+  content: "\f078";
+}
+.ui-icon-home:before {
+  content: "\f015";
+}
+
+.header-logo {
+  vertical-align: middle;
+  padding-right: 0.3em;
+  margin-top: -2px;
+}
+
+.ssc-navbar .ui-btn-text {
+  font-size: 0.9em
+}
+
+/* overwide, customize icons css */ 
+.ssc-navbar .ui-icon {
+  background: none !important;
+  margin-top:2px !important;
+}
+/* jQM allows not more than 5 items per line in navbar.
+ We need 6. Hence we should override the default CSS rule.
+ Each block will occupy 1/6 of the width: 16.66%
+ */
+.ssc-navbar .ui-block-a {
+  width:16.66% !important;
+}
+.ssc-navbar .ui-block-b {
+  width:16.66% !important;
+}
+
+.ssc-grid-nav {
+  display: block; 
+  text-align: center; 
+  border-top: 1px solid #c0c0c0;
+  text-decoration:none;
+  color: #555 !important;
+  overflow: hidden;
+  box-sizing: border-box
+}
+.ssc-grid-nav:nth-child(odd) {
+  border-right: 1px solid #c0c0c0;
+}
+.ssc-grid-item-icon {
+  display:block;
+  font-size: 2em;
+  padding-bottom: 0.5em
+}
+----
+
+Wile testing this initial version of the Save Sick Child application, note that the content of the About and Share pages is implemented as in mockups shown on <<FIG12-11>> and <<FIG12-17>>. The source code of the share.html is shown below (the about.html looks similar).
+
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+ <head>
+   <meta charset="utf-8">
+ </head>
+ <body>
+
+   <div data-role="page" data-add-back-btn="true" id="Share">
+     <div class="ssc-grid-header" data-role="header" data-position="fixed" data-tap-toggle="false" 
+     data-id="persistent-header">
+       <a href="login.html" data-icon="chevron-down" data-iconpos="right" 
+       class="ui-btn-right login-btn" data-rel="dialog">Login</a>
+       <h1><img class="header-logo" src="../assets/img/logo-20x20.png" 
+       alt="Save Sick Child Logo"/></h1>
+     </div>
+
+     <div data-role="content" style="padding:0">
+       <div class="ui-grid-a">
+         <div class="ui-block-a">
+           <a href="#" class="ssc-grid-nav">
+           <span class="ssc-grid-item-icon ui-icon-twitter"></span>
+           <br/>
+           Share via Twitter</a>
+         </div>
+         <div class="ui-block-b">
+           <a href="#" class="ssc-grid-nav">
+           <span class="ssc-grid-item-icon ui-icon-facebook"></span>
+           <br/>
+           Share via Facebook</a>
+         </div>
+         <div class="ui-block-a">
+           <a href="#" class="ssc-grid-nav">
+           <span class="ssc-grid-item-icon ui-icon-google-plus"></span>
+           <br/>
+           Share via Google+</a>
+         </div>
+         <div class="ui-block-b">
+           <a href="#" class="ssc-grid-nav">
+           <span class="ssc-grid-item-icon ui-icon-camera"></span>
+           <br/>
+           Photo App</a>
+         </div>
+       </div>
+     </div>
+   
+     <div class="ssc-grid-footer" data-role="footer" data-position="fixed" data-tap-toggle="false" 
+     data-id="persistent-footer">
+       <div data-role="navbar" class="ssc-navbar">
+         <ul>
+           <li>
+             <a href="about.html" data-iconshadow="false" data-icon="info-sign" 
+             data-transition="slideup">About</a>
+           </li>
+           <li>
+             <a href="donate.html" data-iconshadow="false" data-icon="heart" 
+             data-transition="slideup">Donate</a>
+           </li>
+           <li>
+             <a href="stats.html" data-iconshadow="false" data-icon="bar-chart" 
+             data-transition="slideup">Stats</a>
+           </li>
+           <li>
+             <a href="events.html" data-iconshadow="false" data-icon="map-marker" 
+             data-transition="slideup">Events</a>
+           </li>
+           <li>
+             <a href="media.html" data-iconshadow="false" data-icon="film" 
+             data-transition="slideup">Media</a>
+           </li>
+           <li>
+             <a href="#" data-iconshadow="false" data-icon="share"
+              class="ui-state-persist">Share</a>
+           </li>
+         </ul>
+       </div><!-- /navbar -->
+     </div><!-- /footer -->
+   </div><!-- /page  -->
+ </body>
+</html>
+----
+
 === Summary
 
-In this chapter you've got familiar with a simple to use non-intrusive mobile framework.
-
+In this chapter you've got familiar with a simple to use non-intrusive mobile framework. We'll use the singe-page template, and in <<FIG12-25>>  you can see the structure and initial content of of our project. 
