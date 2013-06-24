@@ -224,7 +224,6 @@ You can learn about creating custom themes with ThemeRoller by visiting http://l
 
 In jQuery Mobile page navigation is defined by using the HTML anchor tag `<a href="">`, where the `href` attribute can either points at page defined as a section in the same HTML document or at a paged defined in a separate HTML document. Accordingly, you can say that that we're using either a _multi-page template_ or a _single-page template_. 
 
-
 ===== Multi-Page Template
 
 With multi-page template each page is a `<div>` (or other HTML container) with an id, and  the `href` attribute responsible for navigation will include the hash tag followed by the corresponding id.  
@@ -354,25 +353,39 @@ _http://127.0.0.1:8020/pages/stats.html_
 //Since in a single-page mode jQuery Mobile uses AJAX to load pages, make sure that if these pages use some custom CSS files they are pre-loaded on the application start otherwise you'll lose the styling.
 
 
-.Progressive enhancements and intrusiveness
-*****
 Web developers use technique called _progressive enhancement_, especially in the mobile field. The idea is simple - first make sure that the basic functionality works in any browser, and then apply bells and whistles to make the application as fancy as possible using CSS and or framework-specific enhancements. 
 
-Now let's delete `<script>` and `<link>` tags from the above html file and open it in the Web browser - we are testing a situation when, for whatever reason, we need to remove the jQuery Mobile from our code base. The code still works! You'll see the first page, clicking on the link will open the second page. You'll lose the styling and that nice-looking Back button, but you can still use the browser's Back button.  The Web browser ignores custom `data-` attributes without breaking anything.
+But what if you decide to go the opposite route and take a nicel looking UI and remove its awesomeness? For instance, delete `<script>` and `<link>` tags from the above html file and open it in the Web browser - we are testing a situation when, for whatever reason, we need to remove the jQuery Mobile from our code base. The code still works! You'll see the first page, clicking on the link will open the second page. You'll lose the styling and that nice-looking Back button, but you can still use the browser's Back button.  The Web browser ignores custom `data-` attributes without breaking anything.
 
 This wouldn't be the case if we'd be using the multi-page template, where each page is a `<div>` or an `<article>` in the same HTML file. With multi-page template the Web browser would open all pages at once - one under another. 
 
-Here's another example. With jQuery Mobile the following anchor link will look as a nice and easy to click button:
+Here's another example. With jQuery Mobile you can create a button in many ways. There are multiple examples in the http://view.jquerymobile.com/1.3.1/dist/demos/widgets/buttons/[Buttons section] of product documentation. The code below will produce five buttons, which will look the same, just the labels are different:
 
 [source, html]
 ----
-<a data-role="button" href="http://cnn.com">CNN</a>
+<a href="http://cnn.com" data-role="button">Anchor</a>
+<form action="http://cnn.com">
+    <button>Click me</button>
+    <input type="button" value="Input">
+    <input type="submit" value="Submit">
+    <input type="reset" value="Reset">
+</form>
 ----
 
-Remove jQuery Mobile, and the above line will still work as a standard HTML link.
+If you chose to use the anchor link with `data-role="button"` and then remove the `<script>` tag that includes the code of jQuery Mobile library, the anchor tag will still work as a standard HTML link. It won't look as a button, but it will function as expected.
 
-When you're making a decision about using any particular framework or library, ask yourself a question, "How easy it is to remove the framework from the application code if it doesn't deliver as expected". On multiple occasions the authors of this book were invited to help with the project, where the first task was removal of a wrongly-selected framework from the application code. Such surgery usually lasts at least two weeks. jQuery Mobile is non-intrusive and is easily removable.
-*****
+When you're making a decision about using any particular framework or library, ask yourself a question, "How easy it is to remove the framework from the application code if it doesn't deliver as expected". On multiple occasions the authors of this book were invited to help with the project, where the first task was removal of a wrongly-selected framework from the application code. Such surgery usually lasts at least two weeks. jQuery Mobile is non overly intrusive and is easily removable.
+
+===== Multi or Singe-Page Template
+
+So which template should you use?  Both have their pros and cons. If the code base of your application is large, use single-page template. The code will be split into multiple pages, will be easier to read and will give you a feeling of being modular without implementing any additional libraries for cutting the application into pieces. The home page of the application comes quicker because you don't need to load the entire code base.
+
+This all sounds good, but be aware that with single-page templates whenever you'll navigate from one page to another your mobile device makes a new request to the server. They user will see the wait cursor until the to-page has not arrived to the device. Even if the size of each page is small, additional requests to the server are costlier with mobile devices as they need another second just re-establish a radio link to the cell tower. After the communication with the server is done, the phone lowers its power consumption. The new request to the server for loading the page will start with increasing the power consumption again. Hence using the multi-page template may provide smoother navigation. 
+
+On the other hand, there is a way to http://view.jquerymobile.com/1.3.1/dist/demos/widgets/pages/[pre-fetch pages] into the DOM even in a single-page mode so the number of the server request id minimized. This can be done either with the HTML attribute `data-pretetch="true"` or programmatically using `$.mobile.loadPage()`. You can also ask the browser to cache previously visited pages with `$.mobile.page.prototype.options.domCache = true;`.
+
+So what's the verdict? Test your application in both single and multi-page modes and see what's work best. 
+
 
 ==== Persistent Toolbars
 
@@ -599,16 +612,15 @@ image::images/fig_12_24.png[]
 
 TIP: If you want to add a link that will offer to dial a phone number, use the `tel:` scheme, for example: `<a href="tel:+12125551212">Call us</a>`. If you want the phone to look like a button, add the attribute `data-role="button"` to the anchor tag.
 
-==== Implementing Navigation
+==== The Project Structure and Navigation
 
-Let's start implementing the navigation based using the techniques described earlier in the section "Persistent Toolbars".
-
+This time the Save Sick Child project structure will look as in <<>FIG12-25>. We are using the singe-page template here. The index.html is the home page of our application. All other pages are located in the _pages_ folder. The javascript code is in the folder _js_, and fonts, images and CSS file are in the folder _assets_. We'll use the same JSON files as in the previous versions of this application, and they are located in the folder _data_.
 
 [[FIG12-25]]
 .The project structure
 image::images/fig_12_25.png[]
 
-The index.html is the home page of our application. All other pages are located in the _pages_ folder. The javascript code is in the folder _js_, and fonts, images and CSS are in the folder _assets_. The source code of the index.html is shown below.
+Let's start implementing navigation based using the techniques described earlier in the section "Persistent Toolbars". The source code of the index.html is shown below.
 
 [source, html]
 ----
@@ -624,33 +636,38 @@ The index.html is the home page of our application. All other pages are located 
     <title>Save Sick Child</title>
 
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+
+    // <3>
     <link rel="stylesheet" href="assets/css/jqm-icon-pack-3.0.0-fa.css" />
+    
     <link rel="stylesheet" href="assets/css/app-styles.css" /> // <2>
   </head>
   <body>
 
     <div data-role="page">
-// <3>
+// <4>
       <div data-role="header" data-position="fixed" data-tap-toggle="false" 
       data-id="persistent-header">
         <a href="pages/login.html" data-icon="chevron-down" data-iconpos="right" 
         class="ui-btn-right login-btn" data-rel="dialog">Login</a>
         <h1><img class="header-logo" src="assets/img/logo-20x20.png" alt="Save Sick Child Logo"/> </h1>
       </div>
-// <4>      
+// <5>      
       <div data-role="content" >
         <h2>Save Sick Child</h2>
         <p>
           <b>Start page</b> content.
         </p>
       </div>
-// <5>      
+// <6>      
       <div data-role="footer" data-position="fixed" data-tap-toggle="false" 
       data-id="persistent-footer">
         <div data-role="navbar" class="ssc-navbar">
           <ul>
             <li>
-              <a href="pages/about.html" data-iconshadow="false" data-icon="info-sign" 
+              <a href="pages/about.html" data-iconshadow="false" 
+// <7>
+              data-icon="info-sign" 
               data-transition="slideup">About</a>
             </li>
             <li>
@@ -685,15 +702,19 @@ The index.html is the home page of our application. All other pages are located 
 </html>
 ----
 
-<1> The metatags to request the full screen mode and black status bar on iOS devices
+<1> The metatags to request the full screen mode and black status bar on iOS devices. The main goal is to remove the browser's address bar. Some developers suggest JavaScript tricks like `window.scrollTo(0,1);` (Google on it for details). But we are are not aware of a reliable solution for a guaranteed full screen mode in Web applications on all devices.
 
-<2> Our CSS will override some of the jQuery Mobile classes and add new styles specific to our application.  
+<2> Our CSS will override some of the jQuery Mobile classes and add new styles specific to our application.    
 
+<3> This project uses jQuery Mobile Icon Pack - an extension of standard jQuery Mobile icons. 
+ 
 <3> The header shows a Login button and the application logo. 
 
 <4> The content of the main page should go here
 
 <5> All the navigation buttons are located in the footer. 
+
+<6> jQuery Mobile includes a number of icons that you can use by specifying their names in the `data-icon` attribute (read the Note on icons below). The icon position is controlled by the attribute `data-iconpos`.
 
 <<FIG12-26>> shows how the landing page of the Save Sick Child application will look in the Ripple Emulator. Run it and click on each of the buttons in the navigation bar. 
 
@@ -701,12 +722,18 @@ The index.html is the home page of our application. All other pages are located 
 .The first take on SSC home page
 image::images/fig_12_26.png[]  
 
+NOTE:
+****
+In this application we use http://css-tricks.com/flat-icons-icon-fonts/[icon fonts] to be displayed on the navigation bar. The main advantage over using images for icons is that icon fonts are maintenance free. You don't need to resize and redraw icons. The disadvantage of the icon fonts is that they are single-colored, but for the navigation bar buttons having multi-colored images is not important. 
+
+In the above code we've been using the jQuery Mobile Icon Pack that's available on https://github.com/commadelimited/jQuery-Mobile-Icon-Pack[GitHub]. It's an adaptation of the Twitter Bootstrap's Font Awesome for jQuery Mobile. If you need fancier images for your mobile application, consider using http://www.glyphish.com/[Glypish icons].
+****
 The content of our custom CSS file app-styles.css comes next.
 
-[source, HTML]
+[source, CSS]
 ----
+// <1>
 
-/* prevent using images for icons - overwrite default classes */
 .ui-icon-plus, .ui-icon-minus, .ui-icon-delete, .ui-icon-arrow-r, .ui-icon-arrow-l, 
 .ui-icon-arrow-u, .ui-icon-arrow-d, .ui-icon-check, .ui-icon-gear, 
 .ui-icon-refresh, .ui-icon-forward, .ui-icon-back, .ui-icon-grid, .ui-icon-star, .ui-icon-alert, 
@@ -714,13 +741,15 @@ The content of our custom CSS file app-styles.css comes next.
 .ui-icon-checkbox-on, .ui-icon-radio-off, .ui-icon-radio-on, 
 .ui-icon-email, .ui-icon-page, .ui-icon-question, .ui-icon-foursquare, .ui-icon-dollar, 
 .ui-icon-euro, .ui-icon-pound, .ui-icon-apple, .ui-icon-chat, 
-.ui-icon-trash, .ui-icon-mappin, .ui-icon-direction, .ui-icon-heart, .ui-icon-wrench, .ui-icon-play, 
-.ui-icon-pause, .ui-icon-stop, .ui-icon-person, .ui-icon-music, .ui-icon-wifi, 
-.ui-icon-phone, .ui-icon-power, .ui-icon-lightning, .ui-icon-drink, .ui-icon-android {
+.ui-icon-trash, .ui-icon-mappin, .ui-icon-direction, .ui-icon-heart, .ui-icon-wrench, 
+.ui-icon-play, .ui-icon-pause, .ui-icon-stop, .ui-icon-person,
+ .ui-icon-music, .ui-icon-wifi, .ui-icon-phone, .ui-icon-power, 
+ .ui-icon-lightning, .ui-icon-drink, .ui-icon-android {
   background-image: none !important;
 }
-/* if we prevent using images, we should provide custom icon for buttons - 
-override default class via icon-font search */
+
+// <2>
+
 .ui-icon-arrow-l:before {
   content: "\f053";
   margin-top: 2px
@@ -746,6 +775,8 @@ override default class via icon-font search */
   padding-right: 0.3em;
   margin-top: -2px;
 }
+
+// <3>
 
 .ssc-navbar .ui-btn-text {
   font-size: 0.9em
@@ -786,7 +817,13 @@ override default class via icon-font search */
 }
 ----
 
-Wile testing this initial version of the Save Sick Child application, note that the content of the About and Share pages is implemented as in mockups shown on <<FIG12-11>> and <<FIG12-17>>. The source code of the share.html is shown below (the about.html looks similar).
+<1> First, we want to stop jQuery Mobile using it's standard images for icons. 
+
+<2> Override the jQuery Mobile CSS class selectors with the icon fonts
+
+<3> Create some custom styles for the Save Sick Chile application.
+
+While testing this initial version of the Save Sick Child application, note that the content of the About and Share pages is implemented as in mockups shown on <<FIG12-11>> and <<FIG12-17>>. The source code of the share.html is shown below (the about.html looks similar). After all the above explanations you should understand this code without further comments.
 
 [source, html]
 ----
@@ -798,8 +835,8 @@ Wile testing this initial version of the Save Sick Child application, note that 
  <body>
 
    <div data-role="page" data-add-back-btn="true" id="Share">
-     <div class="ssc-grid-header" data-role="header" data-position="fixed" data-tap-toggle="false" 
-     data-id="persistent-header">
+     <div class="ssc-grid-header" data-role="header" data-position="fixed" 
+     data-tap-toggle="false" data-id="persistent-header">
        <a href="login.html" data-icon="chevron-down" data-iconpos="right" 
        class="ui-btn-right login-btn" data-rel="dialog">Login</a>
        <h1><img class="header-logo" src="../assets/img/logo-20x20.png" 
