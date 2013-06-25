@@ -9,12 +9,10 @@ This chapter is about modularization techniques that will quickly render the fir
 There is no out-of-the box modularization scheme in JavaScript language. The upcoming EcmaScript 6 specification tends to resolve this with introduction a _module concept_ in the JavaScript language itself. But it's the future.
 
 Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive translates into an additional HTTP call to the server. As the application gets larger the latency will growth accordingly. 
-
-// vik
 <<LISTING_SCRIPT_TAG,Here is an example>> of such situation.
 
 [[LISTING_SCRIPT_TAG]]
-.With ton of `<script>` tags you can very easy lost the control of application dependencies
+.With tons of `<script>` tags you can loose control of application dependencies
 [source,html]
 ----
 <!DOCTYPE html>
@@ -43,15 +41,16 @@ Of course, we can load each JavaScript file using `<script>` tag. But this appro
 </body>
 </html>
 ----
-<1> All widgets depend on jquery. We need to load it first.
-<2> Application components might also have dependencies. Those scripts need to be loaded before component itself. Order of this script tags very important.
-<3> A widgerManager component expects that all widgets (and) will be loaded.
+<1> All widgets depend on the code from Core jQuery library. We need to load it first.
 
-// /vik
+<2> Application components may also have dependencies. Those scripts need to be loaded before the component itself. The order of these script tags is very important.
 
-We need different approach to modularizing applications. We will start with using the Module Pattern to leverage Immediately-Invoked Function Expressions (IIFE) as our first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS implementation, and http://requirejs.org/[RequireJS] as AMD implementation.
+<3> The `widgerManager` component expects that all widgets (and) will be loaded.
 
-YOu'll see how the upcoming EcmaScript 6 specification is dealing  with modules and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
+
+We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as our first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS implementation, and http://requirejs.org/[RequireJS] as AMD implementation.
+
+You'll see how the upcoming EcmaScript 6 specification suggests dealing with modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
 
 Finally, we're going to discuss such advanced topics as intermodule-communication and Dependency Injection in JavaScript.
 
@@ -97,22 +96,22 @@ There is one huge disadvantage of using the Module Pattern - we still need to de
 // TDB
 Browserify takes all of your code and concatenates it to one large file.
 
-==== Asynchronous Module Definition (AMD)
+==== Asynchronous Module Definition
 
-// vik
-AMD began as a draft specification for a module format on the CommonJS list but as it wasn't able to reach full concensus, further development of the format moved to the https://github.com/amdjs[amdjs Github page].
+AMD began as a draft specification for module format in CommonJS, but since the full consensus about its content was not reached, the further development of the module format moved to the https://github.com/amdjs[amdjs Github page].
 
 The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded. 
-
-The AMD API is based on a https://github.com/amdjs/amdjs-api/wiki/AMD[specification]. The AMD API have the following main functions:
+The AMD API is based on a https://github.com/amdjs/amdjs-api/wiki/AMD[this specification]. The AMD API have the following main functions:
 
 * `define` for facilitating module definition. A function takes two arguments:
-** An optional array of module IDs, which serve as this module's dependencies
-** A callback function (often referred to as a _factory function_), which will be invoked when dependencies are loaded, OR a value to use directory as the module's value.
+
+** An optional array of modules IDs, which serve as this module's dependencies
+
+** A callback function (often referred to as a _factory function_), which will be invoked when dependencies are loaded. This also can be a value to use directory as the module's value.
 +
 
 [[LISTING_define_func]]
-.Example of `define` function
+.The example of a `define` function
 [source,javascript]
 ----
 define(
@@ -121,19 +120,22 @@ define(
     function {}         // <3>
 );
 ----
-<1> Optional parameter, string literal defines +module_id+ that will be used by AMD loader to load this module.
-<2> Optional array of dependencies' ids.
-<3> Function for instantiating the module or object.
-+
+<1> This string literal is an optional parameter. It defines +module_id+ that will be used by AMD for loading this module.
+
+<2> An optional array of dependencies' ids.
+
+<3> The function for instantiating the module or object.
 
 [[LISTING_define_modeule]]
-.Definition of `wayToGive` module
+.The Definition of the `wayToGive` module
 [source,javascript]
 ----
 include::include/ch7_define_wayToGive.js[]
 ----
-<1> In this example, we not providing optional +module_id+. File name without `.js` extension will be used as +module_id+. Our module has one dependency on module called +newContentLoader+. Module instance will be passed in factory method as variable +contentLoader+. 
+<1> In this example, we are not providing the optional +module_id+. The file name without the `.js` extension will be used as +module_id+. Our module has one dependency on the module called +newContentLoader+. The module instance will be passed in the factory method as variable +contentLoader+. 
+
 <2> We can start use dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.
+
 <3> Module defines and returns constructor function for new objects.
 
 * `require` function takes two arguments
@@ -149,20 +151,23 @@ require(["main"], function() {
     console.log("module main is loaded");
 }); // <1>
 ----
-<1> Loads module with id +main+ and executes anonymous function after module and all its dependencies are loaded.
+<1> Loads module with id +main+ and executes the anonymous function after module and all its dependencies are loaded.
 
 `exports` 
 
-Distinctions from CommonJS
+===== AMD Pros and Cons
 
 //TBD
 
 AMD pros:
 
-* Very simple API (two functions - `require` and `define`). 
-* Wide variety of loaders available. We will talk about loaded later in <<REQUIREJS, RequireJS section>>.
+* It's a very simple API that has only two functions - `require` and `define`. 
+
+* A wide variety of loaders is available. You'll find more coverage on loaders in the <<REQUIREJS, RequireJS section>>.
+
 * Plugins offer an immense amount of flexibility
-* Easy To Debug.
+
+* Easy To Debug
 +
 
 Consider following error messages that JavaScript interpretor can throw:
@@ -177,12 +182,16 @@ _There was an error in /modules/loginModule.js on line 42_
 _There was an error in /built-app.js on line 1984._
 +
 
-When your application if modularized you can much easy identify error and eliminate it.
+When your application if modularized you can identify the error easier.
 
-* Performance: when you not require the module it's not loaded.
+* Performance: module are loaded only when required hence the initial portion of the application's code become smaller.
 +
 
-We might want to load module on demand, for example, on a button click. In following example, module can be in three states: not loaded (`module === null`), loading in progress (`module === 'loading'`), fully loaded (`module !== null`).
+You may want to load a module on demand when the user clicks the button or selectes a menu item. In the following example, the module can be in one of three states: 
+
+* not loaded (`module === null`)
+* loading in progress (`module === 'loading'`)
+* fully loaded (`module !== null`).
 +
 
 .Loading +widget1+ module on demand
@@ -205,19 +214,23 @@ var buttonClickHandler = function(event) {
 };
 ----
 <1> Checking if a module loading in progress.
-<2> We don't want to load module each time. If module was loaded just call method to render widget on the page.
-<3> Setting module into intermediate state until it will be fully loaded. 
-<4> Once module loaded, we can instantiate new widget object and render it in the page.
 
-AMD cons:
+<2> We don't want to load the module each time. If module was loaded just call method to render widget on the page.
+
+<3> Setting the module into intermediate state until it's fully loaded. 
+
+<4> Once the module is loaded, instantiate the new widget object and render it in the page.
+
+AMD Cons:
 
 * The dependency array can get rather large for complex modules (Example TBD).
+
 * Easy to get a mismatch between dependency array and callback arguments (Example TBD).
 
 [[REQUIREJS]]
 ===== RequireJS
 
-After discussion of theory and basics of AMD it is time to see how modularization works in real life. In this section we're introduce AMD-complaint module loader http://requirejs.org/[RequireJS]. 
+After discussion of theory and basics of AMD it is time to see how modularization can work in the real world. In this section we'll  introduce the AMD-complaint module loader http://requirejs.org/[RequireJS]. 
 RequireJS (include info about build with `r.js`)
 
 ****
@@ -226,7 +239,7 @@ Sidebar about curljs - another popular AMD complaint module loader.
 TBD
 ****
 
-You can download +require.js+ for github repo of use package manager like Bower.
+You can download require.js from its github repository or use a package manager like Bower.
 
 // TBD about Bower
 
@@ -246,9 +259,8 @@ You can download +require.js+ for github repo of use package manager like Bower.
 </body>
 </html>
 ----
-<1> A `data-main` attribute needs for require.js. It specifies that framework should load `app/config.js` after +require.js+ loads. `app/config.js` is an entry point of your application.
+<1> The `data-main` attribute is needed needs for require.js. It specifies that the framework should load `app/config.js` after +require.js+ loads. The `app/config.js` is the entry point of your application.
 
-// /vik
 
 ==== Universal Module Definition (UMD)
 
@@ -257,12 +269,8 @@ https://github.com/umdjs/umd[Specification]
 
 === Summary
 
-// vik
+The size of your application tends to increase, and sooner or later you'll need to decide how to cut it into several loadable blocks of functionality. The sooner you start planning for modularizing your application the better. 
 
-The chances are high that your application size will increase, and sooner or later you'll need to decide how to cut it into many reusable blocks of functionality The sooner you start planning for modularizing your application, the better. 
+In this chapter we've reviewed several options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using the (classical) module pattern alone including: avoiding a need for developers to create global variables for each module and better support for static and dynamic dependency management.
 
-In this chapter we've reviewed several of the options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using the (classical) module pattern alone including: avoiding a need for developers to create global variables for each module they create, better support for static and dynamic dependency management.
-
-Understanding what technologies and frameworks available in JavaScript, combined with the knowledge of different ways of linking modules and libraries to your main application, is crucial for the creation of responsive and fast JavaScript applications.
-
-// /vik
+Understanding what technologies and frameworks available in JavaScript, combined with the knowledge of different ways of linking modules and libraries to your main application is crucial for the creation of responsive JavaScript applications.
