@@ -412,7 +412,7 @@ In jQuery Mobile implementing persistent toolbars is simple. The content of each
   </head>
   <body>
     <div data-role="page" data-add-back-btn="true">
-      <div data-role="header" data-position="fixed" 
+      <div data-role="header" data-position="fixed"          // <1>
            data-tap-toggle="false" data-id="persistent-header">
         <h1>Page #2</h1>
       </div><!-- /header -->
@@ -422,14 +422,14 @@ In jQuery Mobile implementing persistent toolbars is simple. The content of each
         </p>
       </div><!-- /content -->
       <div data-role="footer" data-position="fixed" 
-         data-tap-toggle="false" data-id="persistent-footer"> // <1>
+         data-tap-toggle="false" data-id="persistent-footer"> // <2>
         <div data-role="navbar">
           <ul>
             <li>
-              <a href="page-1.html" data-transition="slideup">Page #1</a>   // <2>
+              <a href="page-1.html" data-transition="slideup">Page #1</a>   // <3>
             </li>
             <li>
-              <a href="#" class="ui-state-persist">Page #2</a> // <3>
+              <a href="#" class="ui-state-persist">Page #2</a> // <4>
             </li>
             <li>
               <a href="page-3.html" data-transition="slideup">Page #3</a> 
@@ -445,11 +445,13 @@ In jQuery Mobile implementing persistent toolbars is simple. The content of each
 </html>
 ----
 
-<1> The footer of page1, page2, page3, and page4 will have the same `data-id="persistent-footer"`.
+<1> To prevent the toolbar from being scrolled away from the screen we use `data-position="fixed"`. The attribute `data-tap-toggle="false"` disables the ability to remove the toolbar from the secreen by tapping on the screen.
 
-<2> While replacing the current page with another one, apply the transition effect so the page appears by sliding from the bottom up: `data-transition="slideup"`.
+<2> The footer of page1, page2, page3, and page4 will have the same `data-id="persistent-footer"`.
 
-<3> Since the Page 2 is already shown on the screen, tapping on the button "Page #2" in the navigation bar should not change the page, hence `href="#"`. The `class="ui-state-persist"` makes the framework to restore the active state each time when the existing in the DOM page is shown. The file page3.html will have a similar anchor for the button "Page #3". You got the idea.
+<3> While replacing the current page with another one, apply the transition effect so the page appears by sliding from the bottom up: `data-transition="slideup"`. Note that the anchor tags are automatically styled as buttons just because they are placed in the `navbar` container.
+
+<4> Since the Page 2 is already shown on the screen, tapping on the button "Page #2" in the navigation bar should not change the page, hence `href="#"`. The `class="ui-state-persist"` makes the framework to restore the active state each time when the existing in the DOM page is shown. The file page3.html will have a similar anchor for the button "Page #3" and so on. 
 
 The code of the main page index.html is shown below - it also  defines the header, content, and footer areas:
 
@@ -527,7 +529,6 @@ $.mobile.changePage("pages/stats.html", {
 	changeHash: false
 });
 ---- 
-
 
 === Save Sick Child with jQuery Mobile
 
@@ -620,7 +621,7 @@ This time the Save Sick Child project structure will look as in <<>FIG12-25>. We
 .The project structure
 image::images/fig_12_25.png[]
 
-Let's start implementing navigation based using the techniques described earlier in the section "Persistent Toolbars". The source code of the index.html is shown below.
+Let's start implementing navigation based using the techniques described earlier in the section "Persistent Toolbars". The source code of the index.html is shown below. Note that we moved the `<script>` tags with jQuery Mobile code from that end of the `<body>` tag to the `<head>` section to avoid a popup of a non-styled page on the initial load of the application. 
 
 [source, html]
 ----
@@ -636,6 +637,8 @@ Let's start implementing navigation based using the techniques described earlier
     <title>Save Sick Child</title>
 
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
 
     // <3>
     <link rel="stylesheet" href="assets/css/jqm-icon-pack-3.0.0-fa.css" />
@@ -694,9 +697,6 @@ Let's start implementing navigation based using the techniques described earlier
         </div><!-- /navbar -->
       </div><!-- /footer -->
     </div><!-- /page -->
-  
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
     <script src="js/app-main.js"></script>
   </body>
 </html>
@@ -714,7 +714,7 @@ Let's start implementing navigation based using the techniques described earlier
 
 <5> All the navigation buttons are located in the footer. 
 
-<6> jQuery Mobile includes a number of icons that you can use by specifying their names in the `data-icon` attribute (read the Note on icons below). The icon position is controlled by the attribute `data-iconpos`.
+<6> jQuery Mobile includes a number of icons that you can use by specifying their names in the `data-icon` attribute (read the Note on icons below). The icon position is controlled by the attribute `data-iconpos`. If you don't want to show text, use `data-iconpos="notext"`.
 
 <<FIG12-26>> shows how the landing page of the Save Sick Child application will look in the Ripple Emulator. Run it and click on each of the buttons in the navigation bar. 
 
@@ -819,11 +819,17 @@ The content of our custom CSS file app-styles.css comes next.
 
 <1> First, we want to stop jQuery Mobile using it's standard images for icons. 
 
-<2> Override the jQuery Mobile CSS class selectors with the icon fonts. Whenever you create custom icon, jQuery assumes that it'll have a class with the name starting with `.ui-icon-`. But in HTML attributes you'll be using it without this prefix, e.g. `data-icon="arrow-l"`.
+<2> Override the jQuery Mobile CSS class selectors with the icon fonts. Whenever you create custom icon, jQuery Mobile expects to find a class with the name starting with `.ui-icon-` and ending with the name of the icon, like `.ui-icon-donatebtn` . But in HTML attributes you'll be using it without this prefix, e.g. `data-icon="donatebtn"`.
 
-<3> Create some custom styles for the Save Sick Chile application.
+<3> Create some custom styles for the Save Sick Child application.
 
-While testing this initial version of the Save Sick Child application, note that the content of the About and Share pages is implemented as in mockups shown on <<FIG12-11>> and <<FIG12-17>>. The source code of the share.html is shown below (the about.html looks similar). After all the above explanations you should understand this code without further comments.
+==== Selected Code Fragments
+
+All the code that implements Save Sick Child with jQuery Mobile is available to download from the publisher of this book, and we're not going to include entire program listings here. But we will show and comment selected code fragments that illustrate various features of jQuery Mobile. 
+
+===== Grid Layouts
+
+While testing this initial version of the Save Sick Child application, note that the content of the About and Share pages is implemented as in mockups shown on <<FIG12-11>> and <<FIG12-17>>, which looks like grids. jQuery Mobile has several pre-defined layouts that will allow showing the content as rows and columns. Keep in mind that on small devices you should avoid displaying grids with multiple rows and columns as the data there will be hardly visible. But in our case the grid will contain just four large cells.The source code of the share.html followed by brief comments comes next (the code of the about.html looks similar). 
 
 [source, html]
 ----
@@ -844,8 +850,9 @@ While testing this initial version of the Save Sick Child application, note that
      </div>
 
      <div data-role="content" style="padding:0">
-       <div class="ui-grid-a">
-         <div class="ui-block-a">
+       <div class="ui-grid-a">                      // <1>
+
+         <div class="ui-block-a">                   // <2>
            <a href="#" class="ssc-grid-nav">
            <span class="ssc-grid-item-icon ui-icon-twitter"></span>
            <br/>
@@ -908,6 +915,128 @@ While testing this initial version of the Save Sick Child application, note that
 </html>
 ----
 
+<1> The grid from <<FIG12-11>> is implemented using jQuery Mobile multi-column layout using `ui-grid` classes (see explanations below). 
+
+<2> Each of the cells in the grid is classes by the `ui-block-a` for the first grid row and `ui-block-b` for the second one. Hence "Share via Twitter" is in the left cell, and "Share via Facebook is on the right".
+
+There are four http://view.jquerymobile.com/1.3.1/dist/demos/widgets/grids/[preset configurations] for grids containing two, three, four, and five columns called `ui-grid-a`, `ui-grid-b`, `ui-grid-c`, and `ui-grid-d` respectively.  The Stats and About screens split into four sections, which can be laid out in two columns with `ui-grid-a`. With two-column layout, each of the column gets 50% of the width, with three-column layout - about 33% et al.
+
+Each of the cells is laid out with the class that's named with `ui-block-` followed by the corresponding letter, e.g. `ui-block-c` for the cells located in the third column. <<FIG12-27>> is a fragment from jQuery Mobile documentation, and it serves as a good illustration of the grid presets.
+
+[[FIG12-27]]
+.Preset grid layouts
+image::images/fig_12_27.png[]  
+
+The class `.ui-responsive` allows to set breakpoints to grids that are less than 35em (560px) wide. 
+
+===== Control Groups
+
+In the Donation screen, there us a section to allow the user to select one of the donation amounts. This is a good example of a set of UI controls that belong to the same group. In the desktop version of the application we've been using radio buttons grouped by the same `name` attribute like `<input type="radio" name = "amount" ...`. Revisit Chapter 3 and you'll find the complete code example in the section titled "The Donate Section". 
+
+jQuery Mobile has a concept of http://view.jquerymobile.com/1.3.1/dist/demos/widgets/controlgroups/[control groups] that comes handy in grouping and styling components. The code looks very similar, but now it's wrapped in the `<fieldset>` container with the `data-role="controlgroup"`. 
+
+[source, html]
+----
+<div class="donation-form-section">
+  <label class="donation-heading">Please select donation amount</label>
+
+  <fieldset data-role="controlgroup" data-type="horizontal" id="radio-container">
+  
+    <input type="radio" name="amount" id="d10" value="10"/>
+    <label for="d10">$10</label>
+    <input type="radio" name="amount" id="d20" value="20" />
+    <label for="d20">$20</label>
+    <input type="radio" name="amount" id="d50" checked="checked" value="50" />
+    <label for="d50">$50</label>
+    <input type="radio" name="amount" id="d100" value="100" />
+    <label for="d100">$100</label>
+  
+  </fieldset>
+  <label class="donation-heading">...or enter other amount</label>
+  
+  <input id="customAmount" name="amount"  value="" type="text" autocomplete="off" placeholder="$"/>
+----
+
+jQuery Mobile will render this code as shown in <<FIG12-28>>. The buttons are laid out horizontally because of the  attribute `data-type="horizontal"`. If you don't like the default styling of the  radio buttons input fields, feel free to specify  the appropriate `data-theme` either for the entire group or for each input field.
+
+[[FIG12-28]]
+.Controlgroup for donation amount
+image::images/fig_12_28.png[] 
+
+
+===== Listviews
+
+TBD
+
+===== Dropdowns and Collapsibles
+
+Having an ability to use the minimum amount of screen real estate is especially important in mobile applications. Such controls can drop down or popup a list with some information when the user taps on a smaller component. Controls that we know as comboboxes or dropdowns in the desktop applications look different on the mobile devices, but the good news is that you don't need to do any special coding to display a fancy-looking dropdown on the iPhone shown on <<FIG12-29>>. Just use the HTML tag `<select>`, and the mobile browser will render it with a native look on the user's device. 
+
+[[FIG12-29]]
+.States dropdown in the Donate form
+image::images/fig_12_29.png[] 
+
+The bad news is that sometimes you don't want the default behavior offered by the `<select>` element. For example, you may want to create a menu that shows a list of items. First, we'll show you how to do it using a popup that contains a listview. The next code is taken from the jQuery Mobile documentation - it suggests to implement a http://view.jquerymobile.com/1.3.1/dist/demos/widgets/popup/[listview inside a popup]:
+
+[source, html]
+----
+<a href="#popupMenu" data-rel="popup" data-role="button" 
+   data-transition="pop">Select Donation Amount</a>
+
+ <div data-role="popup" id="popupMenu" >
+   <ul data-role="listview" data-inset="true" style="min-width:210px;">
+       <li data-role="divider">Choose the amount</li>
+       <li><a href="#">$10</a></li>
+       <li><a href="#">$20</a></li>
+       <li><a href="#">$50</a></li>
+       <li><a href="#">$100</a></li>
+   </ul>
+ </div>  
+----
+
+Initially the screen will look as in <<FIG12-31>> - it's an anchor styled as a button.
+
+[[FIG12-31]]
+.Select Donation Amount before the tap
+image::images/fig_12_31.png[]
+
+After the user taps on the Set Donation Amount the menu pops up and it'll look as in <<FIG12-32>>.
+
+[[FIG12-32]]
+.Select Donation Amount after the tap
+image::images/fig_12_32.png[]
+
+
+Another way of creating dropdowns is by using so called http://view.jquerymobile.com/1.3.1/dist/demos/widgets/collapsibles/[collapsibles]. If the data role of a container is set to be collapsible, the content of the container won't be initially shown. It'll be collapsed showing only its header with a default icon (the plus sign) until the user will tap on it. 
+
+[source, html]
+----
+<div data-role="collapsible" data-theme="b" 
+                             data-content-theme="c">
+   <h2>Select Donation Amount</h2>
+
+   <ul data-role="listview">
+       <li><a href="#">$10</a></li>
+       <li><a href="#">$20</a></li>
+       <li><a href="#">$50</a></li>
+       <li><a href="#">$100</a></li>
+       
+   </ul>
+</div>        
+----
+If you'll test the above code in Ripple Emulator, the initial screen will look as on <<FIG12-33>> - it's a `<div>` with the `data-role=collapsible`. Note that the this code sample also illustrates using different themes for the collapsed and expanded version of this `<div>`. If you are reading the electronic version of this book on a color display, the collapsed version will have the blue background: `data-theme="b"`.
+
+[[FIG12-33]]
+.Select Donation Amount before the tap
+image::images/fig_12_33.png[]
+
+After the user taps on the Set Donation Amount the menu pops up and it'll look as in <<FIG12-34>>. The icon on the header changes from the plus sign to minus.
+
+[[FIG12-34]]
+.Select Donation Amount after the tap
+image::images/fig_12_34.png[]
+
+
 === Summary
 
-In this chapter you've got familiar with a simple to use non-intrusive mobile framework. We'll use the singe-page template, and in <<FIG12-25>>  you can see the structure and initial content of of our project. 
+In this chapter you've got familiar with a simple to use mobile framework. We've been using its version 1.3.1, which works pretty stable, but it's not a mature library just yet. You can still run into situations when a feature advertised in the product documentation doesn't work (e.g. https://github.com/jquery/jquery-mobile/issues/5986[page prefetching breaks images]). So be prepared to study the code of this library and do the fixes to the critical features on your own. But jQuery Mobile has a group of people who are actively working on bug fixing and improving this library, and using it in production is pretty safe. 
