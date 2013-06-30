@@ -13,13 +13,12 @@ This chapter is about modularization techniques that will quickly render the fir
 
 There is no out-of-the box modularization scheme in JavaScript language. The upcoming EcmaScript 6 specification tends to resolve this with introduction a _module concept_ in the JavaScript language itself. But it's the future.
 
-Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive translates into an additional HTTP call to the server. As the application gets larger the latency will growth accordingly. 
-<<LISTING_SCRIPT_TAG,Here is an example>> of such situation.
+Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive translates into an additional HTTP call to the server. As the application gets larger the latency will growth accordingly, which is illustrated in the following code sample 
+<<LISTING_SCRIPT_TAG,Here is an example>>.
 
-// vik
 
 [[LISTING_SCRIPT_TAG]]
-.With tons of `<script>` tags you can loose control of application dependencies
+.Tons of `<script>` tags leads to loosing control of the application dependencies
 [source,html]
 ----
 <!DOCTYPE html>
@@ -52,13 +51,11 @@ Of course, we can load each JavaScript file using `<script>` tag. But this appro
 </body>
 </html>
 ----
-<1> All modules depend on the code from Core jQuery library. We need to load it first.
+<1> All modules depend on the code from Core jQuery library - loading it first.
 
-<2> Application components may also have dependencies. Those scripts need to be loaded before the component itself. The order of these script tags is very important.
+<2> The application components may also have dependencies on other scripts. Those scripts need to be loaded before the component itself. The order of these script tags is very important.
 
-<3> Main application script should be loaded after all dependencies.
-
-// /vik
+<3> The main application script should be loaded after all dependencies.
 
 We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as our first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS implementation, and http://requirejs.org/[RequireJS] as AMD implementation.
 
@@ -106,34 +103,32 @@ There is one huge disadvantage of using the Module Pattern - we still need to de
 ==== CommonJS
 
 // TDB
-// vik
 
-http://www.commonjs.org/[CommonJS] are a volunteer working group which aim to design, prototype and standardize JavaScript APIs. They've attempted to develop standards for both modules and packages. The CommonJS module proposal specifies a simple API for declaring modules mainly on the server-side.
+http://www.commonjs.org/[CommonJS] is a volunteer working group that works on design, prototyping and standardization of JavaScript APIs. They've attempted to develop standards for both modules and packages. The CommonJS module proposal specifies simple API for declaring modules, but mainly on the server-side.
 
-Browserify takes all of your code and concatenates it to one large file.
+http://browserify.org/[Browserify] takes all of your scripts and concatenates them itto one large file.
 
 * require
 * exports
 * module
 
 // provide the example
-Each module executed in its own scope
+Each module is executed in its own scope.
 How to make that code available if it's not in global scope?
 
 `exports`
-The exports variable is an object that is the implicit value of your module.
-When your module is requested, the code is executed and then exports is returned for you.
+The exports variable is an object that has the implicit value of your module. When your module is requested, the code is executed and then exports is returned for you.
 
 CommonJS pros:
 
-* Simple API. Easy to write and use modules.
+* It's a simple API for writing and using modules.
 * This modules organization pattern is widespread in server-side JavaScript, e.g. NodeJS.
 
 CommonJS cons:
 
-* Additional build step required. We will discuss this in <<Browserify>> section.
-* The `require` method is synchronous, but module values may not be fully loaded during execution.
-* Suitable for loading +js+ files. Not possible to load other assets via CommonJS APIs.
+* The additional build step required. We will discuss this in <<Browserify>> section.
+* The `require` method is synchronous, but module values may not be fully loaded during the execution.
+* It's Suitable for loading +js+ files, but can't load other assets via CommonJS APIs.
 
 [[Browserify]]
 ===== Browserify
@@ -141,7 +136,6 @@ CommonJS cons:
 http://browserify.org/
 https://github.com/substack/node-browserify
 
-// /vik
 
 ==== Asynchronous Module Definition
 
