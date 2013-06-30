@@ -34,7 +34,7 @@ cp -R ../out/index.html .
 
 #Copy images
 cp -R ../images .
-cp -R `brew --prefix asciidoc`/etc/asciidoc/images/icons images/
+#cp -R `brew --prefix asciidoc`/etc/asciidoc/images/icons images/
 
 # Stage all files in git and create a commit
 git add .
