@@ -6,7 +6,7 @@ define(["newContentLoader"], function(contentLoader) { // <1>
         return {
             render: function() {
                 contentLoader.getNewContent("way-to-give", // <2>
-                                            "way-to-give-container", 
+                                            "way-to-give-container",
                                             "assets/html-includes/way-to-give.html");
                 return console.log("way-to-give module is rendered");
             },
