@@ -9,7 +9,7 @@ guard 'shell' do
                             :attributes => {
                                 'source-highlighter' => 'highlightjs', 
                                 'backend' => 'html5',
-                                'stylesheet'=> './stylesheets/riak.css'
+                                'stylesheet'=> './stylesheets/colony.css'
                                 #'stylesheet'=> './stylesheets/asciidoctor.css'
                                 #'stylesheet'=> './stylesheets/foundation.css'
                                 })
