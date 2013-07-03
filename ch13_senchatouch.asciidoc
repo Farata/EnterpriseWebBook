@@ -5,11 +5,12 @@
 
 Sencha Touch framework is a little brother of Ext JS. They both have the same parent: http://www.sencha.com/[Sencha Inc], but Sencha Touch is created for HTML5 mobile application development, while Ext JS is for desktop Web applications. For enterprise developers, there is another important difference: Ext JS offers free licenses only for open source projects, but http://www.sencha.com/products/touch/license/[Sencha Touch licenses] are free for all.   
 
-This chapter is structured similarly to the previous one on jQuery Mobile. We'll try minimizing repeating the information you can find in http://www.sencha.com/learn/touch[Sencha Touch Learning Center] and extensive product documentation. The chapter will start with a brief overview of the main features of Sencha Touch followed by the code review of yet another version of the Save Sick Child application. 
+This chapter is structured similarly to the previous one on jQuery Mobile. The fundamental difference though is that if Chapter 12 has almost no JavaScript, this chapter will have almost no HTML. 
 
-In this chapter we are going to use Sencha Touch 2.2.1, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and when this book is printed, Sencha Touch should support Window Phone 8 too. 
+We'll try minimizing repeating the information you can find in http://www.sencha.com/learn/touch[Sencha Touch Learning Center] and extensive product documentation, which has multiple well written http://docs.sencha.com/touch/2.2.0/#!/guide[Guides] on multiple topics. The chapter will start with a brief overview of the features of Sencha Touch followed by the code review of yet another version of the Save Sick Child application. 
+In this chapter we are going to use Sencha Touch 2.2, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and when this book is printed, Sencha Touch should support Window Phone 8 too. 
 
-NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and understanding of some of the basic concepts like `xType` or classes like `Container` or `Viewport` is a must. 
+NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and being familiar with some of the concepts like MVC architecture or terms like `xType` or SASS is a must. We are not going to repeat the descriptions of UI components that exist in both frameworks and were used earlier in the book.
 
 === Sencha Touch Overview
 
@@ -28,23 +29,61 @@ If you haven't downloaded and installed the Sencha CMD tool, do it now as descri
 
 _sencha -sdk /Library/touch-2.2.1 generate app HelloWorld /Users/yfain11/hellotouch_
 
-After the code generation was complete, you'll see the folder _hello_ of the structure shown on the figure <<FIG13-2>>.
+After the code generation was complete, you'll see the folder _hello_ of the structure shown on the figure <<FIG13-2>>. It follows the same MVC pattern that we've discussed in the Ext JS chapter.
 
 [[FIG13-2]]
 .CMD-generated project 
 image::images/fig_13_02.png[image]
 
-To test your newly generated application you'll need to make sure that the directory _hellotouch_ is deployed under a Web server (simple opening of index.html in the Web browser won't work). you can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6.
+To test your newly generated application you'll need to make sure that the directory _hellotouch_ is deployed under a Web server (simple opening of index.html in the Web browser won't work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6.
 
-TIP: MAC OS users can install a small application http://anvilformac.com/[Anvil] that can easily serve static content of any directory as a Web server with a URL that ends with .dev.
+TIP: MAC OS X users can install a small application http://anvilformac.com/[Anvil] that can easily serve static content of any directory as a Web server with a URL that ends with .dev.
 
-Figure <<FIG13-3>> shows how the generated Hello World application will look in the Chrome browser. It'll consist of two pages controlled by the buttons in the footer toolbar.
+The Figure <<FIG13-3>> shows how the generated Hello World application will look in Chrome browser. It'll consist of two pages controlled by the buttons in the footer toolbar.
 
 [[FIG13-3]]
 .Running CMD-generated Hello World 
 image::images/fig_13_03.png[image]
 
+===== Microloader and app.json
+
+The main application entry is the Javascript file app.js. But if in Ext JS, this file was directly referenced in index.html, Sencha Touch uses a separate microloader script, which starts with loading the file app.json that contains the names of the resources needed for your application including the app.js. 
+
+The configuration file app.json contains a JSON object with various attributes like `js`, `css`, `resources` and others. So if your application needs to load the scripts sencha-touch.js and app.js, they should be located in the `js` array. Here's what the `js` attribute of the app.json contains after the initial code generation by Sencha CMD:  
+
+[source, javascript]
+----
+"js": [
+    {
+        "path": "touch/sencha-touch.js",
+        "x-bootstrap": true
+    },
+    {
+        "path": "app.js",
+        "bundle": true,  
+        "update": "delta"
+    }
+]
+----
+
+Eventually, if you'll need to load additional JavaScript code, CSS files or other resources add them to the appropriate attribute in the file app.json.
+
+Introducing a separate configuration file and additional microloader script may seem like an unnecessary complication, but it's not. On the contrary, it gives you the flexibility of maintaining a clean separation between development and production environments. 
+
+==== UI Components and Events
+
+Sencha Touch has a number of well designed components for mobile devices, which include lists, forms, toolbars and buttons, charts, audio, video, carousel and more.  The quickest way to get familiar with events and UI components is by browsing the http://dev.sencha.com/deploy/touch/examples/production/kitchensink/[Kitchen Sink] Web site, where you can find the examples of how UI components look and 
+
 ==== Implementing Navigation
+
+While designing the navigation for the mobile device you'll be creating a set of views that will replace each other on the user's device.
+
+===== Touches and Gestures
+
+==== Layouts 
+
+UI components have to be laid out on the user's screen. 
+
 
 === Save Sick Child with Sencha Touch
 
@@ -59,8 +98,38 @@ IMPORTANT: The materials presented in this chapter were tested only with the cur
 image::images/fig_13_11.png[]
 
 
+TIP: If you want your program documentation look as good as Sencha's use https://github.com/senchalabs/jsduck[JSDuck tool].
+
 TIP: If you'll add the Save Sick Child application as an icon to the home screen on iOS devices, the browser's address bar will not be displayed.
 
 === Summary 
+
+In chapters 12 and 13 you've learned about two different ways of developing a mobile application. So what's better jQuery Mobile or Sencha Touch? There is no answer to this question, and you will have to make a decision on your own. But here's a quick summary of pros and cons for each library or framework.
+
+* If you are afraid of being locked up with any one vendor, go with jQuery Mobile.
+
+* If you want to minimize the amount of code bytes that be sent to the user's device, jQuery Mobile is for you.
+
+* If you need your application to work on most of the mobile platforms the jQuery Mobile is for you.
+
+* If you prefer declarative UI and hate debugging JavaScript select jQuery Mobile.
+
+* If you like to have a rich library of pre-created and well performing UI components go with Sencha Touch.
+
+* If your application needs smooth animation, go with Sencha Touch - it does automatic throttling based on the actual frames per seconds supported on the device.
+
+* If you believe that using code generators add value to your project, go with Sencha.
+
+* If you want to be able customize and extend components to fit your application's needs perfectly, use Sencha Touch. Yes, you'll be writing JavaScript, but it still may be simpler than trying to figure out the enhancements done to HTML component by jQuery Mobile under the hood. 
+
+* If you want to minimize the efforts required to package your application as a native one, use Sencha Touch.
+
+* If you won't sleep well at night unless you development project is covered by commercial vendor support, use Sencha Touch.
+
+While considering support options do not just assume that paid support translates into better quality. This is not to say that Sencha won't offer you quality support, but in many cases having a large community of developers will lead to a faster solution to a problem that dealing with one assigned support engineer. Having said this, we'd like you to know that http://www.sencha.com/forum/[Sencha forum] has about half a million registered users who are actively discussing problems and offering solutions to each other.
+
+
+Even if you are a developer's manager, you don't have to make the framework choice on your own. Bring your team into a conference room, order pizza, and listen to what _your team members_ have to say about these two or any other frameworks being considered. We offered you the information about two of many frameworks, but the final call is yours.
+
 
 
