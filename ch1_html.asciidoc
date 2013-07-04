@@ -458,6 +458,9 @@ The landing page of your Web application has to specify an explicit reference to
 
 The Web server must serve the manifest file with a MIME type "text/cache-manifest", and you need to refer to the documentation of your Web server to see how to see where to make a configuration change so all files with extension .manifest are served as "text/cache-manifest".
 
+On each subsequent application load the browser makes a request to the server and retrieves the manifest file to see if it has been updated, in which case it reloads all previously cached files. It's a responsibility of Web developers to modify manifest on the server if any of the cacheable resources changed. 
+
+
 ==== Is Your Application Offline?
 
 Web browsers have a `boolean` property `window.navigator.onLine`, which should be used to check if there is no connection to the Internet. The HTML5 specification states that _"The navigator.onLine attribute must return false if the user agent will not contact the network when the user follows links or when a script requests a remote page (or knows that such an attempt would fail), and must return true otherwise."_ Unfortunately, major Web browsers deal with this property differently so you need to do a thorough testing to see if it works as expected with the browser you care about. 
@@ -479,6 +482,8 @@ window.addEventListener("online", function(e) {
 You can also add the `onoffline` and `ononline` event handlers to the `<body>` tag of your HTML page or to the `document` object. Again, test the support of these event in your browsers.
 
 What if the browser's support of the offline/online events is still not stable? In this you'll have to write your own script that will periodically make an AJAX call (see Chapter 4) trying to connect to a remote server that's always up and running, e.g. google.com. If this request fails, it's a good indication that your application is disconnected from the Internet.
+
+
 
 
 ==== Options for Storing Data Locally 
