@@ -20697,6 +20697,19 @@ MAC OS X users can install a small application <a href="http://anvilformac.com/"
 <div class="paragraph">
 <p>The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn&#8217;t know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. Refer to the <a href="http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch">online documentation</a> on using Sencha CMD with Sencha Touch for details.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+
+If your application is not too large, storing the entire code of the Web application locally with automatic updates may eliminate the need for modularization of the application code. For larger applications consider the <a href="http://docs.sencha.com/touch/2.2.1/#!/guide/command_workspace">Workspaces</a> feature of Sencha CMD, which allows to create some common code to be shared by several scripts.
+</td>
+</tr>
+</table>
+</div>
 
 </div>
 <div class="sect4">
@@ -20765,13 +20778,16 @@ Ext.application({
 </div>
 </div>
 <div class="paragraph">
-<p>The structure of the generated Main.js, which is a main view of this application is also straight forward. It extends the class <code>Ext.tab.Panel</code> so each page of the application is a tab. Figure <a href="#FIG13-4">Collapsed version of Main.js</a> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter. As you see, the <code>items[]</code> array includes two objects: Welcome and Get Started - each of them is one tab (screen).</p>
+<p>The structure of the generated Main.js, which is a main view of this application is also straight forward. It extends the class <code>Ext.tab.Panel</code> so each page of the application is a tab. Figure <a href="#FIG13-4">Collapsed version of Main.js</a> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter.</p>
 </div>
 <div id="FIG13-4" class="imageblock">
 <div class="content">
 <img src="./images/fig_13_04.png" alt="image">
 </div>
 <div class="title">Figure 188. Collapsed version of Main.js</div>
+</div>
+<div class="paragraph">
+<p>As you see from this figure the <code>items[]</code> array includes two objects: Welcome and Get Started - each of them is one tab (screen).</p>
 </div>
 <div class="listingblock">
 
@@ -20784,49 +20800,69 @@ Ext.application({
       'Ext.Video'
   ],
   config: {
-      tabBarPosition: 'bottom',
+    tabBarPosition: 'bottom',          // <i class="conum">1</i>
 
-      items: [
-          {
-              title: 'Welcome',
-              iconCls: 'home',
+    items: [
+        {                              // <i class="conum">2</i>
+            title: 'Welcome',
+            iconCls: 'home',
 
-              styleHtmlContent: true,
-              scrollable: true,
+            styleHtmlContent: true,
+            scrollable: true,
 
-              items: {
-                  docked: 'top',
-                  xtype: 'titlebar',
-                  title: 'Welcome to Sencha Touch 2'
-              },
+            items: {
+                docked: 'top',
+                xtype: 'titlebar',
+                title: 'Welcome to Sencha Touch 2'
+            },
 
-              html: [
-                  "You've just generated a new Sencha Touch 2 project. What you're looking at right now is the ",
-                  "contents of &lt;a target='_blank' href=\"app/view/Main.js\"&gt;app/view/Main.js&lt;/a&gt; - edit that file ",
-                  "and refresh to change what's rendered here."
-              ].join("")
-          },
-          {
-              title: 'Get Started',
-              iconCls: 'action',
+            html: [
+                "You've just generated a new Sencha Touch 2 project. What you're looking at right now is the ",
+                "contents of &lt;a target='_blank' href=\"app/view/Main.js\"&gt;app/view/Main.js&lt;/a&gt; - edit that file ",
+                "and refresh to change what's rendered here."
+            ].join("")
+        },
+        {                               // <i class="conum">3</i>
+            title: 'Get Started',
+            iconCls: 'action',
 
-              items: [
-                  {
-                      docked: 'top',
-                      xtype: 'titlebar',
-                      title: 'Getting Started'
-                  },
-                  {
-                      xtype: 'video',
-                      url: 'http://av.vimeo.com/64284/137/87347327.mp4?token=1330978144_f9b698fea38cd408d52a2393240c896c',
-                      posterUrl: 'http://b.vimeocdn.com/ts/261/062/261062119_640.jpg'
-                  }
-              ]
-          }
+            items: [
+                {
+                    docked: 'top',
+                    xtype: 'titlebar',
+                    title: 'Getting Started'
+                },
+                {
+                    xtype: 'video',
+                    url: 'http://av.vimeo.com/64284/137/87347327.mp4?token=1330978144_f9b698fea38cd408d52a2393240c896c',
+                    posterUrl: 'http://b.vimeocdn.com/ts/261/062/261062119_640.jpg'
+                }
+            ]
+        }
       ]
   }
 });</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>The tab bar has to be located at the bottom of the screen.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>The first tab is a Welcome screen.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>The second tab is a Getting Started screen. It has <code>xtype: video</code>, which means it&#8217;s ready for playing video located at the specified <code>url</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This application has no controllers, models or stores. But it does include the default theme from SASS stylesheet resources/sass/app.scss, which was compiled by Sencha CMD generation process into resources/css/app.css.</p>
 </div>
 
 </div>
@@ -20924,9 +20960,6 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 <ul>
 <li>
 <p>If you are afraid of being locked up with any one vendor, go with jQuery Mobile.</p>
-</li>
-<li>
-<p>If you want to minimize the amount of code bytes that be sent to the user&#8217;s device, jQuery Mobile is for you. Not only this library&#8217;s code base is smaller, but you can modularize you application (e.g. with Require.js) to make it even more responsive. Sencha Touch 2 doesn&#8217;t support modularization.</p>
 </li>
 <li>
 <p>If you need your application to work on most of the mobile platforms the jQuery Mobile is for you.</p>
