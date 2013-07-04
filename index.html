@@ -4758,6 +4758,9 @@ Since the script running inside the <code>Worker</code> thread doesn&#8217;t hav
 <div class="paragraph">
 <p>The Web server must serve the manifest file with a MIME type "text/cache-manifest", and you need to refer to the documentation of your Web server to see how to see where to make a configuration change so all files with extension .manifest are served as "text/cache-manifest".</p>
 </div>
+<div class="paragraph">
+<p>On each subsequent application load the browser makes a request to the server and retrieves the manifest file to see if it has been updated, in which case it reloads all previously cached files. It&#8217;s a responsibility of Web developers to modify manifest on the server if any of the cacheable resources changed.</p>
+</div>
 
 </div>
 <div class="sect3">
@@ -8959,7 +8962,14 @@ bd.appendChild(myScriptTag);</code></pre>
 <h2 id="_redesign_with_jquery_library">Redesign with JQuery Library</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Up till now we&#8217;ve been using HTML, JavaScript and CSS to create the Save Sick Child Web application.  In the real world, developers try to be more productive by using JavaScript libraries and MVC frameworks. Libraries do not dictate how to structure the code of your application - they offer you components that allow to write less code. MVC frameworks force you to organize your code in layers implementing the Model-View-Controller design pattern.  There are more than a dozen MVC JavaScript frameworks that are being used by professional developers: <a href="http://backbonejs.org/">Backbone.js</a>, <a href="http://www.sencha.com/products/extjs">ExtJS</a>, AngularJS, <a href="http://emberjs.com/">Ember.js</a>, <a href="http://knockoutjs.com/">Knockout</a> just to name a few. In this chapter we&#8217;ll introduce the JavaScript library called jQuery. It&#8217;s not an architectural framework that will help you in structuring and layering your JavaScript code, and if you feel in need of such help you can build your Web application with one of the MVC frameworks <em>in addition to</em> jQuery library.</p>
+<p>Up till now we&#8217;ve been using HTML, JavaScript and CSS to create the Save Sick Child Web application.  In the real world, developers try to be more productive by using JavaScript libraries and MVC frameworks. Libraries do not dictate how to structure the code of your application - they offer you components that allow to write less code. MVC frameworks force you to organize your code in layers implementing the Model-View-Controller design pattern.  There are more than a dozen MVC JavaScript frameworks that are being used by professional developers: <a href="http://backbonejs.org/">Backbone.js</a>, <a href="http://www.sencha.com/products/extjs">ExtJS</a>, AngularJS, <a href="http://emberjs.com/">Ember.js</a>, <a href="http://knockoutjs.com/">Knockout</a> just to name a few.
+There are hundreds of micro libraries that can do just one thing and can be used ala cart (visit <a href="http://microjs.com">microjs.com</a> for details).</p>
+</div>
+<div class="paragraph">
+<p>This is today&#8217;s reality of in the JavaScript world. We tried to stay focused and concentrate on a very selected group of libraries that can present a practical toolkit for an enterprise developer. This limited the number of libraries-tools-frameworks discussed in this book to about a dozen. It&#8217;s not easy to lower this number to one or two.</p>
+</div>
+<div class="paragraph">
+<p>This chapter is about the JavaScript library called jQuery. It&#8217;s not an architectural framework that will help you in structuring and layering your JavaScript code, and if you feel in need of such help you can build your Web application with one of the MVC frameworks <em>in addition to</em> jQuery library.</p>
 </div>
 <div class="paragraph">
 <p>Chapter 6 is about the JavaScript framework Ext JS. Their mobile counterparts are called jQuery Mobile and Sencha Touch (see Chapters 12 and 13).</p>
@@ -10813,7 +10823,7 @@ With older versions of Sencha Cmd (Sencha SDK Tools) you would generate a manife
 </td>
 <td class="content">
 
-<a href="http://www.sencha.com/products/desktop-packager/">Sencha Desktop Packager</a> allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. Your application can also integrate with native menues, file dialogs and access the file system.
+<a href="http://www.sencha.com/products/desktop-packager/">Sencha Desktop Packager</a> allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. Your application can also integrate with native menus, file dialogs and access the file system.
 </td>
 </tr>
 </table>
@@ -20573,7 +20583,7 @@ $(document).on("pageshow", "#Events", function() {     // <i class="conum">5</i>
 </div>
 <div class="paragraph">
 <p>We&#8217;ll try minimizing repeating the information you can find in <a href="http://www.sencha.com/learn/touch">Sencha Touch Learning Center</a> and extensive product documentation, which has multiple well written <a href="http://docs.sencha.com/touch/2.2.0/#!/guide">Guides</a> on multiple topics. The chapter will start with a brief overview of the features of Sencha Touch followed by the code review of yet another version of the Save Sick Child application.
-In this chapter we are going to use Sencha Touch 2.2, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and when this book is printed, Sencha Touch should support Window Phone 8 too.</p>
+In this chapter we are going to use Sencha Touch 2.2, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and recently have announced support of Window Phone 8.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -20645,12 +20655,19 @@ MAC OS X users can install a small application <a href="http://anvilformac.com/"
 <div class="title">Figure 187. Running CMD-generated Hello World</div>
 </div>
 <div class="sect4">
-<h5 id="_microloader_and_app_json">Microloader and app.json</h5>
+<h5 id="_microloader_and_configuratoin_file_app_json">Microloader and Configuratoin File app.json</h5>
 <div class="paragraph">
-<p>The main application entry is the Javascript file app.js. But if in Ext JS, this file was directly referenced in index.html, Sencha Touch uses a separate microloader script, which starts with loading the file app.json that contains the names of the resources needed for your application including the app.js.</p>
+<p>The main application entry is the Javascript file app.js. But if in Ext JS, this file was directly referenced in index.html, Sencha Touch applications generated by CMD tool use a separate microloader script, which starts with loading the file app.json that contains the names of the resources needed for your application including the app.js. The only script included in the generated index.html is this one:</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="html language-html">&lt;script id="microloader" type="text/javascript"
+       src="touch/microloader/development.js"&gt;&lt;/script&gt;</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>The configuration file app.json contains a JSON object with various attributes like <code>js</code>, <code>css</code>, <code>resources</code> and others. So if your application needs to load the scripts sencha-touch.js and app.js, they should be located in the <code>js</code> array. Here&#8217;s what the <code>js</code> attribute of the app.json contains after the initial code generation by Sencha CMD:</p>
+<p>This scripts uses one of the microloader scripts, which gets the objects to be loaded from the configuration file app.json. This file contains a JSON object with various attributes like <code>js</code>, <code>css</code>, <code>resources</code> and others. So if your application needs to load the scripts sencha-touch.js and app.js, they should be located in the <code>js</code> array. Here&#8217;s what the <code>js</code> attribute of the app.json contains after the initial code generation by Sencha CMD:</p>
 </div>
 <div class="listingblock">
 
@@ -20672,7 +20689,144 @@ MAC OS X users can install a small application <a href="http://anvilformac.com/"
 <p>Eventually, if you&#8217;ll need to load additional JavaScript code, CSS files or other resources add them to the appropriate attribute in the file app.json.</p>
 </div>
 <div class="paragraph">
-<p>Introducing a separate configuration file and additional microloader script may seem like an unnecessary complication, but it&#8217;s not. On the contrary, it gives you the flexibility of maintaining a clean separation between development and production environments.</p>
+<p>Introducing a separate configuration file and additional microloader script may seem like an unnecessary complication, but it&#8217;s not. On the contrary, it gives you the flexibility of maintaining a clean separation between development, testing,  and production environments. You can find three different loader scripts in the folder <em>touch/microloader</em>: development.js, production.js, and testing.js.  Each of them can load different configuration file.</p>
+</div>
+<div class="paragraph">
+<p>If you open the production loader, you&#8217;ll see that it uses application cache to save files locally on the device (see section Application Cache in Chapter 2 for a refresher) so the user can start the application even without having Internet connection.</p>
+</div>
+<div class="paragraph">
+<p>The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn&#8217;t know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. Refer to the <a href="http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch">online documentation</a> on using Sencha CMD with Sencha Touch for details.</p>
+</div>
+
+</div>
+<div class="sect4">
+<h5 id="_the_main_view_of_hello_world">The Main View of Hello World</h5>
+<div class="paragraph">
+<p>Similarly to Ext JS, the starting point of the Hello World application is app.js shown next and should be self explanatory.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">Ext.Loader.setPath({
+    'Ext': 'touch/src',
+    'HelloWorld': 'app'
+});
+
+Ext.application({
+    name: 'HelloWorld',
+
+    requires: [
+        'Ext.MessageBox'
+    ],
+
+    views: [
+        'Main'
+    ],
+
+    icon: {
+        '57': 'resources/icons/Icon.png',
+        '72': 'resources/icons/Icon~ipad.png',
+        '114': 'resources/icons/Icon@2x.png',
+        '144': 'resources/icons/Icon~ipad@2x.png'
+    },
+
+    isIconPrecomposed: true,
+
+    startupImage: {
+        '320x460': 'resources/startup/320x460.jpg',
+        '640x920': 'resources/startup/640x920.png',
+        '768x1004': 'resources/startup/768x1004.png',
+        '748x1024': 'resources/startup/748x1024.png',
+        '1536x2008': 'resources/startup/1536x2008.png',
+        '1496x2048': 'resources/startup/1496x2048.png'
+    },
+
+    launch: function() {
+        // Destroy the #appLoadingIndicator element
+        Ext.fly('appLoadingIndicator').destroy();
+
+        // Initialize the main view
+        Ext.Viewport.add(Ext.create('HelloWorld.view.Main'));
+    },
+
+    onUpdated: function() {
+        Ext.Msg.confirm(
+            "Application Update",
+            "This application has just successfully been updated to the latest version. Reload now?",
+            function(buttonId) {
+                if (buttonId === 'yes') {
+                    window.location.reload();
+                }
+            }
+        );
+    }
+});
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The structure of the generated Main.js, which is a main view of this application is also straight forward. It extends the class <code>Ext.tab.Panel</code> so each page of the application is a tab. Figure <a href="#FIG13-4">Collapsed version of Main.js</a> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter. As you see, the <code>items[]</code> array includes two objects: Welcome and Get Started - each of them is one tab (screen).</p>
+</div>
+<div id="FIG13-4" class="imageblock">
+<div class="content">
+<img src="./images/fig_13_04.png" alt="image">
+</div>
+<div class="title">Figure 188. Collapsed version of Main.js</div>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="html language-html">Ext.define('HelloWorld.view.Main', {
+  extend: 'Ext.tab.Panel',
+  xtype: 'main',
+  requires: [
+      'Ext.TitleBar',
+      'Ext.Video'
+  ],
+  config: {
+      tabBarPosition: 'bottom',
+
+      items: [
+          {
+              title: 'Welcome',
+              iconCls: 'home',
+
+              styleHtmlContent: true,
+              scrollable: true,
+
+              items: {
+                  docked: 'top',
+                  xtype: 'titlebar',
+                  title: 'Welcome to Sencha Touch 2'
+              },
+
+              html: [
+                  "You've just generated a new Sencha Touch 2 project. What you're looking at right now is the ",
+                  "contents of &lt;a target='_blank' href=\"app/view/Main.js\"&gt;app/view/Main.js&lt;/a&gt; - edit that file ",
+                  "and refresh to change what's rendered here."
+              ].join("")
+          },
+          {
+              title: 'Get Started',
+              iconCls: 'action',
+
+              items: [
+                  {
+                      docked: 'top',
+                      xtype: 'titlebar',
+                      title: 'Getting Started'
+                  },
+                  {
+                      xtype: 'video',
+                      url: 'http://av.vimeo.com/64284/137/87347327.mp4?token=1330978144_f9b698fea38cd408d52a2393240c896c',
+                      posterUrl: 'http://b.vimeocdn.com/ts/261/062/261062119_640.jpg'
+                  }
+              ]
+          }
+      ]
+  }
+});</code></pre>
+</div>
 </div>
 
 </div>
@@ -20681,7 +20835,7 @@ MAC OS X users can install a small application <a href="http://anvilformac.com/"
 <div class="sect3">
 <h4 id="_ui_components_and_events">UI Components and Events</h4>
 <div class="paragraph">
-<p>Sencha Touch has a number of well designed components for mobile devices, which include lists, forms, toolbars and buttons, charts, audio, video, carousel and more.  The quickest way to get familiar with events and UI components is by browsing the <a href="http://dev.sencha.com/deploy/touch/examples/production/kitchensink/">Kitchen Sink</a> Web site, where you can find the examples of how UI components look and</p>
+<p>Sencha Touch has a number of well designed UI components for mobile devices, which include lists, forms, toolbars and buttons, charts, audio, video, carousel and more.  The quickest way to get familiar with events and UI components is by browsing the <a href="http://dev.sencha.com/deploy/touch/examples/production/kitchensink/">Kitchen Sink</a> Web site, where you can find the examples of how UI components look and</p>
 </div>
 
 </div>
@@ -20730,7 +20884,7 @@ The materials presented in this chapter were tested only with the current versio
 <div class="content">
 <img src="./images/fig_13_11.png" alt="fig_13_11">
 </div>
-<div class="title">Figure 188. The Starting/About page</div>
+<div class="title">Figure 189. The Starting/About page</div>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -20772,7 +20926,7 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 <p>If you are afraid of being locked up with any one vendor, go with jQuery Mobile.</p>
 </li>
 <li>
-<p>If you want to minimize the amount of code bytes that be sent to the user&#8217;s device, jQuery Mobile is for you.</p>
+<p>If you want to minimize the amount of code bytes that be sent to the user&#8217;s device, jQuery Mobile is for you. Not only this library&#8217;s code base is smaller, but you can modularize you application (e.g. with Require.js) to make it even more responsive. Sencha Touch 2 doesn&#8217;t support modularization.</p>
 </li>
 <li>
 <p>If you need your application to work on most of the mobile platforms the jQuery Mobile is for you.</p>
@@ -20781,10 +20935,13 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 <p>If you prefer declarative UI and hate debugging JavaScript select jQuery Mobile.</p>
 </li>
 <li>
-<p>If you like to have a rich library of pre-created and well performing UI components go with Sencha Touch.</p>
+<p>If you like to have a rich library of pre-created UI components go with Sencha Touch.</p>
 </li>
 <li>
 <p>If your application needs smooth animation, go with Sencha Touch - it does automatic throttling based on the actual frames per seconds supported on the device.</p>
+</li>
+<li>
+<p>If splitting the application code into cleanly defined architectural layers (model-view-controller-service) is important, go with Sencha Touch.</p>
 </li>
 <li>
 <p>If you believe that using code generators add value to your project, go with Sencha.</p>
