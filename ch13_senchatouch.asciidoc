@@ -79,6 +79,9 @@ If you open the production loader, you'll see that it uses application cache to 
 
 The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn't know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. Refer to the http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch[online documentation] on using Sencha CMD with Sencha Touch for details.
 
+NOTE: If your application is not too large, storing the entire code of the Web application locally with automatic updates may eliminate the need for modularization of the application code. For larger applications consider the http://docs.sencha.com/touch/2.2.1/#!/guide/command_workspace[Workspaces] feature of Sencha CMD, which allows to create some common code to be shared by several scripts.
+
+
 ===== The Main View of Hello World
 
 Similarly to Ext JS, the starting point of the Hello World application is app.js shown next and should be self explanatory. 
@@ -142,11 +145,14 @@ Ext.application({
 
 ----
 
-The structure of the generated Main.js, which is a main view of this application is also straight forward. It extends the class `Ext.tab.Panel` so each page of the application is a tab. Figure <<FIG13-4>> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter. As you see, the `items[]` array includes two objects: Welcome and Get Started - each of them is one tab (screen).
+The structure of the generated Main.js, which is a main view of this application is also straight forward. It extends the class `Ext.tab.Panel` so each page of the application is a tab. Figure <<FIG13-4>> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter. 
 
 [[FIG13-4]]
 .Collapsed version of Main.js
 image::images/fig_13_04.png[image]
+
+As you see from this figure the `items[]` array includes two objects: Welcome and Get Started - each of them is one tab (screen).
+
 
 [source, html]
 ----
@@ -158,50 +164,57 @@ Ext.define('HelloWorld.view.Main', {
       'Ext.Video'
   ],
   config: {
-      tabBarPosition: 'bottom',
+    tabBarPosition: 'bottom',          // <1>
 
-      items: [
-          {
-              title: 'Welcome',
-              iconCls: 'home',
+    items: [
+        {                              // <2>
+            title: 'Welcome',
+            iconCls: 'home',
 
-              styleHtmlContent: true,
-              scrollable: true,
+            styleHtmlContent: true,
+            scrollable: true,
 
-              items: {
-                  docked: 'top',
-                  xtype: 'titlebar',
-                  title: 'Welcome to Sencha Touch 2'
-              },
+            items: {
+                docked: 'top',
+                xtype: 'titlebar',
+                title: 'Welcome to Sencha Touch 2'
+            },
 
-              html: [
-                  "You've just generated a new Sencha Touch 2 project. What you're looking at right now is the ",
-                  "contents of <a target='_blank' href=\"app/view/Main.js\">app/view/Main.js</a> - edit that file ",
-                  "and refresh to change what's rendered here."
-              ].join("")
-          },
-          {
-              title: 'Get Started',
-              iconCls: 'action',
+            html: [
+                "You've just generated a new Sencha Touch 2 project. What you're looking at right now is the ",
+                "contents of <a target='_blank' href=\"app/view/Main.js\">app/view/Main.js</a> - edit that file ",
+                "and refresh to change what's rendered here."
+            ].join("")
+        },
+        {                               // <3>
+            title: 'Get Started',
+            iconCls: 'action',
 
-              items: [
-                  {
-                      docked: 'top',
-                      xtype: 'titlebar',
-                      title: 'Getting Started'
-                  },
-                  {
-                      xtype: 'video',
-                      url: 'http://av.vimeo.com/64284/137/87347327.mp4?token=1330978144_f9b698fea38cd408d52a2393240c896c',
-                      posterUrl: 'http://b.vimeocdn.com/ts/261/062/261062119_640.jpg'
-                  }
-              ]
-          }
+            items: [
+                {
+                    docked: 'top',
+                    xtype: 'titlebar',
+                    title: 'Getting Started'
+                },
+                {
+                    xtype: 'video',
+                    url: 'http://av.vimeo.com/64284/137/87347327.mp4?token=1330978144_f9b698fea38cd408d52a2393240c896c',
+                    posterUrl: 'http://b.vimeocdn.com/ts/261/062/261062119_640.jpg'
+                }
+            ]
+        }
       ]
   }
 });
 ----
 
+<1> The tab bar has to be located at the bottom of the screen.
+
+<2> The first tab is a Welcome screen.
+
+<3> The second tab is a Getting Started screen. It has `xtype: video`, which means it's ready for playing video located at the specified `url`.   
+
+This application has no controllers, models or stores. But it does include the default theme from SASS stylesheet resources/sass/app.scss, which was compiled by Sencha CMD generation process into resources/css/app.css. 
 
 ==== UI Components and Events
 
@@ -240,8 +253,6 @@ TIP: If you'll add the Save Sick Child application as an icon to the home screen
 In chapters 12 and 13 you've learned about two different ways of developing a mobile application. So what's better jQuery Mobile or Sencha Touch? There is no answer to this question, and you will have to make a decision on your own. But here's a quick summary of pros and cons for each library or framework.
 
 * If you are afraid of being locked up with any one vendor, go with jQuery Mobile.
-
-* If you want to minimize the amount of code bytes that be sent to the user's device, jQuery Mobile is for you. Not only this library's code base is smaller, but you can modularize you application (e.g. with Require.js) to make it even more responsive. Sencha Touch 2 doesn't support modularization.
 
 * If you need your application to work on most of the mobile platforms the jQuery Mobile is for you.
 
