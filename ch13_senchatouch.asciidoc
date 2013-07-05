@@ -3,24 +3,26 @@
 
 == Sencha Touch
 
-Sencha Touch framework is a little brother of Ext JS. They both have the same parent: http://www.sencha.com/[Sencha Inc], but Sencha Touch is created for HTML5 mobile application development, while Ext JS is for desktop Web applications. For enterprise developers, there is another important difference: Ext JS offers free licenses only for open source projects, but http://www.sencha.com/products/touch/license/[Sencha Touch licenses] are free for all.   
+Sencha Touch framework is a little brother of Ext JS. They both have the same creator: http://www.sencha.com/[Sencha Inc], and they both are build on the same core classes. But Sencha Touch is created for developing mobile Web, while Ext JS is for desktop Web applications. The enterprise IT managers need to be aware of another important difference: Ext JS offers free licenses only for open source projects, but http://www.sencha.com/products/touch/license/[Sencha Touch licenses] are free for all.   
 
 This chapter is structured similarly to the previous one on jQuery Mobile. The fundamental difference though is that if Chapter 12 has almost no JavaScript, this chapter will have almost no HTML. 
 
 We'll try minimizing repeating the information you can find in http://www.sencha.com/learn/touch[Sencha Touch Learning Center] and extensive product documentation, which has multiple well written http://docs.sencha.com/touch/2.2.0/#!/guide[Guides] on multiple topics. The chapter will start with a brief overview of the features of Sencha Touch followed by the code review of yet another version of the Save Sick Child application. 
 In this chapter we are going to use Sencha Touch 2.2, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and recently have announced support of Window Phone 8. 
 
-NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and being familiar with some of the concepts like MVC architecture or terms like `xType` or SASS is a must. We are not going to repeat the descriptions of UI components that exist in both frameworks and were used earlier in the book.
+NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like `xType`, SASS and others explained in Chapter 6. 
 
 === Sencha Touch Overview
 
-Let's start with downloading Sencha Touch from http://www.sencha.com/products/touch/download/[http://www.sencha.com/products/touch/download]. You can download the framework licensed as GPL, but in this case your users may see a little watermark as shown on the <<FIG13-1>> figure below.
+Let's start with downloading Sencha Touch from http://www.sencha.com/products/touch/download/[http://www.sencha.com/products/touch/download]. To get the free commercial license just specify your email address, and you'll receive the link to download in the email. The Sencha Touch framework comes as a zip file, which you should unzip in the directory of your choice - later on the framework will be copied either into your project directory or in the document root of your Web server.  
+
+But commercial license of Sencha Touch doesn't include charts (you'd need to get either Sencha Complete or Sencha Touch Bundle for the chart support). Because of this we'll be using the GPL version for the open source Save Sick Child project, but our users will see a little watermark as shown on the <<FIG13-1>> figure below. 
 
 [[FIG13-1]]
 .A GPL license watermark 
 image::images/fig_13_01.png[]
 
-For the free commercial license just specify your email address, and you'll receive the link to download in the email. The Sencha Touch framework comes as a zip file, which you should unzip in the directory of your choice - later on the framework will be copied either into your project directory or in the document root of your Web server.  We placed our version of Sencha Touch in the directory _/Library/touch-2.2.1_.
+After downloading Sencha Touch in the directory _/Library/touch-2.2.1_, but later on the code generation process will copy this framework in our application directory anyway.
 
 ==== Generating Hello World
 
@@ -34,7 +36,13 @@ After the code generation was complete, you'll see the folder _hello_ of the str
 .CMD-generated project 
 image::images/fig_13_02.png[image]
 
-To test your newly generated application you'll need to make sure that the directory _hellotouch_ is deployed under a Web server (simple opening of index.html in the Web browser won't work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6.
+To test your newly generated application you'll need to make sure that the directory _hellotouch_ is deployed under a Web server (simple opening of index.html in the Web browser won't work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6. 
+
+In this chapter we are going to use the internal Web server that comes with WebStorm IDE. It runs on the port 63342, and if your project's name is helloworld, just enter in your Web browser http://localhost:63342/helloworld to run it.
+
+NOTE: To debug your code inside WebStorm IDE, select the menu Run | Edit Configurations, press the plus sign in the top left corner and in JavaScipt Debug | Remote panel enter the URL http://localhost:63342 followed by the name of your project(e.g. ssctouch) and name your new debug configuration. After that you'll be able to debug your code in your Chrome Web browser (it'll ask you to install the JetBrains IDE Support extension of the first run).
+
+
 
 TIP: MAC OS X users can install a small application http://anvilformac.com/[Anvil] that can easily serve static content of any directory as a Web server with a URL that ends with .dev.
 
@@ -44,7 +52,7 @@ The Figure <<FIG13-3>> shows how the generated Hello World application will look
 .Running CMD-generated Hello World 
 image::images/fig_13_03.png[image]
 
-===== Microloader and Configuratoin File app.json
+===== Microloader and Configurations
 
 The main application entry is the Javascript file app.js. But if in Ext JS, this file was directly referenced in index.html, Sencha Touch applications generated by CMD tool use a separate microloader script, which starts with loading the file app.json that contains the names of the resources needed for your application including the app.js. The only script included in the generated index.html is this one:
 
@@ -75,9 +83,9 @@ Eventually, if you'll need to load additional JavaScript code, CSS files or othe
 
 Introducing a separate configuration file and additional microloader script may seem like an unnecessary complication, but it's not. On the contrary, it gives you the flexibility of maintaining a clean separation between development, testing,  and production environments. You can find three different loader scripts in the folder _touch/microloader_: development.js, production.js, and testing.js.  Each of them can load different configuration file. 
 
-If you open the production loader, you'll see that it uses application cache to save files locally on the device (see section Application Cache in Chapter 2 for a refresher) so the user can start the application even without having Internet connection.
+If you open the production loader, you'll see that it uses application cache to save files locally on the device (see section Application Cache in Chapter 2 for a refresher) so the user can start the application even without having the Internet connection.
 
-The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn't know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. Refer to the http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch[online documentation] on using Sencha CMD with Sencha Touch for details.
+The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn't know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. When we start building the Save Sick Child application, you'll see how to prompt the user that the application has been updated. Refer to the http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch[online documentation] on using Sencha CMD with Sencha Touch for details.
 
 NOTE: Reducing the startup latency and implementing lazy loading of certain parts of the application are main reasons for modularizing Web applications. If your application is not too large, storing the entire code of the Web application locally with automatic updates may eliminate the need for modularization. For larger applications consider the http://docs.sencha.com/touch/2.2.1/#!/guide/command_workspace[Workspaces] feature of Sencha CMD, which allows to create some common code to be shared by several scripts.
 
@@ -142,7 +150,6 @@ Ext.application({
         );
     }
 });
-
 ----
 
 The structure of the generated Main.js, which is a main view of this application is also straight forward. It extends the class `Ext.tab.Panel` so each page of the application is a tab. Figure <<FIG13-4>> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter. 
@@ -226,12 +233,14 @@ While designing the navigation for the mobile device you'll be creating a set of
 
 ===== Touches and Gestures
 
+The Scroller class
+
 ==== Layouts 
 
 UI components have to be laid out on the user's screen. 
 
 
-=== Save Sick Child with Sencha Touch
+=== Save Sick Child With Sencha Touch
 
 The Sencha Touch version of the Save Sick Child application will be based on the prototype from Chapter 12, section "Prototyping Mobile Version" with minor changes. This time the home page of the application will be a slightly different version of the About page shown on <<FIG13-11>>. 
 
@@ -243,8 +252,82 @@ IMPORTANT: The materials presented in this chapter were tested only with the cur
 .The Starting/About page
 image::images/fig_13_11.png[]
 
+Below is the code of the app.js in the SSae Sick Chiled project (we've just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications.
+
+[source, javascript]
+----
+Ext.application({
+    name: 'SSC',
+
+    requires: [
+        'Ext.MessageBox'
+    ],
+
+    views: [
+        'About',
+        'CampaignsMap',
+        'DonateForm',
+        'DonorsChart',
+        'LoginForm',
+        'LoginToolbar',
+        'Main',
+        'Media',
+        'Share',
+        'ShareTile'
+    ],
+
+    stores: [
+        'Campaigns',
+        'Countries',
+        'Donors',
+        'States',
+        'Videos'
+    ],
+
+    controllers: [
+        'Login'
+    ],
+
+    launch: function() {
+        // Destroy the #appLoadingIndicator element
+        Ext.fly('appLoadingIndicator').destroy();
+
+        // Initialize the main view
+        Ext.Viewport.add(Ext.create('SSC.view.Main'));
+    },
+
+    onUpdated: function() {
+        Ext.Msg.confirm(
+            "Application Update",
+            "This application has just successfully been updated to the latest version. Reload now?",
+            function(buttonId) {
+                if (buttonId === 'yes') {
+                    window.location.reload();
+                }
+            }
+        );
+    }
+});
+
+----
+
+We'll talk about the views and controllers a bit later, but wanted to draw your attention to the `onUpdated()` event handler. In the section "Microloader and Configurations" we've mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the `appCache` section of app.json. If any of these files changes, the `onUpdated` event handler is invoked, if any. For illustration purposes we decided to intercept this event and Figure <<13-12>> shows how the update prompt can look like on iPhone 5.
+
+[[FIG13-12]]
+.The code on the server has changed
+image::images/fig_13_12.png[]
+
+At this point the user can either select working with the previous version of the application or reload the new one. 
+
+The index.html file of our application beside the microloader script includes one more script that supports Google Maps API.
+
+[source, html]
+----
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+---- 
 
 TIP: If you want your program documentation look as good as Sencha's use https://github.com/senchalabs/jsduck[JSDuck tool].
+
 
 TIP: If you'll add the Save Sick Child application as an icon to the home screen on iOS devices, the browser's address bar will not be displayed.
 
