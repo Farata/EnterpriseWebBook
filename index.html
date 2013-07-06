@@ -11166,7 +11166,7 @@ The instance of any object has access to its class via a special variable <a hre
 <div class="sect4">
 <h5 id="_what_s_xtype">What&#8217;s xtype</h5>
 <div class="paragraph">
-<p>One of the interesting pre-processors is <em>xtype</em>, which allows to skip the invocation of the <code>create()</code> method for creating the instance of the class. Every Ext JS component has assigned <code>xtype</code>. For example, <code>Ext.panel.Panel</code> has an <code>xtype</code> of <code>panel</code>. Online documentation displays the name of the corresponding <code>xtype</code> in the header of each component as in <a href="#FIG6-7">Each component has an xtype</a>.</p>
+<p>One of the interesting pre-processors is <em>xtype</em>, which is an alternative to the invocation of the <code>create()</code> method for creating the instance of the class. Every Ext JS component has assigned and documented <code>xtype</code>. For example, <code>Ext.panel.Panel</code> has an <code>xtype</code> of <code>panel</code>. Online documentation displays the name of the corresponding <code>xtype</code> in the header of each component as in <a href="#FIG6-7">Each component has an xtype</a>.</p>
 </div>
 <div id="FIG6-7" class="imageblock">
 <div class="content">
@@ -11175,7 +11175,7 @@ The instance of any object has access to its class via a special variable <a hre
 <div class="title">Figure 74. Each component has an xtype</div>
 </div>
 <div class="paragraph">
-<p>If you are defining a class and include its <code>xtype</code>, Ext JS will instantiate if for you without the need to call <code>create()</code>. You can find many examples of using the <code>xtype</code> property in the section "Developing Save Sick Child with Ext JS" later in this chapter. For example, the following class definition includes many components with the <code>xtype</code> property.</p>
+<p>Using <code>xtype</code> instead of <code>create()</code> leads to more efficient memory management. If the object is declared with the <code>xtype</code> attribute, it won&#8217;t be instantiated until some container uses it. You are encouraged to assign <code>xtype</code> to your custom classes, and Ext JS will instantiate if for you without the need to call <code>create()</code>. You can find many examples of using the <code>xtype</code> property in the section "Developing Save Sick Child with Ext JS" later in this chapter. For example, the following class definition includes many components with the <code>xtype</code> property.</p>
 </div>
 <div class="listingblock">
 
@@ -11524,7 +11524,7 @@ In Chapter 1 we were discussing HTML5 local storage API. Ext JS has a class <a h
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
-<td>Listing one or more views of your application in the <code>refs</code> property, which simplifies the search of the component globally or within some container.</td>
+<td>Listing one or more views of your application in the <code>refs</code> property, which simplifies the search of the component globally or within some container. Controller generates getters and setters for each object listed in the <code>refs</code>.</td>
 </tr>
 <tr>
 <td><i class="conum">3</i></td>
@@ -20604,7 +20604,7 @@ In this chapter we are going to use Sencha Touch 2.2, which is the latest versio
 </td>
 <td class="content">
 
-If you haven&#8217;t read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like <code>xType</code>, SASS and others explained in Chapter 6.
+If you haven&#8217;t read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like <code>xType</code>, SASS and others explained in Chapter 6. Ext JS and Sencha Touch non-UI classes are not 100% compatible, but for the most part they are.
 </td>
 </tr>
 </table>
@@ -20725,20 +20725,28 @@ MAC OS X users can install a small application <a href="http://anvilformac.com/"
 <p>If you open the production loader, you&#8217;ll see that it uses application cache to save files locally on the device (see section Application Cache in Chapter 2 for a refresher) so the user can start the application even without having the Internet connection.</p>
 </div>
 <div class="paragraph">
-<p>The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn&#8217;t know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. When we start building the Save Sick Child application, you&#8217;ll see how to prompt the user that the application has been updated. Refer to the <a href="http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch">online documentation</a> on using Sencha CMD with Sencha Touch for details.</p>
+<p>The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn&#8217;t know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. To create a production build open a Teminal or a command window, change to your application directory and run the following command:</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="icon-note" title="Note"></i>
-</td>
-<td class="content">
+<div class="paragraph">
+<p><em>sencha app build production</em></p>
+</div>
+<div class="paragraph">
+<p>See the section <a href="http://docs.sencha.com/touch/2.2.1/!/guide/command_app">"Deploying Your Application"</a> for more details on Sencha CMD builds. When we start building the Save Sick Child application, you&#8217;ll see how to prompt the user that the application has been updated. Refer to the <a href="http://docs.sencha.com/cmd/3.1.2/!/guide/command_app_touch">online documentation</a> on using Sencha CMD with Sencha Touch for details.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Modularization and Code Distribution</div>
+<div class="paragraph">
+<p>Reducing the startup latency and implementing lazy loading of certain parts of the application are main reasons for modularizing Web applications. The other reason for modularization is an ability to redeploy certain portions of the code vs. the entire application if the code modifications are limited in scope. The ability of Sencha Touch to monitor modified pieces of code is great from the distribution perspective - just change the SomeFile.js on the server and it&#8217;ll be automatically downloaded and saved on the user&#8217;s mobile device.</p>
+</div>
+<div class="paragraph">
+<p>What about the latency during the startup? Should we load the entire code base from the local storage (it&#8217;s a lot faster that getting the code from remote servers) or still use loaders to bring up the portion of the code (a.k.a. modules) on as needed basis? There is no general answer to this question - every application is different.</p>
+</div>
+<div class="paragraph">
+<p>If your application is not too large and the mobile device has enough memory, loading the entire code of the Web application from the local storage may lower the need for modularization. For larger applications consider the <a href="http://docs.sencha.com/touch/2.2.1/#!/guide/command_workspace">Workspaces</a> feature of Sencha CMD, which allows to create some common code to be shared by several scripts.</p>
+</div>
 
-Reducing the startup latency and implementing lazy loading of certain parts of the application are main reasons for modularizing Web applications. If your application is not too large, storing the entire code of the Web application locally with automatic updates may eliminate the need for modularization. For larger applications consider the <a href="http://docs.sencha.com/touch/2.2.1/#!/guide/command_workspace">Workspaces</a> feature of Sencha CMD, which allows to create some common code to be shared by several scripts.
-</td>
-</tr>
-</table>
+</div>
 </div>
 
 </div>
@@ -20955,7 +20963,7 @@ The materials presented in this chapter were tested only with the current versio
 <div class="title">Figure 189. The Starting/About page</div>
 </div>
 <div class="paragraph">
-<p>Below is the code of the app.js in the SSae Sick Chiled project (we&#8217;ve just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications.</p>
+<p>Below is the code of the app.js in the Save Sick Child project (we&#8217;ve just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications.</p>
 </div>
 <div class="listingblock">
 
@@ -21016,7 +21024,10 @@ The materials presented in this chapter were tested only with the current versio
 </div>
 </div>
 <div class="paragraph">
-<p>We&#8217;ll talk about the views and controllers a bit later, but wanted to draw your attention to the <code>onUpdated()</code> event handler. In the section "Microloader and Configurations" we&#8217;ve mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the <code>appCache</code> section of app.json. If any of these files changes, the <code>onUpdated</code> event handler is invoked, if any. For illustration purposes we decided to intercept this event and Figure <a href="#13-12">[13-12]</a> shows how the update prompt can look like on iPhone 5.</p>
+<p>All the store listed in app.js will be automatically instantiated. The views that require data from the store will either mention the store name like <code>store: 'Videos'</code> or will explicitly use the class <code>StoreMgr</code>, for example <code>Ext.StoreMgr.get('Campaigns');</code>. In this version of the application we have only one controller <code>Login</code> that doesn&#8217;t use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. This version of the Save Sick Child application doesn&#8217;t use explicitly defined models - all the data are hard-coded in the stores in the <code>data</code> attributes.</p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see the code of the views a bit later, but we wanted to draw your attention to the <code>onUpdated()</code> event handler. In the section "Microloader and Configurations" we&#8217;ve mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the <code>appCache</code> section of app.json. If any of these files changes, the <code>onUpdated</code> event handler is invoked, if any. For illustration purposes we decided to intercept this event and Figure <a href="#13-12">[13-12]</a> shows how the update prompt can look like on iPhone 5.</p>
 </div>
 <div id="FIG13-12" class="imageblock">
 <div class="content">
@@ -21048,6 +21059,269 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 </td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>The code of the UI landing page of this application is located in the <em>views</em> folder in the file Main.js. First, take a look at the screenshot from WebStorm IDE on figure <a href="#FIG13-13">The Main.js in a collapsed form</a> that there are only two objects on the top level: the container and a login form.</p>
+</div>
+<div id="FIG13-13" class="imageblock">
+<div class="content">
+<img src="./images/fig_13_13.png" alt="fig_13_13">
+</div>
+<div class="title">Figure 191. The Main.js in a collapsed form</div>
+</div>
+<div class="paragraph">
+<p>The <code>card</code> layout means that the user will see either the content of that container or the login form - one at a time. Let&#8217;s open up the container. It has an array of children, which are our application pages. The figure <a href="#FIG13-14">The container&#8217;s children in a collapsed form</a> show who are the children.</p>
+</div>
+<div id="FIG13-14" class="imageblock">
+<div class="content">
+<img src="./images/fig_13_14.png" alt="fig_13_14">
+</div>
+<div class="title">Figure 192. The container&#8217;s children in a collapsed form</div>
+</div>
+<div class="paragraph">
+<p>The entire code of the Main.js is shown next.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.view.Main', {
+   extend: 'Ext.Container',
+   xtype: 'mainview',             // <i class="conum">1</i>
+   requires: [
+       'Ext.tab.Panel',
+       'Ext.Map',
+       'Ext.Img'
+   ],
+
+   config: {
+     layout: 'card',
+
+     items: [
+       { xtype: 'container',
+         layout: 'fit',
+
+         showAnimation: {
+             type: 'slide',
+             direction: 'down',
+             duration: 200
+         },
+
+         items: [
+           { xtype: 'tabpanel',
+             tabBarPosition: 'bottom',
+
+             items: [
+               {  title: 'About',
+                  iconCls: 'info',   // <i class="conum">2</i>
+                  layout: 'fit',     // <i class="conum">3</i>
+                  items: [
+                    {xtype: 'aboutview'}
+                  ]
+               },
+               {  title: 'Donate',
+                  iconCls: 'love',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'logintoolbar',
+                      title: 'Donate'
+                    },
+                    {xtype: 'donateform'}
+                  ]
+               },
+               {  title: 'Stats',
+                  iconCls: 'pie',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'logintoolbar',
+                      title: 'Stats'
+                    },
+                    { xtype: 'donorschart'}
+                  ]
+               },
+               {  title: 'Events',
+                  iconCls: 'pin',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'logintoolbar',
+                      title: 'Events'
+                    },
+                    { xtype: 'campaignsmap'}
+                  ]
+               },
+               {  title: 'Media',
+                  iconCls: 'media',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'mediaview'}
+                  ]
+               },
+               {  title: 'Share',
+                  iconCls: 'share',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'logintoolbar',
+                      title: 'Share'
+                    },
+                    {xtype: 'shareview'}
+                  ]
+               }
+             ]
+           }
+         ]
+       },
+       { xtype: 'loginform',
+
+         showAnimation: {
+             type: 'slide',
+             direction: 'up',
+             duration: 200
+         }
+       }
+     ]
+   }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>We&#8217;ve assigned the <code>xtype: 'mainview</code> to the main view so to  allow the Login controller refer to it (see its code below).</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>Each of the tabs has a corresponding button on the toolbar. It shows the text from the <code>title</code> attribute and the icon from the <code>iconCls</code>.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>Each of the view has <a href="http://docs.sencha.com/extjs/4.1.3/#!/api/Ext.layout.container.Fit"><code>fit</code> layout</a>, which forces the content to expand to fill the layout&#8217;s container.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s review the code of the Login page controller. It has no login logic, and implements the UI only. The name of this file is Login.js and it&#8217;s located in the folder <em>controller</em>.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.controller.Login', {
+    extend: 'Ext.app.Controller',
+
+    config: {
+        refs: {
+            mainView: 'mainview',           // <i class="conum">1</i>
+            loginButton: 'button[action=login]',
+            loginForm: 'loginform',         // <i class="conum">2</i>
+            cancelButton: 'loginform button[action=cancel]'
+        },
+
+        control: {                         // <i class="conum">3</i>
+            loginButton: {
+                tap: 'showLoginView'
+            },
+            cancelButton: {
+                tap: 'cancelLogin'
+            }
+        }
+    },
+
+    showLoginView: function () {
+        this.getMainView().setActiveItem(1);  // <i class="conum">4</i>
+    },
+
+    cancelLogin: function () {
+        this.getMainView().setActiveItem(0);  //  <i class="conum">5</i>
+    }
+
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Including the <code>mainView: 'mainview'</code> in the <code>refs</code> attribute forces Sencha Touch to generate the getter providing access to the main view.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>This controller uses components from the LoginForm view (it&#8217;s code comes next).</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>Defining the event handlers for tap events for the buttons Login and Cancel from the LoginForm view.</td>
+</tr>
+<tr>
+<td><i class="conum">4</i></td>
+<td>The main view has two children (see <a href="#FIG13-13">The Main.js in a collapsed form</a>). When the use clicks on the Login button, show the second child: <code>setActiveItem(1)</code>.</td>
+</tr>
+<tr>
+<td><i class="conum">5</i></td>
+<td>When the use clicks on the Cancel button, show the main container - the first child of the main view: <code>setActiveItem(0)</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The figure <a href="#FIG13-15">The Login View</a> is a snapshot of Login view taken from iPhone 5.</p>
+</div>
+<div id="FIG13-15" class="imageblock">
+<div class="content">
+<img src="./images/fig_13_15.png" alt="fig_13_15">
+</div>
+<div class="title">Figure 193. The Login View</div>
+</div>
+<div class="paragraph">
+<p>This is how the code of the Login view view looks like - it&#8217;s self explanatory. The <code>ui: 'decline'</code> is the <a href="http://try.sencha.com/touch/2.2.0/demos/Ext.Button.ui/"><code>Ext.Button</code> style</a> that causes the Cancel button have a red background.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.view.LoginForm', {
+  extend: 'Ext.form.Panel',
+  xtype: 'loginform',
+  requires: [
+      'Ext.field.Password'
+  ],
+
+  config: {
+    items: [
+        {   xtype: 'toolbar',
+            title: 'Login',
+
+            items: [
+                {   xtype: 'button',
+                    text: 'Cancel',
+                    ui: 'decline',
+                    action: 'cancel'
+                }
+            ]
+        },
+        {  xtype: 'fieldset',
+            title: 'Please enter your credentials',
+
+            defaults: {
+                labelWidth: '35%'
+            },
+
+            items: [
+                {   xtype: 'textfield',
+                    label: 'Username'
+                },
+                {   xtype: 'passwordfield',
+                    label: 'Password'
+                }
+            ]
+        },
+        {  xtype: 'button',
+            text: 'Login',
+            ui: 'confirm',
+            margin: '0 10'
+        }
+    ]
+  }
+});</code></pre>
+</div>
 </div>
 <div class="admonitionblock tip">
 <table>
