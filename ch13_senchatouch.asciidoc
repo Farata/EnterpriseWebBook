@@ -10,7 +10,7 @@ This chapter is structured similarly to the previous one on jQuery Mobile. The f
 We'll try minimizing repeating the information you can find in http://www.sencha.com/learn/touch[Sencha Touch Learning Center] and extensive product documentation, which has multiple well written http://docs.sencha.com/touch/2.2.0/#!/guide[Guides] on multiple topics. The chapter will start with a brief overview of the features of Sencha Touch followed by the code review of yet another version of the Save Sick Child application. 
 In this chapter we are going to use Sencha Touch 2.2, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and recently have announced support of Window Phone 8. 
 
-NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like `xType`, SASS and others explained in Chapter 6. 
+NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like `xType`, SASS and others explained in Chapter 6. Ext JS and Sencha Touch non-UI classes are not 100% compatible, but for the most part they are.
 
 === Sencha Touch Overview
 
@@ -85,10 +85,20 @@ Introducing a separate configuration file and additional microloader script may 
 
 If you open the production loader, you'll see that it uses application cache to save files locally on the device (see section Application Cache in Chapter 2 for a refresher) so the user can start the application even without having the Internet connection.
 
-The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn't know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. When we start building the Save Sick Child application, you'll see how to prompt the user that the application has been updated. Refer to the http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch[online documentation] on using Sencha CMD with Sencha Touch for details.
+The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn't know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. To create a production build open a Teminal or a command window, change to your application directory and run the following command: 
 
-NOTE: Reducing the startup latency and implementing lazy loading of certain parts of the application are main reasons for modularizing Web applications. If your application is not too large, storing the entire code of the Web application locally with automatic updates may eliminate the need for modularization. For larger applications consider the http://docs.sencha.com/touch/2.2.1/#!/guide/command_workspace[Workspaces] feature of Sencha CMD, which allows to create some common code to be shared by several scripts.
+_sencha app build production_
 
+See the section http://docs.sencha.com/touch/2.2.1/#!/guide/command_app["Deploying Your Application"] for more details on Sencha CMD builds. When we start building the Save Sick Child application, you'll see how to prompt the user that the application has been updated. Refer to the http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch[online documentation] on using Sencha CMD with Sencha Touch for details.
+
+.Modularization and Code Distribution
+************
+Reducing the startup latency and implementing lazy loading of certain parts of the application are main reasons for modularizing Web applications. The other reason for modularization is an ability to redeploy certain portions of the code vs. the entire application if the code modifications are limited in scope. The ability of Sencha Touch to monitor modified pieces of code is great from the distribution perspective - just change the SomeFile.js on the server and it'll be automatically downloaded and saved on the user's mobile device.
+
+What about the latency during the startup? Should we load the entire code base from the local storage (it's a lot faster that getting the code from remote servers) or still use loaders to bring up the portion of the code (a.k.a. modules) on as needed basis? There is no general answer to this question - every application is different.
+
+If your application is not too large and the mobile device has enough memory, loading the entire code of the Web application from the local storage may lower the need for modularization. For larger applications consider the http://docs.sencha.com/touch/2.2.1/#!/guide/command_workspace[Workspaces] feature of Sencha CMD, which allows to create some common code to be shared by several scripts.
+************
 
 ===== The Main View of Hello World
 
@@ -252,7 +262,7 @@ IMPORTANT: The materials presented in this chapter were tested only with the cur
 .The Starting/About page
 image::images/fig_13_11.png[]
 
-Below is the code of the app.js in the SSae Sick Chiled project (we've just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications.
+Below is the code of the app.js in the Save Sick Child project (we've just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications.
 
 [source, javascript]
 ----
@@ -311,7 +321,9 @@ Ext.application({
 
 ----
 
-We'll talk about the views and controllers a bit later, but wanted to draw your attention to the `onUpdated()` event handler. In the section "Microloader and Configurations" we've mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the `appCache` section of app.json. If any of these files changes, the `onUpdated` event handler is invoked, if any. For illustration purposes we decided to intercept this event and Figure <<13-12>> shows how the update prompt can look like on iPhone 5.
+All the store listed in app.js will be automatically instantiated. The views that require data from the store will either mention the store name like `store: 'Videos'` or will explicitly use the class `StoreMgr`, for example `Ext.StoreMgr.get('Campaigns');`. In this version of the application we have only one controller `Login` that doesn't use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. This version of the Save Sick Child application doesn't use explicitly defined models - all the data are hard-coded in the stores in the `data` attributes.
+
+You'll see the code of the views a bit later, but we wanted to draw your attention to the `onUpdated()` event handler. In the section "Microloader and Configurations" we've mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the `appCache` section of app.json. If any of these files changes, the `onUpdated` event handler is invoked, if any. For illustration purposes we decided to intercept this event and Figure <<13-12>> shows how the update prompt can look like on iPhone 5.
 
 [[FIG13-12]]
 .The code on the server has changed
@@ -328,6 +340,227 @@ The index.html file of our application beside the microloader script includes on
 
 TIP: If you want your program documentation look as good as Sencha's use https://github.com/senchalabs/jsduck[JSDuck tool].
 
+The code of the UI landing page of this application is located in the _views_ folder in the file Main.js. First, take a look at the screenshot from WebStorm IDE on figure <<FIG13-13>> that there are only two objects on the top level: the container and a login form.  
+
+[[FIG13-13]]
+.The Main.js in a collapsed form
+image::images/fig_13_13.png[] 
+
+The `card` layout means that the user will see either the content of that container or the login form - one at a time. Let's open up the container. It has an array of children, which are our application pages. The figure <<FIG13-14>> show who are the children.
+
+[[FIG13-14]]
+.The container's children in a collapsed form
+image::images/fig_13_14.png[] 
+
+The entire code of the Main.js is shown next.
+
+[source, javascript]
+----
+Ext.define('SSC.view.Main', {
+   extend: 'Ext.Container',
+   xtype: 'mainview',             // <1>
+   requires: [
+       'Ext.tab.Panel',
+       'Ext.Map',
+       'Ext.Img'
+   ],
+
+   config: {
+     layout: 'card',
+
+     items: [
+       { xtype: 'container',
+         layout: 'fit',
+
+         showAnimation: {
+             type: 'slide',
+             direction: 'down',
+             duration: 200
+         },
+
+         items: [
+           { xtype: 'tabpanel',
+             tabBarPosition: 'bottom',
+
+             items: [
+               {  title: 'About',
+                  iconCls: 'info',   // <2>  
+                  layout: 'fit',     // <3>
+                  items: [
+                    {xtype: 'aboutview'}
+                  ]
+               },
+               {  title: 'Donate',
+                  iconCls: 'love',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'logintoolbar',
+                      title: 'Donate'
+                    },
+                    {xtype: 'donateform'}
+                  ]
+               },
+               {  title: 'Stats',
+                  iconCls: 'pie',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'logintoolbar',
+                      title: 'Stats'
+                    },
+                    { xtype: 'donorschart'}
+                  ]
+               },
+               {  title: 'Events',
+                  iconCls: 'pin',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'logintoolbar',
+                      title: 'Events'
+                    },
+                    { xtype: 'campaignsmap'}
+                  ]
+               },
+               {  title: 'Media',
+                  iconCls: 'media',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'mediaview'}
+                  ]
+               },
+               {  title: 'Share',
+                  iconCls: 'share',
+                  layout: 'fit',
+                  items: [
+                    { xtype: 'logintoolbar',
+                      title: 'Share'
+                    },
+                    {xtype: 'shareview'}
+                  ]
+               }
+             ]
+           }
+         ]
+       },
+       { xtype: 'loginform',
+
+         showAnimation: {
+             type: 'slide',
+             direction: 'up',
+             duration: 200
+         }
+       }
+     ]
+   } 
+});
+----
+
+<1> We've assigned the `xtype: 'mainview` to the main view so to  allow the Login controller refer to it (see its code below). 
+
+<2> Each of the tabs has a corresponding button on the toolbar. It shows the text from the `title` attribute and the icon from the `iconCls`. 
+
+<3> Each of the view has http://docs.sencha.com/extjs/4.1.3/#!/api/Ext.layout.container.Fit[`fit` layout], which forces the content to expand to fill the layout's container.
+
+Now let's review the code of the Login page controller. It has no login logic, and implements the UI only. The name of this file is Login.js and it's located in the folder _controller_. 
+
+[source, javascript]
+----
+Ext.define('SSC.controller.Login', {
+    extend: 'Ext.app.Controller',
+
+    config: {
+        refs: {
+            mainView: 'mainview',           // <1>
+            loginButton: 'button[action=login]',
+            loginForm: 'loginform',         // <2> 
+            cancelButton: 'loginform button[action=cancel]'
+        },
+
+        control: {                         // <3>
+            loginButton: {
+                tap: 'showLoginView'
+            },
+            cancelButton: {
+                tap: 'cancelLogin'
+            }
+        }
+    },
+
+    showLoginView: function () {
+        this.getMainView().setActiveItem(1);  // <4>
+    },
+
+    cancelLogin: function () {
+        this.getMainView().setActiveItem(0);  //  <5> 
+    }
+
+});
+----
+
+<1> Including the `mainView: 'mainview'` in the `refs` attribute forces Sencha Touch to generate the getter providing access to the main view.
+
+<2> This controller uses components from the LoginForm view (it's code comes next).
+
+<3>  Defining the event handlers for tap events for the buttons Login and Cancel from the LoginForm view.
+
+<4> The main view has two children (see <<FIG13-13>>). When the use clicks on the Login button, show the second child: `setActiveItem(1)`.
+  
+<5> When the use clicks on the Cancel button, show the main container - the first child of the main view: `setActiveItem(0)`.
+
+The figure <<FIG13-15>> is a snapshot of Login view taken from iPhone 5. 
+
+[[FIG13-15]]
+.The Login View
+image::images/fig_13_15.png[] 
+
+This is how the code of the Login view view looks like - it's self explanatory. The `ui: 'decline'` is the http://try.sencha.com/touch/2.2.0/demos/Ext.Button.ui/[`Ext.Button` style] that causes the Cancel button have a red background.
+
+[source, javascript]
+----
+Ext.define('SSC.view.LoginForm', {
+  extend: 'Ext.form.Panel',
+  xtype: 'loginform',
+  requires: [
+      'Ext.field.Password'
+  ],
+
+  config: {
+    items: [
+        {   xtype: 'toolbar',
+            title: 'Login',
+
+            items: [
+                {   xtype: 'button',
+                    text: 'Cancel',
+                    ui: 'decline',
+                    action: 'cancel'
+                }
+            ]
+        },
+        {  xtype: 'fieldset',
+            title: 'Please enter your credentials',
+
+            defaults: {
+                labelWidth: '35%'
+            },
+
+            items: [
+                {   xtype: 'textfield',
+                    label: 'Username'
+                },
+                {   xtype: 'passwordfield',
+                    label: 'Password'
+                }
+            ]
+        },
+        {  xtype: 'button',
+            text: 'Login',
+            ui: 'confirm',
+            margin: '0 10'
+        }
+    ]
+  }
+});
+----
 
 TIP: If you'll add the Save Sick Child application as an icon to the home screen on iOS devices, the browser's address bar will not be displayed.
 
