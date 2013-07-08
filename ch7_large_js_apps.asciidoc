@@ -69,7 +69,7 @@ Of course, we can load each JavaScript file using `<script>` tag. But this appro
 
 <3> The main application script should be loaded after all dependencies.
 
-We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as our first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS example, and http://requirejs.org/[RequireJS] as AMD example.
+We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS example, and http://requirejs.org/[RequireJS] as AMD example.
 
 You'll see how the upcoming EcmaScript 6 specification suggests dealing with modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
 
@@ -102,15 +102,11 @@ The code of the Save Sick Child application will be refactored to implement modu
 
 ==== Module Pattern
 
-// vik
-
-The Module pattern was originally defined as a way to provide both private and public encapsulation for classes in conventional software engineering.
-
-In JavaScript, the Module pattern is used to emulate the concept of classes. We're able to include both public/private methods and variables inside a single object, thus shielding particular parts from the global scope. What this results in is a reduction in the likelihood of our function names conflicting with other functions defined in additional scripts on the page.
+In general software engineering the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We're able to include both public/private methods and variables inside a single object, thus hiding particular section of code from global scope. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts, but used in the same application's scope.
 
 Ultimately, it's just some code in an IIFE that:
 
-.Returning the module value 
+.Returning the value from a module 
 [source,javascript]
 ----
 include::include/ch7_iife_loginModule.js[]
@@ -135,9 +131,8 @@ This approach doesn't scale well:
 * When working with an application with a large number of modules, you may want to avoid boilerplate checks of objects existence in the global scope.
 * Polluting the global scope. 
 
-There is one huge disadvantage of using the Module Pattern - we still need to deal with manual dependency management and manually arrange `<script>` tags in HTML page.
+There is one huge disadvantage of using the Module pattern - we still need to deal with manual dependency management and manually arrange `<script>` tags in HTML page.
 
-// /vik
 
 ==== CommonJS
 
@@ -335,43 +330,37 @@ You can download require.js from its github repository or use a package manager 
 ----
 <1> The `data-main` attribute is needed needs for require.js. It specifies that the framework should load `app/config.js` after +require.js+ loads. The `app/config.js` is the entry point of your application.
 
-// vik
 
 .r.js - RequireJS Optimizer
 ****
 RequireJS comes with an optimization tool called http://requirejs.org/docs/optimization.html[_r.js_].
-The optimizer will combine modules that are specified in arrays of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls.
+This optimizer will combine modules that are specified in arrays of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls.
 ****
-
-// /vik
 
 
 ==== Universal Module Definition (UMD)
 
-// vik
 
-Universal Module Definition (UMD) are the series of patterns / code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. Here is example of module definition that can behave as AMD module or registers itself in browser globals.
+Universal Module Definition (UMD) is the series of patterns / code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. Here is example of a module definition that can behave as AMD module or registers itself in browser globals.
 
 [source,javascript]
 ----
 include::include/ch7_umd_amd_globals.js[]
 ----
-<1> Checking if AMD loader is available. If it is, proceed with defining module according AMD spec.
+<1> Checking if the AMD loader is available. If it is, proceed with defining module according AMD specification.
 
-<2> If AMD loader doesn't present, using factory method to instantiate object and attaching it to global object.
+<2> If the AMD loader isn't present, use the factory method to instantiate object and attach it to the global object.
 
 <3> Passing a top-level context and defining providing a implementation of a factory function.
 
-Worth to mention that UMD is not a specification or a standard.
-Ultimately, you need to care about UMD in case when your modules shall be run in a variety of environments (browser, NodeJS). In most cases, make lot of sense to choose a single module format and use it.
-More information about UMD and commented code snippets for different situations could be found in https://github.com/umdjs/umd[UMD project repository].
-
+It's worth mentioning that UMD is not a specification or a standard. You need to care about UMD in case when your modules shall run in more than one type of environment (e.g. a browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.
+You can find more information about UMD and commented code snippets for different situations in https://github.com/umdjs/umd[the UMD project repository].
 
 ==== ECMAScript 6 Modules
 
 // This section under active development
 
-The ECMAScript 6 (ES6) specification is an evolving draft outlining the changes and features in the next version of JavaScript. Very soon this specification will be finalized, but before that happens for anything introduced in ES6 browsers support will be experimental at best and cannot be used for widely-deployed web applications. One of the most important features of upcoming ES6 is the _module syntax_. Here is an example of how we can write our code:
+The ECMAScript 6 (ES6) specification is an evolving draft outlining the changes and features in the next version of JavaScript. This specification will be finalized soon, but before that happens the browsers' support for anything introduced in ES6 will be experimental at best and cannot be relied upon for widely-deployed web applications. One of the most important features of the upcoming ES6 specification is the _module syntax_. Here is an example of how it suggest to define and use a module:
 
 .Login module definition
 [source,javascript]
@@ -397,8 +386,6 @@ http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 transpiler] de
 
 TDB: TypeSctript module feature
 ****
-
-// /vik
 
 === Advanced Modularization
 
