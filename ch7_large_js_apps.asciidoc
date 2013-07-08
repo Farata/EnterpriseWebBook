@@ -23,9 +23,9 @@ People consider your web application fast for one of two reasons: either it's ac
 
 This chapter is about modularization techniques that will quickly render the first page of your web application on the user's Browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save Sick Child application to illustrate using modules.
 
-There is no out-of-the box modularization scheme in JavaScript language. The upcoming EcmaScript 6 specification tends to resolve this with introduction a _module concept_ in the JavaScript language itself. But it's the future.
+There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this with introduction a _module concept_ in the JavaScript language itself. But it's the future.
 
-Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive translates into an additional HTTP call to the server. As the application gets larger the latency will growth accordingly, which is illustrated in the following code sample 
+Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive translates into an additional HTTP call to the server. As the application gets larger the latency will growth accordingly, which is illustrated in the following code sample.
 <<LISTING_SCRIPT_TAG,Here is an example>>.
 
 
@@ -69,7 +69,7 @@ Of course, we can load each JavaScript file using `<script>` tag. But this appro
 
 <3> The main application script should be loaded after all dependencies.
 
-We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as our first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS implementation, and http://requirejs.org/[RequireJS] as AMD implementation.
+We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as our first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS example, and http://requirejs.org/[RequireJS] as AMD example.
 
 You'll see how the upcoming EcmaScript 6 specification suggests dealing with modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
 
@@ -78,14 +78,14 @@ Finally, we're going to discuss such advanced topics as intermodule-communicatio
 The code of the Save Sick Child application will be refactored to implement module system based on RequireJS for lazy loading of the  application components.
 
 ****
-.Plan for chapter
-* History: the Module pattern, namespaces
+.[underline]#Plan for chapter#
+* [line-through]#History: the Module pattern, namespaces#
 * CommonJS
 * AMD ~70%
-* https://github.com/umdjs/umd[UMD] 
+* [blue line-through]#https://github.com/umdjs/umd[UMD]#
 * Advanced topics:
 ** https://gist.github.com/wycats/51c96e3adcdb3a68cbc3[ES6 modules] (http://wiki.ecmascript.org/doku.php?id=harmony:modules) and TypeScript modules
-** Inter-Module communication, Mediator pattern (???)
+** Inter-Module communication, Mediator pattern, Pub/Sub/EventBus example
 ** _Dependency Injection_
 * ExtJS style (sidebar example ???)
 ****
@@ -139,8 +139,6 @@ There is one huge disadvantage of using the Module Pattern - we still need to de
 
 // /vik
 
-// TDB
-
 ==== CommonJS
 
 // TDB
@@ -185,6 +183,7 @@ AMD began as a draft specification for module format in CommonJS, but since the 
 The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded. 
 The AMD API is based on a https://github.com/amdjs/amdjs-api/wiki/AMD[this specification]. The AMD API have the following main functions:
 
+[[DEFINE_DESC]]
 * `define` for facilitating module definition. A function takes two arguments:
 ** An optional array of modules IDs, which serve as this module's dependencies
 ** A callback function (often referred to as a _factory function_), which will be invoked when dependencies are loaded. This also can be a value to use directory as the module's value.
@@ -215,6 +214,7 @@ include::include/ch7_define_wayToGive.js[]
 <2> We can start use dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.
 <3> Module defines and returns constructor function for new objects.
 
+[[REQUIRE_DESC]]
 * `require` function takes two arguments
 ** An array of module IDs to load. Module ID is a string literal.
 ** A callback to be executed once those modules are available. The modules loaded by ID are passed into the callback in their relative positions. <<LISTING_Require_func,Here is example>> of `require` function usage.
@@ -236,8 +236,6 @@ Distinctions from CommonJS
 //TBD
 
 ===== AMD Pros and Cons
-
-//TBD
 
 AMD pros:
 
@@ -267,7 +265,7 @@ When your application if modularized you can identify the error easier.
 * Performance: module are loaded only when required hence the initial portion of the application's code become smaller.
 +
 
-You may want to load a module on demand when the user clicks the button or selectes a menu item. In the following example, the module can be in one of three states: 
+You may want to load a module on demand when the user clicks the button or selects a menu item. In the following example, the module can be in one of three states: 
 
 * not loaded (`module === null`)
 * loading in progress (`module === 'loading'`)
@@ -301,7 +299,6 @@ var buttonClickHandler = function(event) {
 AMD Cons:
 
 * The dependency array can get rather large for complex modules (Example TBD).
-
 * Easy to get a mismatch between dependency array and callback arguments (Example TBD).
 
 [[REQUIREJS]]
@@ -338,11 +335,72 @@ You can download require.js from its github repository or use a package manager 
 ----
 <1> The `data-main` attribute is needed needs for require.js. It specifies that the framework should load `app/config.js` after +require.js+ loads. The `app/config.js` is the entry point of your application.
 
+// vik
+
+.r.js - RequireJS Optimizer
+****
+RequireJS comes with an optimization tool called http://requirejs.org/docs/optimization.html[_r.js_].
+The optimizer will combine modules that are specified in arrays of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls.
+****
+
+// /vik
+
 
 ==== Universal Module Definition (UMD)
 
-Series of patterns to support multiple modules formats.
-https://github.com/umdjs/umd[Specification]
+// vik
+
+Universal Module Definition (UMD) are the series of patterns / code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. Here is example of module definition that can behave as AMD module or registers itself in browser globals.
+
+[source,javascript]
+----
+include::include/ch7_umd_amd_globals.js[]
+----
+<1> Checking if AMD loader is available. If it is, proceed with defining module according AMD spec.
+
+<2> If AMD loader doesn't present, using factory method to instantiate object and attaching it to global object.
+
+<3> Passing a top-level context and defining providing a implementation of a factory function.
+
+Worth to mention that UMD is not a specification or a standard.
+Ultimately, you need to care about UMD in case when your modules shall be run in a variety of environments (browser, NodeJS). In most cases, make lot of sense to choose a single module format and use it.
+More information about UMD and commented code snippets for different situations could be found in https://github.com/umdjs/umd[UMD project repository].
+
+
+==== ECMAScript 6 Modules
+
+// This section under active development
+
+The ECMAScript 6 (ES6) specification is an evolving draft outlining the changes and features in the next version of JavaScript. Very soon this specification will be finalized, but before that happens for anything introduced in ES6 browsers support will be experimental at best and cannot be used for widely-deployed web applications. One of the most important features of upcoming ES6 is the _module syntax_. Here is an example of how we can write our code:
+
+.Login module definition
+[source,javascript]
+----
+function Login(userNameValue, userPasswordValue) {
+    console.log("login implementation omitted");
+};
+export = Login;
+----
+
+And this is how can be used:
+
+.Main application module
+[source,javascript]
+----
+import "login" as Login;
+var result = Login("admin", "password");
+----
+
+.ES6 module transpilers
+****
+http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 transpiler] developed by http://squareup.com/[Square] Engineers.
+
+TDB: TypeSctript module feature
+****
+
+// /vik
+
+=== Advanced Modularization
 
 === Summary
 
