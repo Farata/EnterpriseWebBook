@@ -36,7 +36,7 @@ After the code generation was complete, you'll see the folder _hello_ of the str
 .CMD-generated project 
 image::images/fig_13_02.png[image]
 
-To test your newly generated application you'll need to make sure that the directory _hellotouch_ is deployed under a Web server (simple opening of index.html in the Web browser won't work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6. 
+To test your newly generated application you'll need to make sure that the directory _hellotouch_ is deployed under a Web server (simple opening of index.html in the Web browser won't work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6. In the same chapter you can find the command to start the Jetty Web server embedded in the Sencha CMD tool.
 
 In this chapter we are going to use the internal Web server that comes with WebStorm IDE. It runs on the port 63342, and if your project's name is helloworld, just enter in your Web browser http://localhost:63342/helloworld to run it.
 
@@ -169,7 +169,7 @@ Ext.application({
 The code of the generated Main.js, which is a main view of this application is shown next. It extends the class `Ext.tab.Panel` so each page of the application is a tab. Figure <<FIG13-4>> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter. 
 
 [[FIG13-4]]
-.Collapsed version of Main.js
+.Collapsed version of Main.js from Hello World
 image::images/fig_13_04.png[image]
 
 As you see from this figure the `items[]` array includes two objects: Welcome and Get Started - each of them is one tab (screen).
@@ -236,38 +236,91 @@ Ext.define('HelloWorld.view.Main', {
 
 This application has no controllers, models or stores. But it does include the default theme from SASS stylesheet resources/sass/app.scss, which was compiled by Sencha CMD generation process into resources/css/app.css. 
 
-==== UI Components 
+==== Constructing UI  
 
 Sencha Touch has a number UI components specifically designed  for mobile devices, which include lists, forms, toolbars and buttons, charts, audio, video, carousel and more.  The quickest way to get familiar with events and UI components is by browsing the http://dev.sencha.com/deploy/touch/examples/production/kitchensink/[Kitchen Sink] Web site, where you can find the examples of how UI components look and see the source code of these examples.
 
+===== Containers
+
 In general, the process of implementing of a mobile application with Sencha Touch will consist of selecting the appropriate containers and arranging the navigation between them. Each screen that user sees is a container. Pretty often it'll include a toolbar _docked_ on top or bottom of the container.
 
-If your containers will include forms with such inputs as text field, text area, password, and numbers, the virtual keyboard will automatically show up occupying half of the user's screen. On some platforms, virtual keyboards will adapt to the type of the input field, for example, if the field has `xtype: 'emailfield'`, the keyboard will be modified for easier input of emails. Figure <<FIG13-5>> is a snapshot taken from the Donate screen of the Save Sick Child application when the user taped inside the email field.  
+Containers can be nested - they are needed for a better grouping of UI components on the screen. The lightest container is `Ext.Container`. It inherits all the functionality from it ancestor `Ext.Component` can plus it can contain other components.  When you'll be reviewing the code of the Save Sick Child application, note that the main view `SSC.view.Main` (see Main.js) extends `Ext.Container`. The hierarchy of Sencha Touch containers is shown on Figure <<FIG13-5>>.
 
 [[FIG13-5]]
-.The iPhone virtual keyboard for entering emails
+.Sencha Touch Containers Hierarchy
 image::images/fig_13_05.png[image]
+
+The `FieldSet` is also a pretty light container - it simply adds the title to a group of fields that belong together. You'll see several code samples in this chapter with `xtype: 'fieldset'` (e.g. Login or Donate screens). 
+
+If your containers display forms with such inputs as text field, text area, password, and numbers, the virtual keyboard will automatically show up occupying half of the user's screen. On some platforms, virtual keyboards will adapt to the type of the input field, for example, if the field has `xtype: 'emailfield'`, the keyboard will be modified for easier input of emails. Figure <<FIG13-6>> is a snapshot taken from the Donate screen of the Save Sick Child application when the user taped inside the email field - note the key with the at-sign on the main keyboard, which wouldn't be shown for non-email inputs.  
+
+[[FIG13-6]]
+.The iPhone virtual keyboard for entering emails
+image::images/fig_13_06.png[image]
 
 If the field is for entering a URL (`xtype: 'urlfield'`) expect to see a virtual keyboard with the button labeled as ".com". If the input field has `xtype: 'numberfield'` the user may see a numeric keyboard when the focus gets into this field.
 
-==== Implementing Navigation
+===== Layouts
 
-While designing the navigation for the mobile device you'll be creating a set of views that will replace each other on the user's device.
+Besides grouping components, containers allow you to assign a `Layout` to control its children arrangements. In desktop applications screens are larger and pretty often you can place multiple containers on the same screen at the same time. In mobile world you don't have such a luxury and you'll be designing layouts showing just one container at a time. Not all layouts are practical on smaller screens, which is the reason why not all Ext JS layouts are supported in Sencha Touch. For example, such Ext JS layouts as `Table`, `Column`, `Border`, and some others are not available in Sencha Touch. 
 
-===== Touches and Gestures
+Figure <<FIG13-13>> illustrates the main container that shows either the `tabpanel` or `loginform`. The `tabpanel` is a container with a special layout that shows only one of its child containers at a time (e.g. About, Donate, et al).
 
-The Scroller class
+By default, the container's layout is `auto`, which instructs the rendering engine to use the entire width of the container, but use just enough height to display the children. This behavior is similar to the `vbox` layout (vertical box), where all components are being added to the container vertically - one under another. Accordingly, the `hbox`will arrange all components horizontally - one next to the other. 
 
-==== Layouts 
+TIP: If you want to control how much of a vertical or horizontal screen space is given to each component use the `flex` property as described in Chapter 6 in the section "The flex Property".
 
-UI components have to be laid out on the user's screen. 
+The `fit` layout will fill the entire container's space with the child element. If you have more than one child element in the container - the first one will fill the entire space, and the other will be ignored. The `card` layout is somewhat similar to fit, but it can accommodate multiple children while displaying only one at a time. The container's method `setActiveItem()` allows programmatically select the "card" to be on top of the deck. 
+
+You can find examples of `card` and `fit` layouts in the file Main.js of the Save Sick Child application. Figure <<FIG13-14>> shows `card` layout, but if you'll expand the `tabpanel` container, each tab has the `fit` layout. 
+
+The classes `TabPanel` and `Carousel` represent two different implementations of the containers with `card` layout.
+
+
+//===== Implementing Navigation
+
+//While designing the navigation for the mobile device you'll be creating a set of views that will replace each other on the user's device.
+
+===== Events
+
+Events can be initiated by the browser or by the user. Chapter 6 includes the section titled "Events" - it covers general rules of dealing with events in Ext JS framework. Lots and lots of system events are being dispatched during UI component rendering. The online documentation lists every event that can be dispatched on Sencha classes. Look for the Events section on the top toolbar in the online documentation. Figure <<FIG13-7>> is a snapshot from online documentation for the class Ext.Container, which has 32 events. 
+
+[[FIG13-7]]
+.Events in Online documentation 
+image::images/fig_13_07.png[image] 
+
+Sencha Touch knows how to handle various mobile-specific events. Check out the documentation for the class http://docs.sencha.com/touch/2.2.1/#!/api/Ext.dom.Element[`Ext.dom.Element`] - you'll find there such events as  `touchstart`, `touchend`, `tap`, `doubletap`, `swipe`, `pinch`, `longpress`, `rotate`, and others. 
+
+The `Ext.Container` class defines a config property `control`, which is a convenient place for defining event handlers. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the `tap` event handler functions `showLoginView()` and `cancelLogin()` for the buttons Login and Cancel.
+
+[source, javascript]
+----
+Ext.define('SSC.controller.Login', {
+    extend: 'Ext.app.Controller',
+    ...
+    config: {
+
+        control: {
+            loginButton: {
+                tap: 'showLoginView'
+            },
+            cancelButton: {
+                tap: 'cancelLogin'
+            }
+        }
+    },
+    showLoginView: function () {...},
+
+    cancelLogin: function () { ...}  
+});    
+----
 
 
 === Save Sick Child With Sencha Touch
 
 The Sencha Touch version of the Save Sick Child application will be based on the prototype from Chapter 12, section "Prototyping Mobile Version" with minor changes. This time the home page of the application will be a slightly different version of the About page shown on <<FIG13-11>>. 
 
-In Chapter 6 we started using http://www.jetbrains.com/webstorm/[WebStorm IDE] from JetBrain, and this is going to be our IDE of choice.
+In Chapter 6 we started using http://www.jetbrains.com/webstorm/[WebStorm IDE] from JetBrain, and this is going to be our IDE of choice in this chapter.
 
 IMPORTANT: The materials presented in this chapter were tested only with the current version of Sencha Touch framework, which at the time of this writing was 2.2.1.
 
@@ -362,7 +415,7 @@ image::images/fig_13_13.png[]
 The `card` layout means that the user will see either the content of that container or the login form - one at a time. Let's open up the container. It has an array of children, which are our application pages. The figure <<FIG13-14>> show who are the children.
 
 [[FIG13-14]]
-.The container's children in a collapsed form
+.TabPanel's children in a collapsed form
 image::images/fig_13_14.png[] 
 
 The entire code of the Main.js is shown next.
@@ -370,110 +423,113 @@ The entire code of the Main.js is shown next.
 [source, javascript]
 ----
 Ext.define('SSC.view.Main', {
-   extend: 'Ext.Container',
-   xtype: 'mainview',             // <1>
-   requires: [
-       'Ext.tab.Panel',
-       'Ext.Map',
-       'Ext.Img'
-   ],
+ extend: 'Ext.Container',
+ xtype: 'mainview',                             // <1>
+ requires: [
+     'Ext.tab.Panel',
+     'Ext.Map',
+     'Ext.Img'
+ ],
 
-   config: {
-     layout: 'card',
+ config: {
+    layout: 'card',
 
-     items: [
-       { xtype: 'container',
-         layout: 'fit',
-
-         showAnimation: {
-             type: 'slide',
-             direction: 'down',
-             duration: 200
-         },
-
-         items: [
-           { xtype: 'tabpanel',
-             tabBarPosition: 'bottom',
+    items: [
+     {
+      xtype: 'tabpanel',                         // <2>
+              tabBarPosition: 'bottom',
 
              items: [
-               {  title: 'About',
-                  iconCls: 'info',   // <2>  
-                  layout: 'fit',     // <3>
-                  items: [
-                    {xtype: 'aboutview'}
-                  ]
-               },
-               {  title: 'Donate',
-                  iconCls: 'love',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'logintoolbar',   // <4>
-                      title: 'Donate'
-                    },
-                    {xtype: 'donateform'}
-                  ]
-               },
-               {  title: 'Stats',
-                  iconCls: 'pie',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'logintoolbar',
-                      title: 'Stats'
-                    },
-                    { xtype: 'donorschart'}
-                  ]
-               },
-               {  title: 'Events',
-                  iconCls: 'pin',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'logintoolbar',
-                      title: 'Events'
-                    },
-                    { xtype: 'campaignsmap'}
-                  ]
-               },
-               {  title: 'Media',
-                  iconCls: 'media',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'mediaview'}
-                  ]
-               },
-               {  title: 'Share',
-                  iconCls: 'share',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'logintoolbar',
-                      title: 'Share'
-                    },
-                    {xtype: 'shareview'}
-                  ]
-               }
+               {
+                     title: 'About',
+                     iconCls: 'info',      // <3>
+                     layout: 'fit',        // <4>
+                     items: [
+                         {xtype: 'aboutview'
+                         }
+                     ]
+                },
+               {
+                     title: 'Donate',
+                     iconCls: 'love',
+                     layout: 'fit',
+                     items: [
+                         {xtype: 'logintoolbar',   // <5>
+                          title: 'Donate'
+                         },
+                         {xtype: 'donateform'
+                         }
+                     ]
+                },
+               {
+                     title: 'Stats',
+                     iconCls: 'pie',
+                     layout: 'fit',
+                     items: [
+                         {xtype: 'logintoolbar',
+                          title: 'Stats'
+                         },
+                         {xtype: 'donorschart'
+                         }
+                     ]
+                 },
+               {
+                    title: 'Events',
+                    iconCls: 'pin',
+                    layout: 'fit',
+                    items: [
+                        {xtype: 'logintoolbar',
+                         title: 'Events'
+                        },
+                        {xtype: 'campaignsmap'
+                        }
+                    ]
+                },
+               {
+                    title: 'Media',
+                    iconCls: 'media',
+                    layout: 'fit',
+                    items: [
+                        {xtype: 'mediaview'
+                        }
+                    ]
+                },
+               {
+                    title: 'Share',
+                    iconCls: 'share',
+                    layout: 'fit',
+                    items: [
+                        {xtype: 'logintoolbar',
+                            title: 'Share'
+                        },
+                        {xtype: 'shareview'
+                        }
+                    ]
+                }
              ]
-           }
-         ]
-       },
-       { xtype: 'loginform',
+     },
 
+     {xtype: 'loginform',
          showAnimation: {
              type: 'slide',
              direction: 'up',
              duration: 200
          }
-       }
-     ]
-   } 
+     }
+    ]
+ }
 });
 ----
 
 <1> We've assigned the `xtype: 'mainview` to the main view so to  allow the Login controller refer to it (see its code below). 
 
-<2> Each of the tabs has a corresponding button on the toolbar. It shows the text from the `title` attribute and the icon from the `iconCls`. 
+<2> Note that the `tabpanel` doesn't explicitly specify any layout - it uses `card` by default.
 
-<3> Each of the view has http://docs.sencha.com/extjs/4.1.3/#!/api/Ext.layout.container.Fit[`fit` layout], which forces the content to expand to fill the layout's container.
+<3> Each of the tabs has a corresponding button on the toolbar. It shows the text from the `title` attribute and the icon from the `iconCls`. 
 
-<4> Each view will have a Login button on the toolbar. It's implemented in the LoginToolbar.js shown later in this chapter.    
+<4> Each of the view has http://docs.sencha.com/extjs/4.1.3/#!/api/Ext.layout.container.Fit[`fit` layout], which forces the content to expand to fill the layout's container.
+
+<5> Each view will have a Login button on the toolbar. It's implemented in the LoginToolbar.js shown later in this chapter.    
 Now let's review the code of the Login page controller. It has no login logic, and implements only the UI. The name of this file is Login.js and it's located in the folder _controller_. 
 
 [source, javascript]
@@ -620,30 +676,32 @@ TIP: If you'll add the Save Sick Child application as an icon to the home screen
 
 In chapters 12 and 13 you've learned about two different ways of developing a mobile application. So what's better jQuery Mobile or Sencha Touch? There is no answer to this question, and you will have to make a decision on your own. But here's a quick summary of pros and cons for each library or framework.
 
-* If you are afraid of being locked up with any one vendor, go with jQuery Mobile.
+Use jQuery Mobile if:
 
-* If you need your application to work on most of the mobile platforms the jQuery Mobile is for you.
+* If you are afraid of being locked up with any one vendor.
 
-* If you prefer declarative UI and hate debugging JavaScript select jQuery Mobile.
+* If you need your application to work on most of the mobile platforms.
 
-* If you like to have a rich library of pre-created UI components go with Sencha Touch.
+* If you prefer declarative UI and hate debugging JavaScript.
 
-* If your application needs smooth animation, go with Sencha Touch - it does automatic throttling based on the actual frames per seconds supported on the device.
+Use Sench Touch if:
 
-* If splitting the application code into cleanly defined architectural layers (model-view-controller-service) is important, go with Sencha Touch.
+* If you like to have a rich library of pre-created UI.
 
-* If you believe that using code generators add value to your project, go with Sencha.
+* If your application needs smooth animation. Sencha Touch does automatic throttling based on the actual frames per seconds supported on the device.
 
-* If you want to be able customize and extend components to fit your application's needs perfectly, use Sencha Touch. Yes, you'll be writing JavaScript, but it still may be simpler than trying to figure out the enhancements done to HTML component by jQuery Mobile under the hood. 
+* If splitting the application code into cleanly defined architectural layers (model-view-controller-service) is important.
 
-* If you want to minimize the efforts required to package your application as a native one, use Sencha Touch.
+* If you believe that using code generators add value to your project.
 
-* If you won't sleep well at night unless you development project is covered by commercial vendor support, use Sencha Touch.
+* If you want to be able customize and extend components to fit your application's needs perfectly. Yes, you'll be writing JavaScript, but it still may be simpler than trying to figure out the enhancements done to HTML component by jQuery Mobile under the hood. 
+
+* If you want to minimize the efforts required to package your application as a native one.
+
+* If you want your application to look as close to the native ones as possible.
+
+* If you won't sleep well at night unless you development project is covered by commercial vendor support.
 
 While considering support options do not just assume that paid support translates into better quality. This is not to say that Sencha won't offer you quality support, but in many cases having a large community of developers will lead to a faster solution to a problem that dealing with one assigned support engineer. Having said this, we'd like you to know that http://www.sencha.com/forum/[Sencha forum] has about half a million registered users who are actively discussing problems and offering solutions to each other.
 
-
 Even if you are a developer's manager, you don't have to make the framework choice on your own. Bring your team into a conference room, order pizza, and listen to what _your team members_ have to say about these two or any other frameworks being considered. We offered you the information about two of many frameworks, but the final call is yours.
-
-
-
