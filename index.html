@@ -1131,9 +1131,7 @@ p.tableblock.header { color: #6d6e71; }
 <li>
 <ol type="none" class="sectlevel3">
 <li><a href="#_code_generation_and_distribution">Code Generation and Distribution</a></li>
-<li><a href="#_ui_components">UI Components</a></li>
-<li><a href="#_implementing_navigation">Implementing Navigation</a></li>
-<li><a href="#_layouts_2">Layouts</a></li>
+<li><a href="#_constructing_ui">Constructing UI</a></li>
 </ol>
 </li>
 <li><a href="#_save_sick_child_with_sencha_touch">Save Sick Child With Sencha Touch</a></li>
@@ -10831,18 +10829,21 @@ With older versions of Sencha Cmd (Sencha SDK Tools) you would generate a manife
 <div class="paragraph">
 <p>Later in this chapter we&#8217;ll use Sencha CMD tool again in the section "Building Production Version" to create an optimized version of the Save Sick Child application.</p>
 </div>
-<div class="admonitionblock important">
+<div class="admonitionblock tip">
 <table>
 <tr>
 <td class="icon">
-<i class="icon-important" title="Important"></i>
+<i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
 
-If your organization is developing Web applications with Ext JS without using Sencha CMD - it&#8217;s a mistake. Sencha CMD is a very useful code generator and optimizer that also enforces the MVC principles of application design.
+Sencha CMD 3.1 comes with embedded Jetty 8.1.7 Web server. Open the Terminal or command window and run the following command to serve your Web application on port 8080 (can be another port): <em>sencha fs web -port8080 start -map /path/to/app/docrootdir</em>.
 </td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>If your organization is developing Web applications with Ext JS without using Sencha CMD - it&#8217;s a mistake. Sencha CMD is a very useful code generator and optimizer that also enforces the MVC principles of application design.</p>
 </div>
 
 </div>
@@ -20644,7 +20645,7 @@ If you haven&#8217;t read Chapter 6 on Ext JS, please do it now. Both of these f
 <div class="title">Figure 186. CMD-generated project</div>
 </div>
 <div class="paragraph">
-<p>To test your newly generated application you&#8217;ll need to make sure that the directory <em>hellotouch</em> is deployed under a Web server (simple opening of index.html in the Web browser won&#8217;t work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6.</p>
+<p>To test your newly generated application you&#8217;ll need to make sure that the directory <em>hellotouch</em> is deployed under a Web server (simple opening of index.html in the Web browser won&#8217;t work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6. In the same chapter you can find the command to start the Jetty Web server embedded in the Sencha CMD tool.</p>
 </div>
 <div class="paragraph">
 <p>In this chapter we are going to use the internal Web server that comes with WebStorm IDE. It runs on the port 63342, and if your project&#8217;s name is helloworld, just enter in your Web browser <a href="http://localhost:63342/helloworld">http://localhost:63342/helloworld</a> to run it.</p>
@@ -20831,13 +20832,13 @@ Ext.application({
 </table>
 </div>
 <div class="paragraph">
-<p>The code of the generated Main.js, which is a main view of this application is shown next. It extends the class <code>Ext.tab.Panel</code> so each page of the application is a tab. Figure <a href="#FIG13-4">Collapsed version of Main.js</a> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter.</p>
+<p>The code of the generated Main.js, which is a main view of this application is shown next. It extends the class <code>Ext.tab.Panel</code> so each page of the application is a tab. Figure <a href="#FIG13-4">Collapsed version of Main.js from Hello World</a> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter.</p>
 </div>
 <div id="FIG13-4" class="imageblock">
 <div class="content">
 <img src="./images/fig_13_04.png" alt="image">
 </div>
-<div class="title">Figure 188. Collapsed version of Main.js</div>
+<div class="title">Figure 188. Collapsed version of Main.js from Hello World</div>
 </div>
 <div class="paragraph">
 <p>As you see from this figure the <code>items[]</code> array includes two objects: Welcome and Get Started - each of them is one tab (screen).</p>
@@ -20922,45 +20923,117 @@ Ext.application({
 
 </div>
 <div class="sect3">
-<h4 id="_ui_components">UI Components</h4>
+<h4 id="_constructing_ui">Constructing UI</h4>
 <div class="paragraph">
 <p>Sencha Touch has a number UI components specifically designed  for mobile devices, which include lists, forms, toolbars and buttons, charts, audio, video, carousel and more.  The quickest way to get familiar with events and UI components is by browsing the <a href="http://dev.sencha.com/deploy/touch/examples/production/kitchensink/">Kitchen Sink</a> Web site, where you can find the examples of how UI components look and see the source code of these examples.</p>
 </div>
+<div class="sect4">
+<h5 id="_containers">Containers</h5>
 <div class="paragraph">
 <p>In general, the process of implementing of a mobile application with Sencha Touch will consist of selecting the appropriate containers and arranging the navigation between them. Each screen that user sees is a container. Pretty often it&#8217;ll include a toolbar <em>docked</em> on top or bottom of the container.</p>
 </div>
 <div class="paragraph">
-<p>If your containers will include forms with such inputs as text field, text area, password, and numbers, the virtual keyboard will automatically show up occupying half of the user&#8217;s screen. On some platforms, virtual keyboards will adapt to the type of the input field, for example, if the field has <code>xtype: 'emailfield'</code>, the keyboard will be modified for easier input of emails. Figure <a href="#FIG13-5">The iPhone virtual keyboard for entering emails</a> is a snapshot taken from the Donate screen of the Save Sick Child application when the user taped inside the email field.</p>
+<p>Containers can be nested - they are needed for a better grouping of UI components on the screen. The lightest container is <code>Ext.Container</code>. It inherits all the functionality from it ancestor <code>Ext.Component</code> can plus it can contain other components.  When you&#8217;ll be reviewing the code of the Save Sick Child application, note that the main view <code>SSC.view.Main</code> (see Main.js) extends <code>Ext.Container</code>. The hierarchy of Sencha Touch containers is shown on Figure <a href="#FIG13-5">Sencha Touch Containers Hierarchy</a>.</p>
 </div>
 <div id="FIG13-5" class="imageblock">
 <div class="content">
 <img src="./images/fig_13_05.png" alt="image">
 </div>
-<div class="title">Figure 189. The iPhone virtual keyboard for entering emails</div>
+<div class="title">Figure 189. Sencha Touch Containers Hierarchy</div>
+</div>
+<div class="paragraph">
+<p>The <code>FieldSet</code> is also a pretty light container - it simply adds the title to a group of fields that belong together. You&#8217;ll see several code samples in this chapter with <code>xtype: 'fieldset'</code> (e.g. Login or Donate screens).</p>
+</div>
+<div class="paragraph">
+<p>If your containers display forms with such inputs as text field, text area, password, and numbers, the virtual keyboard will automatically show up occupying half of the user&#8217;s screen. On some platforms, virtual keyboards will adapt to the type of the input field, for example, if the field has <code>xtype: 'emailfield'</code>, the keyboard will be modified for easier input of emails. Figure <a href="#FIG13-6">The iPhone virtual keyboard for entering emails</a> is a snapshot taken from the Donate screen of the Save Sick Child application when the user taped inside the email field - note the key with the at-sign on the main keyboard, which wouldn&#8217;t be shown for non-email inputs.</p>
+</div>
+<div id="FIG13-6" class="imageblock">
+<div class="content">
+<img src="./images/fig_13_06.png" alt="image">
+</div>
+<div class="title">Figure 190. The iPhone virtual keyboard for entering emails</div>
 </div>
 <div class="paragraph">
 <p>If the field is for entering a URL (<code>xtype: 'urlfield'</code>) expect to see a virtual keyboard with the button labeled as ".com". If the input field has <code>xtype: 'numberfield'</code> the user may see a numeric keyboard when the focus gets into this field.</p>
 </div>
 
 </div>
-<div class="sect3">
-<h4 id="_implementing_navigation">Implementing Navigation</h4>
+<div class="sect4">
+<h5 id="_layouts_2">Layouts</h5>
 <div class="paragraph">
-<p>While designing the navigation for the mobile device you&#8217;ll be creating a set of views that will replace each other on the user&#8217;s device.</p>
+<p>Besides grouping components, containers allow you to assign a <code>Layout</code> to control its children arrangements. In desktop applications screens are larger and pretty often you can place multiple containers on the same screen at the same time. In mobile world you don&#8217;t have such a luxury and you&#8217;ll be designing layouts showing just one container at a time. Not all layouts are practical on smaller screens, which is the reason why not all Ext JS layouts are supported in Sencha Touch. For example, such Ext JS layouts as <code>Table</code>, <code>Column</code>, <code>Border</code>, and some others are not available in Sencha Touch.</p>
+</div>
+<div class="paragraph">
+<p>Figure <a href="#FIG13-13">The Main.js in a collapsed form</a> illustrates the main container that shows either the <code>tabpanel</code> or <code>loginform</code>. The <code>tabpanel</code> is a container with a special layout that shows only one of its child containers at a time (e.g. About, Donate, et al).</p>
+</div>
+<div class="paragraph">
+<p>By default, the container&#8217;s layout is <code>auto</code>, which instructs the rendering engine to use the entire width of the container, but use just enough height to display the children. This behavior is similar to the <code>vbox</code> layout (vertical box), where all components are being added to the container vertically - one under another. Accordingly, the `hbox`will arrange all components horizontally - one next to the other.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+If you want to control how much of a vertical or horizontal screen space is given to each component use the <code>flex</code> property as described in Chapter 6 in the section "The flex Property".
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>fit</code> layout will fill the entire container&#8217;s space with the child element. If you have more than one child element in the container - the first one will fill the entire space, and the other will be ignored. The <code>card</code> layout is somewhat similar to fit, but it can accommodate multiple children while displaying only one at a time. The container&#8217;s method <code>setActiveItem()</code> allows programmatically select the "card" to be on top of the deck.</p>
+</div>
+<div class="paragraph">
+<p>You can find examples of <code>card</code> and <code>fit</code> layouts in the file Main.js of the Save Sick Child application. Figure <a href="#FIG13-14">TabPanel&#8217;s children in a collapsed form</a> shows <code>card</code> layout, but if you&#8217;ll expand the <code>tabpanel</code> container, each tab has the <code>fit</code> layout.</p>
+</div>
+<div class="paragraph">
+<p>The classes <code>TabPanel</code> and <code>Carousel</code> represent two different implementations of the containers with <code>card</code> layout.</p>
+</div>
+
 </div>
 <div class="sect4">
-<h5 id="_touches_and_gestures">Touches and Gestures</h5>
+<h5 id="_events_3">Events</h5>
 <div class="paragraph">
-<p>The Scroller class</p>
+<p>Events can be initiated by the browser or by the user. Chapter 6 includes the section titled "Events" - it covers general rules of dealing with events in Ext JS framework. Lots and lots of system events are being dispatched during UI component rendering. The online documentation lists every event that can be dispatched on Sencha classes. Look for the Events section on the top toolbar in the online documentation. Figure <a href="#FIG13-7">Events in Online documentation</a> is a snapshot from online documentation for the class Ext.Container, which has 32 events.</p>
+</div>
+<div id="FIG13-7" class="imageblock">
+<div class="content">
+<img src="./images/fig_13_07.png" alt="image">
+</div>
+<div class="title">Figure 191. Events in Online documentation</div>
+</div>
+<div class="paragraph">
+<p>Sencha Touch knows how to handle various mobile-specific events. Check out the documentation for the class <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.dom.Element"><code>Ext.dom.Element</code></a> - you&#8217;ll find there such events as  <code>touchstart</code>, <code>touchend</code>, <code>tap</code>, <code>doubletap</code>, <code>swipe</code>, <code>pinch</code>, <code>longpress</code>, <code>rotate</code>, and others.</p>
+</div>
+<div class="paragraph">
+<p>The <code>Ext.Container</code> class defines a config property <code>control</code>, which is a convenient place for defining event handlers. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the <code>tap</code> event handler functions <code>showLoginView()</code> and <code>cancelLogin()</code> for the buttons Login and Cancel.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.controller.Login', {
+    extend: 'Ext.app.Controller',
+    ...
+    config: {
+
+        control: {
+            loginButton: {
+                tap: 'showLoginView'
+            },
+            cancelButton: {
+                tap: 'cancelLogin'
+            }
+        }
+    },
+    showLoginView: function () {...},
+
+    cancelLogin: function () { ...}
+});</code></pre>
+</div>
 </div>
 
-</div>
-
-</div>
-<div class="sect3">
-<h4 id="_layouts_2">Layouts</h4>
-<div class="paragraph">
-<p>UI components have to be laid out on the user&#8217;s screen.</p>
 </div>
 
 </div>
@@ -20972,7 +21045,7 @@ Ext.application({
 <p>The Sencha Touch version of the Save Sick Child application will be based on the prototype from Chapter 12, section "Prototyping Mobile Version" with minor changes. This time the home page of the application will be a slightly different version of the About page shown on <a href="#FIG13-11">The Starting/About page</a>.</p>
 </div>
 <div class="paragraph">
-<p>In Chapter 6 we started using <a href="http://www.jetbrains.com/webstorm/">WebStorm IDE</a> from JetBrain, and this is going to be our IDE of choice.</p>
+<p>In Chapter 6 we started using <a href="http://www.jetbrains.com/webstorm/">WebStorm IDE</a> from JetBrain, and this is going to be our IDE of choice in this chapter.</p>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -20991,7 +21064,7 @@ The materials presented in this chapter were tested only with the current versio
 <div class="content">
 <img src="./images/fig_13_11.png" alt="fig_13_11">
 </div>
-<div class="title">Figure 190. The Starting/About page</div>
+<div class="title">Figure 192. The Starting/About page</div>
 </div>
 <div class="paragraph">
 <p>Below is the code of the app.js in the Save Sick Child project (we&#8217;ve just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications.</p>
@@ -21064,7 +21137,7 @@ The materials presented in this chapter were tested only with the current versio
 <div class="content">
 <img src="./images/fig_13_12.png" alt="fig_13_12">
 </div>
-<div class="title">Figure 191. The code on the server has changed</div>
+<div class="title">Figure 193. The code on the server has changed</div>
 </div>
 <div class="paragraph">
 <p>At this point the user can either select working with the previous version of the application or reload the new one.</p>
@@ -21098,16 +21171,16 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 <div class="content">
 <img src="./images/fig_13_13.png" alt="fig_13_13">
 </div>
-<div class="title">Figure 192. The Main.js in a collapsed form</div>
+<div class="title">Figure 194. The Main.js in a collapsed form</div>
 </div>
 <div class="paragraph">
-<p>The <code>card</code> layout means that the user will see either the content of that container or the login form - one at a time. Let&#8217;s open up the container. It has an array of children, which are our application pages. The figure <a href="#FIG13-14">The container&#8217;s children in a collapsed form</a> show who are the children.</p>
+<p>The <code>card</code> layout means that the user will see either the content of that container or the login form - one at a time. Let&#8217;s open up the container. It has an array of children, which are our application pages. The figure <a href="#FIG13-14">TabPanel&#8217;s children in a collapsed form</a> show who are the children.</p>
 </div>
 <div id="FIG13-14" class="imageblock">
 <div class="content">
 <img src="./images/fig_13_14.png" alt="fig_13_14">
 </div>
-<div class="title">Figure 193. The container&#8217;s children in a collapsed form</div>
+<div class="title">Figure 195. TabPanel&#8217;s children in a collapsed form</div>
 </div>
 <div class="paragraph">
 <p>The entire code of the Main.js is shown next.</p>
@@ -21116,100 +21189,101 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.view.Main', {
-   extend: 'Ext.Container',
-   xtype: 'mainview',             // <i class="conum">1</i>
-   requires: [
-       'Ext.tab.Panel',
-       'Ext.Map',
-       'Ext.Img'
-   ],
+ extend: 'Ext.Container',
+ xtype: 'mainview',                             // <i class="conum">1</i>
+ requires: [
+     'Ext.tab.Panel',
+     'Ext.Map',
+     'Ext.Img'
+ ],
 
-   config: {
-     layout: 'card',
+ config: {
+    layout: 'card',
 
-     items: [
-       { xtype: 'container',
-         layout: 'fit',
-
-         showAnimation: {
-             type: 'slide',
-             direction: 'down',
-             duration: 200
-         },
-
-         items: [
-           { xtype: 'tabpanel',
-             tabBarPosition: 'bottom',
+    items: [
+     {
+      xtype: 'tabpanel',                         // <i class="conum">2</i>
+              tabBarPosition: 'bottom',
 
              items: [
-               {  title: 'About',
-                  iconCls: 'info',   // <i class="conum">2</i>
-                  layout: 'fit',     // <i class="conum">3</i>
-                  items: [
-                    {xtype: 'aboutview'}
-                  ]
-               },
-               {  title: 'Donate',
-                  iconCls: 'love',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'logintoolbar',   // <i class="conum">4</i>
-                      title: 'Donate'
-                    },
-                    {xtype: 'donateform'}
-                  ]
-               },
-               {  title: 'Stats',
-                  iconCls: 'pie',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'logintoolbar',
-                      title: 'Stats'
-                    },
-                    { xtype: 'donorschart'}
-                  ]
-               },
-               {  title: 'Events',
-                  iconCls: 'pin',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'logintoolbar',
-                      title: 'Events'
-                    },
-                    { xtype: 'campaignsmap'}
-                  ]
-               },
-               {  title: 'Media',
-                  iconCls: 'media',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'mediaview'}
-                  ]
-               },
-               {  title: 'Share',
-                  iconCls: 'share',
-                  layout: 'fit',
-                  items: [
-                    { xtype: 'logintoolbar',
-                      title: 'Share'
-                    },
-                    {xtype: 'shareview'}
-                  ]
-               }
+               {
+                     title: 'About',
+                     iconCls: 'info',      // <i class="conum">3</i>
+                     layout: 'fit',        // <i class="conum">4</i>
+                     items: [
+                         {xtype: 'aboutview'
+                         }
+                     ]
+                },
+               {
+                     title: 'Donate',
+                     iconCls: 'love',
+                     layout: 'fit',
+                     items: [
+                         {xtype: 'logintoolbar',   // <i class="conum">5</i>
+                          title: 'Donate'
+                         },
+                         {xtype: 'donateform'
+                         }
+                     ]
+                },
+               {
+                     title: 'Stats',
+                     iconCls: 'pie',
+                     layout: 'fit',
+                     items: [
+                         {xtype: 'logintoolbar',
+                          title: 'Stats'
+                         },
+                         {xtype: 'donorschart'
+                         }
+                     ]
+                 },
+               {
+                    title: 'Events',
+                    iconCls: 'pin',
+                    layout: 'fit',
+                    items: [
+                        {xtype: 'logintoolbar',
+                         title: 'Events'
+                        },
+                        {xtype: 'campaignsmap'
+                        }
+                    ]
+                },
+               {
+                    title: 'Media',
+                    iconCls: 'media',
+                    layout: 'fit',
+                    items: [
+                        {xtype: 'mediaview'
+                        }
+                    ]
+                },
+               {
+                    title: 'Share',
+                    iconCls: 'share',
+                    layout: 'fit',
+                    items: [
+                        {xtype: 'logintoolbar',
+                            title: 'Share'
+                        },
+                        {xtype: 'shareview'
+                        }
+                    ]
+                }
              ]
-           }
-         ]
-       },
-       { xtype: 'loginform',
+     },
 
+     {xtype: 'loginform',
          showAnimation: {
              type: 'slide',
              direction: 'up',
              duration: 200
          }
-       }
-     ]
-   }
+     }
+    ]
+ }
 });</code></pre>
 </div>
 </div>
@@ -21222,14 +21296,18 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
-<td>Each of the tabs has a corresponding button on the toolbar. It shows the text from the <code>title</code> attribute and the icon from the <code>iconCls</code>.</td>
+<td>Note that the <code>tabpanel</code> doesn&#8217;t explicitly specify any layout - it uses <code>card</code> by default.</td>
 </tr>
 <tr>
 <td><i class="conum">3</i></td>
-<td>Each of the view has <a href="http://docs.sencha.com/extjs/4.1.3/#!/api/Ext.layout.container.Fit"><code>fit</code> layout</a>, which forces the content to expand to fill the layout&#8217;s container.</td>
+<td>Each of the tabs has a corresponding button on the toolbar. It shows the text from the <code>title</code> attribute and the icon from the <code>iconCls</code>.</td>
 </tr>
 <tr>
 <td><i class="conum">4</i></td>
+<td>Each of the view has <a href="http://docs.sencha.com/extjs/4.1.3/#!/api/Ext.layout.container.Fit"><code>fit</code> layout</a>, which forces the content to expand to fill the layout&#8217;s container.</td>
+</tr>
+<tr>
+<td><i class="conum">5</i></td>
 <td>Each view will have a Login button on the toolbar. It&#8217;s implemented in the LoginToolbar.js shown later in this chapter.
 Now let&#8217;s review the code of the Login page controller. It has no login logic, and implements only the UI. The name of this file is Login.js and it&#8217;s located in the folder <em>controller</em>.</td>
 </tr>
@@ -21306,7 +21384,7 @@ Now let&#8217;s review the code of the Login page controller. It has no login lo
 <div class="content">
 <img src="./images/fig_13_15.png" alt="fig_13_15">
 </div>
-<div class="title">Figure 194. The Login Form View</div>
+<div class="title">Figure 196. The Login Form View</div>
 </div>
 <div class="paragraph">
 <p>This is how the code of the Login form view looks like - it&#8217;s self explanatory. The <code>ui: 'decline'</code> is the <a href="http://try.sencha.com/touch/2.2.0/demos/Ext.Button.ui/"><code>Ext.Button</code> style</a> that causes the Cancel button have a red background.</p>
@@ -21367,7 +21445,7 @@ Now let&#8217;s review the code of the Login page controller. It has no login lo
 <div class="content">
 <img src="./images/fig_13_16.png" alt="fig_13_16">
 </div>
-<div class="title">Figure 195. The Login Toolbar</div>
+<div class="title">Figure 197. The Login Toolbar</div>
 </div>
 <div class="paragraph">
 <p>The Login button is added as <code>xtype: 'logintoolbar'</code> to the top of each view in the Main.js. It&#8217;s implemented in the LoginToolbar.js shown next.</p>
@@ -21430,38 +21508,52 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 <div class="paragraph">
 <p>In chapters 12 and 13 you&#8217;ve learned about two different ways of developing a mobile application. So what&#8217;s better jQuery Mobile or Sencha Touch? There is no answer to this question, and you will have to make a decision on your own. But here&#8217;s a quick summary of pros and cons for each library or framework.</p>
 </div>
+<div class="paragraph">
+<p>Use jQuery Mobile if:</p>
+</div>
 <div class="ulist">
 
 <ul>
 <li>
-<p>If you are afraid of being locked up with any one vendor, go with jQuery Mobile.</p>
+<p>If you are afraid of being locked up with any one vendor.</p>
 </li>
 <li>
-<p>If you need your application to work on most of the mobile platforms the jQuery Mobile is for you.</p>
+<p>If you need your application to work on most of the mobile platforms.</p>
 </li>
 <li>
-<p>If you prefer declarative UI and hate debugging JavaScript select jQuery Mobile.</p>
+<p>If you prefer declarative UI and hate debugging JavaScript.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Use Sench Touch if:</p>
+</div>
+<div class="ulist">
+
+<ul>
+<li>
+<p>If you like to have a rich library of pre-created UI.</p>
 </li>
 <li>
-<p>If you like to have a rich library of pre-created UI components go with Sencha Touch.</p>
+<p>If your application needs smooth animation. Sencha Touch does automatic throttling based on the actual frames per seconds supported on the device.</p>
 </li>
 <li>
-<p>If your application needs smooth animation, go with Sencha Touch - it does automatic throttling based on the actual frames per seconds supported on the device.</p>
+<p>If splitting the application code into cleanly defined architectural layers (model-view-controller-service) is important.</p>
 </li>
 <li>
-<p>If splitting the application code into cleanly defined architectural layers (model-view-controller-service) is important, go with Sencha Touch.</p>
+<p>If you believe that using code generators add value to your project.</p>
 </li>
 <li>
-<p>If you believe that using code generators add value to your project, go with Sencha.</p>
+<p>If you want to be able customize and extend components to fit your application&#8217;s needs perfectly. Yes, you&#8217;ll be writing JavaScript, but it still may be simpler than trying to figure out the enhancements done to HTML component by jQuery Mobile under the hood.</p>
 </li>
 <li>
-<p>If you want to be able customize and extend components to fit your application&#8217;s needs perfectly, use Sencha Touch. Yes, you&#8217;ll be writing JavaScript, but it still may be simpler than trying to figure out the enhancements done to HTML component by jQuery Mobile under the hood.</p>
+<p>If you want to minimize the efforts required to package your application as a native one.</p>
 </li>
 <li>
-<p>If you want to minimize the efforts required to package your application as a native one, use Sencha Touch.</p>
+<p>If you want your application to look as close to the native ones as possible.</p>
 </li>
 <li>
-<p>If you won&#8217;t sleep well at night unless you development project is covered by commercial vendor support, use Sencha Touch.</p>
+<p>If you won&#8217;t sleep well at night unless you development project is covered by commercial vendor support.</p>
 </li>
 </ul>
 </div>
