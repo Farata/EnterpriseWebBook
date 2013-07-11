@@ -1139,7 +1139,7 @@ p.tableblock.header { color: #6d6e71; }
 <ol type="none" class="sectlevel3">
 <li><a href="#_the_application_entry">The Application Entry</a></li>
 <li><a href="#_the_main_view">The Main View</a></li>
-<li><a href="#_overview_of_the_views">Overview of the Views</a></li>
+<li><a href="#_the_other_views">The Other Views</a></li>
 <li><a href="#_stores_and_models">Stores and Models</a></li>
 </ol>
 </li>
@@ -2829,7 +2829,7 @@ myTaxObject.doTaxes();  //invoking method doTaxes</code></pre>
 <div class="sect3">
 <h4 id="_call_and_apply">Call and Apply</h4>
 <div class="paragraph">
-<p>Visualize the International Space Station, and add to the picture an image of a approaching space shuttle. After attaching to the docking bay of the station the shuttle&#8217;s crew performs some functions on the station (a.k.a. object) and then flies to another object or back to Earth. What is has to do with JavaScript? It can serve as an analogy for creating a JavaScript function that can operate in the scope of any arbitrary object. For this purpose JavaScript offers two special functions: <code>call()</code> or <code>apply()</code>. Both <code>call()</code> and <code>apply()</code> can invoke any function on any object. The only difference between them is that <code>apply()</code> passes required parameters to a function as an array, while <code>call()</code> uses a comma-separated list.</p>
+<p>Visualize the International Space Station, and add to the picture an image of a approaching space shuttle. After attaching to the docking bay of the station the shuttle&#8217;s crew performs some functions on the station (a.k.a. object) and then flies to another object or back to Earth. What it has to do with JavaScript? It can serve as an analogy for creating a JavaScript function that can operate in the scope of any arbitrary object. For this purpose JavaScript offers two special functions: <code>call()</code> or <code>apply()</code>. Both <code>call()</code> and <code>apply()</code> can invoke any function on any object. The only difference between them is that <code>apply()</code> passes required parameters to a function as an array, while <code>call()</code> uses a comma-separated list.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2839,7 +2839,7 @@ myTaxObject.doTaxes();  //invoking method doTaxes</code></pre>
 </td>
 <td class="content">
 
-Every function in JavaScript is a <code>Function</code> object. Both <code>call()</code> and <code>apply()</code> are defined in the <code>Function</code> object.
+Every function in JavaScript is an instance of the <code>Function</code> object. Both <code>call()</code> and <code>apply()</code> are defined in <code>Function</code>.
 </td>
 </tr>
 </table>
@@ -21061,6 +21061,9 @@ If you want to control how much of a vertical or horizontal screen space is give
 });</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Read more about the role of controllers in event handling in the section titled Controller later in this chapter. Online documentation includes the <a href="http://docs.sencha.com/touch/2.2.1/#!/guide/events">Event Guide</a> - it describes the process of handling events in detail.</p>
+</div>
 
 </div>
 
@@ -21347,7 +21350,7 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 </table>
 </div>
 <div class="paragraph">
-<p>Now let&#8217;s review the code of the Login page controller. We have not implemented any login logic - it simply reacts on the UI interaction. The name of this file is Login.js, it&#8217;s located in the folder <em>controller</em>, and here&#8217;s the code:</p>
+<p>Now let&#8217;s review the code of the Login page controller. For simlicity, we have not implemented any application login logic here - our controller reacts on the user&#8217;s actions performed in the view LoginForm. The name of the controller&#8217;s file is Login.js. It&#8217;s located in the folder <em>controller</em>, and here&#8217;s the code:</p>
 </div>
 <div class="listingblock">
 
@@ -21450,10 +21453,21 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 <div class="paragraph">
 <p>This version of the Login.js is shorter, but the first one is more generic. In both versions the button selectors are the shortcuts for the <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.ComponentQuery"><code>ComponentQuery</code></a> class, which is a singleton used for searching of components.</p>
 </div>
+<div class="paragraph">
+<p>With MVC pattern, the event processing logic is often located in controller classes. Using <code>refs</code> and <code>ComponentQuery</code> selectors allows you to reach event generating objects located different classes. For example, if the user tapped on a button in a view, controller&#8217;s code includes the <code>tap</code> event handler, where it triggers and event on a store class to initiate the data retrieval.</p>
+</div>
+<div class="paragraph">
+<p>But if the <code>control</code> config is defined not in the controller, but in a component, the scope where <code>ComponentQuery</code> operates is limited to the component itself. You&#8217;ll see the example of using the <code>control</code> config inside DonateForm.js later in this chapter.</p>
+</div>
 
 </div>
 <div class="sect3">
-<h4 id="_overview_of_the_views">Overview of the Views</h4>
+<h4 id="_the_other_views">The Other Views</h4>
+<div class="paragraph">
+<p>Let&#8217;s do a brief code review of other Save Sick Child views.</p>
+</div>
+<div class="sect4">
+<h5 id="_loginform">LoginForm</h5>
 <div class="paragraph">
 <p>Figure <a href="#FIG13-15">The Login Form View</a> is a snapshot of Login view taken from iPhone 5.</p>
 </div>
@@ -21577,6 +21591,314 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 </td>
 </tr>
 </table>
+</div>
+
+</div>
+<div class="sect4">
+<h5 id="_donateform">DonateForm</h5>
+<div class="paragraph">
+<p>We wanted to make the Donate view look as per our Web designer&#8217;s mockup shown on Figure <a href="#FIG12-13">The Donate page (portrait)</a>. With jQuery Mobile it was simple - the HTML container <code>&lt;fieldset data-role="controlgroup" data-type="horizontal" id="radio-container"&gt;</code> with a bunch of <code>&lt;input type="radio"</code> did the job as shown on Figure <a href="#FIG12-28">Controlgroup for donation amount</a>. Here the fragment from the initial Sencha Touch version of DonateForm.js.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript"> config: {
+  title: 'DonateForm',
+
+  items: [
+      { xtype: 'fieldset',
+          title: 'Please select donation amount',
+
+          defaults: {
+              name: 'amount',
+              xtype: 'radiofield'
+          },
+
+          items: [
+              { label: '$10',
+                value: 10
+              },
+              { label: '$20',
+                 value: 20
+              },
+              { label: '$50',
+                value: 50
+              },
+              { label: '$100',
+                  value: 100
+              }
+          ]
+      },
+      { xtype: 'fieldset',
+        title: '... or enter other amount',
+
+          items: [
+              { xtype: 'numberfield',
+                label: 'Amount',
+                name: 'amount'
+              }
+          ]
+      }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It&#8217;s also a <code>fieldset</code> with several radio buttons - <code>xtype: 'radiofield'</code>. But the result was not what we expected. These four radio buttons occupied half of the screen and looked as on Figure <a href="#FIG13-17">Rendering of xtype radiofield</a>:</p>
+</div>
+<div id="FIG13-17" class="imageblock">
+<div class="content">
+<img src="./images/fig_13_17.png" alt="fig_13_17">
+</div>
+<div class="title">Figure 198. Rendering of xtype radiofield</div>
+</div>
+<div class="paragraph">
+<p>After doing some research, we found out that Sencha Touch has the UI component called <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.SegmentedButton"><code>Ext.SegmentedButton</code></a> that allows create horizontal bar with a number of toggle buttons, which is exactly what was needed from the rendering perspective. The resulting Donate screen is shown on Figure <a href="#FIG13-18">Donate form with SementedButton</a>.</p>
+</div>
+<div id="FIG13-18" class="imageblock">
+<div class="content">
+<img src="./images/fig_13_18.png" alt="fig_13_18">
+</div>
+<div class="title">Figure 199. Donate form with SementedButton</div>
+</div>
+<div class="paragraph">
+<p>This looks nice, but as opposed to regular HTML form with inputs, the SegmentedButton is not an HTML <code>&lt;input&gt;</code> field and its value won&#8217;t be automatically submitted to the server. This required a little bit of a manual coding, which will be explained as a part of the DonateForm code review, which follows.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.view.DonateForm', {
+ extend: 'Ext.form.Panel',
+ xtype: 'donateform',
+ requires: [
+     'Ext.form.FieldSet',
+     'Ext.field.Select',
+     'Ext.field.Number',
+     'Ext.field.Radio',
+     'Ext.field.Email',
+     'Ext.field.Hidden',
+     'Ext.SegmentedButton',
+     'Ext.Label'
+ ],
+
+ config: {
+     title: 'DonateForm',
+
+     control: {                              // <i class="conum">1</i>
+         'segmentedbutton': {
+             toggle: 'onAmountButtonChange'
+         },
+         'numberfield[name=amount]': {
+             change: 'onAmountFieldChange'
+         }
+     },
+
+     items: [
+         { xtype: 'label',
+            cls: 'x-form-fieldset-title',    // <i class="conum">2</i>
+            html: 'Please select donation amount:'
+         },
+         { xtype: 'segmentedbutton',          // <i class="conum">3</i>
+           margin: '0 10',
+
+           defaults: {
+               flex: 1
+           },
+
+           items: [
+                 { text: '$10',
+                   data: {
+                     value: 10                // <i class="conum">4</i>
+                   }
+                 },
+                 { text: '$20',
+                   data: {
+                     value: 20
+                    }
+                 },
+                 { text: '$50',
+                   data: {
+                     value: 50
+                   }
+                 },
+                 { text: '$100',
+                   data: {
+                     value: 100
+                   }
+                 }
+             ]
+         },
+         { xtype: 'hiddenfield',             // <i class="conum">5</i>
+           name: 'amount'
+         },
+         { xtype: 'fieldset',
+           title: '... or enter other amount',
+
+             items: [
+                 { xtype: 'numberfield',     //  <i class="conum">6</i>
+                   label: 'Amount',
+                   name: 'amount'
+                 }
+             ]
+         },
+         {
+           xtype: 'fieldset',
+           title: 'Donor information',
+
+           items: [
+             { name: 'fullName',
+               xtype: 'textfield',
+               label: 'Full name'
+             },
+             { name: 'email',
+               xtype: 'emailfield',
+               label: 'Email'
+              }
+           ]
+         },
+         {
+             xtype: 'fieldset',
+             title: 'Location',
+
+             items: [
+                 {  name: 'address',
+                    xtype: 'textfield',
+                    label: 'Address'
+                 },
+                 {  name: 'city',
+                    xtype: 'textfield',
+                    label: 'City'
+                 },
+                 {  name: 'zip',
+                    xtype: 'textfield',
+                    label: 'Zip'
+                 },
+                 {  name: 'state',
+                    xtype: 'selectfield',
+                    autoSelect: false,
+                    label: 'State',
+                    store: 'States',
+                    valueField: 'id',
+                    displayField: 'name'
+                 },
+                 {  name: 'country',
+                    xtype: 'selectfield',
+                    autoSelect: false,
+                    label: 'Country',
+                    store: 'Countries',
+                    valueField: 'id',
+                    displayField: 'name'
+                 }
+             ]
+         },
+         {
+             xtype: 'button',
+             text: 'Donate',
+             ui: 'confirm',
+             margin: '0 10 20'
+         }
+     ]
+ },
+
+ onAmountButtonChange: function (segButton,
+                                button, isPressed) { // <i class="conum">7</i>
+
+  if (isPressed) {                                   // <i class="conum">8</i>
+      this.clearAmountField();
+      this.updateHiddenAmountField(button.getData().value);
+      button.setUi('confirm');                       // <i class="conum">9</i>
+  }
+  else {
+      button.setUi('normal');
+  }
+ },
+
+ onAmountFieldChange: function () {         // <i class="conum">10</i>
+
+   this.depressAmountButtons();
+   this.clearHiddenAmountField();
+ },
+
+ clearAmountField: function () {
+   var amountField = this.down('numberfield[name=amount]');
+
+   amountField.suspendEvents();            //  <i class="conum">11</i>
+   amountField.setValue(null);
+   amountField.resumeEvents(true);         //  <i class="conum">12</i>
+ },
+
+ updateHiddenAmountField: function (value) {
+   this.down('hiddenfield[name=amount]').setValue(value);
+ },
+
+ depressAmountButtons: function () {
+   this.down('segmentedbutton').setPressedButtons([]);
+ },
+
+ clearHiddenAmountField: function () {
+   this.updateHiddenAmountField(null);
+ }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Defining event listeners for the <code>segmentedbutton</code> and the field for entering other amount. When the control section is used not in a controller, but in a component it&#8217;s scoped to the object in which it was defined. Hence the <code>ComponentQuery</code> will be looking for <code>segmentedbutton</code> and <code>numberfield[name=amount]</code> only within the DonateForm instance. If these event handlers would be defined in the controller, the scope would be global.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>Borrowing the class that Sencha Touch uses for all <code>fieldset</code> container so our title looks the same.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>The <code>segmentedbutton</code> is defined here. By default, its config property <code>allowToggle=true</code>, which allows only one button to be pressed at a time.</td>
+</tr>
+<tr>
+<td><i class="conum">4</i></td>
+<td>The <code>segmentedbutton</code> has no property to store the value of each of its button. But any  sublcass of <code>Ext.Component</code> has a property <code>data</code>. We are extending the <code>data</code> property to store the button&#8217;s <code>value</code>. It&#8217;ll be available in the event handler in <code>button.getData().value</code>.</td>
+</tr>
+<tr>
+<td><i class="conum">5</i></td>
+<td>Since the buttons in the <code>segmentedbutton</code> are not input fields, we define a hidden field to remember the currently selected amount.</td>
+</tr>
+<tr>
+<td><i class="conum">6</i></td>
+<td>This <code>numberfield</code> stores the <em>other amount</em> if entered. Note that it has the same name <code>amount</code> as the hidden field. The methods <code>clearAmountField()</code> and <code>clearHiddenAmountField()</code> will ensure that only one of the amounts has a value.</td>
+</tr>
+<tr>
+<td><i class="conum">7</i></td>
+<td>When the <code>toggle</code> event is fired it comes with an object that contains the reference to the button that was toggled, and if the button becomes pressed as the result of this event.</td>
+</tr>
+<tr>
+<td><i class="conum">8</i></td>
+<td>The toggle event is dispatched twice - one for the button that becomes pressed, and another for the button that was pressed before. If the button becomes pressed (<code>isPressed=true</code>), clean the previously selected amount and store a new one in the hidden field.</td>
+</tr>
+<tr>
+<td><i class="conum">9</i></td>
+<td>Change the style of the button to make it visibly highlighted. We use the predefine`confirm` style (see the <a href="http://dev.sencha.com/deploy/touch/examples/production/kitchensink/#demo/buttons">Kitchen Sink</a> application for other button styles).</td>
+</tr>
+<tr>
+<td><i class="conum">10</i></td>
+<td>When the <em>other amount</em> field loses focus, this event handler is invoked. The code cleans up the hidden field and removes the pressed state from all buttons.</td>
+</tr>
+<tr>
+<td><i class="conum">11</i></td>
+<td>Temporarily suspend dispatching events while setting the  value of the amount <code>numberfield</code> to null. Otherwise setting to null would cause unnecessary dispatching of the <code>change</code> event.</td>
+</tr>
+<tr>
+<td><i class="conum">12</i></td>
+<td>Resume event dispatching.  The <code>true</code> argument is for discarding all the queued events.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Previous versions of the Save Sick Child application illustrated how to submit the Donate form to the server for further processing. The Sencha Touch version of this application doesn&#8217;t include this code.  If you&#8217;d like to experiment with this, just create a new controller class that extends <code>Ext.app.Controller</code> and define there an event handler for the button Donate (see the Login controller as an example).</p>
+</div>
+<div class="paragraph">
+<p>On the <code>tap</code> event invoke <code>donateform.submit()</code> specifying the URL of the server that knows how to process this form. You can find details on submitting and populating forms in the online documentation for <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.form.Panel"><code>Ext.form.Panel</code></a> - the ancestor of the <code>DonateForm</code>.</p>
+</div>
+
 </div>
 
 </div>
