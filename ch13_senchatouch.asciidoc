@@ -3,14 +3,16 @@
 
 == Sencha Touch
 
-Sencha Touch framework is a little brother of Ext JS. They both have the same creator: http://www.sencha.com/[Sencha Inc], and they both are build on the same core classes. But Sencha Touch is created for developing mobile Web, while Ext JS is for desktop Web applications. The enterprise IT managers need to be aware of another important difference: Ext JS offers free licenses only for open source projects, but http://www.sencha.com/products/touch/license/[Sencha Touch licenses] are free unless you decide to purchase this framework bundled with developers tools.   
+Sencha Touch framework is a little brother of Ext JS. They both have the same creator: http://www.sencha.com/[Sencha Inc], and they both are build on the same core classes. But Sencha Touch is created for developing mobile Web, while Ext JS is for desktop Web applications. 
+
+The enterprise IT managers need to be aware of another important difference: Ext JS offers free licenses only for open source projects, but http://www.sencha.com/products/touch/license/[Sencha Touch licenses] are free unless you decide to purchase this framework bundled with developers tools.   
 
 This chapter is structured similarly to the previous one that described jQuery Mobile. The fundamental difference though is that if Chapter 12 has almost no JavaScript, this chapter will have almost no HTML. 
 
 We'll try minimizing repeating the information you can find in http://www.sencha.com/learn/touch[Sencha Touch Learning Center] and extensive product documentation, which has multiple well written http://docs.sencha.com/touch/2.2.0/#!/guide[Guides] on multiple topics. The chapter will start with a brief overview of the features of Sencha Touch followed by the code review of yet another version of the Save Sick Child application. 
 In this chapter we are going to use Sencha Touch 2.2, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and recently have announced support of Window Phone 8. 
 
-NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like `xType`, SASS and others explained in Chapter 6. Ext JS and Sencha Touch non-UI classes are not 100% compatible, but for the most part they are.
+NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like `xType`, SASS and others explained in Chapter 6. For the most part Ext JS and Sencha Touch non-UI classes are compatible, but there are some differences that may prevent you from 100% code reuse between these frameworks(e.g. see section "Stores and Models"). Hopefully, in the future releases Sencha will come up with some standard solutions to remove the differences in class systems of both frameworks.
 
 === Sencha Touch Overview
 
@@ -291,7 +293,18 @@ image::images/fig_13_07.png[image]
 
 Sencha Touch knows how to handle various mobile-specific events. Check out the documentation for the class http://docs.sencha.com/touch/2.2.1/#!/api/Ext.dom.Element[`Ext.dom.Element`] - you'll find there such events as  `touchstart`, `touchend`, `tap`, `doubletap`, `swipe`, `pinch`, `longpress`, `rotate`, and others. 
 
-The `Ext.Container` class defines a config property `control`, which is a convenient place for defining event handlers. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the `tap` event handler functions `showLoginView()` and `cancelLogin()` for the buttons Login and Cancel.
+You can add event listeners using different techniques. One of them is defining the http://docs.sencha.com/touch/2.2.1/#!/api/Ext.Container-cfg-listeners[`listeners`] config property during the object instantiation. This property is defined in the `Ext.Container` object and allows you to define more than one listener at a time. You should use it while calling the `Ext.create()` method:
+
+[source, javascript]
+----
+Ext.create('Ext.button.Button', {
+   listeners: {
+       tap: function() { // handle event here }
+   }
+}
+----  
+
+If your application is build using MVC pattern, like our Save Sick Child, define event handlers using yet another config property `control` from `Ext.Container`. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the `tap` event handler functions `showLoginView()` and `cancelLogin()` for the buttons Login and Cancel.
 
 [source, javascript]
 ----
@@ -327,6 +340,8 @@ IMPORTANT: The materials presented in this chapter were tested only with the cur
 [[FIG13-11]]
 .The Starting/About page
 image::images/fig_13_11.png[]
+
+==== The Application Entry 
 
 Below is the code of the app.js in the Save Sick Child project (we've just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications.
 
@@ -384,10 +399,9 @@ Ext.application({
         );
     }
 });
-
 ----
 
-All the stores listed in app.js will be automatically instantiated. The views that require data from the store will either mention the store name like `store: 'Videos'` or will explicitly use the class `StoreMgr`, for example `Ext.StoreMgr.get('Campaigns');`. In this version of the application we have only one controller `Login` that doesn't use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. This version of the Save Sick Child application doesn't use explicitly defined models - all the data are hard-coded in the stores in the `data` attributes.
+All the stores listed in app.js will be automatically instantiated. The views that require data from the store will either mention the store name like `store: 'Videos'` or will  use the get method from the class `StoreMgr`, for example `Ext.StoreMgr.get('Campaigns');`. In this version of the application we have only one controller `Login` that doesn't use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. This version of the Save Sick Child application doesn't use explicitly defined models - all the data are hard-coded in the stores in the `data` attributes.
 
 You'll see the code of the views a bit later, but we wanted to draw your attention to the `onUpdated()` event handler. In the section "Microloader and Configurations" we've mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the `appCache` section of app.json. If any of these files changes, the `onUpdated` event handler is invoked, if any. For illustration purposes we decided to intercept this event and Figure <<13-12>> shows how the update prompt can look like on iPhone 5.
 
@@ -405,6 +419,8 @@ The index.html file of our application beside the microloader script includes on
 ---- 
 
 TIP: If you want your program documentation look as good as Sencha's use https://github.com/senchalabs/jsduck[JSDuck tool].
+
+==== The Main View
 
 The code of the UI landing page of this application is located in the _views_ folder in the file Main.js. First, take a look at the screenshot from WebStorm IDE on figure <<FIG13-13>> that there are only two objects on the top level: the container and a login form.  
 
@@ -529,8 +545,10 @@ Ext.define('SSC.view.Main', {
 
 <4> Each of the view has http://docs.sencha.com/extjs/4.1.3/#!/api/Ext.layout.container.Fit[`fit` layout], which forces the content to expand to fill the layout's container.
 
-<5> Each view will have a Login button on the toolbar. It's implemented in the LoginToolbar.js shown later in this chapter.    
-Now let's review the code of the Login page controller. It has no login logic, and implements only the UI. The name of this file is Login.js and it's located in the folder _controller_. 
+<5> Each view will have a Login button on the toolbar. It's implemented in the LoginToolbar.js shown later in this chapter.   
+==== Controller
+
+Now let's review the code of the Login page controller. We have not implemented any login logic - it simply reacts on the UI interaction. The name of this file is Login.js, it's located in the folder _controller_, and here's the code: 
 
 [source, javascript]
 ----
@@ -568,7 +586,7 @@ Ext.define('SSC.controller.Login', {
 
 <1> Including the `mainView: 'mainview'` in the `refs` attribute forces Sencha Touch to generate the getter providing access to the main view.
 
-<3> This controller uses components from the LoginForm view (it's code comes next).
+<3> This controller uses components from the LoginForm view (it's code comes a bit later).
 
 <2> The loginButton is the one that has `action=login`. The cancelButton is the one that's located inside the `loginform` and has `action=cancel`.
 
@@ -578,7 +596,43 @@ Ext.define('SSC.controller.Login', {
   
 <6> When the use clicks on the Cancel button, show the main container - the first child of the main view: `setActiveItem(0)`.
 
-The figure <<FIG13-15>> is a snapshot of Login view taken from iPhone 5. 
+For illustration purposes we'll show you a shorter (but not necessarily better) version of the Login.js. The above code defines the reference to the login form and button selectors in the `refs` section. Sencha Touch will find the references and will generate the getter for these buttons. But in this particular example we are using these buttons only to assign them the event handlers. Hence, we can make the `refs` section slimmer and use the selectors right inside the `control` section as shown below.
+
+[source, javascript]
+----
+Ext.define('SSC.controller.Login', {
+    extend: 'Ext.app.Controller',
+
+    config: {
+        refs: {
+            mainView: 'mainview',
+        },
+
+        control: {
+            'button[action=login]': {
+                tap: 'showLoginView'
+            },
+            'loginform button[action=cancel]': {
+                tap: 'cancelLogin'
+            }
+        }
+    },
+
+    showLoginView: function () {
+        this.getMainView().setActiveItem(1);
+    },
+
+    cancelLogin: function () {
+        this.getMainView().setActiveItem(0);
+    }
+});
+----
+
+This version of the Login.js is shorter, but the first one is more generic. In both versions the button selectors are the shortcuts for the http://docs.sencha.com/touch/2.2.1/#!/api/Ext.ComponentQuery[`ComponentQuery`] class, which is a singleton used for searching of components. 
+
+==== Overview of the Views
+
+Figure <<FIG13-15>> is a snapshot of Login view taken from iPhone 5. 
 
 [[FIG13-15]]
 .The Login Form View
@@ -672,6 +726,37 @@ Ext.define('SSC.view.LoginToolbar', {
 
 TIP: If you'll add the Save Sick Child application as an icon to the home screen on iOS devices, the browser's address bar will not be displayed.
 
+
+==== Stores and Models
+
+In the Sencha Touch version of the Save Sick Child application all the data is hard-coded. All store classes are located in the store directory (see FIG<<13-14>>), and each of them has the `data` property. For example, here's the code of the Videos.js. 
+
+[source, javascript]
+----
+Ext.define('SSC.store.Videos', {
+    extend: 'Ext.data.Store',
+
+    config: {
+        fields: [
+            { name: 'title',       type: 'string' },
+            { name: 'description', type: 'string' },
+            { name: 'url',         type: 'string' },
+            { name: 'thumbnail',   type: 'string' }
+        ],
+
+        data: [
+            { title: 'The title of a video-clip 1', description: 'Short video description 1', url: 'intro.mp4', thumbnail: 'intro.jpg' },
+
+            { title: 'The title of a video-clip 2', description: 'Short video description 2', url: 'intro.mp4', thumbnail: 'intro.jpg' },
+
+            { title: 'The title of a video-clip 3', description: 'Short video description 3', url: 'intro.mp4', thumbnail: 'intro.jpg' }
+        ]
+    }
+});
+----
+
+WARNING. There is compatibility issue between Ext JS and Sencha Touch 2 stores and models. For example, in the above code `fields` and `data` are wrapped inside the `config` object, while in Ext JS store they are not. Until Sencha will offer a generic solution to resolve the compatibility issues, you have to come up with your own if you want to reuse the same stores.
+
 === Summary 
 
 In chapters 12 and 13 you've learned about two different ways of developing a mobile application. So what's better jQuery Mobile or Sencha Touch? There is no answer to this question, and you will have to make a decision on your own. But here's a quick summary of pros and cons for each library or framework.
@@ -684,7 +769,7 @@ Use jQuery Mobile if:
 
 * If you prefer declarative UI and hate debugging JavaScript.
 
-Use Sench Touch if:
+Use Sencha Touch if:
 
 * If you like to have a rich library of pre-created UI.
 
