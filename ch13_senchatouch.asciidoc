@@ -328,6 +328,7 @@ Ext.define('SSC.controller.Login', {
 });    
 ----
 
+Read more about the role of controllers in event handling in the section titled Controller later in this chapter. Online documentation includes the http://docs.sencha.com/touch/2.2.1/#!/guide/events[Event Guide] - it describes the process of handling events in detail.
 
 === Save Sick Child With Sencha Touch
 
@@ -548,7 +549,7 @@ Ext.define('SSC.view.Main', {
 <5> Each view will have a Login button on the toolbar. It's implemented in the LoginToolbar.js shown later in this chapter.   
 ==== Controller
 
-Now let's review the code of the Login page controller. We have not implemented any login logic - it simply reacts on the UI interaction. The name of this file is Login.js, it's located in the folder _controller_, and here's the code: 
+Now let's review the code of the Login page controller. For simlicity, we have not implemented any application login logic here - our controller reacts on the user's actions performed in the view LoginForm. The name of the controller's file is Login.js. It's located in the folder _controller_, and here's the code: 
 
 [source, javascript]
 ----
@@ -586,9 +587,9 @@ Ext.define('SSC.controller.Login', {
 
 <1> Including the `mainView: 'mainview'` in the `refs` attribute forces Sencha Touch to generate the getter providing access to the main view.
 
-<3> This controller uses components from the LoginForm view (it's code comes a bit later).
+<2> This controller uses components from the LoginForm view (it's code comes a bit later).
 
-<2> The loginButton is the one that has `action=login`. The cancelButton is the one that's located inside the `loginform` and has `action=cancel`.
+<3> The loginButton is the one that has `action=login`. The cancelButton is the one that's located inside the `loginform` and has `action=cancel`.
 
 <4>  Defining the event handlers for tap events for the buttons Login and Cancel from the LoginForm view.
 
@@ -630,7 +631,16 @@ Ext.define('SSC.controller.Login', {
 
 This version of the Login.js is shorter, but the first one is more generic. In both versions the button selectors are the shortcuts for the http://docs.sencha.com/touch/2.2.1/#!/api/Ext.ComponentQuery[`ComponentQuery`] class, which is a singleton used for searching of components. 
 
-==== Overview of the Views
+With MVC pattern, the event processing logic is often located in controller classes. Using `refs` and `ComponentQuery` selectors allows you to reach event generating objects located different classes. For example, if the user tapped on a button in a view, controller's code includes the `tap` event handler, where it triggers and event on a store class to initiate the data retrieval.
+
+But if the `control` config is defined not in the controller, but in a component, the scope where `ComponentQuery` operates is limited to the component itself. You'll see the example of using the `control` config inside DonateForm.js later in this chapter.
+
+
+==== The Other Views
+
+Let's do a brief code review of other Save Sick Child views. 
+
+===== LoginForm
 
 Figure <<FIG13-15>> is a snapshot of Login view taken from iPhone 5. 
 
@@ -725,6 +735,270 @@ Ext.define('SSC.view.LoginToolbar', {
 <2> Adding the `Ext.Spacer` component to occupy all the space before the button Login. By default, spacer has flex value of 1, which means take all the space in this case. You can read more about it in Chapter 6 in the section "The flex Property".  
 
 TIP: If you'll add the Save Sick Child application as an icon to the home screen on iOS devices, the browser's address bar will not be displayed.
+
+
+===== DonateForm
+
+We wanted to make the Donate view look as per our Web designer's mockup shown on Figure <<FIG12-13>>. With jQuery Mobile it was simple - the HTML container `<fieldset data-role="controlgroup" data-type="horizontal" id="radio-container">` with a bunch of `<input type="radio"` did the job as shown on Figure <<FIG12-28>>. Here the fragment from the initial Sencha Touch version of DonateForm.js. 
+
+[source, javascript]
+----
+ config: {
+  title: 'DonateForm',
+
+  items: [
+      { xtype: 'fieldset',
+          title: 'Please select donation amount',
+
+          defaults: {
+              name: 'amount',
+              xtype: 'radiofield'
+          },
+
+          items: [
+              { label: '$10',
+                value: 10
+              },
+              { label: '$20',
+                 value: 20
+              },
+              { label: '$50',
+                value: 50
+              },
+              { label: '$100',
+                  value: 100
+              }
+          ]
+      },
+      { xtype: 'fieldset',
+        title: '... or enter other amount',
+
+          items: [
+              { xtype: 'numberfield',
+                label: 'Amount',
+                name: 'amount'
+              }
+          ]
+      }
+----  
+
+It's also a `fieldset` with several radio buttons - `xtype: 'radiofield'`. But the result was not what we expected. These four radio buttons occupied half of the screen and looked as on Figure <<FIG13-17>>:
+
+[[FIG13-17]]
+.Rendering of xtype radiofield 
+image::images/fig_13_17.png[] 
+
+After doing some research, we found out that Sencha Touch has the UI component called http://docs.sencha.com/touch/2.2.1/#!/api/Ext.SegmentedButton[`Ext.SegmentedButton`] that allows create horizontal bar with a number of toggle buttons, which is exactly what was needed from the rendering perspective. The resulting Donate screen is shown on Figure <<FIG13-18>>. 
+
+[[FIG13-18]]
+.Donate form with SementedButton
+image::images/fig_13_18.png[]
+
+This looks nice, but as opposed to regular HTML form with inputs, the SegmentedButton is not an HTML `<input>` field and its value won't be automatically submitted to the server. This required a little bit of a manual coding, which will be explained as a part of the DonateForm code review, which follows.
+
+[source, javascript]
+----
+Ext.define('SSC.view.DonateForm', {
+ extend: 'Ext.form.Panel',
+ xtype: 'donateform',
+ requires: [
+     'Ext.form.FieldSet',
+     'Ext.field.Select',
+     'Ext.field.Number',
+     'Ext.field.Radio',
+     'Ext.field.Email',
+     'Ext.field.Hidden',
+     'Ext.SegmentedButton',
+     'Ext.Label'
+ ],
+
+ config: {
+     title: 'DonateForm',
+
+     control: {                              // <1>  
+         'segmentedbutton': {
+             toggle: 'onAmountButtonChange'
+         },
+         'numberfield[name=amount]': {
+             change: 'onAmountFieldChange'
+         }
+     },
+
+     items: [
+         { xtype: 'label',
+            cls: 'x-form-fieldset-title',    // <2>
+            html: 'Please select donation amount:'
+         },
+         { xtype: 'segmentedbutton',          // <3> 
+           margin: '0 10',
+
+           defaults: {
+               flex: 1
+           },
+
+           items: [
+                 { text: '$10',
+                   data: {
+                     value: 10                // <4>
+                   }
+                 },
+                 { text: '$20',
+                   data: {
+                     value: 20
+                    }
+                 },
+                 { text: '$50',
+                   data: {
+                     value: 50
+                   }
+                 },
+                 { text: '$100',
+                   data: {
+                     value: 100
+                   }
+                 }
+             ]
+         },
+         { xtype: 'hiddenfield',             // <5>
+           name: 'amount'
+         },
+         { xtype: 'fieldset',
+           title: '... or enter other amount',
+
+             items: [
+                 { xtype: 'numberfield',     //  <6>
+                   label: 'Amount',
+                   name: 'amount'
+                 }
+             ]
+         },
+         {
+           xtype: 'fieldset',
+           title: 'Donor information',
+
+           items: [
+             { name: 'fullName',
+               xtype: 'textfield',
+               label: 'Full name'
+             },
+             { name: 'email',
+               xtype: 'emailfield',
+               label: 'Email'
+              }
+           ]
+         },
+         {
+             xtype: 'fieldset',
+             title: 'Location',
+
+             items: [
+                 {  name: 'address',
+                    xtype: 'textfield',
+                    label: 'Address'
+                 },
+                 {  name: 'city',
+                    xtype: 'textfield',
+                    label: 'City'
+                 },
+                 {  name: 'zip',
+                    xtype: 'textfield',
+                    label: 'Zip'
+                 },
+                 {  name: 'state',
+                    xtype: 'selectfield',
+                    autoSelect: false,
+                    label: 'State',
+                    store: 'States',
+                    valueField: 'id',
+                    displayField: 'name'
+                 },
+                 {  name: 'country',
+                    xtype: 'selectfield',
+                    autoSelect: false,
+                    label: 'Country',
+                    store: 'Countries',
+                    valueField: 'id',
+                    displayField: 'name'
+                 }
+             ]
+         },
+         {
+             xtype: 'button',
+             text: 'Donate',
+             ui: 'confirm',
+             margin: '0 10 20'
+         }
+     ]
+ },
+
+ onAmountButtonChange: function (segButton, 
+                                button, isPressed) { // <7>
+  
+  if (isPressed) {                                   // <8>
+      this.clearAmountField();
+      this.updateHiddenAmountField(button.getData().value);
+      button.setUi('confirm');                       // <9>
+  }
+  else {
+      button.setUi('normal');
+  }
+ },
+
+ onAmountFieldChange: function () {         // <10>
+
+   this.depressAmountButtons();
+   this.clearHiddenAmountField();
+ },
+
+ clearAmountField: function () {
+   var amountField = this.down('numberfield[name=amount]');  
+
+   amountField.suspendEvents();            //  <11>
+   amountField.setValue(null);
+   amountField.resumeEvents(true);         //  <12>
+ },
+
+ updateHiddenAmountField: function (value) {
+   this.down('hiddenfield[name=amount]').setValue(value);
+ },
+
+ depressAmountButtons: function () {
+   this.down('segmentedbutton').setPressedButtons([]);
+ },
+
+ clearHiddenAmountField: function () {
+   this.updateHiddenAmountField(null);
+ }
+});
+----   
+
+<1> Defining event listeners for the `segmentedbutton` and the field for entering other amount. When the control section is used not in a controller, but in a component it's scoped to the object in which it was defined. Hence the `ComponentQuery` will be looking for `segmentedbutton` and `numberfield[name=amount]` only within the DonateForm instance. If these event handlers would be defined in the controller, the scope would be global.
+
+<2> Borrowing the class that Sencha Touch uses for all `fieldset` container so our title looks the same.
+
+<3> The `segmentedbutton` is defined here. By default, its config property `allowToggle=true`, which allows only one button to be pressed at a time.
+
+<4> The `segmentedbutton` has no property to store the value of each of its button. But any  sublcass of `Ext.Component` has a property `data`. We are extending the `data` property to store the button's `value`. It'll be available in the event handler in `button.getData().value`.
+ 
+<5> Since the buttons in the `segmentedbutton` are not input fields, we define a hidden field to remember the currently selected amount. 
+
+<6> This `numberfield` stores the _other amount_ if entered. Note that it has the same name `amount` as the hidden field. The methods `clearAmountField()` and `clearHiddenAmountField()` will ensure that only one of the amounts has a value.
+
+<7>  When the `toggle` event is fired it comes with an object that contains the reference to the button that was toggled, and if the button becomes pressed as the result of this event.
+
+<8> The toggle event is dispatched twice - one for the button that becomes pressed, and another for the button that was pressed before. If the button becomes pressed (`isPressed=true`), clean the previously selected amount and store a new one in the hidden field. 
+
+<9> Change the style of the button to make it visibly highlighted. We use the predefine`confirm` style (see the http://dev.sencha.com/deploy/touch/examples/production/kitchensink/#demo/buttons[Kitchen Sink] application for other button styles).
+
+<10> When the _other amount_ field loses focus, this event handler is invoked. The code cleans up the hidden field and removes the pressed state from all buttons.  
+
+<11> Temporarily suspend dispatching events while setting the  value of the amount `numberfield` to null. Otherwise setting to null would cause unnecessary dispatching of the `change` event. 
+
+<12> Resume event dispatching.  The `true` argument is for discarding all the queued events.
+
+Previous versions of the Save Sick Child application illustrated how to submit the Donate form to the server for further processing. The Sencha Touch version of this application doesn't include this code.  If you'd like to experiment with this, just create a new controller class that extends `Ext.app.Controller` and define there an event handler for the button Donate (see the Login controller as an example). 
+
+On the `tap` event invoke `donateform.submit()` specifying the URL of the server that knows how to process this form. You can find details on submitting and populating forms in the online documentation for http://docs.sencha.com/touch/2.2.1/#!/api/Ext.form.Panel[`Ext.form.Panel`] - the ancestor of the `DonateForm`.
 
 
 ==== Stores and Models
