@@ -1137,7 +1137,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_save_sick_child_with_sencha_touch">Save Sick Child With Sencha Touch</a></li>
 <li>
 <ol type="none" class="sectlevel3">
-<li><a href="#_the_application_entry">The Application Entry</a></li>
+<li><a href="#_the_application_object">The Application Object</a></li>
 <li><a href="#_the_main_view">The Main View</a></li>
 <li><a href="#_the_other_views">The Other Views</a></li>
 <li><a href="#_stores_and_models">Stores and Models</a></li>
@@ -11689,7 +11689,7 @@ combobox.un('change', myEventHandlerFunction);</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You can also declaratively subscribe to events using <code>listeners</code> property of the component:</p>
+<p>You can also declaratively subscribe to events using the <code>listeners</code> config property of the component:</p>
 </div>
 <div class="listingblock">
 
@@ -12552,6 +12552,19 @@ showLoginFields: function () {
 });</code></pre>
 </div>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+Ext JS has a wrapper  for the HTML5 <code>&lt;video&gt;</code> tag. It&#8217;s called <code>Ext.Video</code>, and we&#8217;ll use it in Chapter 13.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>The mapping part is located in the view CampaignsMap.js. Initially we tried to use the <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.ux.GMapPanel"><code>Ext.ux.GMapPanel</code></a>, but it didn&#8217;t work as expected. As a workaround, we&#8217;ve added the HTML <code>&lt;div&gt;</code> element to serve as a map container.</p>
 </div>
@@ -12568,12 +12581,12 @@ showLoginFields: function () {
      mapContainer: 'div'
  },
 
- listeners: {
+ listeners: {                                 // <i class="conum">2</i>
   afterrender: function (comp) {
       var map,
-          mapDiv = comp.mapContainer.dom;     // <i class="conum">2</i>
+          mapDiv = comp.mapContainer.dom;     // <i class="conum">3</i>
 
-      if (navigator &amp;&amp; navigator.onLine) {    // <i class="conum">3</i>
+      if (navigator &amp;&amp; navigator.onLine) {    // <i class="conum">4</i>
           try {
               map = comp.initMap(mapDiv);
               comp.addCampaignsOnTheMap(map);
@@ -12586,7 +12599,7 @@ showLoginFields: function () {
   }
  },
 
- initMap: function (mapDiv) {                   // <i class="conum">4</i>
+ initMap: function (mapDiv) {                   // <i class="conum">5</i>
    // latitude = 39.8097343 longitude = -98.55561990000001
    // Lebanon, KS 66952, USA Geographic center of the contiguous United States
    // the center point of the map
@@ -12610,10 +12623,10 @@ showLoginFields: function () {
   var marker,
       infowindow = new google.maps.InfoWindow(),
       geocoder   = new google.maps.Geocoder(),
-      campaigns  = Ext.StoreMgr.get('Campaigns');    // <i class="conum">5</i>
+      campaigns  = Ext.StoreMgr.get('Campaigns');    // <i class="conum">6</i>
 
   campaigns.each(function (campaign) {
-      var title       = campaign.get('title'),       // <i class="conum">6</i>
+      var title       = campaign.get('title'),       // <i class="conum">7</i>
           location    = campaign.get('location'),
           description = campaign.get('description');
 
@@ -12668,22 +12681,26 @@ showLoginFields: function () {
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
-<td>Querying the DOM to find the <code>mapContainer</code> defined in the <code>renderSelectors</code> property. Note that we are getting the reference to this DOM element after the view is rendered in the event handler function <code>afterrender</code>. The object <code>comp</code> will be provided to this handler, and it points at the instance of the current component, which is <code>SSC.view.CampaignsMap</code>.</td>
+<td>Sencha documentation states that declaring <code>listeners</code>  during <code>Ext.define()</code> is bad practice and doing it during <code>Ext.create()</code> should be preferred. This is an arguable statement. Yes, there is a possibility that the handler function will be created during <code>define()</code> but never used during <code>create()</code>, which will lead to unnecessary creation of the handler&#8217;s instance in memory. But the chances are slim. The other consideration is that if listeners are defined during <code>create()</code> each instance can handle the same event differently. We&#8217;ll leave it up to you to decide where&#8217;s the right place for defining listeners. The good part about keeping listeners in the class definition is that the entire code of the class is located in one place.</td>
 </tr>
 <tr>
 <td><i class="conum">3</i></td>
-<td>If Google Map is not available, display an error message as in <a href="#FIG6-10-SSC">If Google Maps server is not responding</a>. This code was added after one of the authors was testing this code while sitting in the plane with no Internet connection. But checking the status of  <a href="https://developer.mozilla.org/en-US/docs/DOM/window.navigator.onLine"><code>navigator.onLine</code></a> may not be a reliable indicator of the offline status, so we&#8217;ve wrapped it into a <code>try/catch</code> block just to be sure.</td>
+<td>Querying the DOM to find the <code>mapContainer</code> defined in the <code>renderSelectors</code> property. Note that we are getting the reference to this DOM element after the view is rendered in the event handler function <code>afterrender</code>. The object <code>comp</code> will be provided to this handler, and it points at the instance of the current component, which is <code>SSC.view.CampaignsMap</code>.</td>
 </tr>
 <tr>
 <td><i class="conum">4</i></td>
-<td>The rest of the code in this class has the same mapping functionality as described in Chapter 3 in section "Adding Geolocation Support".</td>
+<td>If Google Map is not available, display an error message as in <a href="#FIG6-10-SSC">If Google Maps server is not responding</a>. This code was added after one of the authors was testing this code while sitting in the plane with no Internet connection. But checking the status of  <a href="https://developer.mozilla.org/en-US/docs/DOM/window.navigator.onLine"><code>navigator.onLine</code></a> may not be a reliable indicator of the offline status, so we&#8217;ve wrapped it into a <code>try/catch</code> block just to be sure.</td>
 </tr>
 <tr>
 <td><i class="conum">5</i></td>
-<td>The data for the campaign information are coming from the store Campaigns.js located in the folder store. The store manager can find the reference to the store either if by assigned <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.StoreManager"><code>storeId</code></a> or by name <code>Campaigns</code> listed in the <code>stores</code> array in the app.js:</td>
+<td>The rest of the code in this class has the same mapping functionality as described in Chapter 3 in section "Adding Geolocation Support".</td>
 </tr>
 <tr>
 <td><i class="conum">6</i></td>
+<td>The data for the campaign information are coming from the store Campaigns.js located in the folder store. The store manager can find the reference to the store either if by assigned <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.StoreManager"><code>storeId</code></a> or by name <code>Campaigns</code> listed in the <code>stores</code> array in the app.js:</td>
+</tr>
+<tr>
+<td><i class="conum">7</i></td>
 <td>We are configuring the mapping panel to get the information about the campaign title, location, and description from the fields with corresponding names from the store <code>SSC.store.Campaigns</code> that&#8217;s shown right after app.js below.</td>
 </tr>
 </table>
@@ -13087,7 +13104,7 @@ There is a more efficient way to do this by using a numeric character code that 
 </div>
 </div>
 <div class="paragraph">
-<p>Deploy the content of the <em>production</em> under any Web server and load this version of the application in the Chrome with Developer Tools turned on. This time the number of dowloaded bytes is three times lower (2.3Mb). Ask your Web Server administrator to enable gzip or deflate, and the size of the JavaScript will go down from 1.2Mb to 365KB. The size of other resources will decrease even more.  Don&#8217;t forget that we are loading a 500Kb video file intro.mp4. The number of server requests went down to 55, but more that 30 of them were Google Map API calls.</p>
+<p>Deploy the content of the <em>production</em> under any Web server and load this version of the application in the Chrome with Developer Tools turned on. This time the number of downloaded bytes is three times lower (2.3Mb). Ask your Web Server administrator to enable gzip or deflate, and the size of the JavaScript will go down from 1.2Mb to 365Kb. The size of other resources will decrease even more.  Don&#8217;t forget that we are loading a 500Kb video file intro.mp4. The number of server requests went down to 55, but more that 30 of them were Google Map API calls.</p>
 </div>
 <div id="FIG6-14-SSC" class="imageblock">
 <div class="content">
@@ -20971,6 +20988,19 @@ Ext.application({
 <div class="paragraph">
 <p>If the field is for entering a URL (<code>xtype: 'urlfield'</code>) expect to see a virtual keyboard with the button labeled as ".com". If the input field has <code>xtype: 'numberfield'</code> the user may see a numeric keyboard when the focus gets into this field.</p>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+If you need to detect the environment on the user&#8217;s mobile device, use such classes as <code>Ext.os.</code> for detecting the Operating System, <code>Ext.browser</code> for browser, and <code>Ext.feature</code> for supported features.
+</td>
+</tr>
+</table>
+</div>
 
 </div>
 <div class="sect4">
@@ -21011,7 +21041,7 @@ If you want to control how much of a vertical or horizontal screen space is give
 <div class="sect4">
 <h5 id="_events_3">Events</h5>
 <div class="paragraph">
-<p>Events can be initiated by the browser or by the user. Chapter 6 includes the section titled "Events" - it covers general rules of dealing with events in Ext JS framework. Lots and lots of system events are being dispatched during UI component rendering. The online documentation lists every event that can be dispatched on Sencha classes. Look for the Events section on the top toolbar in the online documentation. Figure <a href="#FIG13-7">Events in Online documentation</a> is a snapshot from online documentation for the class Ext.Container, which has 32 events.</p>
+<p>Events can be initiated either by the browser or by the user. Chapter 6 has the section with the same title - it covers general rules of dealing with events in Ext JS framework. Lots  of system events are being dispatched during UI component rendering. The online documentation lists every event that can be dispatched on Sencha classes. Look for the Events section on the top toolbar in the online documentation. Figure <a href="#FIG13-7">Events in Online documentation</a> is a snapshot from online documentation for the class Ext.Container, which has 32 events.</p>
 </div>
 <div id="FIG13-7" class="imageblock">
 <div class="content">
@@ -21035,8 +21065,21 @@ If you want to control how much of a vertical or horizontal screen space is give
 }</code></pre>
 </div>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+read the comments to the code of <code>SSC.view.CampaignsMap</code> in Chapter 6 about the right place for declaring listeners.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
-<p>If your application is build using MVC pattern, like our Save Sick Child, define event handlers using yet another config property <code>control</code> from <code>Ext.Container</code>. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the <code>tap</code> event handler functions <code>showLoginView()</code> and <code>cancelLogin()</code> for the buttons Login and Cancel.</p>
+<p>You can also define event handlers using yet another config property <code>control</code> from <code>Ext.Container</code>. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the <code>tap</code> event handler functions <code>showLoginView()</code> and <code>cancelLogin()</code> for the buttons Login and Cancel.</p>
 </div>
 <div class="listingblock">
 
@@ -21063,6 +21106,19 @@ If you want to control how much of a vertical or horizontal screen space is give
 </div>
 <div class="paragraph">
 <p>Read more about the role of controllers in event handling in the section titled Controller later in this chapter. Online documentation includes the <a href="http://docs.sencha.com/touch/2.2.1/#!/guide/events">Event Guide</a> - it describes the process of handling events in detail.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+If you want to fire custom events, use the method <code>fireEvent()</code>, providing the name of your event. The procedure for defining the listeners for custom events remains the same.
+</td>
+</tr>
+</table>
 </div>
 
 </div>
@@ -21098,7 +21154,7 @@ The materials presented in this chapter were tested only with the current versio
 <div class="title">Figure 192. The Starting/About page</div>
 </div>
 <div class="sect3">
-<h4 id="_the_application_entry">The Application Entry</h4>
+<h4 id="_the_application_object">The Application Object</h4>
 <div class="paragraph">
 <p>Below is the code of the app.js in the Save Sick Child project (we&#8217;ve just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications.</p>
 </div>
@@ -21160,7 +21216,13 @@ The materials presented in this chapter were tested only with the current versio
 </div>
 </div>
 <div class="paragraph">
-<p>All the stores listed in app.js will be automatically instantiated. The views that require data from the store will either mention the store name like <code>store: 'Videos'</code> or will  use the get method from the class <code>StoreMgr</code>, for example <code>Ext.StoreMgr.get('Campaigns');</code>. In this version of the application we have only one controller <code>Login</code> that doesn&#8217;t use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. This version of the Save Sick Child application doesn&#8217;t use explicitly defined models - all the data are hard-coded in the stores in the <code>data</code> attributes.</p>
+<p>The application loads all the dependencies listed in app.js and will instantiate models and stores. The views that require data from the store will either mention the store name like <code>store: 'Videos'</code> or will  use the get method from the class <code>StoreMgr</code>, for example <code>Ext.StoreMgr.get('Campaigns');</code>.  After this is done, the <code>launch</code> function will be called - this is where the main view is created.</p>
+</div>
+<div class="paragraph">
+<p>In this version of the Save Sick Child application we have only one controller <code>Login</code> that doesn&#8217;t use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. The application instantiates all controllers automatically. Accordingly, all controllers live in the context of the <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.app.Application">Application</a> object.</p>
+</div>
+<div class="paragraph">
+<p>We don&#8217;t use explicitly defined models here - all the data are hard-coded in the stores in the <code>data</code> attributes.</p>
 </div>
 <div class="paragraph">
 <p>You&#8217;ll see the code of the views a bit later, but we wanted to draw your attention to the <code>onUpdated()</code> event handler. In the section "Microloader and Configurations" we&#8217;ve mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the <code>appCache</code> section of app.json. If any of these files changes, the <code>onUpdated</code> event handler is invoked, if any. For illustration purposes we decided to intercept this event and Figure <a href="#13-12">[13-12]</a> shows how the update prompt can look like on iPhone 5.</p>
@@ -21175,7 +21237,7 @@ The materials presented in this chapter were tested only with the current versio
 <p>At this point the user can either select working with the previous version of the application or reload the new one.</p>
 </div>
 <div class="paragraph">
-<p>The index.html file of our application beside the microloader script includes one more script that supports Google Maps API.</p>
+<p>Our index.html file beside the microloader script includes one more script that supports Google Maps API.</p>
 </div>
 <div class="listingblock">
 
@@ -21201,7 +21263,7 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 <div class="sect3">
 <h4 id="_the_main_view">The Main View</h4>
 <div class="paragraph">
-<p>The code of the UI landing page of this application is located in the <em>views</em> folder in the file Main.js. First, take a look at the screenshot from WebStorm IDE on figure <a href="#FIG13-13">The Main.js in a collapsed form</a> that there are only two objects on the top level: the container and a login form.</p>
+<p>The code of the UI landing page of this application is located in the <em>views</em> folder in the file Main.js. First, take a look at the screen shot from WebStorm IDE on figure <a href="#FIG13-13">The Main.js in a collapsed form</a> that there are only two objects on the top level: the container and a login form.</p>
 </div>
 <div id="FIG13-13" class="imageblock">
 <div class="content">
@@ -21350,7 +21412,7 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 </table>
 </div>
 <div class="paragraph">
-<p>Now let&#8217;s review the code of the Login page controller. For simlicity, we have not implemented any application login logic here - our controller reacts on the user&#8217;s actions performed in the view LoginForm. The name of the controller&#8217;s file is Login.js. It&#8217;s located in the folder <em>controller</em>, and here&#8217;s the code:</p>
+<p>Now let&#8217;s review the code of the Login page controller. For simplicity, we have not implemented any application login logic here - our controller reacts on the user&#8217;s actions performed in the view LoginForm. The name of the controller&#8217;s file is Login.js. It&#8217;s located in the folder <em>controller</em>, and here&#8217;s the code:</p>
 </div>
 <div class="listingblock">
 
@@ -21392,7 +21454,7 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 <table>
 <tr>
 <td><i class="conum">1</i></td>
-<td>Including the <code>mainView: 'mainview'</code> in the <code>refs</code> attribute forces Sencha Touch to generate the getter providing access to the main view.</td>
+<td>Including the <code>mainView: 'mainview'</code> in the <code>refs</code> attribute forces Sencha Touch to generate a getter function <code>getMainView()</code> providing the access to the main view if need be.</td>
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
@@ -21413,6 +21475,19 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 <tr>
 <td><i class="conum">6</i></td>
 <td>When the use clicks on the Cancel button, show the main container - the first child of the main view: <code>setActiveItem(0)</code>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+Controllers are automatically instantiated by the <code>Application</code> object. If you want some controller&#8217;s code to be executed even before the application <code>launch</code> function is called, put it in the <code>init</code> function. If you want some code to be executed right after the application is launched, put it in the controller&#8217;s <code>launch</code> function.
+</td>
 </tr>
 </table>
 </div>
@@ -21597,7 +21672,7 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 <div class="sect4">
 <h5 id="_donateform">DonateForm</h5>
 <div class="paragraph">
-<p>We wanted to make the Donate view look as per our Web designer&#8217;s mockup shown on Figure <a href="#FIG12-13">The Donate page (portrait)</a>. With jQuery Mobile it was simple - the HTML container <code>&lt;fieldset data-role="controlgroup" data-type="horizontal" id="radio-container"&gt;</code> with a bunch of <code>&lt;input type="radio"</code> did the job as shown on Figure <a href="#FIG12-28">Controlgroup for donation amount</a>. Here the fragment from the initial Sencha Touch version of DonateForm.js.</p>
+<p>We wanted to make the Donate view look as per our Web designer&#8217;s mockup shown on Figure <a href="#FIG12-13">The Donate page (portrait)</a>. With jQuery Mobile it was simple - the HTML container <code>&lt;fieldset data-role="controlgroup" data-type="horizontal" id="radio-container"&gt;</code> with a bunch of <code>&lt;input type="radio"&gt;</code> rendered the horizontal button bar shown on Figure <a href="#FIG12-28">Controlgroup for donation amount</a>. Here the fragment from the initial Sencha Touch version of DonateForm.js.</p>
 </div>
 <div class="listingblock">
 
@@ -21898,6 +21973,195 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 <div class="paragraph">
 <p>On the <code>tap</code> event invoke <code>donateform.submit()</code> specifying the URL of the server that knows how to process this form. You can find details on submitting and populating forms in the online documentation for <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.form.Panel"><code>Ext.form.Panel</code></a> - the ancestor of the <code>DonateForm</code>.</p>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+If you want to use the AJAX-based form submission, use <code>submit()</code>, otherwise use the method <code>standardSubmit()</code>, which will do a standard HTML form submission.
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+<div class="sect4">
+<h5 id="_charts">Charts</h5>
+<div class="paragraph">
+<p>The charting support is just great in Sencha Touch (and similar to Ext JS). It&#8217;s JavaScript based, the charts are live and can get the data from the stores and model. The Figure &lt;&lt;&gt;&gt; shows  how the chart looks on iPhone when the user selects the Stats page:</p>
+</div>
+<div id="FIG13-19" class="imageblock">
+<div class="content">
+<img src="./images/fig_13_19.png" alt="fig_13_19">
+</div>
+<div class="title">Figure 200. Donor&#8217;s statistics chart</div>
+</div>
+<div class="paragraph">
+<p>The code that support the UI part of the chart is located in the view DonorsChart that&#8217;s shown next. It uses he classes located in the Sencha Touch framework in the folder <em>src/chart</em>.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.view.DonorsChart', {
+    extend: 'Ext.chart.PolarChart',         // <i class="conum">1</i>
+    xtype: 'donorschart',
+
+    requires: [
+        'Ext.chart.series.Pie',
+        'Ext.chart.interactions.Rotate'     // <i class="conum">2</i>
+    ],
+
+    config: {
+        store: 'Donors',                    // <i class="conum">3</i>
+        animate: true,
+        interactions: ['rotate'],
+
+        legend: {                           // <i class="conum">4</i>
+            inline: false,
+            docked: 'left',
+            position: 'bottom'
+        },
+
+        series: [
+            {
+                type: 'pie',
+                donut: 20,
+                xField: 'donors',
+                labelField: 'location',
+                showInLegend: true,
+                colors: ["#115fa6", "#94ae0a", "#a61120", "#ff8809", "#ffd13e", "#a61187", "#24ad9a", "#7c7474", "#a66111"]
+            }
+        ]
+    }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Create a chart that uses polar coordinates.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>The <code>Rotate</code> class allows the user to rotate (with a finger) a polar chart around its central point.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>The data shown on the chart come from the store named Donors, which is shown in the section "Stores and Models".</td>
+</tr>
+<tr>
+<td><i class="conum">4</i></td>
+<td>The legend is a bar at the bottom of the screen. The user can horizontally scroll it with a finger.</td>
+</tr>
+</table>
+</div>
+
+</div>
+<div class="sect4">
+<h5 id="_media">Media</h5>
+<div class="paragraph">
+<p>The Media page displays the list of available videos. When the user taps on one of them, the new page opens where the user have to tap on the button play. The screen uses the <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.dataview.List"><code>Ext.dataview.List</code></a> component to display the video titles from the Videos store.</p>
+</div>
+<div class="paragraph">
+<p>The Media view extends <code>Ext.NavigationView</code>, which is a container with the card layout, which also allows to push a new view into this container - we use it to create a view for the selected from the list video. The code of the Media view is shown in the next listing.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.view.Media', {
+  extend: 'Ext.NavigationView',
+  xtype: 'mediaview',
+  requires: [
+      'Ext.Video'                       // <i class="conum">1</i>
+  ],
+
+  config: {
+      control: {
+          'list': {
+              itemtap: 'showVideo'      // <i class="conum">2</i>
+          }
+      },
+
+      useTitleForBackButtonText: true,  // <i class="conum">3</i>
+      navigationBar: {
+          items: [
+              {   xtype: 'button',
+                  action: 'login',
+                  text: 'Login',
+                  align: 'right'
+              }
+          ]
+      },
+
+      items: [
+          {   title: 'Media',
+              xtype: 'list',
+              store: 'Videos',
+              cls: 'x-videos',
+              variableHeights: true,
+              itemTpl: [                         // <i class="conum">3</i>
+                  '&lt;div class="preview"
+                  style="background-image:url(resources/media/{thumbnail});"&gt;&lt;/div&gt;',
+                  '{title}',
+                  '&lt;span&gt;{description}&lt;/span&gt;'
+              ]
+          }
+      ]
+  },
+
+  showVideo: function (view, index, target, model) {
+      this.push(Ext.create('Ext.Video', {        // <i class="conum">5</i>
+          title: model.get('title'),
+          url: 'resources/media/' + model.get('url'),
+          posterURL: 'resources/media/' + model.get('thumbnail')
+      }));
+  }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Sencha Touch offers <code>Ext.Video</code> a wrapper for the HTML5 <code>&lt;video&gt;</code> tag. In Chapter 6 we used the HTML5 tag <code>&lt;video&gt;</code> directly.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>Defining the event listener for the <code>itemtap</code> event, which fires whenever the list item is tapped.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>When the video player&#8217;s view will be pushed to the Media page, we want its Back button to display the previous view&#8217;s title, which is "Media". It&#8217;s a config property in the <code>NavigationView</code>.</td>
+</tr>
+<tr>
+<td><i class="conum">4</i></td>
+<td>The list with descriptions of videos is populated from the store Videos using the list&#8217;s config property`itemTpl`. This is an HTML template for rendering each item. We decided to use the <code>&lt;div&gt;</code> showing the content of store&#8217;s properties <code>title</code>, <code>description</code> with a background image from the property <code>thumbnail</code>, and the video located at the specified <code>url</code>. The source code of the store Videos is included in the section "Stores and Models" below.</td>
+</tr>
+<tr>
+<td><i class="conum">5</i></td>
+<td>Create a video player and push it into the <code>NavigationView</code>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+
+A template [<code>Ext.Template</code>] represents an HTML fragment. The values in curly braces are being passed to the template from the outside. In the above example the values are coming from the store Videos. The class <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.XTemplate"><code>Ext.XTemlate</code></a> offers advanced templating, e.g. auto-filling HTML with the data from an array, which is used here.
+</td>
+</tr>
+</table>
+</div>
 
 </div>
 
@@ -21911,29 +22175,70 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.store.Videos', {
-    extend: 'Ext.data.Store',
+  extend: 'Ext.data.Store',
 
-    config: {
-        fields: [
-            { name: 'title',       type: 'string' },
-            { name: 'description', type: 'string' },
-            { name: 'url',         type: 'string' },
-            { name: 'thumbnail',   type: 'string' }
-        ],
+  config: {
+      fields: [
+          { name: 'title',       type: 'string' },
+          { name: 'description', type: 'string' },
+          { name: 'url',         type: 'string' },
+          { name: 'thumbnail',   type: 'string' }
+      ],
 
-        data: [
-            { title: 'The title of a video-clip 1', description: 'Short video description 1', url: 'intro.mp4', thumbnail: 'intro.jpg' },
+      data: [
+          { title: 'The title of a video-clip 1', description: 'Short video description 1', url: 'intro.mp4', thumbnail: 'intro.jpg' },
 
-            { title: 'The title of a video-clip 2', description: 'Short video description 2', url: 'intro.mp4', thumbnail: 'intro.jpg' },
+          { title: 'The title of a video-clip 2', description: 'Short video description 2', url: 'intro.mp4', thumbnail: 'intro.jpg' },
 
-            { title: 'The title of a video-clip 3', description: 'Short video description 3', url: 'intro.mp4', thumbnail: 'intro.jpg' }
-        ]
-    }
+          { title: 'The title of a video-clip 3', description: 'Short video description 3', url: 'intro.mp4', thumbnail: 'intro.jpg' }
+      ]
+  }
+});</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+
+There is compatibility issue between Ext JS and Sencha Touch 2 stores and models. For example, in the above code <code>fields</code> and <code>data</code> are wrapped inside the <code>config</code> object, while in Ext JS store they are not. Until Sencha will offer a generic solution to resolve the compatibility issues, you have to come up with your own if you want to reuse the same stores.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The code of the Donors store supports the charts in the Stats page. It&#8217;s self explanatory:</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.store.Donors', {
+  extend: 'Ext.data.Store',
+
+  config: {
+      fields: [
+          { name: 'donors',   type: 'int' },
+          { name: 'location', type: 'string' }
+      ],
+
+      data: [
+          { donors: 48, location: 'Chicago, IL' },
+          { donors: 60, location: 'New York, NY' },
+          { donors: 90, location: 'Dallas, TX' },
+          { donors: 22, location: 'Miami, FL' },
+          { donors: 14, location: 'Fargo, ND' },
+          { donors: 44, location: 'Long Beach, NY' },
+          { donors: 24, location: 'Lynbrook, NY' }
+      ]
+  }
 });</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>WARNING. There is compatibility issue between Ext JS and Sencha Touch 2 stores and models. For example, in the above code <code>fields</code> and <code>data</code> are wrapped inside the <code>config</code> object, while in Ext JS store they are not. Until Sencha will offer a generic solution to resolve the compatibility issues, you have to come up with your own if you want to reuse the same stores.</p>
+<p>This concludes the review of the Sencha Touch version of our sample application, which consists of six nice looking screens. The amount of manual coding to achieve this was minimal. In the real world, you&#8217;d need to add business logic to this application, but comes down to inserting the JavaScript code to a well structured layers. The code to communicate with the server will go to the stores, the data will be placed in the models, the UI remains in the views, and the main glue of your application is controllers. Sencha Touch did a pretty good job for us, wouldn&#8217;t you agree?</p>
 </div>
 
 </div>
