@@ -262,6 +262,8 @@ image::images/fig_13_06.png[image]
 
 If the field is for entering a URL (`xtype: 'urlfield'`) expect to see a virtual keyboard with the button labeled as ".com". If the input field has `xtype: 'numberfield'` the user may see a numeric keyboard when the focus gets into this field.
 
+TIP: If you need to detect the environment on the user's mobile device, use such classes as `Ext.os.` for detecting the Operating System, `Ext.browser` for browser, and `Ext.feature` for supported features.
+
 ===== Layouts
 
 Besides grouping components, containers allow you to assign a `Layout` to control its children arrangements. In desktop applications screens are larger and pretty often you can place multiple containers on the same screen at the same time. In mobile world you don't have such a luxury and you'll be designing layouts showing just one container at a time. Not all layouts are practical on smaller screens, which is the reason why not all Ext JS layouts are supported in Sencha Touch. For example, such Ext JS layouts as `Table`, `Column`, `Border`, and some others are not available in Sencha Touch. 
@@ -285,7 +287,7 @@ The classes `TabPanel` and `Carousel` represent two different implementations of
 
 ===== Events
 
-Events can be initiated by the browser or by the user. Chapter 6 includes the section titled "Events" - it covers general rules of dealing with events in Ext JS framework. Lots and lots of system events are being dispatched during UI component rendering. The online documentation lists every event that can be dispatched on Sencha classes. Look for the Events section on the top toolbar in the online documentation. Figure <<FIG13-7>> is a snapshot from online documentation for the class Ext.Container, which has 32 events. 
+Events can be initiated either by the browser or by the user. Chapter 6 has the section with the same title - it covers general rules of dealing with events in Ext JS framework. Lots  of system events are being dispatched during UI component rendering. The online documentation lists every event that can be dispatched on Sencha classes. Look for the Events section on the top toolbar in the online documentation. Figure <<FIG13-7>> is a snapshot from online documentation for the class Ext.Container, which has 32 events. 
 
 [[FIG13-7]]
 .Events in Online documentation 
@@ -304,7 +306,9 @@ Ext.create('Ext.button.Button', {
 }
 ----  
 
-If your application is build using MVC pattern, like our Save Sick Child, define event handlers using yet another config property `control` from `Ext.Container`. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the `tap` event handler functions `showLoginView()` and `cancelLogin()` for the buttons Login and Cancel.
+TIP: read the comments to the code of `SSC.view.CampaignsMap` in Chapter 6 about the right place for declaring listeners.
+
+You can also define event handlers using yet another config property `control` from `Ext.Container`. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the `tap` event handler functions `showLoginView()` and `cancelLogin()` for the buttons Login and Cancel.
 
 [source, javascript]
 ----
@@ -330,6 +334,8 @@ Ext.define('SSC.controller.Login', {
 
 Read more about the role of controllers in event handling in the section titled Controller later in this chapter. Online documentation includes the http://docs.sencha.com/touch/2.2.1/#!/guide/events[Event Guide] - it describes the process of handling events in detail.
 
+TIP: If you want to fire custom events, use the method `fireEvent()`, providing the name of your event. The procedure for defining the listeners for custom events remains the same.
+
 === Save Sick Child With Sencha Touch
 
 The Sencha Touch version of the Save Sick Child application will be based on the prototype from Chapter 12, section "Prototyping Mobile Version" with minor changes. This time the home page of the application will be a slightly different version of the About page shown on <<FIG13-11>>. 
@@ -342,9 +348,9 @@ IMPORTANT: The materials presented in this chapter were tested only with the cur
 .The Starting/About page
 image::images/fig_13_11.png[]
 
-==== The Application Entry 
+==== The Application Object 
 
-Below is the code of the app.js in the Save Sick Child project (we've just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications.
+Below is the code of the app.js in the Save Sick Child project (we've just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications. 
 
 [source, javascript]
 ----
@@ -402,7 +408,11 @@ Ext.application({
 });
 ----
 
-All the stores listed in app.js will be automatically instantiated. The views that require data from the store will either mention the store name like `store: 'Videos'` or will  use the get method from the class `StoreMgr`, for example `Ext.StoreMgr.get('Campaigns');`. In this version of the application we have only one controller `Login` that doesn't use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. This version of the Save Sick Child application doesn't use explicitly defined models - all the data are hard-coded in the stores in the `data` attributes.
+The application loads all the dependencies listed in app.js and will instantiate models and stores. The views that require data from the store will either mention the store name like `store: 'Videos'` or will  use the get method from the class `StoreMgr`, for example `Ext.StoreMgr.get('Campaigns');`.  After this is done, the `launch` function will be called - this is where the main view is created.
+
+In this version of the Save Sick Child application we have only one controller `Login` that doesn't use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. The application instantiates all controllers automatically. Accordingly, all controllers live in the context of the http://docs.sencha.com/touch/2.2.1/#!/api/Ext.app.Application[Application] object. 
+
+We don't use explicitly defined models here - all the data are hard-coded in the stores in the `data` attributes. 
 
 You'll see the code of the views a bit later, but we wanted to draw your attention to the `onUpdated()` event handler. In the section "Microloader and Configurations" we've mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the `appCache` section of app.json. If any of these files changes, the `onUpdated` event handler is invoked, if any. For illustration purposes we decided to intercept this event and Figure <<13-12>> shows how the update prompt can look like on iPhone 5.
 
@@ -412,7 +422,7 @@ image::images/fig_13_12.png[]
 
 At this point the user can either select working with the previous version of the application or reload the new one. 
 
-The index.html file of our application beside the microloader script includes one more script that supports Google Maps API.
+Our index.html file beside the microloader script includes one more script that supports Google Maps API.
 
 [source, html]
 ----
@@ -423,7 +433,7 @@ TIP: If you want your program documentation look as good as Sencha's use https:/
 
 ==== The Main View
 
-The code of the UI landing page of this application is located in the _views_ folder in the file Main.js. First, take a look at the screenshot from WebStorm IDE on figure <<FIG13-13>> that there are only two objects on the top level: the container and a login form.  
+The code of the UI landing page of this application is located in the _views_ folder in the file Main.js. First, take a look at the screen shot from WebStorm IDE on figure <<FIG13-13>> that there are only two objects on the top level: the container and a login form.  
 
 [[FIG13-13]]
 .The Main.js in a collapsed form
@@ -549,7 +559,7 @@ Ext.define('SSC.view.Main', {
 <5> Each view will have a Login button on the toolbar. It's implemented in the LoginToolbar.js shown later in this chapter.   
 ==== Controller
 
-Now let's review the code of the Login page controller. For simlicity, we have not implemented any application login logic here - our controller reacts on the user's actions performed in the view LoginForm. The name of the controller's file is Login.js. It's located in the folder _controller_, and here's the code: 
+Now let's review the code of the Login page controller. For simplicity, we have not implemented any application login logic here - our controller reacts on the user's actions performed in the view LoginForm. The name of the controller's file is Login.js. It's located in the folder _controller_, and here's the code: 
 
 [source, javascript]
 ----
@@ -585,7 +595,7 @@ Ext.define('SSC.controller.Login', {
 });
 ----
 
-<1> Including the `mainView: 'mainview'` in the `refs` attribute forces Sencha Touch to generate the getter providing access to the main view.
+<1> Including the `mainView: 'mainview'` in the `refs` attribute forces Sencha Touch to generate a getter function `getMainView()` providing the access to the main view if need be.
 
 <2> This controller uses components from the LoginForm view (it's code comes a bit later).
 
@@ -596,6 +606,8 @@ Ext.define('SSC.controller.Login', {
 <5> The main view has two children (see <<FIG13-13>>). When the use clicks on the Login button, show the second child: `setActiveItem(1)`.
   
 <6> When the use clicks on the Cancel button, show the main container - the first child of the main view: `setActiveItem(0)`.
+
+TIP: Controllers are automatically instantiated by the `Application` object. If you want some controller's code to be executed even before the application `launch` function is called, put it in the `init` function. If you want some code to be executed right after the application is launched, put it in the controller's `launch` function.
 
 For illustration purposes we'll show you a shorter (but not necessarily better) version of the Login.js. The above code defines the reference to the login form and button selectors in the `refs` section. Sencha Touch will find the references and will generate the getter for these buttons. But in this particular example we are using these buttons only to assign them the event handlers. Hence, we can make the `refs` section slimmer and use the selectors right inside the `control` section as shown below.
 
@@ -739,7 +751,7 @@ TIP: If you'll add the Save Sick Child application as an icon to the home screen
 
 ===== DonateForm
 
-We wanted to make the Donate view look as per our Web designer's mockup shown on Figure <<FIG12-13>>. With jQuery Mobile it was simple - the HTML container `<fieldset data-role="controlgroup" data-type="horizontal" id="radio-container">` with a bunch of `<input type="radio"` did the job as shown on Figure <<FIG12-28>>. Here the fragment from the initial Sencha Touch version of DonateForm.js. 
+We wanted to make the Donate view look as per our Web designer's mockup shown on Figure <<FIG12-13>>. With jQuery Mobile it was simple - the HTML container `<fieldset data-role="controlgroup" data-type="horizontal" id="radio-container">` with a bunch of `<input type="radio">` rendered the horizontal button bar shown on Figure <<FIG12-28>>. Here the fragment from the initial Sencha Touch version of DonateForm.js. 
 
 [source, javascript]
 ----
@@ -1000,6 +1012,133 @@ Previous versions of the Save Sick Child application illustrated how to submit t
 
 On the `tap` event invoke `donateform.submit()` specifying the URL of the server that knows how to process this form. You can find details on submitting and populating forms in the online documentation for http://docs.sencha.com/touch/2.2.1/#!/api/Ext.form.Panel[`Ext.form.Panel`] - the ancestor of the `DonateForm`.
 
+TIP: If you want to use the AJAX-based form submission, use `submit()`, otherwise use the method `standardSubmit()`, which will do a standard HTML form submission.
+
+===== Charts
+
+The charting support is just great in Sencha Touch (and similar to Ext JS). It's JavaScript based, the charts are live and can get the data from the stores and model. The Figure <<>> shows  how the chart looks on iPhone when the user selects the Stats page: 
+
+[[FIG13-19]]
+.Donor's statistics chart
+image::images/fig_13_19.png[]
+
+The code that support the UI part of the chart is located in the view DonorsChart that's shown next. It uses he classes located in the Sencha Touch framework in the folder _src/chart_. 
+
+[source, javascript]
+----
+Ext.define('SSC.view.DonorsChart', {
+    extend: 'Ext.chart.PolarChart',         // <1>
+    xtype: 'donorschart',
+
+    requires: [
+        'Ext.chart.series.Pie',
+        'Ext.chart.interactions.Rotate'     // <2>
+    ],
+
+    config: {
+        store: 'Donors',                    // <3>
+        animate: true,
+        interactions: ['rotate'],
+
+        legend: {                           // <4> 
+            inline: false,
+            docked: 'left',
+            position: 'bottom'
+        },
+
+        series: [
+            {
+                type: 'pie',
+                donut: 20,
+                xField: 'donors',
+                labelField: 'location',
+                showInLegend: true,
+                colors: ["#115fa6", "#94ae0a", "#a61120", "#ff8809", "#ffd13e", "#a61187", "#24ad9a", "#7c7474", "#a66111"]
+            }
+        ]
+    }
+});
+----
+
+<1> Create a chart that uses polar coordinates.
+
+<2> The `Rotate` class allows the user to rotate (with a finger) a polar chart around its central point.
+
+<3> The data shown on the chart come from the store named Donors, which is shown in the section "Stores and Models". 
+
+<4> The legend is a bar at the bottom of the screen. The user can horizontally scroll it with a finger.  
+
+===== Media
+
+The Media page displays the list of available videos. When the user taps on one of them, the new page opens where the user have to tap on the button play. The screen uses the http://docs.sencha.com/touch/2.2.1/#!/api/Ext.dataview.List[`Ext.dataview.List`] component to display the video titles from the Videos store.
+
+The Media view extends `Ext.NavigationView`, which is a container with the card layout, which also allows to push a new view into this container - we use it to create a view for the selected from the list video. The code of the Media view is shown in the next listing.
+
+[source, javascript]
+----
+Ext.define('SSC.view.Media', {
+  extend: 'Ext.NavigationView',     
+  xtype: 'mediaview',
+  requires: [
+      'Ext.Video'                       // <1>
+  ],
+
+  config: {
+      control: {
+          'list': {
+              itemtap: 'showVideo'      // <2>
+          }
+      },
+
+      useTitleForBackButtonText: true,  // <3>
+      navigationBar: {
+          items: [
+              {   xtype: 'button',
+                  action: 'login',
+                  text: 'Login',
+                  align: 'right'
+              }
+          ]
+      },
+
+      items: [
+          {   title: 'Media',
+              xtype: 'list',
+              store: 'Videos',
+              cls: 'x-videos',
+              variableHeights: true,
+              itemTpl: [                         // <3>
+                  '<div class="preview" 
+                  style="background-image:url(resources/media/{thumbnail});"></div>',
+                  '{title}',
+                  '<span>{description}</span>'
+              ]
+          }
+      ]
+  },
+
+  showVideo: function (view, index, target, model) {
+      this.push(Ext.create('Ext.Video', {        // <5>
+          title: model.get('title'),
+          url: 'resources/media/' + model.get('url'),
+          posterURL: 'resources/media/' + model.get('thumbnail')
+      }));
+  }
+});
+----    
+
+<1> Sencha Touch offers `Ext.Video` a wrapper for the HTML5 `<video>` tag. In Chapter 6 we used the HTML5 tag `<video>` directly.
+
+<2> Defining the event listener for the `itemtap` event, which fires whenever the list item is tapped.
+
+<3> When the video player's view will be pushed to the Media page, we want its Back button to display the previous view's title, which is "Media". It's a config property in the `NavigationView`.    
+
+<4>  The list with descriptions of videos is populated from the store Videos using the list's config property`itemTpl`. This is an HTML template for rendering each item. We decided to use the `<div>` showing the content of store's properties `title`, `description` with a background image from the property `thumbnail`, and the video located at the specified `url`. The source code of the store Videos is included in the section "Stores and Models" below.
+
+<5> Create a video player and push it into the `NavigationView`.
+
+NOTE: A template [`Ext.Template`] represents an HTML fragment. The values in curly braces are being passed to the template from the outside. In the above example the values are coming from the store Videos. The class http://docs.sencha.com/touch/2.2.1/#!/api/Ext.XTemplate[`Ext.XTemlate`] offers advanced templating, e.g. auto-filling HTML with the data from an array, which is used here.
+
 
 ==== Stores and Models
 
@@ -1008,28 +1147,57 @@ In the Sencha Touch version of the Save Sick Child application all the data is h
 [source, javascript]
 ----
 Ext.define('SSC.store.Videos', {
-    extend: 'Ext.data.Store',
+  extend: 'Ext.data.Store',
 
-    config: {
-        fields: [
-            { name: 'title',       type: 'string' },
-            { name: 'description', type: 'string' },
-            { name: 'url',         type: 'string' },
-            { name: 'thumbnail',   type: 'string' }
-        ],
+  config: {
+      fields: [
+          { name: 'title',       type: 'string' },
+          { name: 'description', type: 'string' },
+          { name: 'url',         type: 'string' },
+          { name: 'thumbnail',   type: 'string' }
+      ],
 
-        data: [
-            { title: 'The title of a video-clip 1', description: 'Short video description 1', url: 'intro.mp4', thumbnail: 'intro.jpg' },
+      data: [
+          { title: 'The title of a video-clip 1', description: 'Short video description 1', url: 'intro.mp4', thumbnail: 'intro.jpg' },
 
-            { title: 'The title of a video-clip 2', description: 'Short video description 2', url: 'intro.mp4', thumbnail: 'intro.jpg' },
+          { title: 'The title of a video-clip 2', description: 'Short video description 2', url: 'intro.mp4', thumbnail: 'intro.jpg' },
 
-            { title: 'The title of a video-clip 3', description: 'Short video description 3', url: 'intro.mp4', thumbnail: 'intro.jpg' }
-        ]
-    }
+          { title: 'The title of a video-clip 3', description: 'Short video description 3', url: 'intro.mp4', thumbnail: 'intro.jpg' }
+      ]
+  }
 });
 ----
 
-WARNING. There is compatibility issue between Ext JS and Sencha Touch 2 stores and models. For example, in the above code `fields` and `data` are wrapped inside the `config` object, while in Ext JS store they are not. Until Sencha will offer a generic solution to resolve the compatibility issues, you have to come up with your own if you want to reuse the same stores.
+WARNING: There is compatibility issue between Ext JS and Sencha Touch 2 stores and models. For example, in the above code `fields` and `data` are wrapped inside the `config` object, while in Ext JS store they are not. Until Sencha will offer a generic solution to resolve the compatibility issues, you have to come up with your own if you want to reuse the same stores.
+
+The code of the Donors store supports the charts in the Stats page. It's self explanatory:  
+
+[source, javascript]
+----
+Ext.define('SSC.store.Donors', {
+  extend: 'Ext.data.Store',
+
+  config: {
+      fields: [
+          { name: 'donors',   type: 'int' },
+          { name: 'location', type: 'string' }
+      ],
+
+      data: [
+          { donors: 48, location: 'Chicago, IL' },
+          { donors: 60, location: 'New York, NY' },
+          { donors: 90, location: 'Dallas, TX' },
+          { donors: 22, location: 'Miami, FL' },
+          { donors: 14, location: 'Fargo, ND' },
+          { donors: 44, location: 'Long Beach, NY' },
+          { donors: 24, location: 'Lynbrook, NY' }
+      ]
+  }
+});
+----
+
+This concludes the review of the Sencha Touch version of our sample application, which consists of six nice looking screens. The amount of manual coding to achieve this was minimal. In the real world, you'd need to add business logic to this application, but comes down to inserting the JavaScript code to a well structured layers. The code to communicate with the server will go to the stores, the data will be placed in the models, the UI remains in the views, and the main glue of your application is controllers. Sencha Touch did a pretty good job for us, wouldn't you agree?     
+
 
 === Summary 
 
