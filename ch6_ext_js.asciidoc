@@ -744,7 +744,7 @@ combobox.removeListener('change', myEventHandlerFunction);
 combobox.un('change', myEventHandlerFunction);
 ----
 
-You can also declaratively subscribe to events using `listeners` property of the component:
+You can also declaratively subscribe to events using the `listeners` config property of the component:
 
 [source, javascript]
 ----
@@ -1402,6 +1402,8 @@ Ext.define("SSC.view.VideoPanel", {
 });
 ----
 
+TIP: Ext JS has a wrapper  for the HTML5 `<video>` tag. It's called `Ext.Video`, and we'll use it in Chapter 13.
+
 The mapping part is located in the view CampaignsMap.js. Initially we tried to use the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.ux.GMapPanel[`Ext.ux.GMapPanel`], but it didn't work as expected. As a workaround, we've added the HTML `<div>` element to serve as a map container.
 
 [source, javascript]
@@ -1417,12 +1419,12 @@ Ext.define("SSC.view.CampaignsMap", {
      mapContainer: 'div'
  },
 
- listeners: {
+ listeners: {                                 // <2>
   afterrender: function (comp) {
       var map,
-          mapDiv = comp.mapContainer.dom;     // <2>
+          mapDiv = comp.mapContainer.dom;     // <3>
 
-      if (navigator && navigator.onLine) {    // <3>
+      if (navigator && navigator.onLine) {    // <4>
           try {
               map = comp.initMap(mapDiv);
               comp.addCampaignsOnTheMap(map);
@@ -1435,7 +1437,7 @@ Ext.define("SSC.view.CampaignsMap", {
   }
  },
 
- initMap: function (mapDiv) {                   // <4>
+ initMap: function (mapDiv) {                   // <5>
    // latitude = 39.8097343 longitude = -98.55561990000001
    // Lebanon, KS 66952, USA Geographic center of the contiguous United States
    // the center point of the map
@@ -1459,10 +1461,10 @@ Ext.define("SSC.view.CampaignsMap", {
   var marker,
       infowindow = new google.maps.InfoWindow(),
       geocoder   = new google.maps.Geocoder(),
-      campaigns  = Ext.StoreMgr.get('Campaigns');    // <5>
+      campaigns  = Ext.StoreMgr.get('Campaigns');    // <6>
 
   campaigns.each(function (campaign) {
-      var title       = campaign.get('title'),       // <6>
+      var title       = campaign.get('title'),       // <7>
           location    = campaign.get('location'),
           description = campaign.get('description');
 
@@ -1510,15 +1512,17 @@ Ext.define("SSC.view.CampaignsMap", {
 
 <1>  Since we've added video container just by including the HTML `<div>` component, Ext JS wouldn't create an ID for it. We didn't want to create an ID manually hence used the property `renderSelectors` allows to map an arbitrary name to a DOM selector. In this case such key-value pair is `mapContainer: 'div'`. The `mapContainer` is a cross-browser wrapper for DOM elements (see http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.dom.Element[product documentation]).
 
-<2> Querying the DOM to find the `mapContainer` defined in the `renderSelectors` property. Note that we are getting the reference to this DOM element after the view is rendered in the event handler function `afterrender`. The object `comp` will be provided to this handler, and it points at the instance of the current component, which is `SSC.view.CampaignsMap`.
+<2> Sencha documentation states that declaring `listeners`  during `Ext.define()` is bad practice and doing it during `Ext.create()` should be preferred. This is an arguable statement. Yes, there is a possibility that the handler function will be created during `define()` but never used during `create()`, which will lead to unnecessary creation of the handler's instance in memory. But the chances are slim. The other consideration is that if listeners are defined during `create()` each instance can handle the same event differently. We'll leave it up to you to decide where's the right place for defining listeners. The good part about keeping listeners in the class definition is that the entire code of the class is located in one place. 
 
-<3> If Google Map is not available, display an error message as in <<FIG6-10-SSC>>. This code was added after one of the authors was testing this code while sitting in the plane with no Internet connection. But checking the status of  https://developer.mozilla.org/en-US/docs/DOM/window.navigator.onLine[`navigator.onLine`] may not be a reliable indicator of the offline status, so we've wrapped it into a `try/catch` block just to be sure. 
+<3> Querying the DOM to find the `mapContainer` defined in the `renderSelectors` property. Note that we are getting the reference to this DOM element after the view is rendered in the event handler function `afterrender`. The object `comp` will be provided to this handler, and it points at the instance of the current component, which is `SSC.view.CampaignsMap`.
 
-<4> The rest of the code in this class has the same mapping functionality as described in Chapter 3 in section "Adding Geolocation Support".
+<4> If Google Map is not available, display an error message as in <<FIG6-10-SSC>>. This code was added after one of the authors was testing this code while sitting in the plane with no Internet connection. But checking the status of  https://developer.mozilla.org/en-US/docs/DOM/window.navigator.onLine[`navigator.onLine`] may not be a reliable indicator of the offline status, so we've wrapped it into a `try/catch` block just to be sure. 
 
-<5> The data for the campaign information are coming from the store Campaigns.js located in the folder store. The store manager can find the reference to the store either if by assigned http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.StoreManager[`storeId`] or by name `Campaigns` listed in the `stores` array in the app.js:
+<5> The rest of the code in this class has the same mapping functionality as described in Chapter 3 in section "Adding Geolocation Support".
 
-<6> We are configuring the mapping panel to get the information about the campaign title, location, and description from the fields with corresponding names from the store `SSC.store.Campaigns` that's shown right after app.js below.   
+<6> The data for the campaign information are coming from the store Campaigns.js located in the folder store. The store manager can find the reference to the store either if by assigned http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.StoreManager[`storeId`] or by name `Campaigns` listed in the `stores` array in the app.js:
+
+<7> We are configuring the mapping panel to get the information about the campaign title, location, and description from the fields with corresponding names from the store `SSC.store.Campaigns` that's shown right after app.js below.   
 
 [[FIG6-10-SSC]]
 .If Google Maps server is not responding 
@@ -1812,7 +1816,7 @@ The production version of the Save Sick Child application will be generated in t
 </html>
 ----
 
-Deploy the content of the _production_ under any Web server and load this version of the application in the Chrome with Developer Tools turned on. This time the number of dowloaded bytes is three times lower (2.3Mb). Ask your Web Server administrator to enable gzip or deflate, and the size of the JavaScript will go down from 1.2Mb to 365KB. The size of other resources will decrease even more.  Don't forget that we are loading a 500Kb video file intro.mp4. The number of server requests went down to 55, but more that 30 of them were Google Map API calls. 
+Deploy the content of the _production_ under any Web server and load this version of the application in the Chrome with Developer Tools turned on. This time the number of downloaded bytes is three times lower (2.3Mb). Ask your Web Server administrator to enable gzip or deflate, and the size of the JavaScript will go down from 1.2Mb to 365Kb. The size of other resources will decrease even more.  Don't forget that we are loading a 500Kb video file intro.mp4. The number of server requests went down to 55, but more that 30 of them were Google Map API calls. 
 
 [[FIG6-14-SSC]]
 .The size of production version of Save Sick Child  
