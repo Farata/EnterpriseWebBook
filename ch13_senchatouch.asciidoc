@@ -1118,6 +1118,7 @@ Ext.define('SSC.view.Media', {
   },
 
   showVideo: function (view, index, target, model) {
+
       this.push(Ext.create('Ext.Video', {        // <5>
           title: model.get('title'),
           url: 'resources/media/' + model.get('url'),
@@ -1135,10 +1136,119 @@ Ext.define('SSC.view.Media', {
 
 <4>  The list with descriptions of videos is populated from the store Videos using the list's config property`itemTpl`. This is an HTML template for rendering each item. We decided to use the `<div>` showing the content of store's properties `title`, `description` with a background image from the property `thumbnail`, and the video located at the specified `url`. The source code of the store Videos is included in the section "Stores and Models" below.
 
-<5> Create a video player and push it into the `NavigationView`.
+<5> Create a video player and push it into the `NavigationView`. When the `itemtap` event is fired, it passes several values to the function handler. We just use the `model` that corresponds to the tapped list item.
 
 NOTE: A template [`Ext.Template`] represents an HTML fragment. The values in curly braces are being passed to the template from the outside. In the above example the values are coming from the store Videos. The class http://docs.sencha.com/touch/2.2.1/#!/api/Ext.XTemplate[`Ext.XTemlate`] offers advanced templating, e.g. auto-filling HTML with the data from an array, which is used here.
 
+===== Maps
+
+Integration with Google Maps is a pretty straightforward task in Sencha Touch, which comes with `Ext.Map` - a wrapper class for Google Maps API. Our view `CampainsMap` is a subclass of `Ext.Map`.
+
+Figure <<FIG13-20>> shows the iPhone's screen when the button Events is pressed. 
+
+[[FIG13-20]]
+.The Events page
+image::images/fig_13_20.png[]
+
+Of course, some additional styling would be needed before offering this view in production environment, but our  CampaignsMap.js that supports this screen is only ninety lines of code! Can't beat this.  
+
+[source, javascript]
+----
+Ext.define('SSC.view.CampaignsMap', {
+  extend: 'Ext.Map',
+  xtype: 'campaignsmap',
+
+  config: {
+      listeners: {
+          maprender: function () {            // <1>
+
+            if (navigator && navigator.onLine) {
+                try {
+                    this.initMap();
+                    this.addCampaignsOnTheMap(this.getMap());
+                } catch (e) {
+                    this.displayGoogleMapError();
+                }
+            } else {
+                this.displayGoogleMapError();
+            }
+          }
+      }
+  },
+
+  initMap: function () {                      // <2>
+
+      var latMapCenter = 39.8097343,
+          lonMapCenter = -98.55561990000001;
+
+      var mapOptions = {
+          zoom     : 3,
+          center   : new google.maps.LatLng(latMapCenter, lonMapCenter),
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          mapTypeControlOptions: {
+              style   : google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+              position: google.maps.ControlPosition.TOP_RIGHT
+          }
+      };
+
+      this.setMapOptions(mapOptions);
+  },
+
+  addCampaignsOnTheMap: function (map) {
+      var marker,
+          infowindow = new google.maps.InfoWindow(),
+          geocoder   = new google.maps.Geocoder(),
+          campaigns  = Ext.StoreMgr.get('Campaigns');
+
+      campaigns.each(function (campaign) {
+          var title       = campaign.get('title'),
+              location    = campaign.get('location'),
+              description = campaign.get('description');
+
+          geocoder.geocode({
+              address: location,
+              country: 'USA'
+          }, function(results, status) {
+              if (status == google.maps.GeocoderStatus.OK) {
+
+                 // getting coordinates
+                 var lat = results[0].geometry.location.lat(),
+                     lon = results[0].geometry.location.lng();
+
+                 // create marker
+                 marker = new google.maps.Marker({
+                     position: new google.maps.LatLng(lat, lon),
+                     map     : map,
+                     title   : location
+                 });
+
+                 // adding click event to the marker to show info-bubble with data from json
+                 google.maps.event.addListener(marker, 'click', (function(marker) {
+                     return function () {
+                         var content = Ext.String.format(
+                             '<p class="infowindow"><b>{0}</b><br/>{1}<br/><i>{2}</i></p>',
+                             title, description, location);
+
+                         infowindow.setContent(content);
+                         infowindow.open(map, marker);
+                     };
+                 })(marker));
+              } else {
+                 console.error('Error getting location data for address: ' + location);
+              }
+          });
+      });
+  },
+
+  displayGoogleMapError: function () {
+    console.log("Sorry, Google Map service isn't available");
+  }
+});
+----
+
+<1>
+
+<2>
 
 ==== Stores and Models
 
