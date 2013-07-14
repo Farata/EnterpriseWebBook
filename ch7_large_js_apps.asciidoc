@@ -104,10 +104,7 @@ The code of the Save Sick Child application will be refactored to implement modu
 
 In general software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We're able to include both public/private methods and variables inside a single object, thus hiding particular section of code from global scope. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts, but used in the same application's scope.
 
-// vik
-Ultimately, it's just some code in an IIFE that creates module object in function internal scope of function and exposes that module for the global scope using different syntactical techniques. Here are couple examples how Module Pattern could be implemented using IIFEs.
-
-// /vik
+Ultimately, it's just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using various JavaScript syntax. Here are couple examples how Module Pattern could be implemented using IIFEs.
 
 .Returning the value from a module 
 [source,javascript]
@@ -129,11 +126,9 @@ include::include/ch7_iife_global_loginModule.js[]
 include::include/ch7_iife_namespace_loginModule.js[]
 ----
 
-// vik
-This approach doesn't scale well because when working with an application with a large number of modules, very soon you may find yourself adding lots of boilerplate checks of objects existence in the global scope for each new module. Also, you need to be very careful to manage namespaces. Because you put your object to the global scope you need to think about how to avoid accidental names clashing.
+This approach doesn't scale well because when working with an application with a large number of modules, very soon you may find yourself adding lots of boilerplate checks of objects existence in the global scope for each new module. Also, you need to be very careful with managing namespaces. Because you are the one who put an object into the global scope, you need to think about how to avoid accidental names conflicts.
 
-// /vik
-There is one huge disadvantage of using the Module pattern - we still need to deal with manual dependency management and manually arrange `<script>` tags in HTML page.
+There is one huge disadvantage of using the Module pattern - we still need to deal with manual dependency management and manually arranging `<script>` tags in the HTML document.
 
 
 ==== CommonJS
@@ -331,14 +326,12 @@ You can download require.js from its github repository or use a package manager 
 </html>
 ----
 [[data_main_attrib]]
-<1> The `data-main` attribute is needed needs for require.js. It specifies that the framework should load `app/config.js` after +require.js+ loads. The `app/config.js` is the entry point of your application.
+<1> The `data-main` attribute is needed for require.js. It specifies that the framework should load `app/config.js` after +require.js+ loads. The `app/config.js` is the entry point of your application.
 
-// vik
 
 .r.js - RequireJS Optimizer
 ****
-RequireJS comes with an optimization tool called http://requirejs.org/docs/optimization.html[_r.js_]. r.js is an utility that does optimization of modules for RequireJS.
-This optimizer will combine modules that are specified in arrays of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify content of script files.
+RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that does optimization of modules. This optimizer will combine modules that are specified in arrays of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify content of script files.
 
 *TODO*: _Make introduction of Grunt Tools in this chapter not next chapter._ 
 
@@ -359,52 +352,47 @@ Let's configure our Grunt project to enable optimization task.
 include::include/ch7_rjs_Gruntfile.js[]
 ----
 
-<1> A +clean+ task cleans output directory. In `files` section of task config we specify what folder should be cleaned.
-<2> A +requirejs+ task. The configuration properties of +requrejs+ task are self-explanatory. +mainConfigFile+ points to same file that <<data_main_attrib,`data-main` attribute>> of RequireJS script tag. +out+ parameter specifies output directory where optimized script will be created.
-<3> A +concat+ task combines/concatenates together optimized modules code and RequireJS loader code.
-<4> A +uglify+ task minifies provided files using http://lisperator.net/uglifyjs/[UglifyJS] - a compressor/minifier tool. UglifyJS produces significantly smaller version of original script by reducing Abstract Source Tree (AST) and mangling local variable to single-letters.
+<1> The +clean+ task cleans output directory. In the `files` section of task config we specify what folder should be cleaned.
+<2> The +requirejs+ task. The configuration properties of +requrejs+ task are self-explanatory. +mainConfigFile+ points at the same file that <<data_main_attrib,`data-main` attribute>> of RequireJS script tag. +out+ parameter specifies output directory where optimized script will be created.
+<3> The +concat+ task combines/concatenates together optimized modules code and RequireJS loader code.
+<4> The +uglify+ task minifies provided files using http://lisperator.net/uglifyjs/[UglifyJS] - a compressor/minifier tool. UglifyJS produces significantly smaller version of original script by reducing Abstract Source Tree (AST) and mangling local variable to single-letters.
 <5> Loading plugins that provide necessary tasks.
-<6> Default task that executes all tasks in order.
+<6> The default task to execute all tasks in order.
 
-If you inspect Save Sick Child application build with RequireJS with Network Monitor from Chrome Developer Tools, you might realize that we're making many HTTP requests to load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 of 14 requests that browser sends are for load all required modules.
+Monitor the network traffic of the Save Sick Child application built with RequireJS in Chrome Developer Tools, and you'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 requests that browser sends are for loading all required modules.
 
 [[unoptim_require_fig]]
 .Unoptimized version of Save Sick Child Application
 image::fig_07_02.png[]
 
-Here is <<optim_with_rjs_fig,screenshot>> of Save Sick Child application optimized with RequireJS optimizer. As you can see, we managed to pack all our modules, its dependencies and loader's code under one single file. And considerably decreased number of server-side calls.  
+The next <<optim_with_rjs_fig,screenshot>> shows the loading of Save Sick Child application optimized with RequireJS optimizer. As you can see, we managed to pack all our modules, its dependencies and loader's code under one single file. And considerably decreased number of server-side calls.  
 
 [[optim_with_rjs_fig]]
-.Optimized with r.js version of Save Sick Child Application
+.Loading of optimized version of Save Sick Child 
 image::fig_07_03.png[]
 
 You can find more information about different optimization topics on the RequireJS documentation site under http://requirejs.org/docs/optimization.html[``Optimization''] section.
 
 ****
 
-// /vik
 
 ==== Universal Module Definition (UMD)
 
 
 Universal Module Definition (UMD) is the series of patterns / code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. 
 
-// vik
-Here is example of a module definition using UMD notation. A module can register itself using `define` method if is detects AMD loader  or registers itself in browser globals.
+Here is an example of module definition using UMD notation. A module can register itself using the `define()` method if it detects the AMD loader or registers itself in browser globals.
 
-// /vik
 
 [source,javascript]
 ----
 include::include/ch7_umd_amd_globals.js[]
 ----
-<1> Checking if the AMD loader is available. If it is, proceed with defining module according AMD specification.
+<1> Checking if the AMD loader is available. If it is, proceed with defining the module according AMD specification.
 
-// vik
-<2> If the AMD loader isn't present, use the factory method to instantiate object and attach it to the global scope (e.g. `window` object in case of browser runtime) .
+<2> If the AMD loader isn't present, use the factory method to instantiate object and attach it to the global scope (i.e. `window` object in case of executing this code in a Web browser).
 
-// /vik
-<3> Passing a top-level context and defining providing a implementation of a factory function.
+<3> Passing the top-level context and defining providing a implementation of a factory function.
 
 It's worth mentioning that UMD is not a specification or a standard. You need to care about UMD in case when your modules shall run in more than one type of environment (e.g. a browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.
 You can find more information about UMD and commented code snippets for different situations in https://github.com/umdjs/umd[the UMD project repository].
@@ -413,7 +401,7 @@ You can find more information about UMD and commented code snippets for differen
 
 // This section under active development
 
-The ECMAScript 6 (ES6) specification is an evolving draft outlining the changes and features in the next version of JavaScript. This specification will be finalized soon, but before that happens the browsers' support for anything introduced in ES6 will be experimental at best and cannot be relied upon for widely-deployed web applications. One of the most important features of the upcoming ES6 specification is the _module syntax_. Here is an example of how it suggest to define and use a module:
+The ECMAScript 6 (ES6) specification is an evolving draft outlining changes and features for the next version of JavaScript. This specification will be finalized soon, but before that happens the browsers' support for anything defined in ES6 will be experimental at best and cannot be relied upon for Web applications that must run in multiple browsers. One of the most important features of the upcoming ES6 specification is the _module syntax_. Here is an example of how it suggests to define and use a module:
 
 .Login module definition
 [source,javascript]
