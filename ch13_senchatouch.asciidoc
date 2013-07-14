@@ -3,50 +3,50 @@
 
 == Sencha Touch
 
-Sencha Touch framework is a little brother of Ext JS. They both have the same creator: http://www.sencha.com/[Sencha Inc], and they both are build on the same core classes. But Sencha Touch is created for developing mobile Web, while Ext JS is for desktop Web applications. 
+Sencha Touch framework is a little brother of Ext JS. They both have the same creator: http://www.sencha.com/[Sencha Inc], and they both are built on the same set of core classes. But Sencha Touch is created for developing mobile Web, while Ext JS is for desktop Web applications. 
 
-The enterprise IT managers need to be aware of another important difference: Ext JS offers free licenses only for open source projects, but http://www.sencha.com/products/touch/license/[Sencha Touch licenses] are free unless you decide to purchase this framework bundled with developers tools.   
+Enterprise IT managers need to be aware of another important difference: Ext JS offers free licenses only for open source projects, but http://www.sencha.com/products/touch/license/[Sencha Touch licenses] are free unless you decide to purchase this framework bundled with developers tools.   
 
-This chapter is structured similarly to the previous one that described jQuery Mobile. The fundamental difference though is that if Chapter 12 has almost no JavaScript, this chapter will have almost no HTML. 
+This chapter is structured similarly to the previous one that described jQuery Mobile - minimum theory followed by the code. The fundamental difference though is that if Chapter 12 has almost no JavaScript, while this chapter will have almost no HTML. 
 
-We'll try minimizing repeating the information you can find in http://www.sencha.com/learn/touch[Sencha Touch Learning Center] and extensive product documentation, which has multiple well written http://docs.sencha.com/touch/2.2.0/#!/guide[Guides] on multiple topics. The chapter will start with a brief overview of the features of Sencha Touch followed by the code review of yet another version of the Save Sick Child application. 
-In this chapter we are going to use Sencha Touch 2.2, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and recently have announced support of Window Phone 8. 
+We'll try minimizing repeating the information you can find in http://www.sencha.com/learn/touch[Sencha Touch Learning Center] and extensive product documentation, which has multiple well written http://docs.sencha.com/touch/2.2.0/#!/guide[Guides] on various topics. This chapter will start with a brief overview of the features of Sencha Touch followed by the code review of yet another version of the Save Sick Child application. 
+In this chapter we are going to use Sencha Touch 2.2.1, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and recently have announced support of Window Phone 8. 
 
-NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like `xType`, SASS and others explained in Chapter 6. For the most part Ext JS and Sencha Touch non-UI classes are compatible, but there are some differences that may prevent you from 100% code reuse between these frameworks(e.g. see section "Stores and Models"). Hopefully, in the future releases Sencha will come up with some standard solutions to remove the differences in class systems of both frameworks.
+NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like `xType`, SASS and some others explained in Chapter 6. For the most part Ext JS and Sencha Touch non-UI classes are compatible, but there are some differences that may prevent you from 100% code reuse between these frameworks(e.g. see section "Stores and Models"). Hopefully, in the future releases Sencha will come up with some standard solutions to remove the differences in class systems of both frameworks.
 
 === Sencha Touch Overview
 
-Let's start with downloading Sencha Touch from http://www.sencha.com/products/touch/download/[http://www.sencha.com/products/touch/download]. To get the free commercial license just specify your email address, and you'll receive the link to download in the email. The Sencha Touch framework comes as a zip file, which you should unzip in the directory of your choice - later on the framework will be copied either into your project directory or in the document root of your Web server.  
+Let's start with downloading Sencha Touch from http://www.sencha.com/products/touch/download/[http://www.sencha.com/products/touch/download]. If you want to get a free commercial license just specify your email address, and you'll receive the link to download in the email. Sencha Touch framework comes as a zip file, which you should unzip in any  directory - later you'll copy the framework's code either into your project directory or in the document root of your Web server.  
 
-But commercial license of Sencha Touch doesn't include charts (you'd need to get either Sencha Complete or Sencha Touch Bundle for the chart support). Because of this we'll be using the GPL version for the open source Save Sick Child project, but our users will see a little watermark as shown on the <<FIG13-1>> figure below. 
+WARNING: Commercial license of Sencha Touch doesn't include charts (you'd need to get either Sencha Complete or Sencha Touch Bundle for the chart support). Because of this we'll be using the GPL version for the open source Save Sick Child project, and our users will see a little watermark "Powered by Sencha Touch GPLv3" as shown on Figure <<FIG13-1>> below. 
 
 [[FIG13-1]]
 .A GPL license watermark 
 image::images/fig_13_01.png[]
 
-After downloading Sencha Touch in the directory _/Library/touch-2.2.1_, but later on the code generation process will copy this framework in our application directory anyway.
+After downloading Sencha Touch we've unzipped it into the directory _/Library/touch-2.2.1_, but the code generation process will copy this framework into our application directory.
 
 ==== Code Generation and Distribution
 
-If you haven't downloaded and installed the Sencha CMD tool, do it now as described in Chapter 6. We'll use Sencha CMD again, but this time to generate a mobile Hello World.  After opening a Terminal or Command Window enter the following command specifying the absolute path to your ExtJS SDK directory (we keep it in the /Library directory) and to the output folder, where the generated project should reside.
+If you haven't downloaded and installed the Sencha CMD tool, do it now as described in Chapter 6. This time we'll use Sencha CMD to generate a mobile version of Hello World. After opening a Terminal or Command Window enter the following command specifying the absolute path to your ExtJS SDK directory and to the output folder, where the generated project should reside.
 
 _sencha -sdk /Library/touch-2.2.1 generate app HelloWorld /Users/yfain11/hellotouch_
 
-After the code generation was complete, you'll see the folder _hello_ of the structure shown on the figure <<FIG13-2>>. It follows the same MVC pattern that we've discussed in the Ext JS chapter.
+After the code generation is complete, you'll see the folder _hello_ of the structure shown on Figure <<FIG13-2>>. It follows the MVC pattern discussed in the Ext JS chapter.
 
 [[FIG13-2]]
 .CMD-generated project 
 image::images/fig_13_02.png[image]
 
-To test your newly generated application you'll need to make sure that the directory _hellotouch_ is deployed under a Web server (simple opening of index.html in the Web browser won't work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6. In the same chapter you can find the command to start the Jetty Web server embedded in the Sencha CMD tool.
+To test your newly generated application make sure that the directory _hellotouch_ is deployed under a Web server (simple opening of index.html in the Web browser won't work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6. In the same chapter you can find the command to start the Jetty Web server embedded in the Sencha CMD tool.
 
-In this chapter we are going to use the internal Web server that comes with WebStorm IDE. It runs on the port 63342, and if your project's name is helloworld, just enter in your Web browser http://localhost:63342/helloworld to run it.
+Here we are going to use the internal Web server that comes with WebStorm IDE. It runs on the port 63342, and if your project's name is helloworld, the URL to test it is  http://localhost:63342/helloworld.
 
 NOTE: To debug your code inside WebStorm IDE, select the menu Run | Edit Configurations, press the plus sign in the top left corner and in JavaScipt Debug | Remote panel enter the URL http://localhost:63342 followed by the name of your project(e.g. ssctouch) and name your new debug configuration. After that you'll be able to debug your code in your Chrome Web browser (it'll ask you to install the JetBrains IDE Support extension of the first run).
 
 TIP: MAC OS X users can install a small application http://anvilformac.com/[Anvil] that can easily serve static content of any directory as a Web server with a URL that ends with .dev.
 
-The Figure <<FIG13-3>> shows how the generated Hello World application will look in Chrome browser. It'll consist of two pages controlled by the buttons in the footer toolbar.
+Figure <<FIG13-3>> shows how the generated Hello World application will look in Chrome browser. It'll consist of two pages controlled by the buttons in the footer toolbar.
 
 [[FIG13-3]]
 .Running CMD-generated Hello World 
@@ -62,7 +62,7 @@ The main application entry is the Javascript file app.js. But if in Ext JS, this
        src="touch/microloader/development.js"></script>
 ----
 
-This scripts uses one of the microloader scripts, which gets the objects to be loaded from the configuration file app.json. This file contains a JSON object with various attributes like `js`, `css`, `resources` and others. So if your application needs to load the scripts sencha-touch.js and app.js, they should be located in the `js` array. Here's what the `js` attribute of the app.json contains after the initial code generation by Sencha CMD:  
+This script uses one of the scripts located in the microloader folder, which gets the object names to be loaded from the configuration file app.json. This file contains a JSON object with various attributes like `js`, `css`, `resources` and others. So if your application needs to load the scripts sencha-touch.js and app.js, they should be located in the `js` array. Here's what the `js` attribute of the app.json contains after the initial code generation by Sencha CMD:  
 
 [source, javascript]
 ----
@@ -81,25 +81,27 @@ This scripts uses one of the microloader scripts, which gets the objects to be l
 
 Eventually, if you'll need to load additional JavaScript code, CSS files or other resources add them to the appropriate attribute in the file app.json.
 
-Introducing a separate configuration file and additional microloader script may seem like an unnecessary complication, but it's not. On the contrary, it gives you the flexibility of maintaining a clean separation between development, testing,  and production environments. You can find three different loader scripts in the folder _touch/microloader_: development.js, production.js, and testing.js.  Each of them can load different configuration file. 
+Introducing a separate configuration file and additional microloader script may seem like an unnecessary complication, but it's not. On the contrary, it gives you the flexibility of maintaining clean separation between development, testing,  and production environments. You can find three different loader scripts in the folder _touch/microloader_: development.js, production.js, and testing.js.  Each of them can load different configuration file. 
 
-If you open the production loader, you'll see that it uses application cache to save files locally on the device (see section Application Cache in Chapter 2 for a refresher) so the user can start the application even without having the Internet connection.
+TIP: Our sample application includes some sample video files. Don't forget to include "resources/media" folder in the `resources` section of the app.json.
 
-The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn't know which resources has changed and reloads all cacheable resources. CMD-generated production builds for Sencha touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. To create a production build open a Terminal or a command window, change to your application directory and run the following command: 
+If you open the source code of the production loader, you'll see that it uses application cache to save files locally on the device (see section Application Cache in Chapter 2 for a refresher), so the user can start the application even without having the Internet connection.
+
+The production microloader of Sencha Touch offers a smarter solution for minimizing unnecessary loading of cached JavaScript and CSS files than HTML5 Application Cache. The standard HTML5 mechanism  doesn't know which resources have  changed and reloads all cacheable files. CMD-generated production builds for Sencha Touch keep track of changes and create deltas, so the mobile device will download only those resources that has been actually changed. To create a production build, open a Terminal or a command window, change to your application directory and run the following command: 
 
 _sencha app build production_
 
-See the section http://docs.sencha.com/touch/2.2.1/#!/guide/command_app["Deploying Your Application"] for more details on Sencha CMD builds. When we start building the Save Sick Child application, you'll see how to prompt the user that the application has been updated. Refer to the http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch[online documentation] on using Sencha CMD with Sencha Touch for details.
+See the section http://docs.sencha.com/touch/2.2.1/#!/guide/command_app["Deploying Your Application"] for more details on Sencha CMD builds. When we start building our Save Sick Child application, you'll see how to prompt the user that the application code has been updated. Refer to the http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch[online documentation] on using Sencha CMD with Sencha Touch for details.
 
 .Code Distribution and Modularization  
 ************
 The ability of Sencha Touch to monitor modified pieces of code helps with deployment - just change the SomeFile.js on the server and it'll be automatically downloaded and saved on the user's mobile device. This may have some effect on the application modularization decisions you will take.
 
-Reducing the startup latency and implementing lazy loading of certain parts of the application are main reasons for modularizing Web applications. The other reason for modularization is an ability to redeploy certain portions of the code vs. the entire application if the code modifications are limited in scope. 
+Reducing the startup latency and implementing lazy loading of certain parts of the application are the main reasons for modularizing Web applications. The other reason for modularization is an ability to redeploy certain portions of the code vs. the entire application if the code modifications are limited in scope. 
 
 So should we load the entire code base from the local storage (it's a lot faster that getting the code from remote servers) or still use loaders to bring up the portion of the code (a.k.a. modules) on as needed basis? There is no general answer to this question - every application is different.
 
-If your application is not too large and the mobile device has enough memory, loading the entire code of the Web application from the local storage may lower the need for modularization. For larger applications consider the http://docs.sencha.com/touch/2.2.1/#!/guide/command_workspace[Workspaces] feature of Sencha CMD, which allows to create some common code to be shared by several scripts.
+If your application is not too large and the mobile device has enough memory, loading the entire code of the application from the local storage may lower the need for modularization. For larger applications consider the http://docs.sencha.com/touch/2.2.1/#!/guide/command_workspace[Workspaces] feature of Sencha CMD, which allows to create some common code to be shared by several scripts.
 ************
 
 ===== The Code of Hello World
@@ -164,17 +166,17 @@ Ext.application({
 });
 ----
 
-<1> This code instructs the loader that any class that starts with Ext can be found in the directory _touch/src_, and classes that starts with HelloWorld are under the _app_ directory.
+<1> This code instructs the loader that any class that starts with _Ext_ can be found in the directory _touch/src_ or its subdirectories. The classes with names that starts with _HelloWorld_ are under the _app_ directory.
 
 <2> This is an interception of the event that's triggered if the code on the server was updated. The user is warned that the new version of the application has been downloaded. See more on this in the comments to app.js in the section Save Sick Child With Sencha Touch.
 
-The code of the generated Main.js, which is a main view of this application is shown next. It extends the class `Ext.tab.Panel` so each page of the application is a tab. Figure <<FIG13-4>> is a snapshot of a collapsed version of the Main.js taken from WebStorm IDE, which will be our IDE of choice in this chapter. 
+The code of the generated main view of this application (Main.js) is shown next. It extends the class `Ext.tab.Panel` so each page of the application is one tab in this panel. Figure <<FIG13-4>> is a snapshot of a collapsed version of Main.js taken from http://www.jetbrains.com/webstorm/[WebStorm IDE] from JetBrains, which is our IDE of choice in this chapter. 
 
 [[FIG13-4]]
 .Collapsed version of Main.js from Hello World
 image::images/fig_13_04.png[image]
 
-As you see from this figure the `items[]` array includes two objects: Welcome and Get Started - each of them is one tab (screen).
+As you see from this figure the `items[]` array includes two objects: Welcome and Get Started - each of them represents a  tab (screen) on the panel.
 
 [source, html]
 ----
@@ -234,19 +236,19 @@ Ext.define('HelloWorld.view.Main', {
 
 <2> The first tab is a Welcome screen.
 
-<3> The second tab is a Getting Started screen. It has `xtype: video`, which means it's ready for playing video located at the specified `url`.   
+<3> The second tab is the Getting Started screen. It has `xtype: video`, which means it's ready for playing video located at the specified `url`.   
 
-This application has no controllers, models or stores. But it does include the default theme from SASS stylesheet resources/sass/app.scss, which was compiled by Sencha CMD generation process into resources/css/app.css. 
+This application has no controllers, models or stores. But it does include the default theme from SASS stylesheet resources/sass/app.scss, which was compiled by Sencha CMD generation process into the file resources/css/app.css. 
 
 ==== Constructing UI  
 
-Sencha Touch has a number UI components specifically designed  for mobile devices, which include lists, forms, toolbars and buttons, charts, audio, video, carousel and more.  The quickest way to get familiar with events and UI components is by browsing the http://dev.sencha.com/deploy/touch/examples/production/kitchensink/[Kitchen Sink] Web site, where you can find the examples of how UI components look and see the source code of these examples.
+Sencha Touch has a number UI components specifically designed  for mobile devices, which include lists, forms, toolbars, buttons, charts, audio, video, carousel and more.  The quickest way to get familiar with UI components is by browsing the http://dev.sencha.com/deploy/touch/examples/production/kitchensink/[Kitchen Sink] Web site, where you can find the examples of how UI components look and see the source code of these examples.
 
 ===== Containers
 
 In general, the process of implementing of a mobile application with Sencha Touch will consist of selecting the appropriate containers and arranging the navigation between them. Each screen that user sees is a container. Pretty often it'll include a toolbar _docked_ on top or bottom of the container.
 
-Containers can be nested - they are needed for a better grouping of UI components on the screen. The lightest container is `Ext.Container`. It inherits all the functionality from it ancestor `Ext.Component` can plus it can contain other components.  When you'll be reviewing the code of the Save Sick Child application, note that the main view `SSC.view.Main` (see Main.js) extends `Ext.Container`. The hierarchy of Sencha Touch containers is shown on Figure <<FIG13-5>>.
+Containers can be nested - they are needed for better grouping of UI components on the screen. The lightest container is `Ext.Container`. It inherits all the functionality from it ancestor `Ext.Component` plus it can contain other components.  When you'll be reviewing the code of the Save Sick Child application, note that the main view `SSC.view.Main` from Main.js extends `Ext.Container`. The hierarchy of Sencha Touch containers is shown on Figure <<FIG13-5>>.
 
 [[FIG13-5]]
 .Sencha Touch Containers Hierarchy
@@ -254,7 +256,7 @@ image::images/fig_13_05.png[image]
 
 The `FieldSet` is also a pretty light container - it simply adds the title to a group of fields that belong together. You'll see several code samples in this chapter with `xtype: 'fieldset'` (e.g. Login or Donate screens). 
 
-If your containers display forms with such inputs as text field, text area, password, and numbers, the virtual keyboard will automatically show up occupying half of the user's screen. On some platforms, virtual keyboards will adapt to the type of the input field, for example, if the field has `xtype: 'emailfield'`, the keyboard will be modified for easier input of emails. Figure <<FIG13-6>> is a snapshot taken from the Donate screen of the Save Sick Child application when the user taped inside the email field - note the key with the at-sign on the main keyboard, which wouldn't be shown for non-email inputs.  
+If your containers display forms with such inputs as text field, text area, password, and numbers, the virtual keyboard will automatically show up occupying half of the user's screen. On some platforms, virtual keyboards will adapt to the type of the input field, for example, if the field has `xtype: 'emailfield'`, the keyboard will be modified for easier input of emails. Figure <<FIG13-6>> is a snapshot taken from the Donate screen of the Save Sick Child application when the user tapped inside the email field - note the key with the at-sign on the main keyboard, which wouldn't be shown for non-email inputs.  
 
 [[FIG13-6]]
 .The iPhone virtual keyboard for entering emails
@@ -266,28 +268,23 @@ TIP: If you need to detect the environment on the user's mobile device, use such
 
 ===== Layouts
 
-Besides grouping components, containers allow you to assign a `Layout` to control its children arrangements. In desktop applications screens are larger and pretty often you can place multiple containers on the same screen at the same time. In mobile world you don't have such a luxury and you'll be designing layouts showing just one container at a time. Not all layouts are practical on smaller screens, which is the reason why not all Ext JS layouts are supported in Sencha Touch. For example, such Ext JS layouts as `Table`, `Column`, `Border`, and some others are not available in Sencha Touch. 
+Besides grouping components, containers allow you to assign a `Layout` to control its children arrangements. In desktop applications screens are larger and pretty often you can place multiple containers on the same screen at the same time. In mobile world you don't have such a luxury and typically you'll be showing just one container at a time. Not all layouts are practical to use on smaller screens, which is the reason why not all Ext JS layouts are supported in Sencha Touch. For example, such Ext JS layouts as `Table`, `Column`, `Border`, and some others are not available in Sencha Touch. 
 
 Figure <<FIG13-13>> illustrates the main container that shows either the `tabpanel` or `loginform`. The `tabpanel` is a container with a special layout that shows only one of its child containers at a time (e.g. About, Donate, et al).
 
-By default, the container's layout is `auto`, which instructs the rendering engine to use the entire width of the container, but use just enough height to display the children. This behavior is similar to the `vbox` layout (vertical box), where all components are being added to the container vertically - one under another. Accordingly, the `hbox`will arrange all components horizontally - one next to the other. 
+By default, a container's layout is `auto`, which instructs the rendering engine to use the entire width of the container, but use just enough height to display the children. This behavior is similar to the `vbox` layout (vertical box), where all components are being added to the container vertically - one under another. Accordingly, the `hbox`will arrange all components horizontally - one next to the other. 
 
 TIP: If you want to control how much of a vertical or horizontal screen space is given to each component use the `flex` property as described in Chapter 6 in the section "The flex Property".
 
-The `fit` layout will fill the entire container's space with the child element. If you have more than one child element in the container - the first one will fill the entire space, and the other will be ignored. The `card` layout is somewhat similar to fit, but it can accommodate multiple children while displaying only one at a time. The container's method `setActiveItem()` allows programmatically select the "card" to be on top of the deck. 
+The `fit` layout will fill the entire container's space with its child element. If you have more than one child element in the container - the first one will fill the entire space, and the other one will be ignored. The `card` layout is somewhat similar to `fit`, but it can accommodate multiple children while displaying only one at a time. The container's method `setActiveItem()` allows programmatically select the "card" to be on top of the deck. 
 
-You can find examples of `card` and `fit` layouts in the file Main.js of the Save Sick Child application. Figure <<FIG13-14>> shows `card` layout, but if you'll expand the `tabpanel` container, each tab has the `fit` layout. 
+You can find examples of `card` and `fit` layouts in the code of Main.js of the Save Sick Child application. Figure <<FIG13-14>> shows `card` layout, but if you'll expand the `tabpanel` container, each tab has the `fit` layout. 
 
 The classes `TabPanel` and `Carousel` represent two different implementations of the containers with `card` layout.
 
-
-//===== Implementing Navigation
-
-//While designing the navigation for the mobile device you'll be creating a set of views that will replace each other on the user's device.
-
 ===== Events
 
-Events can be initiated either by the browser or by the user. Chapter 6 has the section with the same title - it covers general rules of dealing with events in Ext JS framework. Lots  of system events are being dispatched during UI component rendering. The online documentation lists every event that can be dispatched on Sencha classes. Look for the Events section on the top toolbar in the online documentation. Figure <<FIG13-7>> is a snapshot from online documentation for the class Ext.Container, which has 32 events. 
+Events can be initiated either by the browser or by the user. Chapter 6 has the section with the same title - it covers general rules of dealing with events in Ext JS framework. Lots  of system events are being dispatched during UI component rendering. The online documentation lists every event that can be dispatched on Sencha classes. Look for the Events section on the top toolbar in the online documentation. Figure <<FIG13-7>> is a snapshot from online documentation for the class `Ext.Container`, which has 32 events.
 
 [[FIG13-7]]
 .Events in Online documentation 
@@ -295,18 +292,28 @@ image::images/fig_13_07.png[image]
 
 Sencha Touch knows how to handle various mobile-specific events. Check out the documentation for the class http://docs.sencha.com/touch/2.2.1/#!/api/Ext.dom.Element[`Ext.dom.Element`] - you'll find there such events as  `touchstart`, `touchend`, `tap`, `doubletap`, `swipe`, `pinch`, `longpress`, `rotate`, and others. 
 
-You can add event listeners using different techniques. One of them is defining the http://docs.sencha.com/touch/2.2.1/#!/api/Ext.Container-cfg-listeners[`listeners`] config property during the object instantiation. This property is defined in the `Ext.Container` object and allows you to define more than one listener at a time. You should use it while calling the `Ext.create()` method:
+You can add event listeners using different techniques. One of them is defining the http://docs.sencha.com/touch/2.2.1/#!/api/Ext.Container-cfg-listeners[`listeners`] config property during the object instantiation. This property is declared in the `Ext.Container` object and allows you to define more than one listener at a time. You should use it while calling the `Ext.create()` method:
 
 [source, javascript]
 ----
 Ext.create('Ext.button.Button', {
    listeners: {
-       tap: function() { // handle event here }
+     tap: function() { // handle event here }
    }
 }
 ----  
 
-TIP: read the comments to the code of `SSC.view.CampaignsMap` in Chapter 6 about the right place for declaring listeners.
+If you need to handle an event only once, you can use the option `single: true`, which will automatically remove the  listener after the first handling of the event. For example: 
+
+[source, javacript]
+----
+listeners: {
+  tap: function() { // handle event here },
+  single: true
+}
+----
+
+TIP: Read the comments to the code of `SSC.view.CampaignsMap` in Chapter 6 about the right place for declaring listeners.
 
 You can also define event handlers using yet another config property `control` from `Ext.Container`. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the `tap` event handler functions `showLoginView()` and `cancelLogin()` for the buttons Login and Cancel.
 
@@ -338,9 +345,7 @@ TIP: If you want to fire custom events, use the method `fireEvent()`, providing 
 
 === Save Sick Child With Sencha Touch
 
-The Sencha Touch version of the Save Sick Child application will be based on the prototype from Chapter 12, section "Prototyping Mobile Version" with minor changes. This time the home page of the application will be a slightly different version of the About page shown on <<FIG13-11>>. 
-
-In Chapter 6 we started using http://www.jetbrains.com/webstorm/[WebStorm IDE] from JetBrain, and this is going to be our IDE of choice in this chapter.
+The Sencha Touch version of the Save Sick Child application will be based on the mockup from Chapter 12, section "Prototyping Mobile Version" with some minor changes. This time the home page of the application will be a slightly different version of the About page shown on <<FIG13-11>>. 
 
 IMPORTANT: The materials presented in this chapter were tested only with the current version of Sencha Touch framework, which at the time of this writing was 2.2.1.
 
@@ -414,7 +419,7 @@ In this version of the Save Sick Child application we have only one controller `
 
 We don't use explicitly defined models here - all the data are hard-coded in the stores in the `data` attributes. 
 
-You'll see the code of the views a bit later, but we wanted to draw your attention to the `onUpdated()` event handler. In the section "Microloader and Configurations" we've mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the `appCache` section of app.json. If any of these files changes, the `onUpdated` event handler is invoked, if any. For illustration purposes we decided to intercept this event and Figure <<13-12>> shows how the update prompt can look like on iPhone 5.
+You'll see the code of the views a bit later, but we wanted to draw your attention to the `onUpdated()` event handler. In the section "Microloader and Configurations" we've mentioned that production builds of Sencha Touch applications are watching the locally cached JavaScript and CSS files listed in the JS and CSS sections of the configuration file app.json and compare them with their peers on the server. They also watch all the files listed in the `appCache` section of app.json. If any of these files changes, the `onUpdated` event handler is invoked. For illustration purposes we decided to intercept this event and Figure <<13-12>> shows how the update prompt can look like on iPhone 5.
 
 [[FIG13-12]]
 .The code on the server has changed
@@ -439,7 +444,7 @@ The code of the UI landing page of this application is located in the _views_ fo
 .The Main.js in a collapsed form
 image::images/fig_13_13.png[] 
 
-The `card` layout means that the user will see either the content of that container or the login form - one at a time. Let's open up the container. It has an array of children, which are our application pages. The figure <<FIG13-14>> show who are the children.
+The `card` layout means that the user will see either the content of that container or the login form - one at a time. Let's open up the container. It has an array of children, which are our application pages. The figure <<FIG13-14>> shows the titles of the children.
 
 [[FIG13-14]]
 .TabPanel's children in a collapsed form
@@ -549,14 +554,145 @@ Ext.define('SSC.view.Main', {
 ----
 
 <1> We've assigned the `xtype: 'mainview` to the main view so to  allow the Login controller refer to it (see its code below). 
-
 <2> Note that the `tabpanel` doesn't explicitly specify any layout - it uses `card` by default.
 
-<3> Each of the tabs has a corresponding button on the toolbar. It shows the text from the `title` attribute and the icon from the `iconCls`. 
+<3> Each of the tabs has a corresponding button on the toolbar. It shows the text from the `title` attribute and the icon specified in the class `iconCls`. 
 
 <4> Each of the view has http://docs.sencha.com/extjs/4.1.3/#!/api/Ext.layout.container.Fit[`fit` layout], which forces the content to expand to fill the layout's container.
 
-<5> Each view will have a Login button on the toolbar. It's implemented in the LoginToolbar.js shown later in this chapter.   
+<5> Each view will have a Login button on the toolbar. It's implemented in the LoginToolbar.js shown later in this chapter.
+
+Starting from version 2.2 Sencha Touch can render icons using  icon fonts from http://pictos.cc/[Pictos library] located in the folder _resources/sass/stylesheets/fonts_.  We've used icon fonts in the jQuery Mobile version of our application, and in this version we'll also fonts, which take a lot less memory than images. Below is the content of our app.scss file that includes several font icons used in the Save Sick Child application. 
+
+[source, css]
+----
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+@include icon-font('IcoMoon', inline-font-files('icomoon/icomoon.woff', woff, 'icomoon/icomoon.ttf', truetype,'icomoon/icomoon.svg', svg));
+@include icon('info',  '!', 'IcoMoon');
+@include icon('love',  '"', 'IcoMoon');
+@include icon('pie',   '#', 'IcoMoon');
+@include icon('pin',   '$', 'IcoMoon');
+@include icon('media', '%', 'IcoMoon');
+@include icon('share', '&', 'IcoMoon');
+
+.child-img {
+  border: 1px solid #999;
+}
+
+// Reduce size of the icons to fit 6 buttons in the tabbar; add Share tab
+.x-tabbar.x-docked-bottom .x-tab {
+  min-width: 2.8em;
+
+  .x-button-icon:before {
+    font-size: 1.4em;
+  }
+}
+
+// Share icons
+.icon-twitter, .icon-facebook, .icon-google-plus, .icon-camera {
+  font-family: 'icomoon';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+.icon-twitter:before {
+  content: "\27";
+}
+.icon-facebook:before {
+  content: "\28";
+}
+.icon-google-plus:before {
+  content: "\29";
+}
+.icon-camera:before {
+  content: "\2a";
+}
+
+// Share tiles
+.share-tile {
+  top: 25%;
+  width: 100%;
+  position: absolute;
+  text-align: center;
+  border-width: 0 1px 1px 0;
+
+  p:nth-child(1) {
+    font-size:4em;
+  }
+
+  p:nth-child(2) {
+    margin-top: 1.5em;
+    font-size: 0.9em;
+  }
+}
+
+$sharetile-border: #666 solid;
+
+.sharetile-twitter {
+  border: $sharetile-border;
+  border-width: 0 1px 1px 0;
+}
+
+.sharetile-facebook {
+  border: $sharetile-border;
+  border-width: 0 0 1px;
+}
+
+.sharetile-gplus {
+  border: $sharetile-border;
+  border-width: 0 1px 0 0;
+}
+
+// Media
+.x-videos {
+  .x-list-item > .x-innerhtml {
+    font-weight: bold;
+    line-height: 18px;
+    min-height: 88px;
+
+    > span {
+      display: block;
+      font-size: 14px;
+      font-weight: normal;
+    }
+  }
+
+  .preview {
+    float: left;
+    height: 64px;
+    width: 64px;
+    margin-right: 10px;
+    background-size: cover;
+    background-position: center center;
+    background: #eee;
+    @include border-radius(3px);
+    -webkit-box-shadow: inset 0 0 2px rgba(0,0,0,.6);
+  }
+
+  .x-item-pressed,
+  .x-item-selected {
+    border-top-color: #D1D1D1 !important;
+  }
+}
+----
+
+The first two lines of the app.scss import the icons from the default theme. We've added several more. Note that we had to reduce the size of the icons to fit six buttons in the application's toolbar. All the `@include` statements use SASS mixin `icon()`.  
+
+If you need more icons use the http://icomoon.io/app/[IcoMoon application]. Pick an icon there and press the button Font to generate the custom font (see Figure <<FIG13-14-2>>). Download and copy the generated fonts into your _resources/sass/stylesheets/fonts_ directory and add them to the app.scss using `@include icon-font` directive. The downloaded zip file will contain the fonts as well as index.html file that will show you the class name and the code of the generated font icon(s).
+
+[[FIG13-14-2]]
+.Generating twitter icon font with IcoMoon application
+image::images/fig_13_14_2.png[] 
+
+When you compile the SASS with http://compass-style.org/help/tutorials/command-line/[compass] (or build the application with Sencha CMD), the SASS styles are converted into a standard CSS file resources/css/app.css.
+
+
 ==== Controller
 
 Now let's review the code of the Login page controller. For simplicity, we have not implemented any application login logic here - our controller reacts on the user's actions performed in the view LoginForm. The name of the controller's file is Login.js. It's located in the folder _controller_, and here's the code: 
@@ -1142,7 +1278,12 @@ NOTE: A template [`Ext.Template`] represents an HTML fragment. The values in cur
 
 ===== Maps
 
-Integration with Google Maps is a pretty straightforward task in Sencha Touch, which comes with `Ext.Map` - a wrapper class for Google Maps API. Our view `CampainsMap` is a subclass of `Ext.Map`.
+Integration with Google Maps is a pretty straightforward task in Sencha Touch, which comes with http://docs.sencha.com/touch/2.2.1/#!/api/Ext.Map[`Ext.Map]` - a wrapper class for Google Maps API. Our view `CampainsMap` is a subclass of `Ext.Map`. Note that we've imported Google Maps API in the file index.html as follows:
+
+[source, html]
+----
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+----
 
 Figure <<FIG13-20>> shows the iPhone's screen when the button Events is pressed. 
 
@@ -1150,7 +1291,7 @@ Figure <<FIG13-20>> shows the iPhone's screen when the button Events is pressed.
 .The Events page
 image::images/fig_13_20.png[]
 
-Of course, some additional styling would be needed before offering this view in production environment, but our  CampaignsMap.js that supports this screen is only ninety lines of code! Can't beat this.  
+Of course, some additional styling would be needed before offering this view in production environment, but our  CampaignsMap.js that supports this screen is only ninety lines of code!  
 
 [source, javascript]
 ----
@@ -1158,9 +1299,9 @@ Ext.define('SSC.view.CampaignsMap', {
   extend: 'Ext.Map',
   xtype: 'campaignsmap',
 
-  config: {
+  config: {                                   // <1>
       listeners: {
-          maprender: function () {            // <1>
+          maprender: function () {            // <2>
 
             if (navigator && navigator.onLine) {
                 try {
@@ -1176,7 +1317,10 @@ Ext.define('SSC.view.CampaignsMap', {
       }
   },
 
-  initMap: function () {                      // <2>
+  initMap: function () {                      
+      
+      // latitude = 39.8097343 longitude = -98.55561990000001
+      // Lebanon, KS 66952, USA Geographic center of the contiguous United States the center point of the map
 
       var latMapCenter = 39.8097343,
           lonMapCenter = -98.55561990000001;
@@ -1246,15 +1390,28 @@ Ext.define('SSC.view.CampaignsMap', {
 });
 ----
 
-<1>
+<1> We just use `listeners` config here, but `Ext.Map` has 60 of them. For example, if we wanted the mobile device to identify the current location of the device and put it in the center of the map, we'd add `useCurrentLocation: true`.
 
-<2>
+<2> This event is fired when the map is initially rendered. We are reusing the same code as in previous chapters for initializing the map (showing the central point of the USA) and adding the campaigns information. The code of the store Campaigns is shown in the section Stores and Models below. 
 
-Sencha Touch is a framework for mobile devices, which can be on the move. `Ext.util.Geolocation` is a handy class that you can use for applications that require to know the current position of the mobile device. When your program instantiates `Geolocation`, it starts tracking the location of the device by firing the `locationupdate` event periodically.  
+Sencha Touch is a framework for mobile devices, which can be on the move. http://docs.sencha.com/touch/2.2.1/#!/api/Ext.util.Geolocation[`Ext.util.Geolocation`] is a handy class for applications that require to know the current position of the mobile device. When your program instantiates `Geolocation`, it starts tracking the location of the device by firing the `locationupdate` event periodically (you can turn auto updates off). The following code fragment shows how to get the current latitude of the mobile device. 
+
+[source, javascript]
+----
+var geo = Ext.create('Ext.util.Geolocation', {
+  listeners: {
+    locationupdate: function(geo) {
+       console.log('New latitude: ' + geo.getLatitude());
+    }
+  }  
+});
+
+geo.updateLocation();  // start the location updates
+----
 
 ==== Stores and Models
 
-In the Sencha Touch version of the Save Sick Child application all the data is hard-coded. All store classes are located in the store directory (see FIG<<13-14>>), and each of them has the `data` property. For example, here's the code of the Videos.js. 
+In the Sencha Touch version of the Save Sick Child application all the data is hard-coded. All store classes are located in the store directory (see Figure <<FIG13-14>>), and each of them has the `data` property. For example, here's the code of the Videos.js. 
 
 [source, javascript]
 ----
@@ -1307,6 +1464,53 @@ Ext.define('SSC.store.Donors', {
   }
 });
 ----
+
+The Campaigns store is used to display the markers on the map, where charity campaigns are active. Taping on the marker will show the description of the selected campaign as shown on Figure <<FIG13-20>> - we tapped on Chicago marker. The code of the store Campaigns.js is shown next.
+
+[source, javascript]
+----
+Ext.define('SSC.store.Campaigns', {
+    extend: 'Ext.data.Store',
+
+    config: {
+        fields: [
+            { name: 'title',       type: 'string' },
+            { name: 'description', type: 'string' },
+            { name: 'location',    type: 'string' }
+        ],
+
+        data: [
+            {
+                title: 'Lorem ipsum',
+                description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                location: 'Chicago, IL'
+            },
+            {
+                title: 'Donors meeting',
+                description: 'Morbi mollis ante at ante posuere tempor.',
+                location: 'New York, NY'
+            },
+            {
+                title: 'Sed tincidunt magna',
+                description: 'Donec ac ligula sit amet libero vehicula laoreet',
+                location: 'Dallas, TX'
+            },
+            {
+                title: 'Fusce tellus dui',
+                description: 'Sed accumsan nibh sapien, interdum ullamcorper velit.',
+                location: 'Miami, FL'
+            },
+            {
+                title: 'Aenean lorem quam',
+                description: 'Pellentesque habitant morbi tristique senectus',
+                location: 'Fargo, ND'
+            }
+        ]
+    }
+
+});
+----
+
 
 This concludes the review of the Sencha Touch version of our sample application, which consists of six nice looking screens. The amount of manual coding to achieve this was minimal. In the real world, you'd need to add business logic to this application, but comes down to inserting the JavaScript code to a well structured layers. The code to communicate with the server will go to the stores, the data will be placed in the models, the UI remains in the views, and the main glue of your application is controllers. Sencha Touch did a pretty good job for us, wouldn't you agree?     
 
