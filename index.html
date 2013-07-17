@@ -22809,8 +22809,21 @@ The information on the PhoneGap Web site may not exactly match the latest PhoneG
 </div>
 <div class="title">Figure 203. What comes with PhoneGap 2.9</div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+
+We use Mac OS for development with pre-installed <a href="https://developer.apple.com/xcode/">Xcode IDE</a>, which is available at Apple&#8217;s App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT).
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
-<p>It&#8217;s time for the PhoneGap Hello World, and we&#8217;ll build it for iOS. We are going to generate the initial project using Cordova command line interface (CLI) as described in  <a href="http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface">documentation</a>. We use Mac OS for development with pre-installed <a href="https://developer.apple.com/xcode/">Xcode IDE</a>.
+<p>It&#8217;s time for the PhoneGap Hello World, and we&#8217;ll build it for iOS. We are going to generate the initial project using Cordova command line interface (CLI) as described in  <a href="http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface">documentation</a>.
 After generating Hello World with Cordova CLI, it created files and directories shown on Figure <a href="#FIG14-3">Cordova-generated project Hello World</a>.</p>
 </div>
 <div id="FIG14-3" class="imageblock">
@@ -22825,7 +22838,7 @@ After generating Hello World with Cordova CLI, it created files and directories 
 <div class="listingblock">
 
 <div class="content monospaced">
-<pre>&lt;!DOCTYPE html&gt;
+<pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
  &lt;head&gt;
      &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
@@ -22848,11 +22861,11 @@ After generating Hello World with Cordova CLI, it created files and directories 
          app.initialize();
      &lt;/script&gt;
  &lt;/body&gt;
-&lt;/html&gt;</pre>
+&lt;/html&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This HTML includes the code to load the cordova.js library and the initialization code from index.js. But if you look at <a href="#FIG14-3">Cordova-generated project Hello World</a> the file cordova.js is missing. We&#8217;ll ask Cordova CLI to get it for us shortly. For now, let&#8217;s look at the code of the index.js.</p>
+<p>This HTML includes the code to load the cordova.js library and the initialization code from index.js, and then immediately calls <code>app.initialize()</code>. But if you look at <a href="#FIG14-3">Cordova-generated project Hello World</a> the file cordova.js is missing. Cordova CLI will add it to the project during another phase of code generation for specific mobile platforms. For now, let&#8217;s look at the code of the index.js.</p>
 </div>
 <div class="listingblock">
 
@@ -22861,16 +22874,21 @@ After generating Hello World with Cordova CLI, it created files and directories 
   initialize: function() {
       this.bind();
   },
+
   bind: function() {
-    document.addEventListener('deviceready', this.deviceready, false);
+    document.addEventListener('deviceready',     // <i class="conum">1</i>
+               this.deviceready, false);
   },
+
   deviceready: function() {
 
     app.report('deviceready');
   },
-  report: function(id) {
+
+  report: function(id) {                        //  <i class="conum">2</i>
+
       console.log("report:" + id);
-      // hide the .pending &lt;p&gt; and show the .complete &lt;p&gt;
+
       document.querySelector('#' + id + ' .pending').className += ' hide';
       var completeElem = document.querySelector('#' + id + ' .complete');
       completeElem.className = completeElem.className.split('hide').join('');
@@ -22878,14 +22896,27 @@ After generating Hello World with Cordova CLI, it created files and directories 
 };</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>The mobile OS sends the <code>deviceready</code> event to the PhoneGap application when it&#8217;s ready to invoke native APIs.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>The function <code>report()</code> is called from the <code>deviceready</code> event handler. It hides the <code>.pending &lt;p&gt;</code> and shows the <code>.complete &lt;p&gt;</code> in index.html. Technically, <code>split('hide')</code> followed by <code>join('')</code> perform removal of the word hide.</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>According the Cordova CLI documentation after the code is generated you need to add the platforms for which you are planning to prepare PhoneGap builds. For example, you can run the following commands from the Terminal window (inside the HelloWorld directory) to request the builds for ios, android, and blackberry:</p>
 </div>
 <div class="paragraph">
-<p><em>$ cordova platform add ios</em></p>
+<p><em>cordova platform add ios</em></p>
 </div>
 <div class="paragraph">
-<p><em>$ cordova platform add android</em></p>
+<p><em>cordova platform add android</em></p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -22895,16 +22926,56 @@ After generating Hello World with Cordova CLI, it created files and directories 
 </td>
 <td class="content">
 
-The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK.
+The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK as described in the sidebar.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>After running these commands, the initially empty directory <em>platforms</em> will get additional content for each platform.</p>
+<p>After running these commands, the initially empty directory <em>platforms</em> will be filled with additional files specific to each platform. Technically, these commands generate separate Hello World projects - one per platform. Each of them will have its own <em>www</em> directory with index.html and cordova.js that was missing during the initial project generation. You can see on Figure <a href="#FIG14-4">Cordova-generated project for iOS platform</a> the content of the ios folder that was generated as a result of executing command <em>cordova platform add ios</em>.</p>
+</div>
+<div id="FIG14-4" class="imageblock">
+<div class="content">
+<img src="./images/fig_14_04.png" alt="fig_14_04">
+</div>
+<div class="title">Figure 205. Cordova-generated project for iOS platform</div>
+</div>
+<div class="paragraph">
+<p>After connecting the iPhone to the USB port of MAC computer, double-click on the file Hello_World.xcodeproj, and it&#8217;ll be opened as a project in Xcode. Press the button Run on the top left corner of the toolbar - the project will be compiled and started in the iOS simulator (see Figure <a href="#FIG14-4-1">Running Hello World in XCode</a>). Note the "Device is ready" text from index.html (as per index.css this text is blinking and is shown in the upper case).</p>
+</div>
+<div id="FIG14-4-1" class="imageblock">
+<div class="content">
+<img src="./images/fig_14_04_1.png" alt="fig_14_04_1">
+</div>
+<div class="title">Figure 206. Running Hello World in XCode</div>
 </div>
 <div class="paragraph">
 <p>TBD</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Installing Android SDK</div>
+<div class="paragraph">
+<p>To get Android SDK, go to <a href="http://developer.android.com/sdk">android.com/sdk</a>. We are going to do a simple install by pressing the button "Download the Sdk ADT Bundle for Mac", which will download and install Eclipse IDE with ADT plugin, Android SDK tools, Android Platform tools, and Android platform. But if you already have Eclipse IDE and prefer to install and configure required tooling manually, follow the instructions published on this Web site under the section "Use and Existing IDE".</p>
+</div>
+<div class="paragraph">
+<p>After downloading the bundle, unzip this file, and it&#8217;ll create a folder with two subfolders: <em>sdk</em> and <em>eclipse</em>. Start Eclipse IDE from <em>eclipse</em> folder accepting the location of the default workspace. Press the little Plus sign on the top toolbar and open perspective DDMS. This is the place where you can use Android emulator while developing Android applications.</p>
+</div>
+
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+Blackberry developers can download their WebWorks SDK at <a href="http://developer.blackberry.com/html5/download/">developer.blackberry.com/html5/download</a> as well as BLackBerry 10 Simulator. If you haven&#8217;t downloaded the Ripple Emulator (see Chapter 12) you can get it there too.
+</td>
+</tr>
+</table>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -22944,22 +23015,22 @@ For current list of available PhoneGap plugins for various mobile platforms visi
 <p>Besides being able to deploy the application in the App Store, developers are allow their beta-customer to test the application even before they were accepted in the store. Individual developers can share their application among up to 100 iOS devices identified by UUID (click on the serial number of your device in iTunes to see it). It&#8217;s so called Ad Hoc distribution. The owners of the enterprise license don&#8217;t have such a restriction and can distribute their applications right from their own Web sites.</p>
 </div>
 <div class="paragraph">
-<p>For example, after PhoneGap has built the .ipa file for the iOS, you can make it available for installation right on the beta-tester&#8217;s device using such services as <a href="http://www.diawi.com/">diawi</a> or <a href="https://testflightapp.com/">TestFlight</a>. Upload the .ipa file and its provisioning profile to one of these services and you&#8217;ll get the link (a URL) to be given to your testers (their UUID must be registered with the application). Figure <a href="#FIG14-4">Ad hoc application install from diawi</a> shows the snapshot from the iPhone after the tester clicked on such a link from diawi. Pressing the button Install Application completes the install of the application on your iOS device.</p>
-</div>
-<div id="FIG14-4" class="imageblock">
-<div class="content">
-<img src="./images/fig_14_04.png" alt="fig_14_04">
-</div>
-<div class="title">Figure 205. Ad hoc application install from diawi</div>
-</div>
-<div class="paragraph">
-<p>Android developers are not restricted in distributing of their application - upload the APK package with your application to your corporate Web site and send the URL to anyone who&#8217;s interested. For example, the authors of this book are creating a software for insurance industry, where they offer to download both iOS and Android versions of the application right from their corporate Web site as shown at Figure <a href="#FIG14-5">Distributing mobile applications at surancebay.com</a>.</p>
+<p>For example, after PhoneGap has built the .ipa file for the iOS, you can make it available for installation right on the beta-tester&#8217;s device using such services as <a href="http://www.diawi.com/">diawi</a> or <a href="https://testflightapp.com/">TestFlight</a>. Upload the .ipa file and its provisioning profile to one of these services and you&#8217;ll get the link (a URL) to be given to your testers (their UUID must be registered with the application). Figure <a href="#FIG14-5">Ad hoc application install from diawi</a> shows the snapshot from the iPhone after the tester clicked on such a link from diawi. Pressing the button Install Application completes the install of the application on your iOS device.</p>
 </div>
 <div id="FIG14-5" class="imageblock">
 <div class="content">
 <img src="./images/fig_14_05.png" alt="fig_14_05">
 </div>
-<div class="title">Figure 206. Distributing mobile applications at surancebay.com</div>
+<div class="title">Figure 207. Ad hoc application install from diawi</div>
+</div>
+<div class="paragraph">
+<p>Android developers are not restricted in distributing of their application - upload the APK package with your application to your corporate Web site and send the URL to anyone who&#8217;s interested. For example, the authors of this book are creating a software for insurance industry, where they offer to download both iOS and Android versions of the application right from their corporate Web site as shown at Figure <a href="#FIG14-6">Distributing mobile applications at surancebay.com</a>.</p>
+</div>
+<div id="FIG14-6" class="imageblock">
+<div class="content">
+<img src="./images/fig_14_06.png" alt="fig_14_06">
+</div>
+<div class="title">Figure 208. Distributing mobile applications at surancebay.com</div>
 </div>
 
 </div>
