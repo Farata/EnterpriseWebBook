@@ -69,7 +69,9 @@ NOTE: The information on the PhoneGap Web site may not exactly match the latest 
 .What comes with PhoneGap 2.9
 image::images/fig_14_02.png[] 
 
-It's time for the PhoneGap Hello World, and we'll build it for iOS. We are going to generate the initial project using Cordova command line interface (CLI) as described in  http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface[documentation]. We use Mac OS for development with pre-installed https://developer.apple.com/xcode/[Xcode IDE].
+NOTE: We use Mac OS for development with pre-installed https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT). 
+
+It's time for the PhoneGap Hello World, and we'll build it for iOS. We are going to generate the initial project using Cordova command line interface (CLI) as described in  http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface[documentation]. 
 After generating Hello World with Cordova CLI, it created files and directories shown on Figure <<FIG14-3>>. 
 
 [[FIG14-3]]
@@ -78,7 +80,7 @@ image::images/fig_14_03.png[]
 
 The content of generated index.html is shown next. It includes several meta tags to use the entire screen of the mobile device and don't allow scaling by user's gestures. Then it includes a couple of JavaScript files. Of course, it's not too difficult to prepare such a simple HTML file manually, but we prefer code generators when available - they are faster and less error prone.
 
-[code, html]
+[source, html]
 ----
 <!DOCTYPE html>
 <html>
@@ -106,7 +108,7 @@ The content of generated index.html is shown next. It includes several meta tags
 </html>
 ----
 
-This HTML includes the code to load the cordova.js library and the initialization code from index.js. But if you look at <<FIG14-3>> the file cordova.js is missing. We'll ask Cordova CLI to get it for us shortly. For now, let's look at the code of the index.js.
+This HTML includes the code to load the cordova.js library and the initialization code from index.js, and then immediately calls `app.initialize()`. But if you look at <<FIG14-3>> the file cordova.js is missing. Cordova CLI will add it to the project during another phase of code generation for specific mobile platforms. For now, let's look at the code of the index.js.
 
 [source, javascript]
 ----
@@ -114,16 +116,21 @@ var app = {
   initialize: function() {
       this.bind();
   },
+
   bind: function() {
-    document.addEventListener('deviceready', this.deviceready, false);
+    document.addEventListener('deviceready',     // <1>
+               this.deviceready, false);
   },
+
   deviceready: function() {
     
     app.report('deviceready');
   },
-  report: function(id) { 
+
+  report: function(id) {                        //  <2>
+
       console.log("report:" + id);
-      // hide the .pending <p> and show the .complete <p>
+      
       document.querySelector('#' + id + ' .pending').className += ' hide';
       var completeElem = document.querySelector('#' + id + ' .complete');
       completeElem.className = completeElem.className.split('hide').join('');
@@ -131,17 +138,42 @@ var app = {
 };
 ----
 
+<1> The mobile OS sends the `deviceready` event to the PhoneGap application when it's ready to invoke native APIs.
+
+<2> The function `report()` is called from the `deviceready` event handler. It hides the `.pending <p>` and shows the `.complete <p>` in index.html. Technically, `split('hide')` followed by `join('')` perform removal of the word hide.
+
 According the Cordova CLI documentation after the code is generated you need to add the platforms for which you are planning to prepare PhoneGap builds. For example, you can run the following commands from the Terminal window (inside the HelloWorld directory) to request the builds for ios, android, and blackberry:
 
-_$ cordova platform add ios_
+_cordova platform add ios_
 
-_$ cordova platform add android_
+_cordova platform add android_
 
-NOTE: The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK.
+NOTE: The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK as described in the sidebar.
 
-After running these commands, the initially empty directory _platforms_ will get additional content for each platform. 
+After running these commands, the initially empty directory _platforms_ will be filled with additional files specific to each platform. Technically, these commands generate separate Hello World projects - one per platform. Each of them will have its own _www_ directory with index.html and cordova.js that was missing during the initial project generation. You can see on Figure <<FIG14-4>> the content of the ios folder that was generated as a result of executing command _cordova platform add ios_.
+
+[[FIG14-4]]
+.Cordova-generated project for iOS platform
+image::images/fig_14_04.png[] 
+
+After connecting the iPhone to the USB port of MAC computer, double-click on the file Hello_World.xcodeproj, and it'll be opened as a project in Xcode. Press the button Run on the top left corner of the toolbar - the project will be compiled and started in the iOS simulator (see Figure <<FIG14-4-1>>). Note the "Device is ready" text from index.html (as per index.css this text is blinking and is shown in the upper case).
+
+[[FIG14-4-1]]
+.Running Hello World in XCode
+image::images/fig_14_04_1.png[] 
 
 TBD
+
+.Installing Android SDK
+******
+To get Android SDK, go to http://developer.android.com/sdk[android.com/sdk]. We are going to do a simple install by pressing the button "Download the Sdk ADT Bundle for Mac", which will download and install Eclipse IDE with ADT plugin, Android SDK tools, Android Platform tools, and Android platform. But if you already have Eclipse IDE and prefer to install and configure required tooling manually, follow the instructions published on this Web site under the section "Use and Existing IDE". 
+
+After downloading the bundle, unzip this file, and it'll create a folder with two subfolders: _sdk_ and _eclipse_. Start Eclipse IDE from _eclipse_ folder accepting the location of the default workspace. Press the little Plus sign on the top toolbar and open perspective DDMS. This is the place where you can use Android emulator while developing Android applications.
+******
+
+TIP: Blackberry developers can download their WebWorks SDK at http://developer.blackberry.com/html5/download/[developer.blackberry.com/html5/download] as well as BLackBerry 10 Simulator. If you haven't downloaded the Ripple Emulator (see Chapter 12) you can get it there too. 
+
+
 
 TIP: Display messages using Phonegap's `navigator.notification.alert()` and the user will see native dialog box in his mobile device. The `Notification` object also supports `confirm()`, `beep()`, and `vibrate()` methods.
 
@@ -156,18 +188,18 @@ Apple runs the https://developer.apple.com/programs/start/ios/[iOS Developer Pro
 
 Besides being able to deploy the application in the App Store, developers are allow their beta-customer to test the application even before they were accepted in the store. Individual developers can share their application among up to 100 iOS devices identified by UUID (click on the serial number of your device in iTunes to see it). It's so called Ad Hoc distribution. The owners of the enterprise license don't have such a restriction and can distribute their applications right from their own Web sites.  
 
-For example, after PhoneGap has built the .ipa file for the iOS, you can make it available for installation right on the beta-tester's device using such services as http://www.diawi.com/[diawi] or https://testflightapp.com/[TestFlight]. Upload the .ipa file and its provisioning profile to one of these services and you'll get the link (a URL) to be given to your testers (their UUID must be registered with the application). Figure <<FIG14-4>> shows the snapshot from the iPhone after the tester clicked on such a link from diawi. Pressing the button Install Application completes the install of the application on your iOS device. 
-
-[[FIG14-4]]
-.Ad hoc application install from diawi
-image::images/fig_14_04.png[] 
-
-
-Android developers are not restricted in distributing of their application - upload the APK package with your application to your corporate Web site and send the URL to anyone who's interested. For example, the authors of this book are creating a software for insurance industry, where they offer to download both iOS and Android versions of the application right from their corporate Web site as shown at Figure <<FIG14-5>>. 
+For example, after PhoneGap has built the .ipa file for the iOS, you can make it available for installation right on the beta-tester's device using such services as http://www.diawi.com/[diawi] or https://testflightapp.com/[TestFlight]. Upload the .ipa file and its provisioning profile to one of these services and you'll get the link (a URL) to be given to your testers (their UUID must be registered with the application). Figure <<FIG14-5>> shows the snapshot from the iPhone after the tester clicked on such a link from diawi. Pressing the button Install Application completes the install of the application on your iOS device. 
 
 [[FIG14-5]]
+.Ad hoc application install from diawi
+image::images/fig_14_05.png[] 
+
+
+Android developers are not restricted in distributing of their application - upload the APK package with your application to your corporate Web site and send the URL to anyone who's interested. For example, the authors of this book are creating a software for insurance industry, where they offer to download both iOS and Android versions of the application right from their corporate Web site as shown at Figure <<FIG14-6>>. 
+
+[[FIG14-6]]
 .Distributing mobile applications at surancebay.com 
-image::images/fig_14_05.png[]
+image::images/fig_14_06.png[]
 
 
 === Save Sick Child with PhoneGap
