@@ -54,31 +54,34 @@ The learning curve of the Titanium API is steeper than with PhoneGap.
 
 Hybrid applications may be not as fast as the native ones, and application architects responsible for defining mobile enterprise strategy must set their users' expectations. 
 
-If a particular application will be used only by the employees of the organization who use limited and defined number of mobile devices, and if making employees (the users) productive is the main goal - develop native applications. Start with developing and deploying such an application for the pilot OS (typically for the latest iOS or Android OS), and then gradually add support for more  platforms, budget permitting. If you are planning to develop a Web application with relatively simple UI (e.g. Save Sick Child) and have to support a wide variety of unknown consumer devices (people should be able to make donation from any device) - develop a HTML5 Web application. 
+If a particular application will be used only by the employees of the organization who use limited and defined number of mobile devices, and if making employees (the users) productive is the main goal - develop native applications. Start with developing and deploying such an application for the pilot OS (typically for the latest iOS or Android OS), and then gradually add support for more  platforms, budget permitting. If you are planning to develop a Web application with relatively simple UI (e.g. Save Sick Child) and have to support a wide variety of unknown consumer devices (people should be able to make donation from any device) - develop an HTML5 Web application. 
 
 Consider developing a hybrid application for anything in between, and in this chapter we'll create a hybrid version of our Save Sick Child application with http://phonegap.com/[PhoneGap] framework. To be more specific, we'll access the camera of the smartphone and will use the PhoneGap PayPal plugin to process donations.
-
 
 === Intro to the PhoneGap Workflow
 
 Download PhoneGap from http://phonegap.com/[phonegap.com]. Unzip the downloaded file, and you'll get a folder with the phonegap library and product documentation. The name of our library was phonegap-2.9.0.
 
-NOTE: To see what platforms  are supported by the current version of PhoneGap, just open subfolder _lib_ - the code for each supported platform has a corresponding subdirectory. For example, Figure <<FIG14-2>> will give you an idea on what's currently supported. 
+NOTE: PhoneGap documentation may not reflect the latest code. To see what platforms  are supported by the current version of PhoneGap, just open subfolder _lib_ - the code for each supported platform has a corresponding subdirectory. For example, Figure <<FIG14-2>> will give you an idea on what's currently supported. 
 
 [[FIG14-2]]
 .What comes with PhoneGap 2.9
 image::images/fig_14_02.png[] 
 
-NOTE: We use Mac OS for development with pre-installed https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT). 
+We use Mac OS for development with pre-installed https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT). 
 
-It's time for the PhoneGap Hello World, and we'll build it for iOS. We are going to generate the initial project using Cordova command line interface (CLI) as described in  http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface[documentation]. 
+It's time for the PhoneGap Hello World, and we'll build it for iOS. We are going to generate the initial project using Cordova command line interface (CLI) as described in http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface[documentation]. 
 After generating Hello World with _cordova create_ command, it creates files and directories shown on Figure <<FIG14-3>>. 
+
+NOTE: PhoneGap documentation offers different methods for generating projects. Each of them generates slightly different content. We'll use the http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface[first one] for generating Hello World, and http://docs.phonegap.com/en/2.9.0/guide_command-line_index.md.html#Command-Line%[the second one] for generating Save Sick Child. 
 
 [[FIG14-3]]
 .Cordova-generated project Hello World
 image::images/fig_14_03.png[] 
 
-The content of generated index.html is shown next. It includes several meta tags to use the entire screen of the mobile device and don't allow scaling by user's gestures. Then it includes a couple of JavaScript files. Of course, it's not too difficult to prepare such a simple HTML file manually, but we prefer code generators when available - they are faster and less error prone.
+NOTE: If you used the command _cordova create HelloWorld com.example.hello "Hello World"_, exactly as it shown in the documentation, keep in mind that when you'll be creating the certificate to run it on the iOS device, it has to be valid for applications that start with com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
+
+The content of generated index.html is shown next. It includes several meta tags to use the entire screen of the mobile device and don't allow scaling by user's gestures. Then it includes a couple of JavaScript files. 
 
 [source, html]
 ----
@@ -113,12 +116,12 @@ This HTML includes the code to load the cordova.js library and the initializatio
 [source, javascript]
 ----
 var app = {
-  initialize: function() {
+  initialize: function() {                       // <1>
       this.bind();
   },
 
   bind: function() {
-    document.addEventListener('deviceready',     // <1>
+    document.addEventListener('deviceready',     // <2>
                this.deviceready, false);
   },
 
@@ -127,7 +130,7 @@ var app = {
     app.report('deviceready');
   },
 
-  report: function(id) {                        //  <2>
+  report: function(id) {                        //  <3>
 
       console.log("report:" + id);
       
@@ -138,11 +141,15 @@ var app = {
 };
 ----
 
-<1> The mobile OS sends the `deviceready` event to the PhoneGap application when it's ready to invoke native APIs.
+<1> This function is being called when all scripts are loaded in index.html.
 
-<2> The function `report()` is called from the `deviceready` event handler. It hides the `.pending <p>` and shows the `.complete <p>` in index.html. Technically, `split('hide')` followed by `join('')` perform removal of the word hide.
+<2> The mobile OS sends the `deviceready` event to the PhoneGap application when it's ready to invoke native APIs.
 
-According the Cordova CLI documentation after the code is generated you need to add the platforms for which you are planning to prepare PhoneGap builds. For example, you can run the following commands from the Terminal window (inside the HelloWorld directory) to request the builds for ios, android, and blackberry:
+<3> The function `report()` is called from the `deviceready` event handler. It hides the `.pending <p>` and shows the `.complete <p>` in index.html. Technically, `split('hide')` followed by `join('')` perform removal of the word hide.
+
+WARNING: It's not too difficult to prepare such simple HTML and JavaScript files manually, but we prefer using code generators when available - they are faster and less error prone. Unfortunately, PhoneGap's code generators still have room for improvement, and manual intervention will be required anyway.
+
+According some Cordova CLI documentation after the code is generated you need to add the platforms for which you are planning to prepare PhoneGap builds. For example, you can run the following commands from the Terminal window (inside the HelloWorld directory) to request the builds for ios, android, and blackberry:
 
 _cordova platform add ios_
 
@@ -162,13 +169,28 @@ Double-click on the file Hello_World.xcodeproj, and it'll be opened as a project
 .Running Hello World in XCode
 image::images/fig_14_04_1.png[] 
 
-If you want to run it on the physical iOS device, it has to be connected to your Mac computer, enabled for deployment and recognized by Apple. Details on _provisioning your devices for development_ are described in the online http://developer.apple.com/library/ios/#documentation/ToolsLanguages/Conceptual/YourFirstAppStoreSubmission/ProvisionYourDevicesforDevelopment/ProvisionYourDevicesforDevelopment.html[iOS Developer Library].   
+.Testing Application on iOS Devices
+*******
+If you want to test your application not in the simulator, but  on the physical iOS device, it has to be connected to your Mac computer, enabled for deployment and recognized by Apple. Details on _provisioning your devices for development_ are described in the online http://developer.apple.com/library/ios/#documentation/ToolsLanguages/Conceptual/YourFirstAppStoreSubmission/ProvisionYourDevicesforDevelopment/ProvisionYourDevicesforDevelopment.html[iOS Developer Library]. If you prefer shorter instructions, here's what worked for us:
 
-https://developer.apple.com/library/mac/#documentation/IDEs/Conceptual/AppDistributionGuide/Introduction/Introduction.html
+1. Open a Keychain Access application on your Mac computer and create a certificate request using the menus Keychain Access | Certificate Assistant | Request a Certificate from Certificate Authority. This will create a file with the name extension .certSigningRequest.
 
-https://developer.apple.com/search/index.php?q=tn2250
+2. Log on to Member Center at https://developer.apple.com[developer.apple.com] and create a certificate in there for iOS Development specifying the wildcard (an asterisk) in the Bulk name unless you want to restrict this certificate to be used only with application that start with a certain prefix. During this step you'll need to upload the .certSigningRequest file created in the previous step. 
 
+3. After this certificate is created, download this file (its  name ends with .cer), and double-click on it to open in your local keychain. Find it in the list of certificates and expand it - it should include the private key. 
 
+4. Remain in the Member Center, and create a unique application ID.
+
+5. Finally, in the same Member Center create a Provisioning Profile.     
+
+6. In Xcode, open the menu Window | Organizer, go to Provisioning profiles window, and refresh it. You should see the newly created provisioning profiled marked with a green bullet. 
+
+7. Select your iOS device in the active scheme dropdown on top left and run your Hello World or other project on the connected device.
+*******
+
+TIP: Read Apple's https://developer.apple.com/library/mac/#documentation/IDEs/Conceptual/AppDistributionGuide/Introduction/Introduction.html[App Distribution Guide] to learn how to distribute your iOS applications.
+
+// Tech support doc: https://developer.apple.com/search/index.php?q=tn2250
 
 TBD
 
@@ -179,16 +201,76 @@ To get Android SDK, go to http://developer.android.com/sdk[android.com/sdk]. We 
 After downloading the bundle, unzip this file, and it'll create a folder with two subfolders: _sdk_ and _eclipse_. Start Eclipse IDE from _eclipse_ folder accepting the location of the default workspace. Press the little Plus sign on the top toolbar and open perspective DDMS. This is the place where you can use Android emulator while developing Android applications.
 ******
 
-TIP: Blackberry developers can download their WebWorks SDK at http://developer.blackberry.com/html5/download/[developer.blackberry.com/html5/download] as well as BLackBerry 10 Simulator. If you haven't downloaded the Ripple Emulator (see Chapter 12) you can get it there too. 
+Blackberry developers can download their WebWorks SDK at http://developer.blackberry.com/html5/download/[developer.blackberry.com/html5/download] as well as BLackBerry 10 Simulator. If you haven't downloaded the Ripple Emulator (see Chapter 12) you can get it there too. 
+
+=== Using Adobe PhoneGap Build Service
+
+Instead of installing multiple SDKs for different platforms you can use the cloud service https://build.phonegap.com/[Adobe PhoneGap Build], which already has installed and configured all supported SDK's and will do a build of your application for different platforms.
+
+Visit build.phonegap.com and sign in with your Adobe or Github ID. If your project resides on Github, copy its URL to the text field shown on Figure <<FIG14-4-2>>. The other way to do a build is to compress your project's _www_ directory and upload this zip file there.
+
+[[FIG14-4-2]]
+.Submitting Application to PhoneGapBuild
+image::images/fig_14_04_2.png[]
+
+Before zipping up Hello World's  _ios/www_ directory, open and modify the file config.xml. The generated XML contains a lot of non-related to iOS entries. All of the lines that contain android or blackberry should be removed. 
+
+[source, xml]
+----
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.example.hello" version="2.0.0" 
+        xmlns="http://www.w3.org/ns/widgets" 
+        xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    
+    <name>Hello World</name>
+    
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    
+    <author email="callback-dev@incubator.apache.org" href="http://cordova.io">
+        Apache Cordova Team
+    </author>
+    
+    <icon height="512" src="res/icon/cordova_512.png" width="512" />
+    <icon cdv:platform="ios" height="144" src="res/icon/cordova_ios_144.png" width="144" />
+    <cdv:splash cdv:platform="ios" height="748" src="res/screen/ipad_landscape.png" width="1024" />
+    <cdv:splash cdv:platform="ios" height="1004" src="res/screen/ipad_portrait.png" width="768" />
+    <cdv:splash cdv:platform="ios" height="1496" src="res/screen/ipad_retina_landscape.png" width="2048" />
+    <cdv:splash cdv:platform="ios" height="2008" src="res/screen/ipad_retina_portrait.png" width="1536" />
+    <cdv:splash cdv:platform="ios" height="320" src="res/screen/iphone_landscape.png" width="480" />
+    <cdv:splash cdv:platform="ios" height="480" src="res/screen/iphone_portrait.png" width="320" />
+    <cdv:splash cdv:platform="ios" height="640" src="res/screen/iphone_retina_landscape.png" width="960" />
+    <cdv:splash cdv:platform="ios" height="960" src="res/screen/iphone_retina_portrait.png" width="640" />
+    
+    <feature name="http://api.phonegap.com/1.0/device" />
+    
+    <preference name="phonegap-version" value="2.9.0" />
+    <access origin="*" />
+</widget>
+
+----
+
+Try to specify the latest supported Phonegap version in the "phonegap-version" attribute. The online document https://build.phonegap.com/docs/config-xml[Using config.xml] has the information about supported versions and other essential properties. We'll change the phonegap-version value to 2.9.0, which is the latest supported version. You'll see some other entries in config.xml of the Save Sick Child application.
+
+Now you select all the content inside the _ios/www_ folder and compress it into a zip file named helloworld-build.zip. Go to build.phonegap.com and press the button labeled "Upload a .zip file" and select helloworld-build.zip. When uploading is done, you'll see a next screen shown at <<FIG14-4-3>>. 
+
+[[FIG14-4-3]]
+.After helloworld-build.zip was uploaded
+image::images/fig_14_04_3.png[]
+
+Click on the button Ready to Build, and the build for all available platform will start.
+ 
+//TIP: Members of PhoneGap community can develop their own plugins for entire community to use. You can find details in this http://phonegap.com/blog/2013/07/15/using-plugins-with-phonegapbuild/[blog of Mike Harris]. 
+
+TBD
+
+//TIP: Display messages using Phonegap's `navigator.notification.alert()` and the user will see native dialog box in his mobile device. The `Notification` object also supports `confirm()`, `beep()`, and `vibrate()` methods.
+
+//TIP: For current list of available PhoneGap plugins for various mobile platforms visit the github repository at https://github.com/phonegap/phonegap-plugins[https://github.com/phonegap/phonegap-plugins].
 
 
-
-TIP: Display messages using Phonegap's `navigator.notification.alert()` and the user will see native dialog box in his mobile device. The `Notification` object also supports `confirm()`, `beep()`, and `vibrate()` methods.
-
-TIP: For current list of available PhoneGap plugins for various mobile platforms visit the github repository at https://github.com/phonegap/phonegap-plugins[https://github.com/phonegap/phonegap-plugins].
-
-
-==== Development and Distribution with PhoneGap
+==== Distribution of Mobile Applications
 
 Mobile device manufacturers set their own rules for the application distribution. Apple has the most strict rules for the iOS developers.
 
