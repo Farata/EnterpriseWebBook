@@ -169,7 +169,7 @@ Double-click on the file Hello_World.xcodeproj, and it'll be opened as a project
 .Running Hello World in XCode
 image::images/fig_14_04_1.png[] 
 
-.Testing Application on iOS Devices
+.Testing Applications on iOS Devices
 *******
 If you want to test your application not in the simulator, but  on the physical iOS device, it has to be connected to your Mac computer, enabled for deployment and recognized by Apple. Details on _provisioning your devices for development_ are described in the online http://developer.apple.com/library/ios/#documentation/ToolsLanguages/Conceptual/YourFirstAppStoreSubmission/ProvisionYourDevicesforDevelopment/ProvisionYourDevicesforDevelopment.html[iOS Developer Library]. If you prefer shorter instructions, here's what worked for us:
 
@@ -183,7 +183,7 @@ If you want to test your application not in the simulator, but  on the physical 
 
 5. Finally, in the same Member Center create a Provisioning Profile.     
 
-6. In Xcode, open the menu Window | Organizer, go to Provisioning profiles window, and refresh it. You should see the newly created provisioning profiled marked with a green bullet. 
+6. In Xcode, open the menu Window | Organizer, go to Provisioning profiles window, and refresh it. You should see the newly created provisioning profile marked with a green bullet. A physical file with the name extension .mobileprovision correspond to this profile.
 
 7. Select your iOS device in the active scheme dropdown on top left and run your Hello World or other project on the connected device.
 *******
@@ -191,8 +191,6 @@ If you want to test your application not in the simulator, but  on the physical 
 TIP: Read Apple's https://developer.apple.com/library/mac/#documentation/IDEs/Conceptual/AppDistributionGuide/Introduction/Introduction.html[App Distribution Guide] to learn how to distribute your iOS applications.
 
 // Tech support doc: https://developer.apple.com/search/index.php?q=tn2250
-
-TBD
 
 .Installing Android SDK
 ******
@@ -259,18 +257,30 @@ Now you select all the content inside the _ios/www_ folder and compress it into 
 .After helloworld-build.zip was uploaded
 image::images/fig_14_04_3.png[]
 
-Click on the button Ready to Build, and the build for all available platform will start. In you did everything right, after watching the wait cursor on above each icon, the builds will successfully complete, and you'll see a blue line under each button. Figure <<FIG14-4-4>> illustrates the case when the build failed for iOS and BlackBerry platformed (the first and fourth buttons are underlined in red color).
+Click on the button Ready to Build, and the build for all available platform will start. In you did everything right, after watching the wait cursor on above each icon, the builds will successfully complete, and you'll see a blue line under each button. Figure <<FIG14-4-4>> illustrates the case when the build failed for iOS and BlackBerry platformed (the first and fourth buttons are underlined in red color). Fixing the BlackBerry version of the application is not in our agenda, but let's take care about the iOS issue.
 
 [[FIG14-4-4]]
 .Two builds failed
 image::images/fig_14_04_4.png[]
 
-After clicking on the iOS button, it revealed the error "No key selected, you must provide the signing key first". The error message also provides a https://build.phonegap.com/docs/config-signing-ios[link to the document] describing how to fix this erre.
+After clicking on the iOS button, it revealed the message in a dropdown box "No key selected". Another error message reads"You must provide the signing key first". The dropdown also offers an option to add the missing key. Selecting this option reveals a panel shown on Figure <<FIG14-4-5>>.
 
- 
+[[FIG14-4-5]]
+.Uploading certificate and profile
+image::images/fig_14_04_5.png[]
+
+The missing key message actually means that they need the provisioning profile and certificate discussed in the section "Testing Applications on iOS Devices". The certificate has to be in the P12 format, and you can export it into the .p12 file from the Keychain Access program. During the export, you'll assign a password to the certificate that will be required by PhoneGap Build process. After uploading the .p12 and .mobileprovision to PhoneGap Build and unlocking the little yellow lock, rebuild the Hello World for iOS and it should be done without any errors this time.  
+
+TIP: If you forgot where the .mobileprovision file is located, open Xcode and got to the menu Window | Organize, open the panel Provisioning Profiles under Library, right-click on the profile record and select Reveal in Finder.  
+
+To complete the process, we need to distribute and deploy the application on your mobile device. There are two ways to do this. The first one is by using http://en.wikipedia.org/wiki/QR_code[QR Code] that was generated specifically for our application as shown on the right side of Figure <<FIG14-4-4>>. Just install the QR Reader application on your device, scan this code and the application will be installed.
+
+If you prefer to physically copy files, you'll need to download them first from the build.phonegap.com on your computer and then copy it on the mobile device. To get the Android version of Hello World, just click on the button with Androids logo and the file HelloWorld-debug.apk will be downloaded to your computer. Copy this file to your Android device and enjoy the application. For the iOS version, click on the button with the iOS logo, which will download the file HelloWorld.ipa on your Mac computer. Double click on this file in Finder, and it'll bring it into the Application section of iTunes. Synchronize the the content of iTunes with the iOS device, and Hello World will be installed there. 
+
+Phew! This was the longest description of developing and deploying the Hello World application not only in this book, but that we've ever written!  Of course, we picked deployment on the Apple's devices, which this the most complicated process among mobile developers. And we didn't even cover the process of submission the application in the App Store (you'll read more about it in the next section)! But developing and deploying application that have to run natively on multiple platforms is expected to be more complicated that deploying an HTML5 application in a Web browser. 
+
 //TIP: Members of PhoneGap community can develop their own plugins for entire community to use. You can find details in this http://phonegap.com/blog/2013/07/15/using-plugins-with-phonegapbuild/[blog of Mike Harris]. 
 
-TBD
 
 //TIP: Display messages using Phonegap's `navigator.notification.alert()` and the user will see native dialog box in his mobile device. The `Notification` object also supports `confirm()`, `beep()`, and `vibrate()` methods.
 
