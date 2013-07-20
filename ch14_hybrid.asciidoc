@@ -42,7 +42,7 @@ The https://build.phonegap.com/[PhoneGap Build] cloud service takes your HTML/Ja
 
 If you need build an application to run under iOS, PhoneGap Build will create an IPA file. For deployment on Android devices you'd be getting an APK file. After that, if you want to submit your application to public or a private application store, follow the procedure that exists for native applications for the selected platform. The PhoneGap Build service can package your application for iOS, Android, Windows Phone, and Blackberry.
 
-Some people complain about the PhoneGap performance if compared to native applications. Developers need to use best practices recommended for any HTML-based applications, but performance also depends on the Web rendering engine utilized on each mobile platform. If the UI components of your HTML5 framework don't look native enough, this may be considered as a concern for some applications too. On the other hand, PhoneGap allows you to leverage the existing HTML skills for all major mobile platforms, and their native API is not overwhelming and is easy to learn. 
+The PhoneGap application are slower comparing to the native one. Developers need to use best practices recommended for any HTML-based applications, but performance also depends on the Web rendering engine utilized on each mobile platform. If the UI components of your HTML5 framework don't look native enough, this may be considered as a concern for some applications too. On the other hand, PhoneGap allows you to leverage existing HTML/JavaScript skills for all major mobile platforms, and their native API is not overwhelming and is easy to learn. 
 
 Titanium offers its own set of tools and more extensive API. You'd be writing code in JavaScript (no HTML or CSS) and would need to learn The compiled and deployed application is a JavaScript embedded inside Java or Objective-C code plus JavaScript interpreter plus platform-specific Titanium API. The JavaScript objects talk to it's native Titanium piers via proxies. There is not Web view rendering here - the JavaScript code is evaluated by the embedded interpreter, but UI components are from Titanium itself.
 
@@ -62,10 +62,13 @@ Consider developing a hybrid application for anything in between, and in this ch
 
 Download PhoneGap from http://phonegap.com/[phonegap.com]. Unzip the downloaded file, and you'll get a folder with the phonegap library and product documentation. The name of our library was phonegap-2.9.0.
 
-NOTE: PhoneGap documentation may not reflect the latest code. To see what platforms  are supported by the current version of PhoneGap, just open subfolder _lib_ - the code for each supported platform has a corresponding subdirectory. For example, Figure <<FIG14-2>> will give you an idea on what's currently supported. 
+// Using 3.0 CLI http://blog.safaribooksonline.com/2013/07/19/streamline-cross-platform-development-using-apache-cordova-phonegap-cli/
+
+You need to distinguish between development with PhoneGap library and packaging applications with PhoneGap Build server.  To see what platforms are available for development just open subdirectory _lib_ - the code for each supported platform has a corresponding subdirectory. For example, Figure <<FIG14-2>> will give you an idea on what's currently included in PhoneGap download. On the other hand, the PhoneGap Build server can package your application for more target platforms (e.g. Bada and Symbian) than exist under _lib_. 
+
 
 [[FIG14-2]]
-.What comes with PhoneGap 2.9
+.What comes with PhoneGap 3.0
 image::images/fig_14_02.png[] 
 
 We use Mac OS for development with pre-installed https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT). 
@@ -249,7 +252,7 @@ Before zipping up Hello World's  _ios/www_ directory, open and modify the file c
 
 ----
 
-Try to specify the latest supported Phonegap version in the "phonegap-version" attribute. The online document https://build.phonegap.com/docs/config-xml[Using config.xml] has the information about supported versions and other essential properties. We'll change the phonegap-version value to 2.9.0, which is the latest supported version. You'll see some other entries in config.xml of the Save Sick Child application.
+Try to specify the latest supported Phonegap version in the "phonegap-version" attribute. The online document https://build.phonegap.com/docs/config-xml[Using config.xml] has the information about supported versions and other essential properties. We'll change the phonegap-version value to 2.9.0, which is the latest supported by PhoneGap Build version. You'll see some other entries in config.xml of the Save Sick Child application.
 
 Now you select all the content inside the _ios/www_ folder and compress it into a zip file named helloworld-build.zip. Go to build.phonegap.com and press the button labeled "Upload a .zip file" and select helloworld-build.zip. When uploading is done, you'll see a next screen shown at <<FIG14-4-3>>. 
 
@@ -257,7 +260,9 @@ Now you select all the content inside the _ios/www_ folder and compress it into 
 .After helloworld-build.zip was uploaded
 image::images/fig_14_04_3.png[]
 
-Click on the button Ready to Build, and the build for all available platform will start. In you did everything right, after watching the wait cursor on above each icon, the builds will successfully complete, and you'll see a blue line under each button. Figure <<FIG14-4-4>> illustrates the case when the build failed for iOS and BlackBerry platformed (the first and fourth buttons are underlined in red color). Fixing the BlackBerry version of the application is not in our agenda, but let's take care about the iOS issue.
+Click on the button Ready to Build, and the build for all available platform will start. In you did everything right, after watching the wait cursor on above each icon, the builds will successfully complete, and you'll see a blue line under each button. Figure <<FIG14-4-4>> illustrates the case when the build failed for iOS and BlackBerry platformed (the first and fourth buttons are underlined in red color). 
+
+Fixing the BlackBerry version of the application is not in our agenda. Refer to http://docs.phonegap.com/en/edge/guide_platforms_index.md.html[Platform Guides] documentation that contain specific information on what has to be done to develop and deploy PhoneGap applications for each platform. We'll just take care of the iOS issue.
 
 [[FIG14-4-4]]
 .Two builds failed
@@ -314,13 +319,13 @@ image::images/fig_14_06.png[]
 
 === Save Sick Child with PhoneGap
 
-To demonstrate how the turn a Web application into a hybrid one, we'll take the code of the jQuery Mobile version of the Save Sick Child application (Chapter 12), add to it an ability to work with the photo camera using PhoneGap API, and create two builds ready to be deployed on iOS and Android platforms. in this exercise we'll use PhoneGap 2.9, which is the latest version at the time of this writing. 
+To demonstrate how the turn a Web application into a hybrid one, we'll take the code of the jQuery Mobile version of the Save Sick Child application  from Chapter 12), add to it an ability to work with the photo camera using PhoneGap API, and create two builds ready to be deployed on iOS and Android platforms. in this exercise we'll use PhoneGap 3.0, which is the latest version at the time of this writing. 
 
 But before even adding camera support, let's go through the process of building and deploying the jQuery Mobile version of this application in its existing form without changing even one line of code. 
 
-We'll start with packaging this application for iOS and then we'll ask PhoneGap to use the same code and build a the application for Android. In this chapter we'll use Apple's XCode IDE under MAC OS to be able to prepare the code for iOS. Here's the step by step plan: 
+We'll start with packaging this application for iOS and then we'll ask PhoneGap to use the same code and build a the application for Android. We'll continue using XCode IDE under MAC OS to be able to prepare the code for iOS. Here's the step by step plan: 
 
-1. Generate a new PhoneGap project using the http://docs.phonegap.com/en/2.9.0/guide_command-line_index.md.html#Command-Line%20Usage_ios[iOS command line tool]
+1. Generate a new PhoneGap project using the http://docs.phonegap.com/en/2.9.0/guide_command-line_index.md.html#Command-Line%20Usage_ios[iOS command line tool]. With Hello World we've generated the project and after that added specific platforms, but this time we'll specifically generate iOS project. 
 
 2. Copy the existing HTML, CSS, JavaScript and other resources from jQuery Mobile Save Sick Child application into the directory _www_ of the newly generated Cordova iOS project.
 
@@ -335,9 +340,11 @@ We'll start with packaging this application for iOS and then we'll ask PhoneGap 
 
 === Summary
 
-Hybrid applications allow you to take your HTML5-based Web application, connect it to the native API of the mobile device and package it as a native application. The selling point of using Hybrids is that you can reuse the existing HTML5 expertise and with relatively small efforts get access to native capabilities of the mobile devices and distribute your HTML5 application as the native one through an App Store or a Market Place offered by the device manufacturers. If your organization already has software developers who know HTML5, leveraging their existing skills is a very appealing choice too.  
+Hybrid applications allow you to take your HTML5-based Web application, connect it to the native API of the mobile device and package it as a native application. The selling point of using hybrids is that you can reuse the existing HTML5/JavaScript expertise. In the enterprise setup maintaining bugs in a one-language bug database is a lot more easier than if you have multiple versions of the application written in different languages. Maintaining a single set of images, videos, and CSS files makes is yet another advantage that lowers both time to market and cost of ownership of the application.   
 
-But make no mistakes - if you want to create the fastest possible application that looks exactly like other application that were specifically created for the selected mobile platform, developing in the native language prescribed by the device manufacturer is the right choice is to make. Will you be able to afford having experts in each mobile OS is a different and non-technical question. If you don't have such a luxury, going hybrid is a good compromise.
+Hybrid applications not only give access to native capabilities of the mobile devices, but allow distribute your HTML5 application through multiple App Stores  or Market Places offered by the device manufacturers.    
+
+But make no mistakes - if you want to create the fastest possible application that looks exactly like other applications  specifically created for the selected mobile platform, develop it in the native language prescribed by the device manufacturer. Will you be able to afford having experts in each mobile OS is a different and non-technical question. If you don't have such a luxury, going hybrid is a good compromise.  
 
 
 == Epilogue
