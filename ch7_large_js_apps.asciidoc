@@ -299,15 +299,67 @@ AMD Cons:
 After discussion of theory and basics of AMD it is time to see how modularization can work in the real world. In this section we'll  introduce the AMD-complaint module loader http://requirejs.org/[RequireJS]. 
 RequireJS (include info about build with `r.js`)
 
+// vik
+
 ****
-http://github.com/cujojs/curl[*curl.js*]
-Sidebar about curljs - another popular AMD complaint module loader.
-TBD
+http://github.com/cujojs/curl[*curl.js*] is another AMD-compliant asynchronous loader. 
+
 ****
 
-You can download require.js from its github repository or use a package manager like Bower.
+// /vik
 
-// TBD about Bower
+You can download require.js from its github repository or use a package manager like <<what_is_bower,Bower>>.
+
+[[what_is_bower]]
+.What is *Bower*?
+****
+https://github.com/bower/bower[Bower] is a package manager for the web projects. Bower was developed in Twitter and was donated to open-source community. Bower is a utility and a community driven repository of libraries and frameworks for front-end development. Bower's idea is very similar to NPM. But if NPM is more suitable for the server-side projects, on the contrary, Bower was designed and implemented to handle  dependencies for web projects.
+
+Bower will take care of transitive (dependency of dependency) dependencies and download all required library components. Each Bower package has +bower.json+ file. This file contains a package metadata. Using that metadata, Bower can manage the package's transitive dependencies. Also +bower.json+ can might contain information about package repository, readme file, license and etc. You can find +bower.json+ in the root directory of package. For example, the path +components/requirejs/bower.json+ is a path for for RequireJS metadata file.
+
+As other open-source tools that we use in this book, Bower could be installed via NPM. 
+
+[source,bash]
+----
+npm install -g bower    # <1>
+----
+<1> NPM installs Bower globally in your systems.
+
+Next you can start using Bower. For example, here is a Bower's command to install RequireJS.
+
+[source,bash]
+----
+bower install requirejs --save # <1>
+----
+<1> Bower installs RequireJS into +components/requirejs+ directory and saves information about dependency in +bower.json+ configuration file.
+
+Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means, you not necessary need to store dependencies of your application next to a application files under source control. Your application could have its own +bower.json+ with list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`. And you can find all your dependency files in +components+ directory.
+
+Here is how +bower.json+ looks like for Save Sick Child application.
+
+[source,javascript]
+----
+{
+  "name": "ch7_dynamic_modules",
+  "description": "Chapter 7: Save Sick Child, Dynamic Modules app",
+  "dependencies": {
+    "requirejs": "~2.1.5",
+    "jquery": ">= 1.8.0",
+    "qunit": "~1.11.0",
+    "modernizr": "~2.6.2",
+    "requirejs-google-maps": "latest"
+  }
+}
+----
+<1> Application dependencies are specified in corresponding +dependencies+ section.
+
+[[application_components]]
+.Directory structure of application's components
+image::fig_07_04.png[align="center"]
+
+Also, there is a http://sindresorhus.com/bower-components/[Bower search tool] to find desired component in repository.
+
+****
 
 .Adding RequireJS to the web page
 [source,html]
@@ -328,10 +380,35 @@ You can download require.js from its github repository or use a package manager 
 [[data_main_attrib]]
 <1> The `data-main` attribute is needed for require.js. It specifies that the framework should load `app/config.js` after +require.js+ loads. The `app/config.js` is the entry point of your application.
 
+// vik
+
+.Inside config.js
+RequiredJS will need a configuration. Configuration object helps RequireJS to understand that modules and dependencies will managed the framework.
+
+[source,javascript]
+----
+include::include/ch7_require_config.js[]
+----
+<1> http://requirejs.org/docs/api.html#config[Documentation] has comprehensive overview of configuration options. We don't want to duplicate it here.
+
+<2> The `path` configuration option defines the mapping for module names and its paths. The paths is used for module names shouldn't contain file extension.
+
+<3> After configure module paths we're loading 'main' module. All our application flow is defined there.
+
+// /vik
+
 
 .r.js - RequireJS Optimizer
 ****
-RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that does optimization of modules. This optimizer will combine modules that are specified in arrays of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify content of script files.
+RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that does optimization of modules. 
+
+// vik
+
+As you learned earlier in this chapter, we specified the dependencies as array of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and its dependencies into single file using that dependencies information.
+
+// /vik
+
+Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify content of script files.
 
 *TODO*: _Make introduction of Grunt Tools in this chapter not next chapter._ 
 
@@ -377,7 +454,6 @@ You can find more information about different optimization topics on the Require
 
 
 ==== Universal Module Definition (UMD)
-
 
 Universal Module Definition (UMD) is the series of patterns / code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. 
 
