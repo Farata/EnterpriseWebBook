@@ -984,6 +984,24 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_summary_7">Summary</a></li>
 </ol>
 </li>
+<li><a href="#_large_scale_javascript_projects">Large-Scale JavaScript Projects</a></li>
+<li>
+<ol type="none" class="sectlevel2">
+<li><a href="#_modularization_basics">Modularization basics</a></li>
+<li><a href="#_the_paths_to_modularization">The Paths To Modularization</a></li>
+<li>
+<ol type="none" class="sectlevel3">
+<li><a href="#_module_pattern">Module Pattern</a></li>
+<li><a href="#_commonjs">CommonJS</a></li>
+<li><a href="#_asynchronous_module_definition">Asynchronous Module Definition</a></li>
+<li><a href="#_universal_module_definition_umd">Universal Module Definition (UMD)</a></li>
+<li><a href="#_ecmascript_6_modules">ECMAScript 6 Modules</a></li>
+</ol>
+</li>
+<li><a href="#_advanced_modularization">Advanced Modularization</a></li>
+<li><a href="#_summary_8">Summary</a></li>
+</ol>
+</li>
 <li><a href="#_test_driven_development_with_javascript">Test-Driven Development with JavaScript</a></li>
 <li>
 <ol type="none" class="sectlevel2">
@@ -1014,7 +1032,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_setting_up_the_ide_for_tdd">Setting up the IDE for TDD</a></li>
 </ol>
 </li>
-<li><a href="#_summary_8">Summary</a></li>
+<li><a href="#_summary_9">Summary</a></li>
 </ol>
 </li>
 <li><a href="#_upgrading_http_to_websocket">Upgrading HTTP to WebSocket</a></li>
@@ -1060,7 +1078,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#Auction_Messages_Specification">Save Sick Child Auction Protocol</a></li>
 </ol>
 </li>
-<li><a href="#_summary_9">Summary</a></li>
+<li><a href="#_summary_10">Summary</a></li>
 </ol>
 </li>
 </ol>
@@ -1097,7 +1115,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_fluid_media">Fluid Media</a></li>
 </ol>
 </li>
-<li><a href="#_summary_10">Summary</a></li>
+<li><a href="#_summary_11">Summary</a></li>
 </ol>
 </li>
 <li><a href="#_jquery_mobile">jQuery Mobile</a></li>
@@ -1121,7 +1139,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_selected_code_fragments">Selected Code Fragments</a></li>
 </ol>
 </li>
-<li><a href="#_summary_11">Summary</a></li>
+<li><a href="#_summary_12">Summary</a></li>
 </ol>
 </li>
 <li><a href="#_sencha_touch">Sencha Touch</a></li>
@@ -1144,7 +1162,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_stores_and_models">Stores and Models</a></li>
 </ol>
 </li>
-<li><a href="#_summary_12">Summary</a></li>
+<li><a href="#_summary_13">Summary</a></li>
 </ol>
 </li>
 <li><a href="#_hybrid_mobile_applications">Hybrid Mobile Applications</a></li>
@@ -1165,7 +1183,7 @@ p.tableblock.header { color: #6d6e71; }
 </ol>
 </li>
 <li><a href="#_save_sick_child_with_phonegap">Save Sick Child with PhoneGap</a></li>
-<li><a href="#_summary_13">Summary</a></li>
+<li><a href="#_summary_14">Summary</a></li>
 </ol>
 </li>
 <li><a href="#_epilogue">Epilogue</a></li>
@@ -13823,6 +13841,994 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 </div>
 </div>
 <div class="sect1">
+<h2 id="_large_scale_javascript_projects">Large-Scale JavaScript Projects</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Reducing the startup latency and implementing lazy loading of certain parts of the application are main reasons for modularizing Web applications. A good illustration of why you may want to consider cutting the code base of your Web application is a well designed Web application of the <a href="http://www.mbusa.com/">Mercedes Benz USA</a>. This Web application serves people who live in America and either own or consider purchasing cars from this prestigious European car manufacturer.</p>
+</div>
+<div class="paragraph">
+<p>One of the option to purchase a vehicle is called European Delivery. An American resident can combine car purchase with  vacation. He or she would fly to Europe to the car factory, pick up the car there and then would be vacationing for two weeks driving your new vehicle in Europe. After the vacation your car would be shipped to your home town in the USA.  It&#8217;s a really nice program, but would have added several thousand dollars to the price of the car.</p>
+</div>
+<div class="paragraph">
+<p>From the application design code of view, we don&#8217;t need to push include the code that support the European Delivery to each and every user&#8217;s who decided to visit mbusa.com. If and only if the user will visit the menu Owners and will click on the European Delivery link, then the required code and resources has to be pushed to the user&#8217;s computer or mobile device. The snapshot in <a href="#FIG7-1">MB USA: Europian Delivery</a> was taken after clicking on this link with Chrome Developer tools panel open.</p>
+</div>
+<div id="FIG7-1" class="imageblock">
+<div class="content">
+<img src="./images/fig_07_01.png" alt="image">
+</div>
+<div class="title">Figure 99. MB USA: Europian Delivery</div>
+</div>
+<div class="paragraph">
+<p>As you see, 1.9Mb worth of code and other resources have been downloaded as a result of this click. Should the application architects of the MB USA IT decided to load this code on the initial load of mbusa.com, the user would have to wait for another second or more, which would be a wrong design because only a tiny number of American driver would be interested in even looking at the European Delivery option. This is an example of modularization and lazy loading in action.</p>
+</div>
+<div class="paragraph">
+<p>Our Save Sick Child application is not as big as Mercedes Benz site. But we&#8217;ll use it to give you an example of how to build  modularized Web applications that won&#8217;t bring the monolithic ten megabyte application to the client&#8217;s machine, but will load the code on as needed basis. We&#8217;ll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.</p>
+</div>
+<div class="paragraph">
+<p>People consider your web application fast for one of two reasons: either it&#8217;s actually fast or it gives an impression of being fast. Ideally, you should do your best to create an web application that is very responsive. No matter how slow your web application is, it should never feel like freezing.</p>
+</div>
+<div class="paragraph">
+<p>This chapter is about modularization techniques that will quickly render the first page of your web application on the user&#8217;s Browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save Sick Child application to illustrate using modules.</p>
+</div>
+<div class="paragraph">
+<p>There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this with introduction a <em>module concept</em> in the JavaScript language itself. But it&#8217;s the future.</p>
+</div>
+<div class="paragraph">
+<p>Of course, we can load each JavaScript file using <code>&lt;script&gt;</code> tag. But this approach slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each <code>&lt;script&gt;</code> tag directive translates into an additional HTTP call to the server. As the application gets larger the latency will growth accordingly, which is illustrated in the following code sample.
+<a href="#LISTING_SCRIPT_TAG">Here is an example</a>.</p>
+</div>
+<div id="LISTING_SCRIPT_TAG" class="listingblock">
+<div class="title">Tons of <code>&lt;script&gt;</code> tags leads to loosing control of the application dependencies</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
+
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+
+    &lt;title&gt;Save Sick Child | Home Page&lt;/title&gt;
+    &lt;link rel="stylesheet" href="assets/css/styles.css"&gt;
+
+    &lt;script src="components/jquery.js&gt;&lt;/script&gt;     &lt;!-- <i class="conum">1</i> --&gt;
+
+    &lt;script type="text/javascript" src="app/modules/utils/load-html-content.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/modules/utils/show-hide-div.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/modules/svg-pie-chart.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/modules/donation.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/modules/login.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/modules/utils/new-content-loader.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/modules/generic-module.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/modules/module1.js"&gt;&lt;/script&gt; &lt;!-- <i class="conum">2</i> --&gt;
+    &lt;script type="text/javascript" src="app/modules/module2.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/config.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/main.js"&gt;&lt;/script&gt; &lt;!-- <i class="conum">3</i> --&gt;
+
+&lt;/head&gt;
+&lt;body&gt;
+&lt;!-- page body --&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>All modules depend on the code from Core jQuery library - loading it first.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>The application components may also have dependencies on other scripts. Those scripts need to be loaded before the component itself. The order of these script tags is very important.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>The main application script should be loaded after all dependencies.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We need a different approach to modularizing applications. Let&#8217;s  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use <a href="http://browserify.org/">Browserify</a> as CommonJS example, and <a href="http://requirejs.org/">RequireJS</a> as AMD example.</p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see how the upcoming EcmaScript 6 specification suggests dealing with modules, and how you can start using ES6 module syntax today with the help of third-party tools like <a href="http://corner.squareup.com/2013/02/es6-module-transpiler.html">transpiler</a>. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.</p>
+</div>
+<div class="paragraph">
+<p>Finally, we&#8217;re going to discuss such advanced topics as intermodule-communication and Dependency Injection in JavaScript.</p>
+</div>
+<div class="paragraph">
+<p>The code of the Save Sick Child application will be refactored to implement module system based on RequireJS for lazy loading of the  application components.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+
+<div class="ulist">
+<div class="title"><span class="underline">Plan for chapter</span></div>
+<ul>
+<li>
+<p><span class="line-through">History: the Module pattern, namespaces</span></p>
+</li>
+<li>
+<p>CommonJS</p>
+</li>
+<li>
+<p>AMD ~70%</p>
+</li>
+<li>
+<p><span class="blue line-through"><a href="https://github.com/umdjs/umd">UMD</a></span></p>
+</li>
+<li>
+<p>Advanced topics:</p>
+<div class="ulist">
+
+<ul>
+<li>
+<p><a href="https://gist.github.com/wycats/51c96e3adcdb3a68cbc3">ES6 modules</a> (<a href="http://wiki.ecmascript.org/doku.php?id=harmony:modules">http://wiki.ecmascript.org/doku.php?id=harmony:modules</a>) and TypeScript modules</p>
+</li>
+<li>
+<p>Inter-Module communication, Mediator pattern, Pub/Sub/EventBus example</p>
+</li>
+<li>
+<p><em>Dependency Injection</em></p>
+</li>
+</ul>
+</div>
+
+</li>
+<li>
+<p>ExtJS style (sidebar example ???)</p>
+</li>
+</ul>
+</div>
+
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modularization_basics">Modularization basics</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_the_paths_to_modularization">The Paths To Modularization</h3>
+<div class="sect3">
+<h4 id="_module_pattern">Module Pattern</h4>
+<div class="paragraph">
+<p>In general software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We&#8217;re able to include both public/private methods and variables inside a single object, thus hiding particular section of code from global scope. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts, but used in the same application&#8217;s scope.</p>
+</div>
+<div class="paragraph">
+<p>Ultimately, it&#8217;s just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using various JavaScript syntax. Here are couple examples how Module Pattern could be implemented using IIFEs.</p>
+</div>
+<div class="listingblock">
+<div class="title">Returning the value from a module</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">var loginModule = (function() {
+    var module = {};
+
+    module.myConstant = 1984;
+    module.login = function(userNameValue, userPasswordValue) {
+        console.log("login implementation omitted");
+    };
+
+    module.logout = function() {
+        console.log("logout implementation omitted");
+    };
+
+    return module;
+})();</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Piggiybacking on global object</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">(function(global) {
+    var module = {};
+
+    module.myConstant = 1984;
+    module.login = function(userNameValue, userPasswordValue) {
+        console.log("login implementation omitted");
+    };
+
+    module.logout = function() {
+        console.log("logout implementation omitted");
+    };
+
+    global.loginModule = module;
+})(window);</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Application Namespace in global object</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">(function(global) {
+
+    var ssc = global.ssc;
+    if (!ssc) {
+        ssc = {};
+        global.ssc = ssc;
+    }
+
+    var module = ssc.loginModule = {};
+
+    module.myConstant = 1984;
+    module.login = function(userNameValue, userPasswordValue) {
+        console.log("login implementation omitted");
+    };
+
+    module.logout = function() {
+        console.log("logout implementation omitted");
+    };
+})(window);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This approach doesn&#8217;t scale well because when working with an application with a large number of modules, very soon you may find yourself adding lots of boilerplate checks of objects existence in the global scope for each new module. Also, you need to be very careful with managing namespaces. Because you are the one who put an object into the global scope, you need to think about how to avoid accidental names conflicts.</p>
+</div>
+<div class="paragraph">
+<p>There is one huge disadvantage of using the Module pattern - we still need to deal with manual dependency management and manually arranging <code>&lt;script&gt;</code> tags in the HTML document.</p>
+</div>
+
+</div>
+<div class="sect3">
+<h4 id="_commonjs">CommonJS</h4>
+<div class="paragraph">
+<p><a href="http://www.commonjs.org/">CommonJS</a> is a working group that works on design, prototyping and standardization of JavaScript APIs. They&#8217;ve attempted to develop standards for both modules and packages. The CommonJS module proposal specifies simple API for declaring modules, but mainly on the server-side.</p>
+</div>
+<div class="paragraph">
+<p><a href="http://browserify.org/">Browserify</a> takes all of your scripts and concatenates them itto one large file.</p>
+</div>
+<div class="ulist">
+
+<ul>
+<li>
+<p>require</p>
+</li>
+<li>
+<p>exports</p>
+</li>
+<li>
+<p>module</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each module is executed in its own scope.
+How to make that code available if it&#8217;s not in global scope?</p>
+</div>
+<div class="paragraph">
+<p><code>exports</code>
+The exports variable is an object that has the implicit value of your module. When your module is requested, the code is executed and then exports is returned for you.</p>
+</div>
+<div class="paragraph">
+<p>CommonJS pros:</p>
+</div>
+<div class="ulist">
+
+<ul>
+<li>
+<p>It&#8217;s a simple API for writing and using modules.</p>
+</li>
+<li>
+<p>This modules organization pattern is widespread in server-side JavaScript, e.g. NodeJS.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>CommonJS cons:</p>
+</div>
+<div class="ulist">
+
+<ul>
+<li>
+<p>The additional build step required. We will discuss this in <a href="#Browserify">Browserify</a> section.</p>
+</li>
+<li>
+<p>The <code>require</code> method is synchronous, but module values may not be fully loaded during the execution.</p>
+</li>
+<li>
+<p>It&#8217;s Suitable for loading <code>js</code> files, but can&#8217;t load other assets via CommonJS APIs.</p>
+</li>
+</ul>
+</div>
+<div class="sect4">
+<h5 id="Browserify">Browserify</h5>
+<div class="paragraph">
+<p><a href="http://browserify.org/">http://browserify.org/</a>
+<a href="https://github.com/substack/node-browserify">https://github.com/substack/node-browserify</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="sect3">
+<h4 id="_asynchronous_module_definition">Asynchronous Module Definition</h4>
+<div class="paragraph">
+<p>AMD began as a draft specification for module format in CommonJS, but since the full consensus about its content was not reached, the further development of the module format moved to the <a href="https://github.com/amdjs">amdjs Github page</a>.</p>
+</div>
+<div class="paragraph">
+<p>The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded.
+The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">this specification</a>. The AMD API have the following main functions:</p>
+</div>
+<div id="DEFINE_DESC" class="ulist">
+
+<ul>
+<li>
+<p><code>define</code> for facilitating module definition. A function takes two arguments:</p>
+<div class="ulist">
+
+<ul>
+<li>
+<p>An optional array of modules IDs, which serve as this module&#8217;s dependencies</p>
+</li>
+<li>
+<p>A callback function (often referred to as a <em>factory function</em>), which will be invoked when dependencies are loaded. This also can be a value to use directory as the module&#8217;s value.</p>
+<div id="LISTING_define_func" class="listingblock">
+<div class="title">The example of a <code>define</code> function</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define(
+    module_id,          // <i class="conum">1</i>
+    [dependencies],     // <i class="conum">2</i>
+    function {}         // <i class="conum">3</i>
+);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>This string literal is an optional parameter. It defines <code>module_id</code> that will be used by AMD for loading this module.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>An optional array of dependencies' ids.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>The function for instantiating the module or object.</td>
+</tr>
+</table>
+</div>
+<div id="LISTING_define_modeule" class="listingblock">
+<div class="title">The Definition of the <code>wayToGive</code> module</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define(["newContentLoader"], function(contentLoader) { // <i class="conum">1</i>
+    var wayToGive;
+
+    console.log("way-to-give module is loaded");
+    wayToGive = function() {
+        return {
+            render: function() {
+                contentLoader.getNewContent("way-to-give", // <i class="conum">2</i>
+                                            "way-to-give-container",
+                                            "assets/html-includes/way-to-give.html");
+                return console.log("way-to-give module is rendered");
+            },
+            init: function() {
+                return console.log("way-to-give init");
+            }
+        };
+    };
+    return wayToGive;   // <i class="conum">3</i>
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>In this example, we are not providing the optional <code>module_id</code>. The file name without the <code>.js</code> extension will be used as <code>module_id</code>. Our module has one dependency on the module called <code>newContentLoader</code>. The module instance will be passed in the factory method as variable <code>contentLoader</code>.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>We can start use dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>Module defines and returns constructor function for new objects.</td>
+</tr>
+</table>
+</div>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<div id="REQUIRE_DESC" class="ulist">
+
+<ul>
+<li>
+<p><code>require</code> function takes two arguments</p>
+<div class="ulist">
+
+<ul>
+<li>
+<p>An array of module IDs to load. Module ID is a string literal.</p>
+</li>
+<li>
+<p>A callback to be executed once those modules are available. The modules loaded by ID are passed into the callback in their relative positions. <a href="#LISTING_Require_func">Here is example</a> of <code>require</code> function usage.</p>
+<div id="LISTING_require_func" class="listingblock">
+<div class="title">Example of <code>require</code> function usage</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">require(["main"], function() {
+    console.log("module main is loaded");
+}); // <i class="conum">1</i></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Loads module with id <code>main</code> and executes the anonymous function after module and all its dependencies are loaded.</td>
+</tr>
+</table>
+</div>
+
+</li>
+</ul>
+</div>
+
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><code>exports</code>
+Distinctions from CommonJS</p>
+</div>
+<div class="sect4">
+<h5 id="_amd_pros_and_cons">AMD Pros and Cons</h5>
+<div class="paragraph">
+<p>AMD pros:</p>
+</div>
+<div class="ulist">
+
+<ul>
+<li>
+<p>It&#8217;s a very simple API that has only two functions - <code>require</code> and <code>define</code>.</p>
+</li>
+<li>
+<p>A wide variety of loaders is available. You&#8217;ll find more coverage on loaders in the <a href="#REQUIREJS">RequireJS section</a>.</p>
+</li>
+<li>
+<p>Plugins offer an immense amount of flexibility</p>
+</li>
+<li>
+<p>Easy To Debug</p>
+<div class="paragraph">
+<p>Consider following error messages that JavaScript interpretor can throw:</p>
+</div>
+<div class="paragraph">
+<p><em>There was an error in /modules/loginModule.js on line 42</em></p>
+</div>
+<div class="paragraph">
+<p><strong>vs</strong></p>
+</div>
+<div class="paragraph">
+<p><em>There was an error in /built-app.js on line 1984.</em></p>
+</div>
+<div class="paragraph">
+<p>When your application if modularized you can identify the error easier.</p>
+</div>
+
+</li>
+<li>
+<p>Performance: module are loaded only when required hence the initial portion of the application&#8217;s code become smaller.</p>
+<div class="paragraph">
+<p>You may want to load a module on demand when the user clicks the button or selects a menu item. In the following example, the module can be in one of three states:</p>
+</div>
+
+</li>
+<li>
+<p>not loaded (<code>module === null</code>)</p>
+</li>
+<li>
+<p>loading in progress (<code>module === 'loading'</code>)</p>
+</li>
+<li>
+<p>fully loaded (<code>module !== null</code>).</p>
+<div class="listingblock">
+<div class="title">Loading <code>widget1</code> module on demand</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">var module;
+var buttonClickHandler = function(event) {
+  if (module === "loading") {       // <i class="conum">1</i>
+    return;
+  }
+  if (module !== null) {        // <i class="conum">2</i>
+    module.render();
+  } else {
+    module = "loading";         // <i class="conum">3</i>
+    require(["modules/widget1"], function(moduleObject) { // <i class="conum">4</i>
+      module = new moduleObject();
+      module.render();
+    });
+  }
+};</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Checking if a module loading in progress.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>We don&#8217;t want to load the module each time. If module was loaded just call method to render widget on the page.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>Setting the module into intermediate state until it&#8217;s fully loaded.</td>
+</tr>
+<tr>
+<td><i class="conum">4</i></td>
+<td>Once the module is loaded, instantiate the new widget object and render it in the page.</td>
+</tr>
+</table>
+</div>
+
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>AMD Cons:</p>
+</div>
+<div class="ulist">
+
+<ul>
+<li>
+<p>The dependency array can get rather large for complex modules (Example TBD).</p>
+</li>
+<li>
+<p>Easy to get a mismatch between dependency array and callback arguments (Example TBD).</p>
+</li>
+</ul>
+</div>
+
+</div>
+<div class="sect4">
+<h5 id="REQUIREJS">RequireJS</h5>
+<div class="paragraph">
+<p>After covering the basics of AMD let&#8217;s see how modularization can work in the real world. In this section we&#8217;ll  introduce the AMD-complaint module loader <a href="http://requirejs.org/">RequireJS</a>.
+RequireJS (include info about build with <code>r.js</code>)</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+<a href="http://github.com/cujojs/curl"><strong>curl.js</strong></a> is another AMD-compliant asynchronous loader.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can download require.js from its github repository or use a package manager like <a href="#what_is_bower">Bower</a>.</p>
+</div>
+<div id="what_is_bower" class="sidebarblock">
+<div class="content">
+<div class="title">What is <strong>Bower</strong>?</div>
+<div class="paragraph">
+<p><a href="https://github.com/bower/bower">Bower</a> is a package manager for the web projects. Bower was developed in Twitter and was donated to open-source community. Bower is a utility and a community driven repository of libraries and frameworks for front-end development. Bower&#8217;s idea is very similar to NPM. But if NPM is more suitable for the server-side projects, on the contrary, Bower was designed and implemented to handle  dependencies for web projects.</p>
+</div>
+<div class="paragraph">
+<p>Bower will take care of transitive (dependency of dependency) dependencies and download all required library components. Each Bower package has <code>bower.json</code> file. This file contains a package metadata. Using that metadata, Bower can manage the package&#8217;s transitive dependencies. Also <code>bower.json</code> can might contain information about package repository, readme file, license and etc. You can find <code>bower.json</code> in the root directory of package. For example, the path <code>components/requirejs/bower.json</code> is a path for for RequireJS metadata file.</p>
+</div>
+<div class="paragraph">
+<p>As other open-source tools that we use in this book, Bower could be installed via NPM.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="bash language-bash">npm install -g bower    # <i class="conum">1</i></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>NPM installs Bower globally in your systems.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Next you can start using Bower. For example, here is a Bower&#8217;s command to install RequireJS.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="bash language-bash">bower install requirejs --save # <i class="conum">1</i></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Bower installs RequireJS into <code>components/requirejs</code> directory and saves information about dependency in <code>bower.json</code> configuration file.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means, you not necessary need to store dependencies of your application next to a application files under source control. Your application could have its own <code>bower.json</code> with list of the dependencies. At this point, Bower can install all required application dependencies with one command - <code>bower install</code>. And you can find all your dependency files in <code>components</code> directory.</p>
+</div>
+<div class="paragraph">
+<p>Here is how <code>bower.json</code> looks like for Save Sick Child application.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">{
+  "name": "ch7_dynamic_modules",
+  "description": "Chapter 7: Save Sick Child, Dynamic Modules app",
+  "dependencies": {
+    "requirejs": "~2.1.5",
+    "jquery": "&gt;= 1.8.0",
+    "qunit": "~1.11.0",
+    "modernizr": "~2.6.2",
+    "requirejs-google-maps": "latest"
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Application dependencies are specified in corresponding <code>dependencies</code> section.</td>
+</tr>
+</table>
+</div>
+<div id="application_components" class="imageblock" style="text-align: center">
+<div class="content">
+<img src="./images/fig_07_04.png" alt="fig_07_04">
+</div>
+<div class="title">Figure 100. Directory structure of application&#8217;s components</div>
+</div>
+<div class="paragraph">
+<p>Also, there is a <a href="http://sindresorhus.com/bower-components/">Bower search tool</a> to find desired component in repository.</p>
+</div>
+
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Adding RequireJS to the web page</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
+&lt;head&gt;
+    &lt;!-- content omitted --&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;!-- page body --&gt;
+
+&lt;script src="components/requirejs/require.js"
+        data-main="app/config"&gt;&lt;/script&gt; &lt;!-- <i class="conum">1</i> --&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div id="data_main_attrib" class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Once the RequireJS library has loaded it will look for the <code>data-main</code> attribute and attempt to load <code>app/config.js</code> script asynchronously. The <code>app/config.js</code> is the entry point of your application.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<div class="title">Inside config.js</div>
+<p>RequiredJS  uses a configuration object that includes that modules and dependencies to be managed by the framework.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">require.config({        // <i class="conum">1</i>
+    paths: {            // <i class="conum">2</i>
+        'login': 'modules/login',
+        'donation': 'modules/donation',
+        'svg-pie-chart': 'modules/svg-pie-chart',
+        'campaigns-map': 'modules/campaigns-map',
+        'showHideDiv': 'modules/utils/show-hide-div',
+        'loadHtmlContent': 'modules/utils/load-html-content',
+        'newContentLoader': 'modules/utils/new-content-loader',
+        'who-we-are': 'modules/who-we-are',
+        'what-we-do': 'modules/what-we-do',
+        'where-we-work': 'modules/where-we-work',
+        'way-to-give': 'modules/way-to-give',
+        'components': "../components",
+        'jquery': '../components/jquery/jquery',
+        'main': 'main',
+        'GoogleMap': '../components/GoogleMap/dist/GoogleMap'
+    }
+});
+
+require(["main"], function() {}); // <i class="conum">3</i></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td><a href="http://requirejs.org/docs/api.html#config">RequireJS Documentation</a> has comprehensive overview of all configuration options. We&#8217;ve included some of them here.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>The <code>paths</code> configuration option defines the mapping for module names and its paths. The <code>paths</code> is used for module names and shouldn&#8217;t contain file extensions.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>After configuring the modules' paths we&#8217;re loading the <em>main</em> module. the navigation of our application flow is defined there.</td>
+</tr>
+</table>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">r.js - RequireJS Optimizer</div>
+<div class="paragraph">
+<p>RequireJS comes with the optimization tool called <a href="http://requirejs.org/docs/optimization.html"><em>r.js</em></a>, which is a utility that does optimization of modules.</p>
+</div>
+<div class="paragraph">
+<p>Earlier in this chapter, we&#8217;ve specified the dependencies as array of string literals that are passed to top-level <a href="#REQUIRE_DESC">require</a> and <a href="#DEFINE_DESC">define</a> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.</p>
+</div>
+<div class="paragraph">
+<p>Furthermore, r.js integrates with other optimization tools like <code>UglifyJS</code> and <code>Closure Compiler</code> to minify the content of script files.</p>
+</div>
+<div class="paragraph">
+<p><strong>TODO</strong>: <em>Make introduction of Grunt Tools in this chapter not next chapter.</em></p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s configure our Grunt project to enable optimization task.</p>
+</div>
+<div class="listingblock">
+<div class="title">Add RequireJS dependency to package.json</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="bash language-bash">&gt; npm install grunt-contrib-requirejs grunt-contrib-concat grunt-contrib-clean grunt-contrib-uglify --saveDev # <i class="conum">1</i></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Install requirejs, clean, concat and uglify grunt tasks packages and save them as development dependency in package.json.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><a href="#rjs_gruntfile_list">Following listing</a> describes how to setup RequireJS optimizer and related optimization tasks for Grunt.</p>
+</div>
+<div id="rjs_gruntfile_list" class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">'use strict';
+
+module.exports = function (grunt) {
+
+    // Project configuration.
+    grunt.initConfig({
+        // Task configuration.
+        clean: {
+            files: ['dist'] // <i class="conum">1</i>
+        },
+        requirejs: {        // <i class="conum">2</i>
+            compile: {
+                options: {
+                    name: 'config',
+                    mainConfigFile: 'app/config.js',
+                    out: '&lt;%= concat.dist.dest %&gt;',
+                    optimize: 'none'
+                }
+            }
+        },
+        concat: {       // <i class="conum">3</i>
+            dist: {
+                src: ['components/requirejs/require.js', '&lt;%= concat.dist.dest %&gt;'],
+                dest: 'dist/require.js'
+            }
+        },
+        uglify: {       // <i class="conum">4</i>
+            dist: {
+                src: '&lt;%= concat.dist.dest %&gt;',
+                dest: 'dist/require.min.js'
+            }
+        }
+    });
+
+    grunt.loadNpmTasks('grunt-contrib-clean');      // <i class="conum">5</i>
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+
+    grunt.registerTask('default', ['clean', 'requirejs', 'concat', 'uglify']);  // <i class="conum">6</i>
+};</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>The <code>clean</code> task cleans output directory. In the <code>files</code> section of task config we specify what folder should be cleaned.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>The <code>requirejs</code> task. The configuration properties of <code>requrejs</code> task are self-explanatory. <code>mainConfigFile</code> points at the same file that <a href="#data_main_attrib"><code>data-main</code> attribute</a> of RequireJS script tag. <code>out</code> parameter specifies output directory where optimized script will be created.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>The <code>concat</code> task combines/concatenates together optimized modules code and RequireJS loader code.</td>
+</tr>
+<tr>
+<td><i class="conum">4</i></td>
+<td>The <code>uglify</code> task minifies provided files using <a href="http://lisperator.net/uglifyjs/">UglifyJS</a> - a compressor/minifier tool. UglifyJS produces significantly smaller version of original script by reducing Abstract Source Tree (AST) and mangling local variable to single-letters.</td>
+</tr>
+<tr>
+<td><i class="conum">5</i></td>
+<td>Loading plugins that provide necessary tasks.</td>
+</tr>
+<tr>
+<td><i class="conum">6</i></td>
+<td>The default task to execute all tasks in order.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Monitor the network traffic of the Save Sick Child application built with RequireJS in Chrome Developer Tools, and you&#8217;ll see  many HTTP requests that load modules asynchronously. As you can see from the <a href="#unoptim_require_fig">from following screenshot</a>, 12 out of 14 requests that browser sends are for loading all required modules.</p>
+</div>
+<div id="unoptim_require_fig" class="imageblock">
+<div class="content">
+<img src="./images/fig_07_02.png" alt="fig_07_02">
+</div>
+<div class="title">Figure 101. Unoptimized version of Save Sick Child Application</div>
+</div>
+<div class="paragraph">
+<p>The next <a href="#optim_with_rjs_fig">screenshot</a> shows the loading of Save Sick Child application optimized with RequireJS optimizer. As you can see, we managed to pack all our modules, its dependencies and loader&#8217;s code under one single file. And considerably decreased number of server-side calls.</p>
+</div>
+<div id="optim_with_rjs_fig" class="imageblock">
+<div class="content">
+<img src="./images/fig_07_03.png" alt="fig_07_03">
+</div>
+<div class="title">Figure 102. Loading of optimized version of Save Sick Child</div>
+</div>
+<div class="paragraph">
+<p>You can find more information about different optimization topics on the RequireJS documentation site under <a href="http://requirejs.org/docs/optimization.html">&#8220;Optimization&#8221;</a> section.</p>
+</div>
+
+</div>
+</div>
+
+</div>
+
+</div>
+<div class="sect3">
+<h4 id="_universal_module_definition_umd">Universal Module Definition (UMD)</h4>
+<div class="paragraph">
+<p>Universal Module Definition (UMD) is the series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats.</p>
+</div>
+<div class="paragraph">
+<p>Here is an example of module definition using the UMD notation. In the following example, the module can be used with the AMD loader as one of variations of the Module Pattern.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">(function(root, factory) {
+    if (typeof define == "function" &amp;&amp; define.amd) { // <i class="conum">1</i>
+        define(['login'], factory);
+    } else {
+        root.ssc = factory(root.login); // <i class="conum">2</i>
+    }
+}(this, function(login) { // <i class="conum">3</i>
+    return {
+        myConstant: 1984,
+        login: function(userNameValue, userPasswordValue) {
+            console.log("login implementation omitted");
+        },
+        logout: function() {
+            console.log("logout implementation omitted");
+        }
+    };
+}));</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Checking if the AMD loader is available. If it is, proceed with defining the module according AMD specification.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>If the AMD loader isn&#8217;t present, use the factory method to instantiate object and attach it to the global scope (i.e. <code>window</code> object in case of executing this code in a Web browser).</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>Passing the top-level context and providing a implementation of a factory function.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>It&#8217;s worth mentioning that UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules shall run in more than one type of environment (e.g. a browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.</p>
+</div>
+<div class="paragraph">
+<p>You can find more information about UMD and commented code snippets for different situations in <a href="https://github.com/umdjs/umd">the UMD project repository</a>.</p>
+</div>
+
+</div>
+<div class="sect3">
+<h4 id="_ecmascript_6_modules">ECMAScript 6 Modules</h4>
+<div class="paragraph">
+<p>The ECMAScript 6 (ES6) specification is an evolving draft outlining changes and features for the next version of JavaScript. This specification will be finalized soon, but before that happens the browsers' support for anything defined in ES6 will be experimental at best and cannot be relied upon for Web applications that must run in multiple browsers. One of the most important features of the upcoming ES6 specification is the <em>module syntax</em>. Here is an example of how it suggests to define and use a module:</p>
+</div>
+<div class="listingblock">
+<div class="title">Login module definition</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">function Login(userNameValue, userPasswordValue) {
+    console.log("login implementation omitted");
+};
+export = Login;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And this is how can be used:</p>
+</div>
+<div class="listingblock">
+<div class="title">Main application module</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">import "login" as Login;
+var result = Login("admin", "password");</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">ES6 module transpilers</div>
+<div class="paragraph">
+<p><a href="http://corner.squareup.com/2013/02/es6-module-transpiler.html">ES6 transpiler</a> developed by <a href="http://squareup.com/">Square</a> Engineers.</p>
+</div>
+<div class="paragraph">
+<p>TDB: TypeSctript module feature</p>
+</div>
+
+</div>
+</div>
+
+</div>
+
+</div>
+<div class="sect2">
+<h3 id="_advanced_modularization">Advanced Modularization</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_summary_8">Summary</h3>
+<div class="paragraph">
+<p>The size of your application tends to increase, and sooner or later you&#8217;ll need to decide how to cut it into several loadable blocks of functionality. The sooner you start planning for modularizing your application the better.</p>
+</div>
+<div class="paragraph">
+<p>In this chapter we&#8217;ve reviewed several options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using the (classical) module pattern alone including: avoiding a need for developers to create global variables for each module and better support for static and dynamic dependency management.</p>
+</div>
+<div class="paragraph">
+<p>Understanding what technologies and frameworks available in JavaScript, combined with the knowledge of different ways of linking modules and libraries to your main application is crucial for the creation of responsive JavaScript applications.</p>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="sect1">
 <h2 id="_test_driven_development_with_javascript">Test-Driven Development with JavaScript</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -14016,7 +15022,7 @@ Total:       21  27  1317</code></pre>
 <div class="content">
 <img src="./images/fig_08_17.png" alt="fig_08_17">
 </div>
-<div class="title">Figure 99. JMeter test results output example</div>
+<div class="title">Figure 103. JMeter test results output example</div>
 </div>
 <div class="ulist">
 
@@ -14446,13 +15452,13 @@ Completed in 0.50s at Tue May 07 2013 00:41:42 GMT-0400 (EDT) - Waiting...</code
 <div class="content">
 <img src="./images/fig_08_04.png" alt="fig_08_04">
 </div>
-<div class="title">Figure 100. A download section on QUnit website</div>
+<div class="title">Figure 104. A download section on QUnit website</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="./images/fig_08_05.png" alt="fig_08_05">
 </div>
-<div class="title">Figure 101. QUnit framework in our project</div>
+<div class="title">Figure 105. QUnit framework in our project</div>
 </div>
 <div class="listingblock">
 <div class="title">Our first QUnit test</div>
@@ -14520,7 +15526,7 @@ test("my first qunit test", function () {
 <div class="content">
 <img src="./images/fig_08_06.png" alt="fig_08_06">
 </div>
-<div class="title">Figure 102. A test run results in browser</div>
+<div class="title">Figure 106. A test run results in browser</div>
 </div>
 <div class="listingblock">
 <div class="title">Gruntfile with qunit runner</div>
@@ -14624,7 +15630,7 @@ test("my first qunit test", function () {
 <div class="content">
 <img src="./images/fig_08_01.png" alt="Jasmine distribution">
 </div>
-<div class="title">Figure 103. Jasmine Distribution</div>
+<div class="title">Figure 107. Jasmine Distribution</div>
 </div>
 <div class="paragraph">
 <p>Jasmine comes with an example spec (<em>spec</em> folder) and an html test runner - SpecRunner.html. Let&#8217;s open the file SpecRunner.html in browser <a href="#FIG-2">Running Jasmine Specs in a Browser</a>.</p>
@@ -14633,7 +15639,7 @@ test("my first qunit test", function () {
 <div class="content">
 <img src="./images/fig_08_02.png" alt="SpectRunner.html">
 </div>
-<div class="title">Figure 104. Running Jasmine Specs in a Browser</div>
+<div class="title">Figure 108. Running Jasmine Specs in a Browser</div>
 </div>
 <div class="paragraph">
 <p>The SpecRunner.html is structured similarly to QUnit html runner. You can run specifications by opening the runner file in browser.</p>
@@ -14721,7 +15727,7 @@ test("my first qunit test", function () {
 <div class="content">
 <img src="./images/fig_08_03.png" alt="fig_08_03">
 </div>
-<div class="title">Figure 105. Jasmine Specifications in Our Project</div>
+<div class="title">Figure 109. Jasmine Specifications in Our Project</div>
 </div>
 <div class="paragraph">
 <p>Now you need to edit Gruntfile.js to activate Jasmine support.</p>
@@ -14811,7 +15817,7 @@ This allows you to identify issues in the code early.</p>
 <div class="content">
 <img src="./images/fig_08_07.png" alt="Jenkins">
 </div>
-<div class="title">Figure 106. Jenkins CI server running at savesichild.org website and used to build the sample applications for this book.</div>
+<div class="title">Figure 110. Jenkins CI server running at savesichild.org website and used to build the sample applications for this book.</div>
 </div>
 
 </div>
@@ -15201,7 +16207,7 @@ But Testem tasks can be customized using a configuration file.</p>
 <div class="content">
 <img src="./images/fig_08_13.png" alt="fig_08_13">
 </div>
-<div class="title">Figure 107. Testem tdd-mode.</div>
+<div class="title">Figure 111. Testem tdd-mode.</div>
 </div>
 <div class="paragraph">
 <p>In tdd-mode, Testem doesn&#8217;t spawn any browser automatically. On the contrary, you&#8217;d need to open this url in the browser you want run test against to connect it to Testem server. From this point on, Testem will execute tests in all connected browsers.  On the next <a href="#TESTEM_MULTI">screeshot</a> you can see we added different browsers including mobile version of Safari (running on iOS simulator).</p>
@@ -15210,7 +16216,7 @@ But Testem tasks can be customized using a configuration file.</p>
 <div class="content">
 <img src="./images/fig_08_14.png" alt="fig_08_14">
 </div>
-<div class="title">Figure 108. Testem is running the tests on the multiple browsers.</div>
+<div class="title">Figure 112. Testem is running the tests on the multiple browsers.</div>
 </div>
 <div class="paragraph">
 <p>Because the Testem server itself is an HTTP server, you can connect remote browsers to it as well. For example, the <a href="#TESTEM_IE">following screenshot</a> shows Internet Explorer 10 running under Windows 7 virtual machine connected to the testem server.</p>
@@ -15219,7 +16225,7 @@ But Testem tasks can be customized using a configuration file.</p>
 <div class="content">
 <img src="./images/fig_08_16.png" alt="fig_08_16">
 </div>
-<div class="title">Figure 109. Using testem to test code on remote IE 10</div>
+<div class="title">Figure 113. Using testem to test code on remote IE 10</div>
 </div>
 <div class="paragraph">
 <p>Running the tests with testem runner can be combined with previously introduced tool. The <a href="#TESTEM_AND_GRUNT">next screenshot</a> shows that testem runs tests on the real browsers and and grunt runs tests on the headless PhantomJS.</p>
@@ -15228,7 +16234,7 @@ But Testem tasks can be customized using a configuration file.</p>
 <div class="content">
 <img src="./images/fig_08_15.png" alt="fig_08_15">
 </div>
-<div class="title">Figure 110. Using testem and <code>grunt watch</code> side-by-side</div>
+<div class="title">Figure 114. Using testem and <code>grunt watch</code> side-by-side</div>
 </div>
 <div class="paragraph">
 <p>Testem supports live reloading mode. This means that Testem will watch file system for changes and will execute tests in all connected browsers automatically. You can force to test run by switching to console and hitting the <em>Enter</em> key.</p>
@@ -15906,7 +16912,7 @@ Ext.onReady(function() {
 <div class="content">
 <img src="./images/fig_08_08.png" alt="fig_08_08">
 </div>
-<div class="title">Figure 111. External Tools configuration window in WebStorm</div>
+<div class="title">Figure 115. External Tools configuration window in WebStorm</div>
 </div>
 <div class="paragraph">
 <p>Click the <code>+</code> button to create new External Tool configuration.</p>
@@ -15915,7 +16921,7 @@ Ext.onReady(function() {
 <div class="content">
 <img src="./images/fig_08_09.png" alt="fig_08_09">
 </div>
-<div class="title">Figure 112. External Tool configuration</div>
+<div class="title">Figure 116. External Tool configuration</div>
 </div>
 <div class="olist arabic">
 
@@ -15944,7 +16950,7 @@ Ext.onReady(function() {
 <div class="content">
 <img src="./images/fig_08_11.png" alt="fig_08_11">
 </div>
-<div class="title">Figure 113. Grunt launcher available under <em>Tools/grunt</em> menu</div>
+<div class="title">Figure 117. Grunt launcher available under <em>Tools/grunt</em> menu</div>
 </div>
 <div class="paragraph">
 <p>Unit tests are really important as a mean to get a quick feedback from your code. You can work more efficient if you manage to minimize context switching during your coding flow. Also, you don&#8217;t want to waste time digging through the menu items of your IDE, so assigning a keyboard shortcut for launching external tool is a good idea.</p>
@@ -15956,7 +16962,7 @@ Ext.onReady(function() {
 <div class="content">
 <img src="./images/fig_08_10.png" alt="fig_08_10">
 </div>
-<div class="title">Figure 114. Setup keyboard shortcut for grunt launcher</div>
+<div class="title">Figure 118. Setup keyboard shortcut for grunt launcher</div>
 </div>
 <div class="paragraph">
 <p>By pressing a combination of keys specified in the previous screen, you will be able to launch the grunt with Jasmine tests with one click of a button(s). WebStorm will redirect all the output from the grunt tool into its  Run window.</p>
@@ -15965,7 +16971,7 @@ Ext.onReady(function() {
 <div class="content">
 <img src="./images/fig_08_12.png" alt="fig_08_12">
 </div>
-<div class="title">Figure 115. Grunt output in WebStorm</div>
+<div class="title">Figure 119. Grunt output in WebStorm</div>
 </div>
 
 </div>
@@ -15974,7 +16980,7 @@ Ext.onReady(function() {
 
 </div>
 <div class="sect2">
-<h3 id="_summary_8">Summary</h3>
+<h3 id="_summary_9">Summary</h3>
 <div class="paragraph">
 <p>Testing is one of the most important processes of software development. Well organized testing helps keeping the code in a good and working state. It&#8217;s especially important in interpreted languages like JavaSctipt where there is no compiler to provide a helping hand to find lots of errors on very early stages.</p>
 </div>
@@ -17118,7 +18124,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_09.png" alt="fig_09_09">
 </div>
-<div class="title">Figure 116. Initially only two modules are loaded</div>
+<div class="title">Figure 120. Initially only two modules are loaded</div>
 </div>
 <div class="paragraph">
 <p>In Google Chrome Developer Tools console you can see that login and donation modules are reporting about successful loading. <a href="#FIG9-10">Two modules are loaded during the Save Sick Child application startup</a> confirms that these modules perform fine - clicking on the button Donate reveals the form and clicking on the Login button makes the id/password fields visible.</p>
@@ -17127,7 +18133,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_10.png" alt="fig_09_10">
 </div>
-<div class="title">Figure 117. Two modules are loaded during the Save Sick Child application startup</div>
+<div class="title">Figure 121. Two modules are loaded during the Save Sick Child application startup</div>
 </div>
 <div class="paragraph">
 <p>Now click the Way To Give menu item and keep an eye on the Developer Tools console <a href="#FIG9-11">The auction controls are loaded and rendered</a>. You will see the way-to-give module reporting about its loading and rendering.</p>
@@ -17136,7 +18142,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_11.png" alt="fig_09_11">
 </div>
-<div class="title">Figure 118. The auction controls are loaded and rendered</div>
+<div class="title">Figure 122. The auction controls are loaded and rendered</div>
 </div>
 <div class="paragraph">
 <p>Once the user clicks the menu Way to Give the framework require.js has to load code of the WebSocket-based auction module. Here is the code snippet from the JavaScript file <code>app.js</code> - the entry point of our Save Sick Child application. This is how it loads the module <em>on demand</em> (see Chapter 7 for the Require.js refresher).</p>
@@ -17285,13 +18291,13 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_12.png" alt="fig_09_12">
 </div>
-<div class="title">Figure 119. The console logs incoming message contains list of auction items.</div>
+<div class="title">Figure 123. The console logs incoming message contains list of auction items.</div>
 </div>
 <div id="FIG9-13" class="imageblock">
 <div class="content">
 <img src="./images/fig_09_13.png" alt="fig_09_13">
 </div>
-<div class="title">Figure 120. Using Network feature of Dev Tools we can monitor WebSocket frames.</div>
+<div class="title">Figure 124. Using Network feature of Dev Tools we can monitor WebSocket frames.</div>
 </div>
 <div id="FIG9-14" class="imageblock">
 <div class="content">
@@ -17308,7 +18314,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_04.png" alt="fig_09_04">
 </div>
-<div class="title">Figure 121. Initial WebSocket handshake in Chrome DevTools</div>
+<div class="title">Figure 125. Initial WebSocket handshake in Chrome DevTools</div>
 </div>
 <div class="paragraph">
 <p>You can also click on <code>WebSocket</code> at the bottom-right to show only the <code>WebSocket</code> endpoints. Click on <code>Frames</code> in the right panel to view the actual frames being exchanged between the client and server. <a href="#FIG9-5">Monitoring WebSocket frames in Chrome Developer Tools</a>. The white colored rows represent incoming data, and the green (or gray on paper) rows - outgoing.</p>
@@ -17317,7 +18323,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_05.png" alt="fig_09_05">
 </div>
-<div class="title">Figure 122. Monitoring WebSocket frames in Chrome Developer Tools</div>
+<div class="title">Figure 126. Monitoring WebSocket frames in Chrome Developer Tools</div>
 </div>
 <div class="paragraph">
 <p>For more gore details you can navigate your Google Chrome to the secret URL - <code>chrome://net-internals</code>, which is a very useful URL showing a lot of additional information (see <a href="#FIG9-6">Details of initial handshake in Chrome Net Internals</a> and <a href="#FIG9-7">Details of the socket connection</a> ). You can find documentation about net-internal in <a href="http://www.chromium.org/developers/design-documents/network-stack/view-net-internals">Chromium Design Documents</a></p>
@@ -17326,13 +18332,13 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_06.png" alt="fig_09_06">
 </div>
-<div class="title">Figure 123. Details of initial handshake in Chrome Net Internals</div>
+<div class="title">Figure 127. Details of initial handshake in Chrome Net Internals</div>
 </div>
 <div id="FIG9-7" class="imageblock">
 <div class="content">
 <img src="./images/fig_09_07.png" alt="fig_09_07">
 </div>
-<div class="title">Figure 124. Details of the socket connection</div>
+<div class="title">Figure 128. Details of the socket connection</div>
 </div>
 <div class="paragraph">
 <p>Google Developer Tools show just the length of the data. But <code>chrome://net-internals</code> shows the actual size of the WebSocket frame too. <a href="#FIG9-8">Dev tools and net-internals side by side</a> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of the frame is slightly different from the size of the payload. There are few more bytes for the frame header. Moreover, all outgoing messages will be masked by the browser (see the note in the <a href="#FRAMES">The WebSocket Frame Anatomy</a> section). This frame&#8217;s mask is going to be transferred to the server as a part of the frame itself, which creates additional 32 bits (4 bytes) overhead.</p>
@@ -17341,7 +18347,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_08.png" alt="fig_09_08">
 </div>
-<div class="title">Figure 125. Dev tools and net-internals side by side</div>
+<div class="title">Figure 129. Dev tools and net-internals side by side</div>
 </div>
 
 </div>
@@ -17354,7 +18360,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_15.png" alt="fig_09_15">
 </div>
-<div class="title">Figure 126. Wireshark application main view</div>
+<div class="title">Figure 130. Wireshark application main view</div>
 </div>
 <div class="paragraph">
 <p>Wireshark captures all network activity. Set up the filter to see only the data you are interested in. We want to capture HTTP and TCP traffic on the port <code>8080</code> because our WebSocket server (Oracle&#8217;s GlassFish) runs on this port <a href="#FIG9-16">Filter setup</a>. Enter <code>http &amp;&amp; (tcp.dstport==8080)</code> in the filter text box and click Apply.</p>
@@ -17363,7 +18369,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_16.png" alt="fig_09_16">
 </div>
-<div class="title">Figure 127. Filter setup</div>
+<div class="title">Figure 131. Filter setup</div>
 </div>
 <div class="paragraph">
 <p>Now the Wireshark is ready to sniff at the traffic of our application. You can start the auction session and place bids. After you&#8217;re done with the auction you can return to the Wireshark window and analyze what we got. You can see the initial handshake (<code>GET</code> request on <a href="#FIG9-17">The <code>GET</code> request for protocol upgrade</a> and the <code>Upgrade</code> response on <a href="#FIG9-18">The <code>GET</code> response with protocol upgrade</a>).</p>
@@ -17372,13 +18378,13 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_17.png" alt="fig_09_17">
 </div>
-<div class="title">Figure 128. The <code>GET</code> request for protocol upgrade</div>
+<div class="title">Figure 132. The <code>GET</code> request for protocol upgrade</div>
 </div>
 <div id="FIG9-18" class="imageblock">
 <div class="content">
 <img src="./images/fig_09_18.png" alt="fig_09_18">
 </div>
-<div class="title">Figure 129. The <code>GET</code> response with protocol upgrade</div>
+<div class="title">Figure 133. The <code>GET</code> response with protocol upgrade</div>
 </div>
 <div class="paragraph">
 <p>After the successful connection upgrade, Wireshark captured the <code>http-alt</code> stream (this is how it reports the Websocket&#8217;s traffic) on the 8080 port. Right click on this row and select <code>Follow TCP Stream</code> <a href="#FIG9-19">The <code>GET</code> response with protocol upgrade</a>.</p>
@@ -17387,7 +18393,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_19.png" alt="fig_09_19">
 </div>
-<div class="title">Figure 130. The <code>GET</code> response with protocol upgrade</div>
+<div class="title">Figure 134. The <code>GET</code> response with protocol upgrade</div>
 </div>
 <div class="paragraph">
 <p>On the next screen you can see the details of WebSocket frame <a href="#FIG9-20">WebSocket frame</a>. We took this screenshot right after the auction application started. You can see here the data with the list of available auctions. The outgoing data is marked with <em>red</em> color and the incoming data is shown in <em>blue</em>.</p>
@@ -17396,7 +18402,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_20.png" alt="fig_09_20">
 </div>
-<div class="title">Figure 131. WebSocket frame</div>
+<div class="title">Figure 135. WebSocket frame</div>
 </div>
 <div class="paragraph">
 <p>The screenshot <a href="#FIG9-21">Entire auction conversation</a> was taken  after the auction has been closed. You can see here the entire data that were sent over the WebSocket connection.</p>
@@ -17405,7 +18411,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_21.png" alt="fig_09_21">
 </div>
-<div class="title">Figure 132. Entire auction conversation</div>
+<div class="title">Figure 136. Entire auction conversation</div>
 </div>
 
 </div>
@@ -17627,7 +18633,7 @@ As soon as the handshake completes successfully, the server side code that imple
 
 </div>
 <div class="sect2">
-<h3 id="_summary_9">Summary</h3>
+<h3 id="_summary_10">Summary</h3>
 <div class="paragraph">
 <p>After reading this chapter you should see the benefits of using WebSocket protocol in Web applications. In many cases WebSocket is an ultimate means for improving the application performance by reducing the network latency and removing the HTTP-headers overhead. You&#8217;ve learned how to integrate the WebSocket-based functionality into the existing HTTP-based application Save Sick Child. There is no need to make the entire communication of the Web application over WebSocket. Use this powerful protocol when it&#8217;s clearly improves the performance and responsiveness of your application.</p>
 </div>
@@ -17685,7 +18691,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_01.jpg" alt="fig_11_01">
 </div>
-<div class="title">Figure 133. The desktop version of bbc.com</div>
+<div class="title">Figure 137. The desktop version of bbc.com</div>
 </div>
 <div class="paragraph">
 <p>The <a href="#FIG11-1">The desktop version of bbc.com</a> page layout delivers more content as it can be allocated nicely on the large desktop monitor or a tablet. But the mobile version on <a href="#FIG11-2">The mobile version of bbc.com</a> substantially limits what&#8217;s delivered to the client, which is done not only because the screen is small, but the user may be accessing the page over the slower network.</p>
@@ -17694,7 +18700,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_02.png" alt="fig_11_02">
 </div>
-<div class="title">Figure 134. The mobile version of bbc.com</div>
+<div class="title">Figure 138. The mobile version of bbc.com</div>
 </div>
 <div class="paragraph">
 <p>Have you ever tried to share the link of the Web site from your iPhone? It&#8217;s so easy! Just press the button and enter the email of the person to share the site with. Go to bbc.com from your iPhone or Android phone and share this link with someone. That person will receive the link <a href="http://www.bbc.co.uk/mobile/i/">http://www.bbc.co.uk/mobile/i</a>, and if she&#8217;s visit this site from the desktop it won&#8217;t look pretty. It&#8217;ll just show the wider version of what you see in <a href="#FIG11-2">The mobile version of bbc.com</a>. Try to enter this URL in your desktop browser to see for yourself.</p>
@@ -17746,7 +18752,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_03.png" alt="fig_11_03">
 </div>
-<div class="title">Figure 135. The User-Agent String from iPhone 5</div>
+<div class="title">Figure 139. The User-Agent String from iPhone 5</div>
 </div>
 <div class="paragraph">
 <p>There is an easier  way to detect on the server that the request came from a mobile device. <a href="http://wurfl.sourceforge.net/">Wireless Universal Resource File (WURF)</a> is a database of thousands of supported devices and their properties. Such Internet giants as Facebook and Google rely on this service and your application could too, if need be. WURF offers APIs from several programming languages to detect specific capabilities of the user devices. For example, the following code snippet is how you could access the WURF data from a Java servlet.</p>
@@ -17800,7 +18806,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_04.png" alt="fig_11_04">
 </div>
-<div class="title">Figure 136. The Desktop layout</div>
+<div class="title">Figure 140. The Desktop layout</div>
 </div>
 <div class="paragraph">
 <p>Jerry gave us several version of the images - with and without the grid background. The use of the grid will be explained later in the section "Fluid Grids". <a href="#FIG11-5">The tablet layout (portrait)</a> depicts the rendering on tablet devices that fall in a category of under 768px width screen in the portrait mode.</p>
@@ -17809,7 +18815,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_05.png" alt="fig_11_05">
 </div>
-<div class="title">Figure 137. The tablet layout (portrait)</div>
+<div class="title">Figure 141. The tablet layout (portrait)</div>
 </div>
 <div class="paragraph">
 <p>Next comes the mockup for the large smart phones having the width of up to 640 pixels. <a href="#FIG11-6">The large phone layout (portrait)</a> shows two different images of the screen next to each other (the user would need to scroll to see the second image).</p>
@@ -17818,7 +18824,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_06.png" alt="fig_11_06">
 </div>
-<div class="title">Figure 138. The large phone layout (portrait)</div>
+<div class="title">Figure 142. The large phone layout (portrait)</div>
 </div>
 <div class="paragraph">
 <p>The mockup for the smaller phones with the width of under 480 pixels is shown on <a href="#FIG11-7">The small phone layout (portrait)</a>. The mockup looks wide, but it actually shows three views of the phone screen next to each other. The user would need to scroll vertically to see the middle or the right view. Physical screens are not too small - iPhone 3 falls into this category, but resolution-wise they are smaller.</p>
@@ -17827,7 +18833,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_07.png" alt="fig_11_07">
 </div>
-<div class="title">Figure 139. The small phone layout (portrait)</div>
+<div class="title">Figure 143. The small phone layout (portrait)</div>
 </div>
 <div class="paragraph">
 <p>If need be, you can ask Jerry to create mockups for the real devices with the width under 320 pixels, but we won&#8217;t even try it here. Now we need to translate these mockups into working code. The first subject to learn is CSS media queries.</p>
@@ -17843,7 +18849,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_08.png" alt="fig_11_08">
 </div>
-<div class="title">Figure 140. The tesktop layout implemented</div>
+<div class="title">Figure 144. The tesktop layout implemented</div>
 </div>
 <div class="paragraph">
 <p>Drag the right border of your desktop Web browser&#8217;s window to the left to make it narrower. After reaching certain <em>breakpoint width</em> (in our project it&#8217;s 768 pixels) you&#8217;ll see how the <code>&lt;div&gt;</code><em>s</em> reallocate themselves into the two-column window shown on <a href="#FIG11-9">The tablet layout (portrait) implemented</a>.</p>
@@ -17852,7 +18858,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_09.png" alt="fig_11_09">
 </div>
-<div class="title">Figure 141. The tablet layout (portrait) implemented</div>
+<div class="title">Figure 145. The tablet layout (portrait) implemented</div>
 </div>
 <div class="paragraph">
 <p>Keep making the browser&#8217;s window narrower, and when the width will pass another breakpoint (becomes less than 640 pixels), the window will re-arrange itself into one long column as in <a href="#FIG11-10">The smaller phone layout (portrait) implemented</a>. The users will have to use scrolling to see the lower portion of this window, but they don&#8217;t loose any content.</p>
@@ -17861,7 +18867,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="content">
 <img src="./images/fig_11_10.png" alt="fig_11_10">
 </div>
-<div class="title">Figure 142. The smaller phone layout (portrait) implemented</div>
+<div class="title">Figure 146. The smaller phone layout (portrait) implemented</div>
 </div>
 <div class="paragraph">
 <p>The W3C Recommendation titled <a href="http://www.w3.org/TR/css3-mediaqueries/">Media Queries</a> has been introduced in CSS2 and HTML4. The idea was to provide different stylesheets for different media. For example, you can specify different stylesheets in HTML using the <code>media</code> attribute for the screens that are less than 640 pixel in width.</p>
@@ -18182,7 +19188,7 @@ Use Google Chrome Developer Tools to find out the current width of the viewport.
 <div class="content">
 <img src="./images/fig_11_11.png" alt="fig_11_11">
 </div>
-<div class="title">Figure 143. Creating a Fluid Grid Layout in Dreamweaver</div>
+<div class="title">Figure 147. Creating a Fluid Grid Layout in Dreamweaver</div>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -18263,7 +19269,7 @@ Adobe has created a subscription-based tool called <a href="http://www.adobe.com
 <div class="content">
 <img src="./images/fig_11_12.png" alt="fig_11_12">
 </div>
-<div class="title">Figure 144. Fluid Grid on the wide screen</div>
+<div class="title">Figure 148. Fluid Grid on the wide screen</div>
 </div>
 <div class="paragraph">
 <p>If you&#8217;ll start lowering the width of the browser&#8217;s window, you&#8217;ll see how the grid cells start squeezing, but the layout remains the same until the page size will become lower than one of the predefined breakpoints. Then another media query kicks in and the layout changes. For example, <a href="#FIG11-13">Fluid Grid on the viewport under 640px</a> shows the fragment of the Web page when the width of the browser&#8217;s window goes below 640px. The 12-, 6-, and 4-cell grids show all the cells vertically one under another. Only the 480px grids still have enough room to display their cells horizontally. But if you keep squeezing the window, all the grids will display their content in one column as long as the viewport width stays under 480px.</p>
@@ -18272,7 +19278,7 @@ Adobe has created a subscription-based tool called <a href="http://www.adobe.com
 <div class="content">
 <img src="./images/fig_11_13.png" alt="fig_11_13">
 </div>
-<div class="title">Figure 145. Fluid Grid on the viewport under 640px</div>
+<div class="title">Figure 149. Fluid Grid on the viewport under 640px</div>
 </div>
 <div class="paragraph">
 <p>The fragment of the index.html from the Responsive Fluid Grid project goes next. For brevity, we&#8217;ve removed some repetitive markup and marked such places with the comment "A fragment removed for brevity". This code fragment includes the 12-, 6-, and 4-column grids shown on top of <a href="#FIG11-12">Fluid Grid on the wide screen</a>.</p>
@@ -18597,7 +19603,7 @@ We&#8217;ll make the page responsive gradually - the first version will make the
 <div class="content">
 <img src="./images/fig_11_14.png" alt="fig_11_14">
 </div>
-<div class="title">Figure 146. Responsive Header (width 580px+)</div>
+<div class="title">Figure 150. Responsive Header (width 580px+)</div>
 </div>
 <div class="paragraph">
 <p>Below is the fragment from index.html that&#8217;s displays the logo image and the header&#8217;s menus.</p>
@@ -18684,7 +19690,7 @@ The styles.css of this project has media queries for different viewport sizes. F
 <div class="content">
 <img src="./images/fig_11_15.png" alt="fig_11_15">
 </div>
-<div class="title">Figure 147. Responsive Header 2 (width between 480 and 580px )</div>
+<div class="title">Figure 151. Responsive Header 2 (width between 480 and 580px )</div>
 </div>
 <div class="paragraph">
 <p>When the width shrinks to 480px, the header looks as in <a href="#FIG11-16">Responsive Header (width below 480px)</a>. Once again, we are not tying the design to the specific device, but rather to a viewport width. The iPhone 4 will render this page using the layout shown at &lt;&lt;&gt;FIG11-16&gt;, but iPhone 5 will use the layout from <a href="#FIG11-15">Responsive Header 2 (width between 480 and 580px )</a>. You can&#8217;t go by a device type.</p>
@@ -18693,7 +19699,7 @@ The styles.css of this project has media queries for different viewport sizes. F
 <div class="content">
 <img src="./images/fig_11_16.png" alt="fig_11_16">
 </div>
-<div class="title">Figure 148. Responsive Header (width below 480px)</div>
+<div class="title">Figure 152. Responsive Header (width below 480px)</div>
 </div>
 <div class="paragraph">
 <p>The next version of the Aptana project to try is called Responsive Donation. This version make the donation section fluid. The donation section contains the Lorem Ipsum text and the form, which is revealed when the user clicks the button Donate. First, let&#8217;s look at the HTML. The index.html contains the following fragment (some of the content that irrelevant for layout was removed for better readability):</p>
@@ -18747,7 +19753,7 @@ The styles.css of this project has media queries for different viewport sizes. F
 <div class="content">
 <img src="./images/fig_11_17.png" alt="fig_11_17">
 </div>
-<div class="title">Figure 149. Responsive Donate Section: 570px</div>
+<div class="title">Figure 153. Responsive Donate Section: 570px</div>
 </div>
 <div class="paragraph">
 <p>But when the width become less then 480px, there is no room for two background images, and only the flowers will remain on the page background. The media query for 480px viewport is shown next - note that the background in the main top section has only one image now: bg2.png. Floating is off to show the navigation menu vertically as in <a href="#FIG11-18">Responsive Donate Section under 480px</a>.</p>
@@ -18809,7 +19815,7 @@ The styles.css of this project has media queries for different viewport sizes. F
 <div class="content">
 <img src="./images/fig_11_18.png" alt="fig_11_18">
 </div>
-<div class="title">Figure 150. Responsive Donate Section under 480px</div>
+<div class="title">Figure 154. Responsive Donate Section under 480px</div>
 </div>
 <div class="paragraph">
 <p>The Aptana project Responsive Final includes the charts, maps, and video. Each of these sections uses <code>four-column</code> style, which is defined in styles.css as 33.332% of the container&#8217;s width.</p>
@@ -18852,7 +19858,7 @@ The styles.css of this project has media queries for different viewport sizes. F
 <div class="content">
 <img src="./images/fig_11_19.png" alt="fig_11_19">
 </div>
-<div class="title">Figure 151. The Portrait Mode on Tablets</div>
+<div class="title">Figure 155. The Portrait Mode on Tablets</div>
 </div>
 <div class="paragraph">
 <p>The relevant code from the style.css is shown below.The top and bottom sections get about a half of the width each, and the floating is turned off so the browser would allocate charts, maps, and video vertically.</p>
@@ -18949,7 +19955,7 @@ While using base-64 encoding increases the total size of the image in bytes, it 
 
 </div>
 <div class="sect2">
-<h3 id="_summary_10">Summary</h3>
+<h3 id="_summary_11">Summary</h3>
 <div class="paragraph">
 <p>Authors of this book have different opinions about the merits of responsive design. One of us simply stated, "I haven&#8217;t seen complex single-code-base applications that work well on Android, iPhone, and desktop browsers". The other responded "We need to compromise". With browser plugins like Flash Player or Silverlight you can choose pixel-perfect design. Just set a pre-requisite: the user must have a 1024x768 viewport minus chrome and margins. But if you&#8217;ll need to make this application work on highly fragmented Android market, on all iPhones, Blackberies, desktops, and other devices, ask yourself a simple question, "Do we have money to hire two or three teams for developing and supporting several versions of the application for different devices or we&#8217;d rather compromise, and push the HTML5-based product out the door?"</p>
 </div>
@@ -19037,7 +20043,7 @@ Even though each of these pairs shares the same code for the core components, do
 <div class="content">
 <img src="./images/fig_12_01.png" alt="fig_12_01">
 </div>
-<div class="title">Figure 152. A fragment of the Mobile Frameworks Matrix</div>
+<div class="title">Figure 156. A fragment of the Mobile Frameworks Matrix</div>
 </div>
 <div class="sect2">
 <h3 id="_where_to_get_jquery_mobile">Where to get jQuery Mobile</h3>
@@ -19221,7 +20227,7 @@ You can find the list of all available data attributes in the <a href="http://jq
 <div class="content">
 <img src="./images/fig_12_02.png" alt="fig_12_02">
 </div>
-<div class="title">Figure 153. Viewing the document in Firefox</div>
+<div class="title">Figure 157. Viewing the document in Firefox</div>
 </div>
 
 </div>
@@ -19250,7 +20256,7 @@ There are emulators that are targeting specific platform. For example, you can c
 <div class="content">
 <img src="./images/fig_12_03.png" alt="fig_12_03">
 </div>
-<div class="title">Figure 154. Viewing the document in Ripple Emulator</div>
+<div class="title">Figure 158. Viewing the document in Ripple Emulator</div>
 </div>
 <div class="paragraph">
 <p>Using emulators really helps in the development. Ripple emulates not only the screen resolutions, but some of the hardware features as well (simulators usually simulate only the software). For example, you can test accelerometer by changing the device position via drag and drop or test the GEO Location on selected device.  But keep in mind that emulators run in in your desktop browser, which may render the UI not exactly the same way as a mobile browser running on the user&#8217;s mobile phone, for example the fonts may look a little different. Hence testing your application on a real device is highly recommended even though it&#8217;s impossible to test your Web application on thousands different devices people use.</p>
@@ -19288,7 +20294,7 @@ There are emulators that are targeting specific platform. For example, you can c
 <div class="content">
 <img src="./images/fig_12_04.png" alt="fig_12_04">
 </div>
-<div class="title">Figure 155. Theme Roller</div>
+<div class="title">Figure 159. Theme Roller</div>
 </div>
 <div class="paragraph">
 <p>You can learn about creating custom themes with ThemeRoller by visiting <a href="http://learn.jquery.com/jquery-mobile/theme-roller/">this URL</a>.</p>
@@ -19374,7 +20380,7 @@ There are emulators that are targeting specific platform. For example, you can c
 <div class="content">
 <img src="./images/fig_12_05.png" alt="fig_12_05">
 </div>
-<div class="title">Figure 156. The Stats page with the Back button</div>
+<div class="title">Figure 160. The Stats page with the Back button</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -19514,7 +20520,7 @@ Even though we&#8217;ve included the sample of the <code>data-add-back-btn</code
 <div class="content">
 <img src="./images/fig_12_06.png" alt="fig_12_06">
 </div>
-<div class="title">Figure 157. Four pages in the footer</div>
+<div class="title">Figure 161. Four pages in the footer</div>
 </div>
 <div class="paragraph">
 <p>If the user taps on one of the four pages in the footer, the program has to replace the starting page with the selected one, and the title of the selected page in the footer has to be highlighted. If you&#8217;re reading the electronic version of this book you&#8217;ll see in <a href="#FIG12-7">Page 2 is selected</a> that the rectangular area for Page #2 in the footer got the blue background. In the printed version of the book the different the background colors may not so obvious, but you have to trust us on this or run the code sample on your own. Besides, we&#8217;ll be highlighting the selected page in a similar way while working on the prototype of the Save Sick Child application as per the mockups shown in the section "Prototyping Mobile Version".</p>
@@ -19523,7 +20529,7 @@ Even though we&#8217;ve included the sample of the <code>data-add-back-btn</code
 <div class="content">
 <img src="./images/fig_12_07.png" alt="fig_12_07">
 </div>
-<div class="title">Figure 158. Page 2 is selected</div>
+<div class="title">Figure 162. Page 2 is selected</div>
 </div>
 <div class="paragraph">
 <p>In jQuery Mobile implementing persistent toolbars is simple. The content of each of the page has to be located in a separate file and each of them has to have the footer and header with <em>the same</em> <code>data_id</code>. Below is the code of the file page2.html, but page1, page3, and page 4 look similar - check them out in the source code that comes with the book.</p>
@@ -19708,25 +20714,25 @@ In this book we will test only the mobile devices with screen sizes of 640x960 a
 <div class="content">
 <img src="./images/fig_12_10.png" alt="fig_12_10">
 </div>
-<div class="title">Figure 159. The Starting page (portrait)</div>
+<div class="title">Figure 163. The Starting page (portrait)</div>
 </div>
 <div id="FIG12-11" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_11.png" alt="fig_12_11">
 </div>
-<div class="title">Figure 160. The About page (portrait)</div>
+<div class="title">Figure 164. The About page (portrait)</div>
 </div>
 <div id="FIG12-12" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_12.png" alt="fig_12_12">
 </div>
-<div class="title">Figure 161. The Who We Are section of About page (portrait)</div>
+<div class="title">Figure 165. The Who We Are section of About page (portrait)</div>
 </div>
 <div id="FIG12-13" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_13.png" alt="fig_12_13">
 </div>
-<div class="title">Figure 162. The Donate page (portrait)</div>
+<div class="title">Figure 166. The Donate page (portrait)</div>
 </div>
 <div class="paragraph">
 <p>The small screen version of the above Donate page illustrates a term <em>Above the Fold</em> used by Web designers. This term originated in the newspaper business where the first half of the folded newspaper contained the most important headlines - something that the potential buyer would notice immediately. In Web design the <em>Above the Fold</em> means the first page that the user can see without the need to scroll. But if with newspapers people know that there is something to read below the fold, in Web design people may not know that the scrolling could reveal more information. In this particular case, there is a chance that a user with a 320x480 screen may not immediately understand that to see the Donate he needs to scroll.</p>
@@ -19751,43 +20757,43 @@ If you have a long form that has to be shown on a small screen, split it into se
 <div class="content">
 <img src="./images/fig_12_14.png" alt="fig_12_14">
 </div>
-<div class="title">Figure 163. The Statistics page (portrait)</div>
+<div class="title">Figure 167. The Statistics page (portrait)</div>
 </div>
 <div id="FIG12-15" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_15.png" alt="fig_12_15">
 </div>
-<div class="title">Figure 164. The Events page (portrait)</div>
+<div class="title">Figure 168. The Events page (portrait)</div>
 </div>
 <div id="FIG12-16" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_16.png" alt="fig_12_16">
 </div>
-<div class="title">Figure 165. The Media page (portrait)</div>
+<div class="title">Figure 169. The Media page (portrait)</div>
 </div>
 <div id="FIG12-17" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_17.png" alt="fig_12_17">
 </div>
-<div class="title">Figure 166. The Share page (portrait)</div>
+<div class="title">Figure 170. The Share page (portrait)</div>
 </div>
 <div id="FIG12-18" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_18.png" alt="fig_12_18">
 </div>
-<div class="title">Figure 167. The Share/Photo page for Chapter 14 (portrait)</div>
+<div class="title">Figure 171. The Share/Photo page for Chapter 14 (portrait)</div>
 </div>
 <div id="FIG12-19" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_19.png" alt="fig_12_19">
 </div>
-<div class="title">Figure 168. The Login popup (portrait)</div>
+<div class="title">Figure 172. The Login popup (portrait)</div>
 </div>
 <div id="FIG12-20" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_20.png" alt="fig_12_20">
 </div>
-<div class="title">Figure 169. After the user logged in</div>
+<div class="title">Figure 173. After the user logged in</div>
 </div>
 <div class="paragraph">
 <p>This prototype will be used for the developing both jQuery Mobile and Sencha Touch versions of our Save Sick Child application. We&#8217;ve also included the design for the page that will integrate with the photo camera of the device (see <a href="#FIG12-18">The Share/Photo page for Chapter 14 (portrait)</a>) - this functionality will be implemented in the last chapter dedicated to hybrid applications.</p>
@@ -19799,25 +20805,25 @@ If you have a long form that has to be shown on a small screen, split it into se
 <div class="content">
 <img src="./images/fig_12_21.png" alt="fig_12_21">
 </div>
-<div class="title">Figure 170. The Donate page (landscape, 640x960)</div>
+<div class="title">Figure 174. The Donate page (landscape, 640x960)</div>
 </div>
 <div id="FIG12-22" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_22.png" alt="fig_12_22">
 </div>
-<div class="title">Figure 171. The Donate page (landscape, 320x480)</div>
+<div class="title">Figure 175. The Donate page (landscape, 320x480)</div>
 </div>
 <div id="FIG12-23" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_23.png" alt="fig_12_23">
 </div>
-<div class="title">Figure 172. The Statistics page (landscape, 640x960)</div>
+<div class="title">Figure 176. The Statistics page (landscape, 640x960)</div>
 </div>
 <div id="FIG12-24" class="imageblock">
 <div class="content">
 <img src="./images/fig_12_24.png" alt="fig_12_24">
 </div>
-<div class="title">Figure 173. The Statistics page (landscape, 320x480)</div>
+<div class="title">Figure 177. The Statistics page (landscape, 320x480)</div>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -19843,7 +20849,7 @@ If you want to add a link that will offer to dial a phone number, use the <code>
 <div class="content">
 <img src="./images/fig_12_25.png" alt="fig_12_25">
 </div>
-<div class="title">Figure 174. The project structure</div>
+<div class="title">Figure 178. The project structure</div>
 </div>
 <div class="paragraph">
 <p>Let&#8217;s start implementing navigation based using the techniques described earlier in the section "Persistent Toolbars". The source code of the index.html is shown below. Note that we moved the <code>&lt;script&gt;</code> tags with jQuery Mobile code from that end of the <code>&lt;body&gt;</code> tag to the <code>&lt;head&gt;</code> section to avoid a popup of a non-styled page on the initial load of the application.</p>
@@ -19967,7 +20973,7 @@ If you want to add a link that will offer to dial a phone number, use the <code>
 <div class="content">
 <img src="./images/fig_12_26.png" alt="fig_12_26">
 </div>
-<div class="title">Figure 175. The first take on SSC home page</div>
+<div class="title">Figure 179. The first take on SSC home page</div>
 </div>
 <div class="paragraph">
 <p>NOTE:</p>
@@ -20212,7 +21218,7 @@ If you want to add a link that will offer to dial a phone number, use the <code>
 <div class="content">
 <img src="./images/fig_12_27.png" alt="fig_12_27">
 </div>
-<div class="title">Figure 176. Preset grid layouts</div>
+<div class="title">Figure 180. Preset grid layouts</div>
 </div>
 <div class="paragraph">
 <p>The class <code>.ui-responsive</code> allows to set breakpoints to grids that are less than 35em (560px) wide.</p>
@@ -20257,7 +21263,7 @@ If you want to add a link that will offer to dial a phone number, use the <code>
 <div class="content">
 <img src="./images/fig_12_28.png" alt="fig_12_28">
 </div>
-<div class="title">Figure 177. Controlgroup for donation amount</div>
+<div class="title">Figure 181. Controlgroup for donation amount</div>
 </div>
 
 </div>
@@ -20270,7 +21276,7 @@ If you want to add a link that will offer to dial a phone number, use the <code>
 <div class="content">
 <img src="./images/fig_12_29.png" alt="fig_12_29">
 </div>
-<div class="title">Figure 178. States dropdown in the Donate form</div>
+<div class="title">Figure 182. States dropdown in the Donate form</div>
 </div>
 <div class="paragraph">
 <p>The bad news is that sometimes you don&#8217;t want the default behavior offered by the <code>&lt;select&gt;</code> element. For example, you may want to create a menu that shows a list of items. First, we&#8217;ll show you how to do it using a popup that contains a listview. The next code is taken from the jQuery Mobile documentation - it suggests to implement a <a href="http://view.jquerymobile.com/1.3.1/dist/demos/widgets/popup/">listview inside a popup</a>:</p>
@@ -20299,7 +21305,7 @@ If you want to add a link that will offer to dial a phone number, use the <code>
 <div class="content">
 <img src="./images/fig_12_31.png" alt="fig_12_31">
 </div>
-<div class="title">Figure 179. Select Donation Amount before the tap</div>
+<div class="title">Figure 183. Select Donation Amount before the tap</div>
 </div>
 <div class="paragraph">
 <p>After the user taps on the Set Donation Amount the menu pops up and it&#8217;ll look as in <a href="#FIG12-32">Select Donation Amount after the tap</a>.</p>
@@ -20308,7 +21314,7 @@ If you want to add a link that will offer to dial a phone number, use the <code>
 <div class="content">
 <img src="./images/fig_12_32.png" alt="fig_12_32">
 </div>
-<div class="title">Figure 180. Select Donation Amount after the tap</div>
+<div class="title">Figure 184. Select Donation Amount after the tap</div>
 </div>
 <div class="paragraph">
 <p>Another way of creating dropdowns is by using so called <a href="http://view.jquerymobile.com/1.3.1/dist/demos/widgets/collapsibles/">collapsibles</a>. If the data role of a container is set to be collapsible, the content of the container won&#8217;t be initially shown. It&#8217;ll be collapsed showing only its header with a default icon (the plus sign) until the user will tap on it.</p>
@@ -20337,7 +21343,7 @@ If you want to add a link that will offer to dial a phone number, use the <code>
 <div class="content">
 <img src="./images/fig_12_33.png" alt="fig_12_33">
 </div>
-<div class="title">Figure 181. Select Donation Amount before the tap</div>
+<div class="title">Figure 185. Select Donation Amount before the tap</div>
 </div>
 <div class="paragraph">
 <p>After the user taps on the Set Donation Amount the menu pops up and it&#8217;ll look as in <a href="#FIG12-34">Select Donation Amount after the tap</a>. The icon on the header changes from the plus sign to minus.</p>
@@ -20346,7 +21352,7 @@ If you want to add a link that will offer to dial a phone number, use the <code>
 <div class="content">
 <img src="./images/fig_12_34.png" alt="fig_12_34">
 </div>
-<div class="title">Figure 182. Select Donation Amount after the tap</div>
+<div class="title">Figure 186. Select Donation Amount after the tap</div>
 </div>
 
 </div>
@@ -20422,7 +21428,7 @@ contains three HTML elements: <code>&lt;a&gt;</code>, <code>&lt;p&gt;</code>, an
 <div class="content">
 <img src="./images/fig_12_35.png" alt="fig_12_35">
 </div>
-<div class="title">Figure 183. Using listview in media.html</div>
+<div class="title">Figure 187. Using listview in media.html</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -20505,7 +21511,7 @@ The <code>&lt;video&gt;</code> tag has an attribute <code>autoplay</code>. But s
 <div class="content">
 <img src="./images/fig_12_36.png" alt="fig_12_36">
 </div>
-<div class="title">Figure 184. Using listview in media.html</div>
+<div class="title">Figure 188. Using listview in media.html</div>
 </div>
 <div class="paragraph">
 <p>Take a look at the styling of the <code>navbar</code>. Our original <code>&lt;ul&gt;</code> HTML element didn&#8217;t include the class <code>ui-grid-a</code>. jQuery Mobile couldn&#8217;t find the predefined layout for a six-button navigational bar and "decided" to allocate is as <code>ui-grid-a</code>, which is a two column grid (see the section Grid Layouts above).</p>
@@ -20630,7 +21636,7 @@ $(document).on("pageshow", "#Events", function() {     // <i class="conum">5</i>
 
 </div>
 <div class="sect2">
-<h3 id="_summary_11">Summary</h3>
+<h3 id="_summary_12">Summary</h3>
 <div class="paragraph">
 <p>In this chapter you&#8217;ve got familiar with a simple to use mobile framework. We&#8217;ve been using its version 1.3.1, which works pretty stable, but it&#8217;s not a mature library just yet. You can still run into situations when a feature advertised in the product documentation doesn&#8217;t work (e.g. <a href="https://github.com/jquery/jquery-mobile/issues/5986">page prefetching breaks images</a>). So be prepared to study the code of this library and do the fixes to the critical features on your own. But there is a group of people who are actively working on bug fixing and improving jQuery Mobile, and using it in production is pretty safe.</p>
 </div>
@@ -20693,7 +21699,7 @@ Commercial license of Sencha Touch doesn&#8217;t include charts (you&#8217;d nee
 <div class="content">
 <img src="./images/fig_13_01.png" alt="fig_13_01">
 </div>
-<div class="title">Figure 185. A GPL license watermark</div>
+<div class="title">Figure 189. A GPL license watermark</div>
 </div>
 <div class="paragraph">
 <p>After downloading Sencha Touch we&#8217;ve unzipped it into the directory <em>/Library/touch-2.2.1</em>, but the code generation process will copy this framework into our application directory.</p>
@@ -20713,7 +21719,7 @@ Commercial license of Sencha Touch doesn&#8217;t include charts (you&#8217;d nee
 <div class="content">
 <img src="./images/fig_13_02.png" alt="image">
 </div>
-<div class="title">Figure 186. CMD-generated project</div>
+<div class="title">Figure 190. CMD-generated project</div>
 </div>
 <div class="paragraph">
 <p>To test your newly generated application make sure that the directory <em>hellotouch</em> is deployed under a Web server (simple opening of index.html in the Web browser won&#8217;t work). You can either install any Web server or just follow the instructions from section about XAMPP and Apache Web Server in Chapter 6. In the same chapter you can find the command to start the Jetty Web server embedded in the Sencha CMD tool.</p>
@@ -20754,7 +21760,7 @@ MAC OS X users can install a small application <a href="http://anvilformac.com/"
 <div class="content">
 <img src="./images/fig_13_03.png" alt="image">
 </div>
-<div class="title">Figure 187. Running CMD-generated Hello World</div>
+<div class="title">Figure 191. Running CMD-generated Hello World</div>
 </div>
 <div class="sect4">
 <h5 id="_microloader_and_configurations">Microloader and Configurations</h5>
@@ -20922,7 +21928,7 @@ Ext.application({
 <div class="content">
 <img src="./images/fig_13_04.png" alt="image">
 </div>
-<div class="title">Figure 188. Collapsed version of Main.js from Hello World</div>
+<div class="title">Figure 192. Collapsed version of Main.js from Hello World</div>
 </div>
 <div class="paragraph">
 <p>As you see from this figure the <code>items[]</code> array includes two objects: Welcome and Get Started - each of them represents a  tab (screen) on the panel.</p>
@@ -21023,7 +22029,7 @@ Ext.application({
 <div class="content">
 <img src="./images/fig_13_05.png" alt="image">
 </div>
-<div class="title">Figure 189. Sencha Touch Containers Hierarchy</div>
+<div class="title">Figure 193. Sencha Touch Containers Hierarchy</div>
 </div>
 <div class="paragraph">
 <p>The <code>FieldSet</code> is also a pretty light container - it simply adds the title to a group of fields that belong together. You&#8217;ll see several code samples in this chapter with <code>xtype: 'fieldset'</code> (e.g. Login or Donate screens).</p>
@@ -21035,7 +22041,7 @@ Ext.application({
 <div class="content">
 <img src="./images/fig_13_06.png" alt="image">
 </div>
-<div class="title">Figure 190. The iPhone virtual keyboard for entering emails</div>
+<div class="title">Figure 194. The iPhone virtual keyboard for entering emails</div>
 </div>
 <div class="paragraph">
 <p>If the field is for entering a URL (<code>xtype: 'urlfield'</code>) expect to see a virtual keyboard with the button labeled as ".com". If the input field has <code>xtype: 'numberfield'</code> the user may see a numeric keyboard when the focus gets into this field.</p>
@@ -21099,7 +22105,7 @@ If you want to control how much of a vertical or horizontal screen space is give
 <div class="content">
 <img src="./images/fig_13_07.png" alt="image">
 </div>
-<div class="title">Figure 191. Events in Online documentation</div>
+<div class="title">Figure 195. Events in Online documentation</div>
 </div>
 <div class="paragraph">
 <p>Sencha Touch knows how to handle various mobile-specific events. Check out the documentation for the class <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.dom.Element"><code>Ext.dom.Element</code></a> - you&#8217;ll find there such events as  <code>touchstart</code>, <code>touchend</code>, <code>tap</code>, <code>doubletap</code>, <code>swipe</code>, <code>pinch</code>, <code>longpress</code>, <code>rotate</code>, and others.</p>
@@ -21212,7 +22218,7 @@ The materials presented in this chapter were tested only with the current versio
 <div class="content">
 <img src="./images/fig_13_11.png" alt="fig_13_11">
 </div>
-<div class="title">Figure 192. The Starting/About page</div>
+<div class="title">Figure 196. The Starting/About page</div>
 </div>
 <div class="sect3">
 <h4 id="_the_application_object">The Application Object</h4>
@@ -21292,7 +22298,7 @@ The materials presented in this chapter were tested only with the current versio
 <div class="content">
 <img src="./images/fig_13_12.png" alt="fig_13_12">
 </div>
-<div class="title">Figure 193. The code on the server has changed</div>
+<div class="title">Figure 197. The code on the server has changed</div>
 </div>
 <div class="paragraph">
 <p>At this point the user can either select working with the previous version of the application or reload the new one.</p>
@@ -21330,7 +22336,7 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 <div class="content">
 <img src="./images/fig_13_13.png" alt="fig_13_13">
 </div>
-<div class="title">Figure 194. The Main.js in a collapsed form</div>
+<div class="title">Figure 198. The Main.js in a collapsed form</div>
 </div>
 <div class="paragraph">
 <p>The <code>card</code> layout means that the user will see either the content of that container or the login form - one at a time. Let&#8217;s open up the container. It has an array of children, which are our application pages. The figure <a href="#FIG13-14">TabPanel&#8217;s children in a collapsed form</a> shows the titles of the children.</p>
@@ -21339,7 +22345,7 @@ If you want your program documentation look as good as Sencha&#8217;s use <a hre
 <div class="content">
 <img src="./images/fig_13_14.png" alt="fig_13_14">
 </div>
-<div class="title">Figure 195. TabPanel&#8217;s children in a collapsed form</div>
+<div class="title">Figure 199. TabPanel&#8217;s children in a collapsed form</div>
 </div>
 <div class="paragraph">
 <p>The entire code of the Main.js is shown next.</p>
@@ -21603,7 +22609,7 @@ $sharetile-border: #666 solid;
 <div class="content">
 <img src="./images/fig_13_14_2.png" alt="fig_13_14_2">
 </div>
-<div class="title">Figure 196. Generating twitter icon font with IcoMoon application</div>
+<div class="title">Figure 200. Generating twitter icon font with IcoMoon application</div>
 </div>
 <div class="paragraph">
 <p>When you compile the SASS with <a href="http://compass-style.org/help/tutorials/command-line/">compass</a> (or build the application with Sencha CMD), the SASS styles are converted into a standard CSS file resources/css/app.css.</p>
@@ -21751,7 +22757,7 @@ Controllers are automatically instantiated by the <code>Application</code> objec
 <div class="content">
 <img src="./images/fig_13_15.png" alt="fig_13_15">
 </div>
-<div class="title">Figure 197. The Login Form View</div>
+<div class="title">Figure 201. The Login Form View</div>
 </div>
 <div class="paragraph">
 <p>This is how the code of the Login form view looks like - it&#8217;s self explanatory. The <code>ui: 'decline'</code> is the <a href="http://try.sencha.com/touch/2.2.0/demos/Ext.Button.ui/"><code>Ext.Button</code> style</a> that causes the Cancel button have a red background.</p>
@@ -21812,7 +22818,7 @@ Controllers are automatically instantiated by the <code>Application</code> objec
 <div class="content">
 <img src="./images/fig_13_16.png" alt="fig_13_16">
 </div>
-<div class="title">Figure 198. The Login Toolbar</div>
+<div class="title">Figure 202. The Login Toolbar</div>
 </div>
 <div class="paragraph">
 <p>The Login button is added as <code>xtype: 'logintoolbar'</code> to the top of each view in the Main.js. It&#8217;s implemented in the LoginToolbar.js shown next.</p>
@@ -21924,7 +22930,7 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 <div class="content">
 <img src="./images/fig_13_17.png" alt="fig_13_17">
 </div>
-<div class="title">Figure 199. Rendering of xtype radiofield</div>
+<div class="title">Figure 203. Rendering of xtype radiofield</div>
 </div>
 <div class="paragraph">
 <p>After doing some research, we found out that Sencha Touch has the UI component called <a href="http://docs.sencha.com/touch/2.2.1/#!/api/Ext.SegmentedButton"><code>Ext.SegmentedButton</code></a> that allows create horizontal bar with a number of toggle buttons, which is exactly what was needed from the rendering perspective. The resulting Donate screen is shown on Figure <a href="#FIG13-18">Donate form with SementedButton</a>.</p>
@@ -21933,7 +22939,7 @@ If you&#8217;ll add the Save Sick Child application as an icon to the home scree
 <div class="content">
 <img src="./images/fig_13_18.png" alt="fig_13_18">
 </div>
-<div class="title">Figure 200. Donate form with SementedButton</div>
+<div class="title">Figure 204. Donate form with SementedButton</div>
 </div>
 <div class="paragraph">
 <p>This looks nice, but as opposed to regular HTML form with inputs, the SegmentedButton is not an HTML <code>&lt;input&gt;</code> field and its value won&#8217;t be automatically submitted to the server. This required a little bit of a manual coding, which will be explained as a part of the DonateForm code review, which follows.</p>
@@ -22198,7 +23204,7 @@ If you want to use the AJAX-based form submission, use <code>submit()</code>, ot
 <div class="content">
 <img src="./images/fig_13_19.png" alt="fig_13_19">
 </div>
-<div class="title">Figure 201. Donor&#8217;s statistics chart</div>
+<div class="title">Figure 205. Donor&#8217;s statistics chart</div>
 </div>
 <div class="paragraph">
 <p>The code that support the UI part of the chart is located in the view DonorsChart that&#8217;s shown next. It uses he classes located in the Sencha Touch framework in the folder <em>src/chart</em>.</p>
@@ -22384,7 +23390,7 @@ A template [<code>Ext.Template</code>] represents an HTML fragment. The values i
 <div class="content">
 <img src="./images/fig_13_20.png" alt="fig_13_20">
 </div>
-<div class="title">Figure 202. The Events page</div>
+<div class="title">Figure 206. The Events page</div>
 </div>
 <div class="paragraph">
 <p>Of course, some additional styling would be needed before offering this view in production environment, but our  CampaignsMap.js that supports this screen is only ninety lines of code!</p>
@@ -22648,7 +23654,7 @@ There is compatibility issue between Ext JS and Sencha Touch 2 stores and models
 
 </div>
 <div class="sect2">
-<h3 id="_summary_12">Summary</h3>
+<h3 id="_summary_13">Summary</h3>
 <div class="paragraph">
 <p>In chapters 12 and 13 you&#8217;ve learned about two different ways of developing a mobile application. So what&#8217;s better jQuery Mobile or Sencha Touch? There is no answer to this question, and you will have to make a decision on your own. But here&#8217;s a quick summary of pros and cons for each library or framework.</p>
 </div>
@@ -22771,7 +23777,7 @@ There is compatibility issue between Ext JS and Sencha Touch 2 stores and models
 <div class="content">
 <img src="./images/fig_14_01.png" alt="fig_14_01">
 </div>
-<div class="title">Figure 203. PhoneGap, Cordova and Web Applications</div>
+<div class="title">Figure 207. PhoneGap, Cordova and Web Applications</div>
 </div>
 <div class="paragraph">
 <p>PhoneGap is a set of APIs and a workflow for creating <em>an application container</em> with your Web application written in  HTML5 (with or without frameworks) that also allows to make JavaScript calls to access native API offered by the mobile OS.</p>
@@ -22833,7 +23839,7 @@ Beside PhoneGap and Titanium, the <a href="http://developers.mobile.conduit.com/
 <div class="content">
 <img src="./images/fig_14_02.png" alt="fig_14_02">
 </div>
-<div class="title">Figure 204. What comes with PhoneGap 3.0</div>
+<div class="title">Figure 208. What comes with PhoneGap 3.0</div>
 </div>
 <div class="paragraph">
 <p>We use Mac OS for development with pre-installed <a href="https://developer.apple.com/xcode/">Xcode IDE</a>, which is available at Apple&#8217;s App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT).</p>
@@ -22859,7 +23865,7 @@ PhoneGap documentation offers different methods for generating projects. Each of
 <div class="content">
 <img src="./images/fig_14_03.png" alt="fig_14_03">
 </div>
-<div class="title">Figure 205. Cordova-generated project Hello World</div>
+<div class="title">Figure 209. Cordova-generated project Hello World</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -22997,7 +24003,7 @@ The first command will run fine, because we have Xcode installed. The second com
 <div class="content">
 <img src="./images/fig_14_04.png" alt="fig_14_04">
 </div>
-<div class="title">Figure 206. Cordova-generated project for iOS platform</div>
+<div class="title">Figure 210. Cordova-generated project for iOS platform</div>
 </div>
 <div class="paragraph">
 <p>Double-click on the file Hello_World.xcodeproj, and it&#8217;ll be opened as a project in Xcode. Press the button Run on the top left corner of the toolbar - the project will be compiled and started in the iOS simulator (see Figure <a href="#FIG14-4-1">Running Hello World in XCode</a>). Note the "Device is ready" text from index.html (as per index.css this text is blinking and is shown in the upper case).</p>
@@ -23006,7 +24012,7 @@ The first command will run fine, because we have Xcode installed. The second com
 <div class="content">
 <img src="./images/fig_14_04_1.png" alt="fig_14_04_1">
 </div>
-<div class="title">Figure 207. Running Hello World in XCode</div>
+<div class="title">Figure 211. Running Hello World in XCode</div>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -23085,7 +24091,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_2.png" alt="fig_14_04_2">
 </div>
-<div class="title">Figure 208. Submitting Application to PhoneGapBuild</div>
+<div class="title">Figure 212. Submitting Application to PhoneGapBuild</div>
 </div>
 <div class="paragraph">
 <p>Before zipping up Hello World&#8217;s  <em>ios/www</em> directory, open and modify the file config.xml. The generated XML contains a lot of non-related to iOS entries. All of the lines that contain android or blackberry should be removed.</p>
@@ -23137,7 +24143,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_3.png" alt="fig_14_04_3">
 </div>
-<div class="title">Figure 209. After helloworld-build.zip was uploaded</div>
+<div class="title">Figure 213. After helloworld-build.zip was uploaded</div>
 </div>
 <div class="paragraph">
 <p>Click on the button Ready to Build, and the build for all available platform will start. In you did everything right, after watching the wait cursor on above each icon, the builds will successfully complete, and you&#8217;ll see a blue line under each button. Figure <a href="#FIG14-4-4">Two builds failed</a> illustrates the case when the build failed for iOS and BlackBerry platformed (the first and fourth buttons are underlined in red color).</p>
@@ -23149,7 +24155,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_4.png" alt="fig_14_04_4">
 </div>
-<div class="title">Figure 210. Two builds failed</div>
+<div class="title">Figure 214. Two builds failed</div>
 </div>
 <div class="paragraph">
 <p>After clicking on the iOS button, it revealed the message in a dropdown box "No key selected". Another error message reads"You must provide the signing key first". The dropdown also offers an option to add the missing key. Selecting this option reveals a panel shown on Figure <a href="#FIG14-4-5">Uploading certificate and profile</a>.</p>
@@ -23158,7 +24164,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_5.png" alt="fig_14_04_5">
 </div>
-<div class="title">Figure 211. Uploading certificate and profile</div>
+<div class="title">Figure 215. Uploading certificate and profile</div>
 </div>
 <div class="paragraph">
 <p>The missing key message actually means that they need the provisioning profile and certificate discussed in the section "Testing Applications on iOS Devices". The certificate has to be in the P12 format, and you can export it into the .p12 file from the Keychain Access program. During the export, you&#8217;ll assign a password to the certificate that will be required by PhoneGap Build process. After uploading the .p12 and .mobileprovision to PhoneGap Build and unlocking the little yellow lock, rebuild the Hello World for iOS and it should be done without any errors this time.</p>
@@ -23220,7 +24226,7 @@ For example, after PhoneGap has built the .ipa file for the iOS, you can make it
 <div class="content">
 <img src="./images/fig_14_05.png" alt="fig_14_05">
 </div>
-<div class="title">Figure 212. Ad hoc application install from diawi</div>
+<div class="title">Figure 216. Ad hoc application install from diawi</div>
 </div>
 <div class="paragraph">
 <p>Android developers are not restricted in distributing of their application - upload the APK package with your application to your corporate Web site and send the URL to anyone who&#8217;s interested. For example, the authors of this book are creating a software for insurance industry, where they offer to download both iOS and Android versions of the application right from their corporate Web site as shown at Figure <a href="#FIG14-6">Distributing mobile applications at surancebay.com</a>.</p>
@@ -23229,7 +24235,7 @@ For example, after PhoneGap has built the .ipa file for the iOS, you can make it
 <div class="content">
 <img src="./images/fig_14_06.png" alt="fig_14_06">
 </div>
-<div class="title">Figure 213. Distributing mobile applications at surancebay.com</div>
+<div class="title">Figure 217. Distributing mobile applications at surancebay.com</div>
 </div>
 
 </div>
@@ -23285,7 +24291,7 @@ If you&#8217;ve architected your hybrid application in a modularized fashion as 
 
 </div>
 <div class="sect2">
-<h3 id="_summary_13">Summary</h3>
+<h3 id="_summary_14">Summary</h3>
 <div class="paragraph">
 <p>Hybrid applications allow you to take your HTML5-based Web application, connect it to the native API of the mobile device and package it as a native application. The selling point of using hybrids is that you can reuse the existing HTML5/JavaScript expertise. In the enterprise setup maintaining bugs in a one-language bug database is a lot more easier than if you have multiple versions of the application written in different languages. Maintaining a single set of images, videos, and CSS files makes is yet another advantage that lowers both time to market and cost of ownership of the application.</p>
 </div>
@@ -23353,7 +24359,7 @@ var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-36390249-1"]);_gaq.push(["_setDom
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-07-22 18:12:52 EDT
+Last updated 2013-07-22 18:48:25 EDT
 </div>
 </div>
 </body>
