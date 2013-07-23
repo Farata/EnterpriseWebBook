@@ -64,35 +64,33 @@ The learning curve of the Titanium API is steeper than with PhoneGap.
 
 NOTE: Beside PhoneGap and Titanium, the http://developers.mobile.conduit.com/reference/documentation/overview/introduction.aspx[Mobile Conduit API] allows to build cross-platform mobile application using HTML/JavaScript/CSS. http://www.convertigo.com/[Convertigo Mobilizer] is a cross-platform enterprise mashup environment that incorporates PhoneGap and Sencha Touch for building mobile applications. http://www-03.ibm.com/software/products/us/en/worklight/[IBM Woklight] offers to enterprises a client/server/cloud to enterprises develop, test, run and manage HTML5, hybrid and native mobile applications.
 
-If a particular application will be used only by the employees of the organization who use limited and defined number of mobile devices, and if making employees (the users) productive is the main goal - develop native applications. Start with developing and deploying such an application for the pilot OS (typically for the latest iOS or Android OS), and then gradually add support for more  platforms, budget permitting. If you are planning to develop a Web application with relatively simple UI (e.g. Save Sick Child) and have to support a wide variety of unknown consumer devices (people should be able to make donation from any device) - develop an HTML5 Web application. 
+If a particular enterprise application will be used only internally by people who use limited variety of mobile devices, and if making these people productive is the main goal - develop native applications. Start with developing and deploying such the first application for the pilot mobile OS (typically for the latest iOS or Android OS), and then gradually add support for more  platforms, budget permitting. If you are planning to develop a Web application with relatively simple UI (as in Save Sick Child) and have to support a wide variety of unknown consumer devices (e.g. you want to  enable people to donate from any device) - develop an HTML5 Web application. 
 
-Consider developing a hybrid application for anything in between, and in this chapter we'll create a hybrid version of our Save Sick Child application with http://phonegap.com/[PhoneGap] framework. To be more specific, we'll access the camera of the smartphone and will use the PhoneGap PayPal plugin to process donations.
+Consider developing a hybrid application for anything in between, and in this chapter we'll create a hybrid version of our Save Sick Child application with http://phonegap.com/[PhoneGap] framework. To be more specific, we'll access the camera of the smartphone.
 
 === Intro to the PhoneGap Workflow
 
-Download PhoneGap from http://phonegap.com/[phonegap.com]. Unzip the downloaded file, and you'll get a folder with the phonegap library and product documentation. The name of our library was phonegap-2.9.0.
+We are going to introduce you to the current PhoneGap 3.0 workflow, but you'll need to start with installing cordoveaccording to the instructions for http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface [the command-line interface]. You start with installing Node.js, which will also install the package manager npm used for installing cordova. We use MAC OS for development, and here's the command that will install the _/usr/local/bin/cordova_ script:
+
+_sudo npm install -g cordova_
 
 // Using 3.0 CLI http://blog.safaribooksonline.com/2013/07/19/streamline-cross-platform-development-using-apache-cordova-phonegap-cli/
 
-You need to distinguish between development with PhoneGap library and packaging applications with PhoneGap Build server.  To see what platforms are available for development just open subdirectory _lib_ - the code for each supported platform has a corresponding subdirectory. For example, Figure <<FIG14-2>> will give you an idea on what's currently included in PhoneGap download. On the other hand, the PhoneGap Build server can package your application for more target platforms (e.g. Bada and Symbian) than exist under _lib_. 
+We'll be developing sample application for the iOS, which has the most complex deployment-deployment cycle. It requires to have https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT). 
 
+It's time for the PhoneGap Hello World. We are going to generate the initial project using  Cordova command line interface (CLI) as described in the same http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface[document] we used for installing cordova in the section titled "Create the App". We'll be running the _cordova_ script passing it the command _create_:
 
-[[FIG14-2]]
-.What comes with PhoneGap 3.0
-image::images/fig_14_02.png[] 
+_sudo cordova create HelloWorld com.example.hello "Hello World"_
 
-We use Mac OS for development with pre-installed https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT). 
-
-It's time for the PhoneGap Hello World, and we'll build it for iOS. We are going to generate the initial project using Cordova command line interface (CLI) as described in http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface[documentation]. 
 After generating Hello World with _cordova create_ command, it creates files and directories shown on Figure <<FIG14-3>>. 
 
-NOTE: PhoneGap documentation offers different methods for generating projects. Each of them generates slightly different content. We'll use the http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface[first one] for generating Hello World, and http://docs.phonegap.com/en/2.9.0/guide_command-line_index.md.html#Command-Line%[the second one] for generating Save Sick Child. 
+//NOTE: PhoneGap documentation offers different methods for generating projects. Each of them generates slightly different content. We'll use the http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface[first one] for generating Hello World, and http://docs.phonegap.com/en/2.9.0/guide_command-line_index.md.html#Command-Line%[the second one] for generating Save Sick Child. 
 
 [[FIG14-3]]
 .Cordova-generated project Hello World
 image::images/fig_14_03.png[] 
 
-NOTE: If you used the command _cordova create HelloWorld com.example.hello "Hello World"_, exactly as it shown in the documentation, keep in mind that when you'll be creating the certificate to run it on the iOS device, it has to be valid for applications that start with com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
+NOTE: If you used the command exactly as it shown in the documentation _cordova create HelloWorld com.example.hello "Hello World"_, keep in mind that when you'll be creating the certificate to run it on the iOS device, it has to be valid for applications that start with com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
 
 The content of generated index.html is shown next. It includes several meta tags to use the entire screen of the mobile device and don't allow scaling by user's gestures. Then it includes a couple of JavaScript files. 
 
