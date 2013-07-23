@@ -23797,52 +23797,38 @@ Beside PhoneGap and Titanium, the <a href="http://developers.mobile.conduit.com/
 </table>
 </div>
 <div class="paragraph">
-<p>If a particular application will be used only by the employees of the organization who use limited and defined number of mobile devices, and if making employees (the users) productive is the main goal - develop native applications. Start with developing and deploying such an application for the pilot OS (typically for the latest iOS or Android OS), and then gradually add support for more  platforms, budget permitting. If you are planning to develop a Web application with relatively simple UI (e.g. Save Sick Child) and have to support a wide variety of unknown consumer devices (people should be able to make donation from any device) - develop an HTML5 Web application.</p>
+<p>If a particular enterprise application will be used only internally by people who use limited variety of mobile devices, and if making these people productive is the main goal - develop native applications. Start with developing and deploying such the first application for the pilot mobile OS (typically for the latest iOS or Android OS), and then gradually add support for more  platforms, budget permitting. If you are planning to develop a Web application with relatively simple UI (as in Save Sick Child) and have to support a wide variety of unknown consumer devices (e.g. you want to  enable people to donate from any device) - develop an HTML5 Web application.</p>
 </div>
 <div class="paragraph">
-<p>Consider developing a hybrid application for anything in between, and in this chapter we&#8217;ll create a hybrid version of our Save Sick Child application with <a href="http://phonegap.com/">PhoneGap</a> framework. To be more specific, we&#8217;ll access the camera of the smartphone and will use the PhoneGap PayPal plugin to process donations.</p>
+<p>Consider developing a hybrid application for anything in between, and in this chapter we&#8217;ll create a hybrid version of our Save Sick Child application with <a href="http://phonegap.com/">PhoneGap</a> framework. To be more specific, we&#8217;ll access the camera of the smartphone.</p>
 </div>
 
 </div>
 <div class="sect2">
 <h3 id="_intro_to_the_phonegap_workflow">Intro to the PhoneGap Workflow</h3>
 <div class="paragraph">
-<p>Download PhoneGap from <a href="http://phonegap.com/">phonegap.com</a>. Unzip the downloaded file, and you&#8217;ll get a folder with the phonegap library and product documentation. The name of our library was phonegap-2.9.0.</p>
+<p>We are going to introduce you to the current PhoneGap 3.0 workflow, but you&#8217;ll need to start with installing cordoveaccording to the instructions for <a href="http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface">http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface</a> [the command-line interface]. You start with installing Node.js, which will also install the package manager npm used for installing cordova. We use MAC OS for development, and here&#8217;s the command that will install the <em>/usr/local/bin/cordova</em> script:</p>
 </div>
 <div class="paragraph">
-<p>You need to distinguish between development with PhoneGap library and packaging applications with PhoneGap Build server.  To see what platforms are available for development just open subdirectory <em>lib</em> - the code for each supported platform has a corresponding subdirectory. For example, Figure <a href="#FIG14-2">What comes with PhoneGap 3.0</a> will give you an idea on what&#8217;s currently included in PhoneGap download. On the other hand, the PhoneGap Build server can package your application for more target platforms (e.g. Bada and Symbian) than exist under <em>lib</em>.</p>
-</div>
-<div id="FIG14-2" class="imageblock">
-<div class="content">
-<img src="./images/fig_14_02.png" alt="fig_14_02">
-</div>
-<div class="title">Figure 208. What comes with PhoneGap 3.0</div>
+<p><em>sudo npm install -g cordova</em></p>
 </div>
 <div class="paragraph">
-<p>We use Mac OS for development with pre-installed <a href="https://developer.apple.com/xcode/">Xcode IDE</a>, which is available at Apple&#8217;s App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT).</p>
+<p>We&#8217;ll be developing sample application for the iOS, which has the most complex deployment-deployment cycle. It requires to have <a href="https://developer.apple.com/xcode/">Xcode IDE</a>, which is available at Apple&#8217;s App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT).</p>
 </div>
 <div class="paragraph">
-<p>It&#8217;s time for the PhoneGap Hello World, and we&#8217;ll build it for iOS. We are going to generate the initial project using Cordova command line interface (CLI) as described in <a href="http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface">documentation</a>.
-After generating Hello World with <em>cordova create</em> command, it creates files and directories shown on Figure <a href="#FIG14-3">Cordova-generated project Hello World</a>.</p>
+<p>It&#8217;s time for the PhoneGap Hello World. We are going to generate the initial project using  Cordova command line interface (CLI) as described in the same <a href="http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface">document</a> we used for installing cordova in the section titled "Create the App". We&#8217;ll be running the <em>cordova</em> script passing it the command <em>create</em>:</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="icon-note" title="Note"></i>
-</td>
-<td class="content">
-
-PhoneGap documentation offers different methods for generating projects. Each of them generates slightly different content. We&#8217;ll use the <a href="http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface">first one</a> for generating Hello World, and <a href="http://docs.phonegap.com/en/2.9.0/guide_command-line_index.md.html#Command-Line%">the second one</a> for generating Save Sick Child.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p><em>sudo cordova create HelloWorld com.example.hello "Hello World"</em></p>
+</div>
+<div class="paragraph">
+<p>After generating Hello World with <em>cordova create</em> command, it creates files and directories shown on Figure <a href="#FIG14-3">Cordova-generated project Hello World</a>.</p>
 </div>
 <div id="FIG14-3" class="imageblock">
 <div class="content">
 <img src="./images/fig_14_03.png" alt="fig_14_03">
 </div>
-<div class="title">Figure 209. Cordova-generated project Hello World</div>
+<div class="title">Figure 208. Cordova-generated project Hello World</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -23852,7 +23838,7 @@ PhoneGap documentation offers different methods for generating projects. Each of
 </td>
 <td class="content">
 
-If you used the command <em>cordova create HelloWorld com.example.hello "Hello World"</em>, exactly as it shown in the documentation, keep in mind that when you&#8217;ll be creating the certificate to run it on the iOS device, it has to be valid for applications that start with com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
+If you used the command exactly as it shown in the documentation <em>cordova create HelloWorld com.example.hello "Hello World"</em>, keep in mind that when you&#8217;ll be creating the certificate to run it on the iOS device, it has to be valid for applications that start with com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
 </td>
 </tr>
 </table>
@@ -23980,7 +23966,7 @@ The first command will run fine, because we have Xcode installed. The second com
 <div class="content">
 <img src="./images/fig_14_04.png" alt="fig_14_04">
 </div>
-<div class="title">Figure 210. Cordova-generated project for iOS platform</div>
+<div class="title">Figure 209. Cordova-generated project for iOS platform</div>
 </div>
 <div class="paragraph">
 <p>Double-click on the file Hello_World.xcodeproj, and it&#8217;ll be opened as a project in Xcode. Press the button Run on the top left corner of the toolbar - the project will be compiled and started in the iOS simulator (see Figure <a href="#FIG14-4-1">Running Hello World in XCode</a>). Note the "Device is ready" text from index.html (as per index.css this text is blinking and is shown in the upper case).</p>
@@ -23989,7 +23975,7 @@ The first command will run fine, because we have Xcode installed. The second com
 <div class="content">
 <img src="./images/fig_14_04_1.png" alt="fig_14_04_1">
 </div>
-<div class="title">Figure 211. Running Hello World in XCode</div>
+<div class="title">Figure 210. Running Hello World in XCode</div>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -24068,7 +24054,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_2.png" alt="fig_14_04_2">
 </div>
-<div class="title">Figure 212. Submitting Application to PhoneGapBuild</div>
+<div class="title">Figure 211. Submitting Application to PhoneGapBuild</div>
 </div>
 <div class="paragraph">
 <p>Before zipping up Hello World&#8217;s  <em>ios/www</em> directory, open and modify the file config.xml. The generated XML contains a lot of non-related to iOS entries. All of the lines that contain android or blackberry should be removed.</p>
@@ -24120,7 +24106,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_3.png" alt="fig_14_04_3">
 </div>
-<div class="title">Figure 213. After helloworld-build.zip was uploaded</div>
+<div class="title">Figure 212. After helloworld-build.zip was uploaded</div>
 </div>
 <div class="paragraph">
 <p>Click on the button Ready to Build, and the build for all available platform will start. In you did everything right, after watching the wait cursor on above each icon, the builds will successfully complete, and you&#8217;ll see a blue line under each button. Figure <a href="#FIG14-4-4">Two builds failed</a> illustrates the case when the build failed for iOS and BlackBerry platformed (the first and fourth buttons are underlined in red color).</p>
@@ -24132,7 +24118,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_4.png" alt="fig_14_04_4">
 </div>
-<div class="title">Figure 214. Two builds failed</div>
+<div class="title">Figure 213. Two builds failed</div>
 </div>
 <div class="paragraph">
 <p>After clicking on the iOS button, it revealed the message in a dropdown box "No key selected". Another error message reads"You must provide the signing key first". The dropdown also offers an option to add the missing key. Selecting this option reveals a panel shown on Figure <a href="#FIG14-4-5">Uploading certificate and profile</a>.</p>
@@ -24141,7 +24127,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_5.png" alt="fig_14_04_5">
 </div>
-<div class="title">Figure 215. Uploading certificate and profile</div>
+<div class="title">Figure 214. Uploading certificate and profile</div>
 </div>
 <div class="paragraph">
 <p>The missing key message actually means that they need the provisioning profile and certificate discussed in the section "Testing Applications on iOS Devices". The certificate has to be in the P12 format, and you can export it into the .p12 file from the Keychain Access program. During the export, you&#8217;ll assign a password to the certificate that will be required by PhoneGap Build process. After uploading the .p12 and .mobileprovision to PhoneGap Build and unlocking the little yellow lock, rebuild the Hello World for iOS and it should be done without any errors this time.</p>
@@ -24203,7 +24189,7 @@ For example, after PhoneGap has built the .ipa file for the iOS, you can make it
 <div class="content">
 <img src="./images/fig_14_05.png" alt="fig_14_05">
 </div>
-<div class="title">Figure 216. Ad hoc application install from diawi</div>
+<div class="title">Figure 215. Ad hoc application install from diawi</div>
 </div>
 <div class="paragraph">
 <p>Android developers are not restricted in distributing of their application - upload the APK package with your application to your corporate Web site and send the URL to anyone who&#8217;s interested. For example, the authors of this book are creating a software for insurance industry, where they offer to download both iOS and Android versions of the application right from their corporate Web site as shown at Figure <a href="#FIG14-6">Distributing mobile applications at surancebay.com</a>.</p>
@@ -24212,7 +24198,7 @@ For example, after PhoneGap has built the .ipa file for the iOS, you can make it
 <div class="content">
 <img src="./images/fig_14_06.png" alt="fig_14_06">
 </div>
-<div class="title">Figure 217. Distributing mobile applications at surancebay.com</div>
+<div class="title">Figure 216. Distributing mobile applications at surancebay.com</div>
 </div>
 
 </div>
