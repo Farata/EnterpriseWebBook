@@ -11,11 +11,11 @@ require.config({        // <1>
         'what-we-do': 'modules/what-we-do',
         'where-we-work': 'modules/where-we-work',
         'way-to-give': 'modules/way-to-give',
-        'components': "../components",
+        'components': '../components',
         'jquery': '../components/jquery/jquery',
         'main': 'main',
         'GoogleMap': '../components/GoogleMap/dist/GoogleMap'
     }
 });
 
-require(["main"], function() {}); // <3>
+require(['main'], function() {}); // <3>
