@@ -34,7 +34,7 @@ Mobile Web applications don't require any third-party involvement for the distri
 
 The publisher of New York magazine is heavily investing into their native application for iPad, but the newer versions of their Web applications are as engaging as their native piers. If your Web application need to be discoverable and visible by search engines, Web applications are definitely better.
 
-=== Hybrids Applications: PhoneGap vs Titanium
+=== Hybrids Applications
 
 _Hybrid applications_ promise you to have the best of both worlds. Develop a Web application in HTML/JavaScript, but access the native API of the mobile device via third-party solutions such as http://phonegap.com/[PhoneGap] from Adobe or http://www.appcelerator.com/platform/titanium-platform/[Titanium] from Appcelerator (the company behind Aptana Studio). 
 
@@ -62,7 +62,7 @@ You can't expect high performance from the Rhino JavaScript engine, which is use
 
 The learning curve of the Titanium API is steeper than with PhoneGap.  
 
-NOTE: Beside PhoneGap and Titanium, the http://developers.mobile.conduit.com/reference/documentation/overview/introduction.aspx[Mobile Conduit API] allows to build cross-platform mobile application using HTML/JavaScript/CSS. http://www.convertigo.com/[Convertigo Mobilizer] is a cross-platform enterprise mashup environment that incorporates PhoneGap and Sencha Touch for building mobile applications. http://www-03.ibm.com/software/products/us/en/worklight/[IBM Woklight] offers to enterprises a client/server/cloud to enterprises develop, test, run and manage HTML5, hybrid and native mobile applications.
+NOTE: PhoneGap and Titanium are not the only solutions that allow building hybrid applications using HTML5. The framowork http://www.kendoui.com/mobile.aspx[Kendo UI Mobile] can build hybrid applications for iOS, Android, Blackberry, and Window Phone 8. The http://developers.mobile.conduit.com/reference/documentation/overview/introduction.aspx[Mobile Conduit API] allows to build cross-platform mobile application with HTML5. http://www.convertigo.com/[Convertigo Mobilizer] is a cross-platform enterprise mashup environment that incorporates PhoneGap and Sencha Touch for building mobile applications. http://www-03.ibm.com/software/products/us/en/worklight/[IBM Woklight] offers to enterprises a client/server/cloud to enterprises develop, test, run and manage HTML5, hybrid and native mobile applications.
 
 If a particular enterprise application will be used only internally by people who use limited variety of mobile devices, and if making these people productive is the main goal - develop native applications. Start with developing and deploying such the first application for the pilot mobile OS (typically for the latest iOS or Android OS), and then gradually add support for more  platforms, budget permitting. If you are planning to develop a Web application with relatively simple UI (as in Save Sick Child) and have to support a wide variety of unknown consumer devices (e.g. you want to  enable people to donate from any device) - develop an HTML5 Web application. 
 
@@ -70,27 +70,34 @@ Consider developing a hybrid application for anything in between, and in this ch
 
 === Intro to the PhoneGap Workflow
 
-We are going to introduce you to the current PhoneGap 3.0 workflow, but you'll need to start with installing cordoveaccording to the instructions for http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface [the command-line interface]. You start with installing Node.js, which will also install the package manager npm used for installing cordova. We use MAC OS for development, and here's the command that will install the _/usr/local/bin/cordova_ script:
+We are going to introduce you to the current PhoneGap 3.0 workflow, but you'll need to start with installing cordoveaccording to the instructions for http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface [the command-line interface]. You start with installing Node.js, which will also install the package manager npm used for installing cordova. We use MAC OS X for development, and here's the command that will install cordova: 
 
 _sudo npm install -g cordova_
 
 // Using 3.0 CLI http://blog.safaribooksonline.com/2013/07/19/streamline-cross-platform-development-using-apache-cordova-phonegap-cli/
 
-We'll be developing sample application for the iOS, which has the most complex deployment-deployment cycle. It requires to have https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT). 
+The above command installs the JavaScript file _cordova_ in _/usr/local/bin_ and the cordova library and its supporting files in the _/usr/local/lib/node_modules/cordova_ - Figure <<FIG14-2>> shows the snapshot of some of the files and diresctories that come with cordova. We've highlighted the create.js script, which will be used for generating Hello World and Save Sick Child projects. 
+
+[[FIG14-2]]
+.Cordova 3.0 Installed
+image::images/fig_14_02.png[]
+
+In this chapter we'll be developing sample applications for iOS platform, to illustrate the most complex deployment-deployment cycle. It requires https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. After installing Xcode open its menu Preferences and install Command Line Tools (CLT) from the Downloads panel. By default, Xcode comes with the latest iOS simulator, which is version 6.1 at the time of this writing. 
+
+==== Hello World
 
 It's time for the PhoneGap Hello World. We are going to generate the initial project using  Cordova command line interface (CLI) as described in the same http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface[document] we used for installing cordova in the section titled "Create the App". We'll be running the _cordova_ script passing it the command _create_:
 
 _sudo cordova create HelloWorld com.example.hello "Hello World"_
 
-After generating Hello World with _cordova create_ command, it creates files and directories shown on Figure <<FIG14-3>>. 
-
-//NOTE: PhoneGap documentation offers different methods for generating projects. Each of them generates slightly different content. We'll use the http://docs.phonegap.com/en/2.9.0/guide_cli_index.md.html#The%20Cordova%20Command-line%20Interface[first one] for generating Hello World, and http://docs.phonegap.com/en/2.9.0/guide_command-line_index.md.html#Command-Line%[the second one] for generating Save Sick Child. 
+After generating Hello World with _cordova create_ command Cordova CLI creates files and directories shown on Figure <<FIG14-3>>. 
+ 
 
 [[FIG14-3]]
 .Cordova-generated project Hello World
 image::images/fig_14_03.png[] 
 
-NOTE: If you used the command exactly as it shown in the documentation _cordova create HelloWorld com.example.hello "Hello World"_, keep in mind that when you'll be creating the certificate to run it on the iOS device, it has to be valid for applications that start with com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
+NOTE: If you used the command exactly as it shown in the documentation _cordova create HelloWorld com.example.hello "Hello World"_, keep in mind that when you'll be creating the certificate to run it on the iOS device, it has to be valid for applications packages in com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
 
 The content of generated index.html is shown next. It includes several meta tags to use the entire screen of the mobile device and don't allow scaling by user's gestures. Then it includes a couple of JavaScript files. 
 
@@ -122,7 +129,7 @@ The content of generated index.html is shown next. It includes several meta tags
 </html>
 ----
 
-This HTML includes the code to load the cordova.js library and the initialization code from index.js, and then immediately calls `app.initialize()`. But if you look at <<FIG14-3>> the file cordova.js is missing. Cordova CLI will add it to the project during another phase of code generation for specific mobile platforms. For now, let's look at the code of the index.js.
+This HTML includes the code to load the cordova.js library and the initialization code from index.js, and then immediately calls `app.initialize()`. But if you look at <<FIG14-3>> the file cordova.js is missing. Cordova CLI will add it to the project during the next phase of code generation when you'll run the command _cordova platform add_ to add specific mobile platforms to your project. For now, let's look at the code of the index.js.
 
 [source, javascript]
 ----
@@ -158,7 +165,7 @@ var app = {
 
 <3> The function `report()` is called from the `deviceready` event handler. It hides the `.pending <p>` and shows the `.complete <p>` in index.html. Technically, `split('hide')` followed by `join('')` perform removal of the word hide.
 
-WARNING: It's not too difficult to prepare such simple HTML and JavaScript files manually, but we prefer using code generators when available - they are faster and less error prone. Unfortunately, PhoneGap's code generators still have room for improvement, and manual intervention will be required anyway.
+WARNING: It's not too difficult to prepare such simple HTML and JavaScript files manually, but we prefer using code generators when available - they are faster and less error prone. 
 
 According some Cordova CLI documentation after the code is generated you need to add the platforms for which you are planning to prepare PhoneGap builds. For example, you can run the following commands from the Terminal window (inside the HelloWorld directory) to request the builds for ios, android, and blackberry:
 
@@ -166,7 +173,7 @@ _cordova platform add ios_
 
 _cordova platform add android_
 
-NOTE: The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK as described in the sidebar.
+NOTE: The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK as described in the sidebar. There are two ways of working with PhoneGap applications: either you install required SDKs and prepare the builds locally, or develop an application for one platform and send it to the PhoneGap Build server that will create multiple builds for different platforms. The  description of the workflow with the Build Phonegap server will follow.
 
 After running these commands, the initially empty directory _platforms_ will be filled with additional files specific to each platform. Technically, these commands generate separate Hello World projects - one per platform. Each of them will have its own _www_ directory with index.html and cordova.js that was missing during the initial project generation. You can see on Figure <<FIG14-4>> the content of the ios folder that was generated as a result of executing command _cordova platform add ios_.
 
@@ -348,7 +355,9 @@ We'll start with packaging this application for iOS and then we'll ask PhoneGap 
 
 TIP: If you've architected your hybrid application in a modularized fashion as described in Chapter 7, you'll get an additional benefit comparing with the native applications. If the code of one of the loadable modules changes, but the main application shell remains the same, there is no need to resubmit the new version of the application to the App Store or a market, which can be a serious time saver on Apple devices - you eliminate the approval process on each new version of the application. 
 
+=== Creating Custom Plugins
 
+// http://devgirl.org/2013/07/17/tutorial-how-to-write-a-phonegap-plugin-for-android/
 
 
 === Summary
