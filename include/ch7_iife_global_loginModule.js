@@ -1,13 +1,14 @@
 (function(global) {
+    'use strict';
     var module = {};
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
-        console.log("login implementation omitted");
+        console.log('login implementation omitted');
     };
 
     module.logout = function() {
-        console.log("logout implementation omitted");
+        console.log('logout implementation omitted');
     };
 
     global.loginModule = module;
