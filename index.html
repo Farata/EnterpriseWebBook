@@ -1174,8 +1174,13 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_native_vs_web_applications">Native vs. Web Applications</a></li>
 </ol>
 </li>
-<li><a href="#_hybrids_applications_phonegap_vs_titanium">Hybrids Applications: PhoneGap vs Titanium</a></li>
+<li><a href="#_hybrids_applications">Hybrids Applications</a></li>
 <li><a href="#_intro_to_the_phonegap_workflow">Intro to the PhoneGap Workflow</a></li>
+<li>
+<ol type="none" class="sectlevel3">
+<li><a href="#_hello_world_2">Hello World</a></li>
+</ol>
+</li>
 <li><a href="#_using_adobe_phonegap_build_service">Using Adobe PhoneGap Build Service</a></li>
 <li>
 <ol type="none" class="sectlevel3">
@@ -1183,6 +1188,7 @@ p.tableblock.header { color: #6d6e71; }
 </ol>
 </li>
 <li><a href="#_save_sick_child_with_phonegap">Save Sick Child with PhoneGap</a></li>
+<li><a href="#_creating_custom_plugins">Creating Custom Plugins</a></li>
 <li><a href="#_summary_14">Summary</a></li>
 </ol>
 </li>
@@ -14002,15 +14008,17 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 <div class="title">Returning the value from a module</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">var loginModule = (function() {
+    'use strict';
+
     var module = {};
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
-        console.log("login implementation omitted");
+        console.log('login implementation omitted');
     };
 
     module.logout = function() {
-        console.log("logout implementation omitted");
+        console.log('logout implementation omitted');
     };
 
     return module;
@@ -14021,15 +14029,16 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 <div class="title">Piggiybacking on global object</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">(function(global) {
+    'use strict';
     var module = {};
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
-        console.log("login implementation omitted");
+        console.log('login implementation omitted');
     };
 
     module.logout = function() {
-        console.log("logout implementation omitted");
+        console.log('logout implementation omitted');
     };
 
     global.loginModule = module;
@@ -14191,20 +14200,21 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <div id="LISTING_define_modeule" class="listingblock">
 <div class="title">The Definition of the <code>wayToGive</code> module</div>
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">define(["newContentLoader"], function(contentLoader) { // <i class="conum">1</i>
+<pre class="highlight"><code class="javascript language-javascript">define(['newContentLoader'], function(contentLoader) { // <i class="conum">1</i>
+    'use strict';
     var wayToGive;
 
-    console.log("way-to-give module is loaded");
+    console.log('way-to-give module is loaded');
     wayToGive = function() {
         return {
             render: function() {
-                contentLoader.getNewContent("way-to-give", // <i class="conum">2</i>
-                                            "way-to-give-container",
-                                            "assets/html-includes/way-to-give.html");
-                return console.log("way-to-give module is rendered");
+                contentLoader.getNewContent('way-to-give', // <i class="conum">2</i>
+                                            'way-to-give-container',
+                                            'assets/html-includes/way-to-give.html');
+                return console.log('way-to-give module is rendered');
             },
             init: function() {
-                return console.log("way-to-give init");
+                return console.log('way-to-give init');
             }
         };
     };
@@ -14520,14 +14530,14 @@ RequireJS (include info about build with <code>r.js</code>)</p>
         'what-we-do': 'modules/what-we-do',
         'where-we-work': 'modules/where-we-work',
         'way-to-give': 'modules/way-to-give',
-        'components': "../components",
+        'components': '../components',
         'jquery': '../components/jquery/jquery',
         'main': 'main',
         'GoogleMap': '../components/GoogleMap/dist/GoogleMap'
     }
 });
 
-require(["main"], function() {}); // <i class="conum">3</i></code></pre>
+require(['main'], function() {}); // <i class="conum">3</i></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -14689,19 +14699,21 @@ module.exports = function (grunt) {
 
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">(function(root, factory) {
-    if (typeof define == "function" &amp;&amp; define.amd) { // <i class="conum">1</i>
+    'use strict';
+    if (typeof define === 'function' &amp;&amp; define.amd) { // <i class="conum">1</i>
         define(['login'], factory);
     } else {
         root.ssc = factory(root.login); // <i class="conum">2</i>
     }
 }(this, function(login) { // <i class="conum">3</i>
+    'use strict';
     return {
         myConstant: 1984,
         login: function(userNameValue, userPasswordValue) {
-            console.log("login implementation omitted");
+            console.log('login for ' + userNameValue + ' and ' + userPasswordValue);
         },
         logout: function() {
-            console.log("logout implementation omitted");
+            console.log('logout implementation omitted');
         }
     };
 }));</code></pre>
@@ -16560,21 +16572,22 @@ Ext.onReady(function() {
 <div id="CAMPMOD_SPEC" class="listingblock">
 <div class="title">CampaignModelAssumptions specification</div>
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">Ext.define('Test.spec.CampaignModelAssumptions', {}, function () {
-    beforeEach(function () {
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('Test.spec.CampaignModelAssumptions', {}, function() {
+    'use strict';
+    beforeEach(function() {
 
     });
 
-    afterEach(function () {
-        Ext.data.Model.cache = {};  // <i class="conum">1</i>
+    afterEach(function() {
+        Ext.data.Model.cache = {}; // <i class="conum">1</i>
     });
 
-    describe('SSC.model.Campaign model', function () {
-        it('exists', function () {      // <i class="conum">2</i>
+    describe('SSC.model.Campaign model', function() {
+        it('exists', function() { // <i class="conum">2</i>
             var model = Ext.create('SSC.model.Campaign', {});
             expect(model.$className).toEqual('SSC.model.Campaign');
         });
-        it('has properties', function () {      // <i class="conum">3</i>
+        it('has properties', function() { // <i class="conum">3</i>
             var model = Ext.create('SSC.model.Campaign', {
                 title: 'Donors meeting',
                 description: 'Donors meeting agenda',
@@ -16584,11 +16597,11 @@ Ext.onReady(function() {
             expect(model.get('description')).toEqual('Donors meeting agenda');
             expect(model.get('location')).toEqual('New York City');
         });
-        it('property title has default values', function () {  // <i class="conum">4</i>
+        it('property title has default values', function() { // <i class="conum">4</i>
             var model = Ext.create('SSC.model.Campaign');
             expect(model.get('title')).toEqual('Default Campaign Title');
         });
-        it('requires campaign location', function(){        // <i class="conum">5</i>
+        it('requires campaign location', function() { // <i class="conum">5</i>
             var model = Ext.create('SSC.model.Campaign');
             var validationResult = model.validate();
             expect(validationResult.isValid()).toBeFalsy();
@@ -17048,30 +17061,35 @@ Ext.onReady(function() {
 <div class="listingblock">
 
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">var source;
-if( !! window.EventSource) {
-    source = new EventSource('http://localhost:8080/donate_web/api/donations/events');  // <i class="conum">1</i>
-} else {
-    // notify use that her browser doesn't support SSE
-}
-
-source.addEventListener('open', function(e) {                   // <i class="conum">2</i>
-    // Connection was opened.
-}, false);
-
-source.addEventListener('create', function(e) {                 // <i class="conum">3</i>
-    // do something with data
-}, false);
-
-source.addEventListener('update', function(e) {                 // <i class="conum">4</i>
-    // do something with data
-}, false);
-
-source.addEventListener('error', function(e) {
-    if(e.readyState == EventSource.CLOSED) {
-        // Connection was closed.
+<pre class="highlight"><code class="javascript language-javascript">var myEventSource = (function(){
+    'use strict';
+    var eventSource;
+    if ( !! window.EventSource) {
+        eventSource = new EventSource('http://localhost:8080/donate_web/api/donations/events'); // <i class="conum">1</i>
+    } else {
+        // notify use that her browser doesn't support SSE
     }
-}, false);</code></pre>
+
+    eventSource.addEventListener('open', function(e) { // <i class="conum">2</i>
+        // Connection was opened.
+    }, false);
+
+    eventSource.addEventListener('create', function(e) { // <i class="conum">3</i>
+        // do something with data
+    }, false);
+
+    eventSource.addEventListener('update', function(e) { // <i class="conum">4</i>
+        // do something with data
+    }, false);
+
+    eventSource.addEventListener('error', function(e) {
+        if (e.readyState === EventSource.CLOSED) {
+            // Connection was closed.
+        }
+    }, false);
+
+    return eventSource;
+})();</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -17241,24 +17259,29 @@ interface WebSocket : EventTarget {
 
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">var ws;
-if(window.WebSocket) {    // <i class="conum">1</i>
-    console.log("WebSocket object is supported in your browser");
-    ws = new WebSocket("ws://www.websocket.org/echo"); // <i class="conum">2</i>
-    ws.onopen = function() { console.log("onopen");
-    };  // <i class="conum">3</i>
-    ws.onmessage = function(e) {
-        console.log("echo from server : " + e.data);  // <i class="conum">4</i>
-    };
+(function(ws) {
+    "use strict";
+    if (window.WebSocket) {    // <i class="conum">1</i>
+        console.log("WebSocket object is supported in your browser");
+        ws = new WebSocket("ws://www.websocket.org/echo"); // <i class="conum">2</i>
+        ws.onopen = function() {
+            console.log("onopen");
+        };  // <i class="conum">3</i>
+        ws.onmessage = function(e) {
+            console.log("echo from server : " + e.data); // <i class="conum">4</i>
+        };
 
-    ws.onclose = function() { // <i class="conum">5</i>
-        output("onclose");
-    };
-    ws.onerror = function() { output("onerror");  // <i class="conum">6</i>
-    };
+        ws.onclose = function() { // <i class="conum">5</i>
+            console.log("onclose");
+        };
+        ws.onerror = function() {
+            console.log("onerror");  // <i class="conum">6</i>
+        };
 
-} else {
-    output("WebSocket object is not supported in your browser");
-}</code></pre>
+    } else {
+        console.log("WebSocket object is not supported in your browser");
+    }
+})(ws);</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -18114,35 +18137,36 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="listingblock">
 
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">require([], function() {    // <i class="conum">1</i>
-  return(function() {
+<pre class="highlight"><code class="javascript language-javascript">require([], function() { // <i class="conum">1</i>
+  'use strict';
+  return (function() {
     var lazyLoadingEventHandlerFactory, wayToGiveHandleClick, wayToGiveModule, way_to_give;
-    way_to_give = document.getElementById("way-to-give");
+    way_to_give = document.getElementById('way-to-give');
 
-    wayToGiveModule = null;     // <i class="conum">2</i>
+    wayToGiveModule = null; // <i class="conum">2</i>
 
     lazyLoadingEventHandlerFactory = function(module, modulePath) {
       var clickEventHandler;
       clickEventHandler = function(event) {
         console.log(event.target);
-        if(module === "loading") {    // <i class="conum">3</i>
+        if (module === 'loading') { // <i class="conum">3</i>
           return;
         }
-        if(module !== null) {
-          return module.startAuction();      // <i class="conum">4</i>
+        if (module !== null) {
+          return module.startAuction(); // <i class="conum">4</i>
         } else {
-          module = "loading";                // <i class="conum">5</i>
-          return require([modulePath], function(moduleObject) { // <i class="conum">6</i>
-            module = new moduleObject();
-            return module.render();                             // <i class="conum">7</i>
+          module = 'loading'; // <i class="conum">5</i>
+          return require([modulePath], function(ModuleObject) { // <i class="conum">6</i>
+            module = new ModuleObject();
+            return module.render(); // <i class="conum">7</i>
           });
         }
       };
       return clickEventHandler;
     };
-    wayToGiveHandleClick = lazyLoadingEventHandlerFactory(wayToGiveModule, "modules/way-to-give");
+    wayToGiveHandleClick = lazyLoadingEventHandlerFactory(wayToGiveModule, 'modules/way-to-give');
 
-    way_to_give.addEventListener("click", wayToGiveHandleClick, false);   // <i class="conum">8</i>
+    way_to_give.addEventListener('click', wayToGiveHandleClick, false); // <i class="conum">8</i>
   })();
 });</code></pre>
 </div>
@@ -21636,7 +21660,7 @@ In this chapter we are going to use Sencha Touch 2.2.1, which is the latest vers
 </td>
 <td class="content">
 
-If you haven&#8217;t read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like <code>xType</code>, SASS and some others explained in Chapter 6. For the most part Ext JS and Sencha Touch non-UI classes are compatible, but there are some differences that may prevent you from 100% code reuse between these frameworks(e.g. see section "Stores and Models"). Hopefully, in the future releases Sencha will come up with some standard solutions to remove the differences in class systems of both frameworks.
+If you haven&#8217;t read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like <code>xType</code>, SASS and some others explained in Chapter 6. For the most part Ext JS and Sencha Touch non-UI classes are compatible, but there are some differences that may prevent you from 100% code reuse between these frameworks(e.g. see section "Stores and Models"). The future releases Sencha should come up with some standard solutions to remove the differences in class systems of both frameworks.
 </td>
 </tr>
 </table>
@@ -22150,6 +22174,19 @@ Read the comments to the code of <code>SSC.view.CampaignsMap</code> in Chapter 6
 <td class="content">
 
 If you want to fire custom events, use the method <code>fireEvent()</code>, providing the name of your event. The procedure for defining the listeners for custom events remains the same.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+
+The Bring Your Own Device is getting more and more popular in enterprises. Sencha offers a product called Sencha Space, which is a secure and managed environment to deploy  enterprise HTML5 application that can be run on a variety of devices that employees can bring to the workplace. Sencha Space promises a clear separation between work-related applications and personal data. It uses secure database and secure File API and allows App-to-App communication.For more details visit the <a href="http://www.sencha.com/products/space/">Sencha Space Web page</a>.
 </td>
 </tr>
 </table>
@@ -23667,7 +23704,7 @@ There is compatibility issue between Ext JS and Sencha Touch 2 stores and models
 <p>If you want your application to look as close to the native ones as possible.</p>
 </li>
 <li>
-<p>If you won&#8217;t sleep well at night unless you development project is covered by commercial vendor support.</p>
+<p>If you prefer to use software that is covered by the commercial support offered by vendor.</p>
 </li>
 </ul>
 </div>
@@ -23743,7 +23780,7 @@ We already mentioned that hybrids are developed in JavaSript/HTML for different 
 
 </div>
 <div class="sect2">
-<h3 id="_hybrids_applications_phonegap_vs_titanium">Hybrids Applications: PhoneGap vs Titanium</h3>
+<h3 id="_hybrids_applications">Hybrids Applications</h3>
 <div class="paragraph">
 <p><em>Hybrid applications</em> promise you to have the best of both worlds. Develop a Web application in HTML/JavaScript, but access the native API of the mobile device via third-party solutions such as <a href="http://phonegap.com/">PhoneGap</a> from Adobe or <a href="http://www.appcelerator.com/platform/titanium-platform/">Titanium</a> from Appcelerator (the company behind Aptana Studio).</p>
 </div>
@@ -23791,7 +23828,7 @@ We already mentioned that hybrids are developed in JavaSript/HTML for different 
 </td>
 <td class="content">
 
-Beside PhoneGap and Titanium, the <a href="http://developers.mobile.conduit.com/reference/documentation/overview/introduction.aspx">Mobile Conduit API</a> allows to build cross-platform mobile application using HTML/JavaScript/CSS. <a href="http://www.convertigo.com/">Convertigo Mobilizer</a> is a cross-platform enterprise mashup environment that incorporates PhoneGap and Sencha Touch for building mobile applications. <a href="http://www-03.ibm.com/software/products/us/en/worklight/">IBM Woklight</a> offers to enterprises a client/server/cloud to enterprises develop, test, run and manage HTML5, hybrid and native mobile applications.
+PhoneGap and Titanium are not the only solutions that allow building hybrid applications using HTML5. The framowork <a href="http://www.kendoui.com/mobile.aspx">Kendo UI Mobile</a> can build hybrid applications for iOS, Android, Blackberry, and Window Phone 8. The <a href="http://developers.mobile.conduit.com/reference/documentation/overview/introduction.aspx">Mobile Conduit API</a> allows to build cross-platform mobile application with HTML5. <a href="http://www.convertigo.com/">Convertigo Mobilizer</a> is a cross-platform enterprise mashup environment that incorporates PhoneGap and Sencha Touch for building mobile applications. <a href="http://www-03.ibm.com/software/products/us/en/worklight/">IBM Woklight</a> offers to enterprises a client/server/cloud to enterprises develop, test, run and manage HTML5, hybrid and native mobile applications.
 </td>
 </tr>
 </table>
@@ -23807,14 +23844,25 @@ Beside PhoneGap and Titanium, the <a href="http://developers.mobile.conduit.com/
 <div class="sect2">
 <h3 id="_intro_to_the_phonegap_workflow">Intro to the PhoneGap Workflow</h3>
 <div class="paragraph">
-<p>We are going to introduce you to the current PhoneGap 3.0 workflow, but you&#8217;ll need to start with installing cordoveaccording to the instructions for <a href="http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface">http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface</a> [the command-line interface]. You start with installing Node.js, which will also install the package manager npm used for installing cordova. We use MAC OS for development, and here&#8217;s the command that will install the <em>/usr/local/bin/cordova</em> script:</p>
+<p>We are going to introduce you to the current PhoneGap 3.0 workflow, but you&#8217;ll need to start with installing cordoveaccording to the instructions for <a href="http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface">http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface</a> [the command-line interface]. You start with installing Node.js, which will also install the package manager npm used for installing cordova. We use MAC OS X for development, and here&#8217;s the command that will install cordova:</p>
 </div>
 <div class="paragraph">
 <p><em>sudo npm install -g cordova</em></p>
 </div>
 <div class="paragraph">
-<p>We&#8217;ll be developing sample application for the iOS, which has the most complex deployment-deployment cycle. It requires to have <a href="https://developer.apple.com/xcode/">Xcode IDE</a>, which is available at Apple&#8217;s App Store at no charge. In Xcode, open the menu Preferences and in Downloads panel install iOS 6.0 Simulator and Command Line Tools (CLT).</p>
+<p>The above command installs the JavaScript file <em>cordova</em> in <em>/usr/local/bin</em> and the cordova library and its supporting files in the <em>/usr/local/lib/node_modules/cordova</em> - Figure <a href="#FIG14-2">Cordova 3.0 Installed</a> shows the snapshot of some of the files and diresctories that come with cordova. We&#8217;ve highlighted the create.js script, which will be used for generating Hello World and Save Sick Child projects.</p>
 </div>
+<div id="FIG14-2" class="imageblock">
+<div class="content">
+<img src="./images/fig_14_02.png" alt="fig_14_02">
+</div>
+<div class="title">Figure 208. Cordova 3.0 Installed</div>
+</div>
+<div class="paragraph">
+<p>In this chapter we&#8217;ll be developing sample applications for iOS platform, to illustrate the most complex deployment-deployment cycle. It requires <a href="https://developer.apple.com/xcode/">Xcode IDE</a>, which is available at Apple&#8217;s App Store at no charge. After installing Xcode open its menu Preferences and install Command Line Tools (CLT) from the Downloads panel. By default, Xcode comes with the latest iOS simulator, which is version 6.1 at the time of this writing.</p>
+</div>
+<div class="sect3">
+<h4 id="_hello_world_2">Hello World</h4>
 <div class="paragraph">
 <p>It&#8217;s time for the PhoneGap Hello World. We are going to generate the initial project using  Cordova command line interface (CLI) as described in the same <a href="http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface">document</a> we used for installing cordova in the section titled "Create the App". We&#8217;ll be running the <em>cordova</em> script passing it the command <em>create</em>:</p>
 </div>
@@ -23822,13 +23870,13 @@ Beside PhoneGap and Titanium, the <a href="http://developers.mobile.conduit.com/
 <p><em>sudo cordova create HelloWorld com.example.hello "Hello World"</em></p>
 </div>
 <div class="paragraph">
-<p>After generating Hello World with <em>cordova create</em> command, it creates files and directories shown on Figure <a href="#FIG14-3">Cordova-generated project Hello World</a>.</p>
+<p>After generating Hello World with <em>cordova create</em> command Cordova CLI creates files and directories shown on Figure <a href="#FIG14-3">Cordova-generated project Hello World</a>.</p>
 </div>
 <div id="FIG14-3" class="imageblock">
 <div class="content">
 <img src="./images/fig_14_03.png" alt="fig_14_03">
 </div>
-<div class="title">Figure 208. Cordova-generated project Hello World</div>
+<div class="title">Figure 209. Cordova-generated project Hello World</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -23838,7 +23886,7 @@ Beside PhoneGap and Titanium, the <a href="http://developers.mobile.conduit.com/
 </td>
 <td class="content">
 
-If you used the command exactly as it shown in the documentation <em>cordova create HelloWorld com.example.hello "Hello World"</em>, keep in mind that when you&#8217;ll be creating the certificate to run it on the iOS device, it has to be valid for applications that start with com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
+If you used the command exactly as it shown in the documentation <em>cordova create HelloWorld com.example.hello "Hello World"</em>, keep in mind that when you&#8217;ll be creating the certificate to run it on the iOS device, it has to be valid for applications packages in com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
 </td>
 </tr>
 </table>
@@ -23876,7 +23924,7 @@ If you used the command exactly as it shown in the documentation <em>cordova cre
 </div>
 </div>
 <div class="paragraph">
-<p>This HTML includes the code to load the cordova.js library and the initialization code from index.js, and then immediately calls <code>app.initialize()</code>. But if you look at <a href="#FIG14-3">Cordova-generated project Hello World</a> the file cordova.js is missing. Cordova CLI will add it to the project during another phase of code generation for specific mobile platforms. For now, let&#8217;s look at the code of the index.js.</p>
+<p>This HTML includes the code to load the cordova.js library and the initialization code from index.js, and then immediately calls <code>app.initialize()</code>. But if you look at <a href="#FIG14-3">Cordova-generated project Hello World</a> the file cordova.js is missing. Cordova CLI will add it to the project during the next phase of code generation when you&#8217;ll run the command <em>cordova platform add</em> to add specific mobile platforms to your project. For now, let&#8217;s look at the code of the index.js.</p>
 </div>
 <div class="listingblock">
 
@@ -23932,7 +23980,7 @@ If you used the command exactly as it shown in the documentation <em>cordova cre
 </td>
 <td class="content">
 
-It&#8217;s not too difficult to prepare such simple HTML and JavaScript files manually, but we prefer using code generators when available - they are faster and less error prone. Unfortunately, PhoneGap&#8217;s code generators still have room for improvement, and manual intervention will be required anyway.
+It&#8217;s not too difficult to prepare such simple HTML and JavaScript files manually, but we prefer using code generators when available - they are faster and less error prone.
 </td>
 </tr>
 </table>
@@ -23954,7 +24002,7 @@ It&#8217;s not too difficult to prepare such simple HTML and JavaScript files ma
 </td>
 <td class="content">
 
-The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK as described in the sidebar.
+The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK as described in the sidebar. There are two ways of working with PhoneGap applications: either you install required SDKs and prepare the builds locally, or develop an application for one platform and send it to the PhoneGap Build server that will create multiple builds for different platforms. The  description of the workflow with the Build Phonegap server will follow.
 </td>
 </tr>
 </table>
@@ -23966,7 +24014,7 @@ The first command will run fine, because we have Xcode installed. The second com
 <div class="content">
 <img src="./images/fig_14_04.png" alt="fig_14_04">
 </div>
-<div class="title">Figure 209. Cordova-generated project for iOS platform</div>
+<div class="title">Figure 210. Cordova-generated project for iOS platform</div>
 </div>
 <div class="paragraph">
 <p>Double-click on the file Hello_World.xcodeproj, and it&#8217;ll be opened as a project in Xcode. Press the button Run on the top left corner of the toolbar - the project will be compiled and started in the iOS simulator (see Figure <a href="#FIG14-4-1">Running Hello World in XCode</a>). Note the "Device is ready" text from index.html (as per index.css this text is blinking and is shown in the upper case).</p>
@@ -23975,7 +24023,7 @@ The first command will run fine, because we have Xcode installed. The second com
 <div class="content">
 <img src="./images/fig_14_04_1.png" alt="fig_14_04_1">
 </div>
-<div class="title">Figure 210. Running Hello World in XCode</div>
+<div class="title">Figure 211. Running Hello World in XCode</div>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -24042,6 +24090,8 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 </div>
 
 </div>
+
+</div>
 <div class="sect2">
 <h3 id="_using_adobe_phonegap_build_service">Using Adobe PhoneGap Build Service</h3>
 <div class="paragraph">
@@ -24054,7 +24104,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_2.png" alt="fig_14_04_2">
 </div>
-<div class="title">Figure 211. Submitting Application to PhoneGapBuild</div>
+<div class="title">Figure 212. Submitting Application to PhoneGapBuild</div>
 </div>
 <div class="paragraph">
 <p>Before zipping up Hello World&#8217;s  <em>ios/www</em> directory, open and modify the file config.xml. The generated XML contains a lot of non-related to iOS entries. All of the lines that contain android or blackberry should be removed.</p>
@@ -24106,7 +24156,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_3.png" alt="fig_14_04_3">
 </div>
-<div class="title">Figure 212. After helloworld-build.zip was uploaded</div>
+<div class="title">Figure 213. After helloworld-build.zip was uploaded</div>
 </div>
 <div class="paragraph">
 <p>Click on the button Ready to Build, and the build for all available platform will start. In you did everything right, after watching the wait cursor on above each icon, the builds will successfully complete, and you&#8217;ll see a blue line under each button. Figure <a href="#FIG14-4-4">Two builds failed</a> illustrates the case when the build failed for iOS and BlackBerry platformed (the first and fourth buttons are underlined in red color).</p>
@@ -24118,7 +24168,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_4.png" alt="fig_14_04_4">
 </div>
-<div class="title">Figure 213. Two builds failed</div>
+<div class="title">Figure 214. Two builds failed</div>
 </div>
 <div class="paragraph">
 <p>After clicking on the iOS button, it revealed the message in a dropdown box "No key selected". Another error message reads"You must provide the signing key first". The dropdown also offers an option to add the missing key. Selecting this option reveals a panel shown on Figure <a href="#FIG14-4-5">Uploading certificate and profile</a>.</p>
@@ -24127,7 +24177,7 @@ Read Apple&#8217;s <a href="https://developer.apple.com/library/mac/#documentati
 <div class="content">
 <img src="./images/fig_14_04_5.png" alt="fig_14_04_5">
 </div>
-<div class="title">Figure 214. Uploading certificate and profile</div>
+<div class="title">Figure 215. Uploading certificate and profile</div>
 </div>
 <div class="paragraph">
 <p>The missing key message actually means that they need the provisioning profile and certificate discussed in the section "Testing Applications on iOS Devices". The certificate has to be in the P12 format, and you can export it into the .p12 file from the Keychain Access program. During the export, you&#8217;ll assign a password to the certificate that will be required by PhoneGap Build process. After uploading the .p12 and .mobileprovision to PhoneGap Build and unlocking the little yellow lock, rebuild the Hello World for iOS and it should be done without any errors this time.</p>
@@ -24189,7 +24239,7 @@ For example, after PhoneGap has built the .ipa file for the iOS, you can make it
 <div class="content">
 <img src="./images/fig_14_05.png" alt="fig_14_05">
 </div>
-<div class="title">Figure 215. Ad hoc application install from diawi</div>
+<div class="title">Figure 216. Ad hoc application install from diawi</div>
 </div>
 <div class="paragraph">
 <p>Android developers are not restricted in distributing of their application - upload the APK package with your application to your corporate Web site and send the URL to anyone who&#8217;s interested. For example, the authors of this book are creating a software for insurance industry, where they offer to download both iOS and Android versions of the application right from their corporate Web site as shown at Figure <a href="#FIG14-6">Distributing mobile applications at surancebay.com</a>.</p>
@@ -24198,7 +24248,7 @@ For example, after PhoneGap has built the .ipa file for the iOS, you can make it
 <div class="content">
 <img src="./images/fig_14_06.png" alt="fig_14_06">
 </div>
-<div class="title">Figure 216. Distributing mobile applications at surancebay.com</div>
+<div class="title">Figure 217. Distributing mobile applications at surancebay.com</div>
 </div>
 
 </div>
@@ -24251,6 +24301,10 @@ If you&#8217;ve architected your hybrid application in a modularized fashion as 
 </tr>
 </table>
 </div>
+
+</div>
+<div class="sect2">
+<h3 id="_creating_custom_plugins">Creating Custom Plugins</h3>
 
 </div>
 <div class="sect2">
