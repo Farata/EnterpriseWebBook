@@ -255,190 +255,11 @@ _There was an error in /built-app.js on line 1984._
 When your application if modularized you can identify the error easier.
 
 * Performance: module are loaded only when required hence the initial portion of the application's code become smaller.
-+
-
-You may want to load a module on demand when the user clicks the button or selects a menu item. In the following example, the module can be in one of three states: 
-
-* not loaded (`module === null`)
-* loading in progress (`module === 'loading'`)
-* fully loaded (`module !== null`).
-+
-
-.Loading +widget1+ module on demand
-[source,javascript]
-----
-var module;
-var buttonClickHandler = function(event) {
-  if (module === "loading") {       // <1>
-    return;
-  }
-  if (module !== null) {        // <2>
-    module.render();
-  } else {
-    module = "loading";         // <3>
-    require(["modules/widget1"], function(moduleObject) { // <4>
-      module = new moduleObject();      
-      module.render();
-    });
-  }
-};
-----
-<1> Checking if a module loading in progress.
-<2> We don't want to load the module each time. If module was loaded just call method to render widget on the page.
-<3> Setting the module into intermediate state until it's fully loaded. 
-<4> Once the module is loaded, instantiate the new widget object and render it in the page.
 
 AMD Cons:
 
 * The dependency array can get rather large for complex modules (Example TBD).
 * Easy to get a mismatch between dependency array and callback arguments (Example TBD).
-
-[[REQUIREJS]]
-===== RequireJS
-
-After covering the basics of AMD let's see how modularization can work in the real world. In this section we'll  introduce the AMD-complaint module loader http://requirejs.org/[RequireJS]. 
-RequireJS (include info about build with `r.js`)
-
-
-TIP: http://github.com/cujojs/curl[*curl.js*] is another AMD-compliant asynchronous loader. 
-
-
-You can download require.js from its github repository or use a package manager like <<what_is_bower,Bower>>.
-
-
-[[what_is_bower]]
-.What is *Bower*?
-****
-https://github.com/bower/bower[Bower] is a package manager for the web projects. Twitter has  donated it to the open-source community. Bower is a utility and a community driven repository of libraries and frameworks for front-end development. Bower's idea is very similar to NPM, but the latter is more suitable for the server-side projects. Bower was designed and implemented to handle dependencies for web projects.
-
-Bower will take care of transitive (dependency of a dependency) dependencies and download all required library components. Each Bower package has bower.json file, which contains the package metadata for managing the package's transitive dependencies. Also, bower.json can contain information about the package repository, readme file, license et al. You can find bower.json in the root directory of the package. For example, the path _components/requirejs/bower.json_ is a path for the RequireJS metadata file. Bower can installed via NPM. The following line shows how to install Bower globally in your system.
-
-[source,bash]
-----
-npm install -g bower    
-----
-
-Next you can start using Bower. For example, here is a Bower's command to install RequireJS.
-
-[source,bash]
-----
-bower install requirejs --save 
-----
-Bower installs RequireJS into _components/requirejs_ directory and saves information about dependencies in bower.json configuration file.
-
-Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means that you don't necessarily need to store dependencies of your application next to a application files in the source code repository. Your application could have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`. And you can find all your dependency files in +components+ directory. Here is the content of the file bower.json for our Save Sick Child application.
-
-[source,javascript]
-----
-{
-  "name": "ch7_dynamic_modules",
-  "description": "Chapter 7: Save Sick Child, Dynamic Modules app",
-  "dependencies": {
-    "requirejs": "~2.1.5",
-    "jquery": ">= 1.8.0",
-    "qunit": "~1.11.0",
-    "modernizr": "~2.6.2",
-    "requirejs-google-maps": "latest"
-  }
-}
-----
-
-Application dependencies are specified in corresponding "dependencies section.
-
-[[application_components]]
-.Directory structure of application's components
-image::fig_07_04.png[align="center"]
-
-Also, there is a http://sindresorhus.com/bower-components/[Bower search tool] to find desired component in repository.
-
-****
-
-
-.Adding RequireJS to the web page
-[source,html]
-----
-<!DOCTYPE html>
-<head>
-    <!-- content omitted -->
-</head>
-<body>
-<!-- page body -->
-
-<script src="components/requirejs/require.js" 
-        data-main="app/config"></script> <!-- <1> -->
-
-</body>
-</html>
-----
-[[data_main_attrib]]
-<1> Once the RequireJS library has loaded it will look for the `data-main` attribute and attempt to load `app/config.js` script asynchronously. The `app/config.js` is the entry point of your application.
-
-
-.Inside config.js
-RequiredJS  uses a configuration object that includes that modules and dependencies to be managed by the framework.
-
-[source,javascript]
-----
-include::include/ch7_require_config.js[]
-----
-<1> http://requirejs.org/docs/api.html#config[RequireJS Documentation] has comprehensive overview of all configuration options. We've included some of them here. 
-
-<2> The `paths` configuration option defines the mapping for module names and its paths. The `paths` is used for module names and shouldn't contain file extensions.
-
-<3> After configuring the modules' paths we're loading the 'main' module. the navigation of our application flow is defined there.
-
-
-
-.r.js - RequireJS Optimizer
-****
-RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that does optimization of modules. 
-
-
-Earlier in this chapter, we've specified the dependencies as array of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
-
-
-Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files.
-
-*TODO*: _Make introduction of Grunt Tools in this chapter not next chapter._ 
-
-Let's configure our Grunt project to enable optimization task. Here'e the command to install requirejs, clean, concat and uglify grunt tasks packages and save them as development dependency in package.json:
-
-.Add RequireJS dependency to package.json
-[source,bash]
-----
-> npm install grunt-contrib-requirejs grunt-contrib-concat grunt-contrib-clean grunt-contrib-uglify --saveDev 
-----
-
-<<rjs_gruntfile_list,Following listing>> describes how to setup RequireJS optimizer and related optimization tasks for Grunt.
-
-[[rjs_gruntfile_list]]
-[source,javascript]
-----
-include::include/ch7_rjs_Gruntfile.js[]
-----
-
-<1> The +clean+ task cleans output directory. In the `files` section of task config we specify what folder should be cleaned.
-<2> The +requirejs+ task. The configuration properties of +requrejs+ task are self-explanatory. +mainConfigFile+ points at the same file that <<data_main_attrib,`data-main` attribute>> of RequireJS script tag. +out+ parameter specifies output directory where optimized script will be created.
-<3> The +concat+ task combines/concatenates together optimized modules code and RequireJS loader code.
-<4> The +uglify+ task minifies provided files using http://lisperator.net/uglifyjs/[UglifyJS] - a compressor/minifier tool. UglifyJS produces significantly smaller version of original script by reducing Abstract Source Tree (AST) and mangling local variable to single-letters.
-<5> Loading plugins that provide necessary tasks.
-<6> The default task to execute all tasks in order.
-
-Monitor the network traffic of the Save Sick Child application built with RequireJS in Chrome Developer Tools, and you'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 requests that browser sends are for loading all required modules.
-
-[[unoptim_require_fig]]
-.Unoptimized version of Save Sick Child Application
-image::fig_07_02.png[]
-
-The next <<optim_with_rjs_fig,screenshot>> shows the loading of Save Sick Child application optimized with RequireJS optimizer. As you can see, we managed to pack all our modules, its dependencies and loader's code under one single file. And considerably decreased number of server-side calls.  
-
-[[optim_with_rjs_fig]]
-.Loading of optimized version of Save Sick Child 
-image::fig_07_03.png[]
-
-You can find more information about different optimization topics on the RequireJS documentation site under http://requirejs.org/docs/optimization.html[``Optimization''] section.
-
-****
 
 
 ==== Universal Module Definition (UMD)
@@ -494,7 +315,225 @@ http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 transpiler] de
 TDB: TypeSctript module feature
 ****
 
-=== Advanced Modularization
+// vik
+
+[[REQUIREJS]]
+=== Mincing Save Sick Child Application Into Modules
+
+After covering the basics of AMD and different modularization patterns let's see how modularization can work in the real world. In this section we'll introduce the AMD-complaint module loader http://requirejs.org/[RequireJS] and will show how you can apply this framework in real world.
+
+TIP: http://github.com/cujojs/curl[*curl.js*] is another AMD-compliant asynchronous loader. curl.js and RequireJS are very similar frameworks. But If you want to learn differences between them you can follow https://groups.google.com/forum/#!topic/requirejs/niUyLZrivgs[this thread on RequireJS group]. Interestingly, that in this thread you can find answers of the developers of RequireJS (James Burke) and curl.js (John Hann).
+
+Let's start with brief explanation of structure of the directories for Save Sick Child application that we will use in this chapter.
+
+[[ssc_structure]]
+.A directory structure of Save Sick application for this chapter
+image::fig_07_05.png[align="center"]
+
+1. The +app/modules+ directory. We will store all application's JavaScript files here.
++
+
+Inside modules directory we can have as many nested folder as we want. For example, here we have +utils+ folder.
+
+2. The application assests we will left as is we had in previous chapters.
+3. The +components+ directory. Here we will put all managed with Bower dependencies like RequireJS and its plugins, jQuery and etc. For more details on Bower please read <<what_is_bower>> sidebar.
+4. The +dist+ directory. We will use this directory as output of optimized version of application. We will cover optimization with `r.js` later in <<using_reuiqrejs_optimizer>> section.
+5. The +test+ directory. We will place the QUnit/Jasmine tests in this directory. We not going to talk about testing in this chapter. Consider it as foundation of the talk about testing techniques for JavaScript applications in the next chapter <<tdd_with_javasctipt>>.
+
+You can download require.js from its github repository or use a package manager like <<what_is_bower,Bower>>.
+
+// /vik
+
+[[what_is_bower]]
+.What is *Bower*?
+****
+https://github.com/bower/bower[Bower] is a package manager for the web projects. Twitter has  donated it to the open-source community. Bower is a utility and a community driven repository of libraries and frameworks for front-end development. Bower's idea is very similar to NPM, but the latter is more suitable for the server-side projects. Bower was designed and implemented to handle dependencies for web projects.
+
+Bower will take care of transitive (dependency of a dependency) dependencies and download all required library components. Each Bower package has bower.json file, which contains the package metadata for managing the package's transitive dependencies. Also, bower.json can contain information about the package repository, readme file, license et al. You can find bower.json in the root directory of the package. For example, the path _components/requirejs/bower.json_ is a path for the RequireJS metadata file. Bower can installed via NPM. The following line shows how to install Bower globally in your system.
+
+[source,bash]
+----
+npm install -g bower    
+----
+
+Next you can start using Bower. For example, here is a Bower's command to install RequireJS.
+
+[source,bash]
+----
+bower install requirejs --save 
+----
+Bower installs RequireJS into _components/requirejs_ directory and saves information about dependencies in bower.json configuration file.
+
+Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means that you don't necessarily need to store dependencies of your application next to a application files in the source code repository. Your application could have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`. And you can find all your dependency files in +components+ directory. Here is the content of the file bower.json for our Save Sick Child application.
+
+[source,javascript]
+----
+{
+  "name": "ch7_dynamic_modules",
+  "description": "Chapter 7: Save Sick Child, Dynamic Modules app",
+  "dependencies": {
+    "requirejs": "~2.1.5",
+    "jquery": ">= 1.8.0",
+    "qunit": "~1.11.0",
+    "modernizr": "~2.6.2",
+    "requirejs-google-maps": "latest"
+  }
+}
+----
+
+Application dependencies are specified in corresponding "dependencies section.
+
+[[application_components]]
+.Directory structure of application's components
+image::fig_07_04.png[align="center"]
+
+Also, there is a http://sindresorhus.com/bower-components/[Bower search tool] to find desired component in repository.
+
+****
+
+// vik
+Once RequireJS downloaded and placed into project directories, we need to add it to the html file like demonstrated in <<add_requirejs>> snippet.
+
+[[add_requirejs]]
+.Adding RequireJS to the web page
+[source,html]
+----
+<!DOCTYPE html>
+<head>
+    <!-- content omitted -->
+</head>
+<body>
+<!-- page body -->
+
+<script src="components/requirejs/require.js" 
+        data-main="app/config"></script> <!-- <1> -->
+
+</body>
+</html>
+----
+[[data_main_attrib]]
+<1> Once the RequireJS library has loaded it will look for the `data-main` attribute and attempt to load `app/config.js` script asynchronously. The `app/config.js` is the entry point of your application.
+
+// /vik
+
+==== Inside +config.js+
+RequiredJS  uses a configuration object that includes that modules and dependencies to be managed by the framework.
+
+[source,javascript]
+----
+include::include/ch7_require_config.js[]
+----
+<1> http://requirejs.org/docs/api.html#config[RequireJS Documentation] has comprehensive overview of all configuration options. We've included some of them here. 
+
+<2> The `paths` configuration option defines the mapping for module names and its paths. The `paths` is used for module names and shouldn't contain file extensions.
+
+<3> After configuring the modules' paths we're loading the 'main' module. We're kicking off the navigation of our application flow there.
+
+// vik
+
+==== Loading Modules On-Demand
+
+Couple components of our application don't necessarily need to be loaded in the time when application starts. Similar to Mercedes Benz website example, some functionality of Save Sick Child website could be loaded later when user needs it. For example, user might never approach "Where we work" section. So those functionality is a great candidate for "load on-demand" module.
+You may want to load a module on demand when the user clicks the button or selects a menu item. In the following example, the module can be in one of three states: 
+
+* not loaded (`module === null`)
+* loading in progress (`module === 'loading'`)
+* fully loaded (`module !== null`).
++
+
+[[load_ondemand_snippet]]
+.Loading +widget1+ module on demand
+[source,javascript]
+----
+include::include/ch7_module_ondemand.js[]
+----
+
+<1> Checking if a module loading in progress.
+<2> We don't want to load the module each time. If module was loaded just call method to render widget on the page.
+<3> Setting the module into intermediate state until it's fully loaded. 
+<4> Once the module is loaded, instantiate the new widget object and render it in the page.
+
+Let's apply technique demonstrated in <<load_ondemand_snippet>> snippet for Save Sich Child application to load "Who We Are", "What We Do", "Where We Work" and "Wat To Give" section only if user clicked on corresponding top bar link.
+
+.Main Module
+[source,javascript]
+----
+include::include/ch7_main_module.js[]
+----
+<1> As was explained earlier in this chapter, first argument of the `define` function receives array of dependencies.
++
+
+The `!` sign in module id string literal means that RequireJS delegated some work to the plugin named `order` for example. This plugin enforces loading order. We will talk about RequireJS plugins late in this chapter in <<requirejs_plugins>> section.
+
+<2> An array of modules that we will be loading on demand.
+
+<3> Function that will produce click handled described in <<load_ondemand_snippet>> snippet. 
+
+<4> In this function we instantiate click handle and apply it to button defined in module config.
+
+<5> Finally, we need to initialize each module button with lazy loading handler.
+
+[[requirejs_plugins]]
+==== RequireJS plugins
+
+TBD +async.js+ and +order.js+
+
+// /vik
+
+[[using_reuiqrejs_optimizer]]
+==== Using RequireJS Optimizer
+
+RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that does optimization of modules. 
+
+Earlier in this chapter, we've specified the dependencies as array of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
+
+Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files.
+
+*TODO*: _Make introduction of Grunt Tools in this chapter not next chapter._ 
+
+Let's configure our Grunt project to enable optimization task. Here'e the command to install requirejs, clean, concat and uglify grunt tasks packages and save them as development dependency in package.json:
+
+.Add RequireJS dependency to package.json
+[source,bash]
+----
+> npm install grunt-contrib-requirejs grunt-contrib-concat grunt-contrib-clean grunt-contrib-uglify --saveDev 
+----
+
+<<rjs_gruntfile_list,Following listing>> describes how to setup RequireJS optimizer and related optimization tasks for Grunt.
+
+[[rjs_gruntfile_list]]
+[source,javascript]
+----
+include::include/ch7_rjs_Gruntfile.js[]
+----
+
+<1> The +clean+ task cleans output directory. In the `files` section of task config we specify what folder should be cleaned.
+<2> The +requirejs+ task. The configuration properties of +requrejs+ task are self-explanatory. +mainConfigFile+ points at the same file that <<data_main_attrib,`data-main` attribute>> of RequireJS script tag. +out+ parameter specifies output directory where optimized script will be created.
+<3> The +concat+ task combines/concatenates together optimized modules code and RequireJS loader code.
+<4> The +uglify+ task minifies provided files using http://lisperator.net/uglifyjs/[UglifyJS] - a compressor/minifier tool. UglifyJS produces significantly smaller version of original script by reducing Abstract Source Tree (AST) and mangling local variable to single-letters.
+<5> Loading plugins that provide necessary tasks.
+<6> The default task to execute all tasks in order.
+
+Monitor the network traffic of the Save Sick Child application built with RequireJS in Chrome Developer Tools, and you'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 requests that browser sends are for loading all required modules.
+
+[[unoptim_require_fig]]
+.Unoptimized version of Save Sick Child Application
+image::fig_07_02.png[]
+
+The next <<optim_with_rjs_fig,screenshot>> shows the loading of Save Sick Child application optimized with RequireJS optimizer. As you can see, we managed to pack all our modules, its dependencies and loader's code under one single file. And considerably decreased number of server-side calls.  
+
+[[optim_with_rjs_fig]]
+.Loading of optimized version of Save Sick Child 
+image::fig_07_03.png[]
+
+You can find more information about different optimization topics on the RequireJS documentation site under http://requirejs.org/docs/optimization.html[``Optimization''] section.
+
+=== Advanced Modularization Topics
+
+* DI/IOC
+* Patterns (mediator, service locator)
+
+TBD
 
 === Summary
 
