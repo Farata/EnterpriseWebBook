@@ -262,12 +262,9 @@ AMD Cons:
 * Easy to get a mismatch between dependency array and callback arguments (Example TBD).
 
 
-==== Universal Module Definition (UMD)
+==== Universal Module Definition
 
-Universal Module Definition (UMD) is the series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats.
-
-
-Here is an example of module definition using the UMD notation. In the following example, the module can be used with the AMD loader as one of variations of the Module Pattern.
+Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. Here is an example of module definition using the UMD notation. In the following example, the module can be used with the AMD loader as one of variations of the Module Pattern.
 
 
 [source,javascript]
@@ -315,34 +312,30 @@ http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 transpiler] de
 TDB: TypeSctript module feature
 ****
 
-// vik
-
 [[REQUIREJS]]
-=== Mincing Save Sick Child Application Into Modules
+=== Mincing the Save Sick Child Application Into Modules
 
-After covering the basics of AMD and different modularization patterns let's see how modularization can work in the real world. In this section we'll introduce the AMD-complaint module loader http://requirejs.org/[RequireJS] and will show how you can apply this framework in real world.
+Now that you know the basics of AMD and different modularization patterns, let's  modularize our Save Sick Child application. In this section we'll apply the AMD-complaint module loader - the framework http://requirejs.org/[RequireJS].
 
-TIP: http://github.com/cujojs/curl[*curl.js*] is another AMD-compliant asynchronous loader. curl.js and RequireJS are very similar frameworks. But If you want to learn differences between them you can follow https://groups.google.com/forum/#!topic/requirejs/niUyLZrivgs[this thread on RequireJS group]. Interestingly, that in this thread you can find answers of the developers of RequireJS (James Burke) and curl.js (John Hann).
+TIP: http://github.com/cujojs/curl[curl.js] is another AMD-compliant asynchronous loader. curl.js and RequireJS are very similar frameworks. To learn differences between them you can follow https://groups.google.com/forum/#!topic/requirejs/niUyLZrivgs[this thread on RequireJS group]. In this thread you can find answers of the developers of RequireJS (James Burke) and curl.js (John Hann).
 
-Let's start with brief explanation of structure of the directories for Save Sick Child application that we will use in this chapter.
+Let's start with brief explanation of the directory structure of the modularized Save Sick Child.
 
 [[ssc_structure]]
-.A directory structure of Save Sick application for this chapter
+.A directory structure of Save Sick Child
 image::fig_07_05.png[align="center"]
 
-1. The +app/modules+ directory. We will store all application's JavaScript files here.
+1. All application's JavaScript files reside in the _app/modules_ directory.
 +
 
-Inside modules directory we can have as many nested folder as we want. For example, here we have +utils+ folder.
+Inside the _modules_ directory you can have as many nested folders as you want, e.g. _utils_ folder.
 
-2. The application assests we will left as is we had in previous chapters.
-3. The +components+ directory. Here we will put all managed with Bower dependencies like RequireJS and its plugins, jQuery and etc. For more details on Bower please read <<what_is_bower>> sidebar.
-4. The +dist+ directory. We will use this directory as output of optimized version of application. We will cover optimization with `r.js` later in <<using_reuiqrejs_optimizer>> section.
-5. The +test+ directory. We will place the QUnit/Jasmine tests in this directory. We not going to talk about testing in this chapter. Consider it as foundation of the talk about testing techniques for JavaScript applications in the next chapter <<tdd_with_javasctipt>>.
+2. The application assests remain the same as in previous chapters.
+3. We keep all Bower-managed dependencies in the _components_ directory: RequireJS and its plugins, jQuery etc. For more details on Bower please read <<what_is_bower>> sidebar.
+4. The _dist_  directory will serve as the location for the optimized version of our application. We will cover optimization with `r.js` later in <<using_reuiqrejs_optimizer>> section.
+5. The QUnit/Jasmine tests will live in the _test_ directory. Testing will be covered in the next chapter <<tdd_with_javasctipt>>. 
 
 You can download require.js from its github repository or use a package manager like <<what_is_bower,Bower>>.
-
-// /vik
 
 [[what_is_bower]]
 .What is *Bower*?
@@ -391,8 +384,7 @@ Also, there is a http://sindresorhus.com/bower-components/[Bower search tool] to
 
 ****
 
-// vik
-Once RequireJS downloaded and placed into project directories, we need to add it to the html file like demonstrated in <<add_requirejs>> snippet.
+Once RequireJS downloaded and placed into the project directory, add it to the html file as  demonstrated in <<add_requirejs>> snippet.
 
 [[add_requirejs]]
 .Adding RequireJS to the web page
@@ -412,29 +404,27 @@ Once RequireJS downloaded and placed into project directories, we need to add it
 </html>
 ----
 [[data_main_attrib]]
-<1> Once the RequireJS library has loaded it will look for the `data-main` attribute and attempt to load `app/config.js` script asynchronously. The `app/config.js` is the entry point of your application.
+<1> Once the RequireJS library is loaded it will look for the `data-main` attribute and attempt to load the `app/config.js` script asynchronously. The `app/config.js` is the entry point of our application.
 
-// /vik
 
 ==== Inside +config.js+
-RequiredJS  uses a configuration object that includes that modules and dependencies to be managed by the framework.
+
+RequiredJS  uses a configuration object that includes that modules and dependencies that have to be managed by the framework.
 
 [source,javascript]
 ----
 include::include/ch7_require_config.js[]
 ----
-<1> http://requirejs.org/docs/api.html#config[RequireJS Documentation] has comprehensive overview of all configuration options. We've included some of them here. 
+<1> http://requirejs.org/docs/api.html#config[RequireJS Documentation] has a comprehensive overview of all configuration options. We've included some of them here. 
 
 <2> The `paths` configuration option defines the mapping for module names and its paths. The `paths` is used for module names and shouldn't contain file extensions.
 
-<3> After configuring the modules' paths we're loading the 'main' module. We're kicking off the navigation of our application flow there.
+<3> After configuring the modules' paths we're loading the 'main' module. The navigation of our application flow starts there.
 
-// vik
 
 ==== Loading Modules On-Demand
 
-Couple components of our application don't necessarily need to be loaded in the time when application starts. Similar to Mercedes Benz website example, some functionality of Save Sick Child website could be loaded later when user needs it. For example, user might never approach "Where we work" section. So those functionality is a great candidate for "load on-demand" module.
-You may want to load a module on demand when the user clicks the button or selects a menu item. In the following example, the module can be in one of three states: 
+A couple of components of our application don't necessarily need to be loaded at the time when the  application starts. Similar to Mercedes Benz website example, some functionality of Save Sick Child can be loaded later when user needs it. For example, the user might never want to visit the "Where we work" section. Hence this functionality is a great candidate for the "load on-demand" module. You may want to load a module on demand when the user clicks the button or selects a menu item. The module can be in one of three states: 
 
 * not loaded (`module === null`)
 * loading in progress (`module === 'loading'`)
@@ -448,37 +438,35 @@ You may want to load a module on demand when the user clicks the button or selec
 include::include/ch7_module_ondemand.js[]
 ----
 
-<1> Checking if a module loading in progress.
-<2> We don't want to load the module each time. If module was loaded just call method to render widget on the page.
-<3> Setting the module into intermediate state until it's fully loaded. 
-<4> Once the module is loaded, instantiate the new widget object and render it in the page.
+<1> Checking if module loading in progress.
+<2> Don't re-load the same module. If the module was already loaded just call the method to render the widget on the Web page.
+<3> Setting the module into the intermediate state until it's fully loaded. 
+<4> Once the module is loaded, instantiate the new widget object and render it on the page.
 
-Let's apply technique demonstrated in <<load_ondemand_snippet>> snippet for Save Sich Child application to load "Who We Are", "What We Do", "Where We Work" and "Wat To Give" section only if user clicked on corresponding top bar link.
+Let's apply technique demonstrated in <<load_ondemand_snippet>> snippet for Save Sich Child application to load the "Who We Are", "What We Do", "Where We Work" and "What To Give" sections only if the user clicked on the corresponding top bar link.
 
-.Main Module
+.The Main Module
 [source,javascript]
 ----
 include::include/ch7_main_module.js[]
 ----
-<1> As was explained earlier in this chapter, first argument of the `define` function receives array of dependencies.
+<1> The first argument of the `define` function receives the array of dependencies.
 +
 
-The `!` sign in module id string literal means that RequireJS delegated some work to the plugin named `order` for example. This plugin enforces loading order. We will talk about RequireJS plugins late in this chapter in <<requirejs_plugins>> section.
+The `!` sign in the module id string literals means that RequireJS delegates some work to a  plugin - it's `order` in our example. This plugin enforces the loading order. We will talk about RequireJS plugins later in this chapter in the <<requirejs_plugins>> section.
 
-<2> An array of modules that we will be loading on demand.
+<2> An array of modules that can be loaded on demand.
 
-<3> Function that will produce click handled described in <<load_ondemand_snippet>> snippet. 
+<3> The function that will produce click handled described in <<load_ondemand_snippet>> snippet. 
+<4> Instantiate the click handler and apply it to button defined in module config.
 
-<4> In this function we instantiate click handle and apply it to button defined in module config.
-
-<5> Finally, we need to initialize each module button with lazy loading handler.
+<5> Finally, we need to initialize each module button with the lazy loading handler.
 
 [[requirejs_plugins]]
 ==== RequireJS plugins
 
 TBD +async.js+ and +order.js+
 
-// /vik
 
 [[using_reuiqrejs_optimizer]]
 ==== Using RequireJS Optimizer
@@ -514,16 +502,16 @@ include::include/ch7_rjs_Gruntfile.js[]
 <5> Loading plugins that provide necessary tasks.
 <6> The default task to execute all tasks in order.
 
-Monitor the network traffic of the Save Sick Child application built with RequireJS in Chrome Developer Tools, and you'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 requests that browser sends are for loading all required modules.
+Run the Save Sick Child application built with RequireJS and monitor the network traffic in Chrome Developer Tools, and you'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 requests that browser sends are for loading all required modules.
 
 [[unoptim_require_fig]]
-.Unoptimized version of Save Sick Child Application
+.Unoptimized version of the Save Sick Child Application
 image::fig_07_02.png[]
 
-The next <<optim_with_rjs_fig,screenshot>> shows the loading of Save Sick Child application optimized with RequireJS optimizer. As you can see, we managed to pack all our modules, its dependencies and loader's code under one single file. And considerably decreased number of server-side calls.  
+The next <<optim_with_rjs_fig,screenshot>> shows loading of the Save Sick Child application optimized with RequireJS optimizer. We managed to pack all our modules, its dependencies and loader's code into a single file, which considerably decreased the number of server-side calls.
 
 [[optim_with_rjs_fig]]
-.Loading of optimized version of Save Sick Child 
+.Loading of optimized version of the Save Sick Child 
 image::fig_07_03.png[]
 
 You can find more information about different optimization topics on the RequireJS documentation site under http://requirejs.org/docs/optimization.html[``Optimization''] section.
@@ -537,8 +525,8 @@ TBD
 
 === Summary
 
-The size of your application tends to increase, and sooner or later you'll need to decide how to cut it into several loadable blocks of functionality. The sooner you start planning for modularizing your application the better. 
+The size of your application tends to increase, and sooner or later you'll need to decide how to cut it into several loadable blocks of functionality. The sooner you start modularizing your application the better. 
 
-In this chapter we've reviewed several options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using the (classical) module pattern alone including: avoiding a need for developers to create global variables for each module and better support for static and dynamic dependency management.
+In this chapter we've reviewed several options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using just the classical  Module Pattern. These advantages include avoiding creating global variables for each module and better support for static and dynamic dependency management.
 
-Understanding what technologies and frameworks available in JavaScript, combined with the knowledge of different ways of linking modules and libraries to your main application is crucial for the creation of responsive JavaScript applications.
+Understanding various technologies and frameworks available in JavaScript, combined with the knowledge of different ways of linking modules and libraries is crucial for developrs who want their JavaScript applications to be more responsive.
