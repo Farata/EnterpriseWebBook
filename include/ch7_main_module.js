@@ -28,7 +28,7 @@ define(["order!login", "order!donation", "order!svg-pie-chart", "modules/generic
             containerId: "way-to-give-container",
             htmlContentUrl: "assets/html-includes/way-to-give.html"
         }];
-        lazyLoadingEventHandlerFactory = function(moduleId, containerId, htmlContentPath) {
+        lazyLoadingEventHandlerFactory = function(moduleId, containerId, htmlContentPath) { // <3>
             return function(event) {
                 var module;
 
@@ -46,13 +46,13 @@ define(["order!login", "order!donation", "order!svg-pie-chart", "modules/generic
                 }
             };
         };
-        initModule = function(module) {
+        initModule = function(module) {     // <4>
             var handler;
 
             handler = lazyLoadingEventHandlerFactory(module.moduleId, module.containerId, module.htmlContentUrl);
             return module.button.addEventListener("click", handler, false);
         };
-        for (_i = 0, _len = modulesConfig.length; _i < _len; _i++) {
+        for (_i = 0, _len = modulesConfig.length; _i < _len; _i++) {    // <5>
             module = modulesConfig[_i];
             initModule(module);
         }
