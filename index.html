@@ -993,7 +993,7 @@ p.tableblock.header { color: #6d6e71; }
 <ol type="none" class="sectlevel3">
 <li><a href="#_module_pattern">Module Pattern</a></li>
 <li><a href="#_commonjs">CommonJS</a></li>
-<li><a href="#_asynchronous_module_definition">Asynchronous Module Definition</a></li>
+<li><a href="#amd_section">Asynchronous Module Definition</a></li>
 <li><a href="#_universal_module_definition">Universal Module Definition</a></li>
 <li><a href="#_ecmascript_6_modules">ECMAScript 6 Modules</a></li>
 </ol>
@@ -1001,7 +1001,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#REQUIREJS">Mincing the Save Sick Child Application Into Modules</a></li>
 <li>
 <ol type="none" class="sectlevel3">
-<li><a href="#_inside_code_config_js_code">Inside <code>config.js</code></a></li>
+<li><a href="#inside_config">Inside <code>config.js</code></a></li>
 <li><a href="#_loading_modules_on_demand">Loading Modules On-Demand</a></li>
 <li><a href="#requirejs_plugins">RequireJS plugins</a></li>
 <li><a href="#using_reuiqrejs_optimizer">Using RequireJS Optimizer</a></li>
@@ -14164,7 +14164,7 @@ The exports variable is an object that has the implicit value of your module. Wh
 
 </div>
 <div class="sect3">
-<h4 id="_asynchronous_module_definition">Asynchronous Module Definition</h4>
+<h4 id="amd_section">Asynchronous Module Definition</h4>
 <div class="paragraph">
 <p>AMD began as a draft specification for module format in CommonJS, but since the full consensus about its content was not reached, the further development of the module format moved to the <a href="https://github.com/amdjs">amdjs Github page</a>.</p>
 </div>
@@ -14602,7 +14602,7 @@ var result = Login("admin", "password");</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_inside_code_config_js_code">Inside <code>config.js</code></h4>
+<h4 id="inside_config">Inside <code>config.js</code></h4>
 <div class="paragraph">
 <p>RequiredJS  uses a configuration object that includes that modules and dependencies that have to be managed by the framework.</p>
 </div>
@@ -14749,7 +14749,7 @@ var buttonClickHandler = function(event) {
             containerId: "way-to-give-container",
             htmlContentUrl: "assets/html-includes/way-to-give.html"
         }];
-        lazyLoadingEventHandlerFactory = function(moduleId, containerId, htmlContentPath) {
+        lazyLoadingEventHandlerFactory = function(moduleId, containerId, htmlContentPath) { // <i class="conum">3</i>
             return function(event) {
                 var module;
 
@@ -14767,13 +14767,13 @@ var buttonClickHandler = function(event) {
                 }
             };
         };
-        initModule = function(module) {
+        initModule = function(module) {     // <i class="conum">4</i>
             var handler;
 
             handler = lazyLoadingEventHandlerFactory(module.moduleId, module.containerId, module.htmlContentUrl);
             return module.button.addEventListener("click", handler, false);
         };
-        for (_i = 0, _len = modulesConfig.length; _i &lt; _len; _i++) {
+        for (_i = 0, _len = modulesConfig.length; _i &lt; _len; _i++) {    // <i class="conum">5</i>
             module = modulesConfig[_i];
             initModule(module);
         }
@@ -14795,7 +14795,7 @@ var buttonClickHandler = function(event) {
 </tr>
 <tr>
 <td><i class="conum">3</i></td>
-<td>The function that will produce click handled described in <a href="#load_ondemand_snippet">Loading <code>widget1</code> module on demand</a> snippet.</td>
+<td>Here we&#8217;re using approach that we described in <a href="#load_ondemand_snippet">Loading <code>widget1</code> module on demand</a> section. This factory function produces button on-click handler. It uses RequireJS API to load the module once user clicked button.</td>
 </tr>
 <tr>
 <td><i class="conum">4</i></td>
@@ -14803,16 +14803,90 @@ var buttonClickHandler = function(event) {
 </tr>
 <tr>
 <td><i class="conum">5</i></td>
-<td>Finally, we need to initialize each module button with the lazy loading handler.</td>
+<td>On the last step, we need to initialize each module button with the lazy loading handler.</td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>At this point, you should get the idea how to load module&#8217;s code. Next, let&#8217;s see how make your modules recognizable by RequireJS loader.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define(["newContentLoader"], function(contentLoader) {      // <i class="conum">1</i>
+    "use strict";
+    var genericModule;
+
+    genericModule = function(moduleId) {    // <i class="conum">2</i>
+        return {
+            render: function(button, containerId, dataUrl) {
+                contentLoader.getNewContent(button, containerId, dataUrl);  // <i class="conum">3</i>
+                console.log("Module " + moduleId + " is rendered...");
+            }
+        };
+    };
+    return genericModule;
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>As we discussed in the <a href="#amd_section">Asynchronous Module Definition</a> section, the code that you want to expose as a module should be wrapped in the <code>define()</code> function call. The first parameter is an array of dependencies. The location of dependencies files we&#8217;re defined <a href="#inside_config">Inside <code>config.js</code></a>. The dependency object doesn&#8217;t have the same name as the dependency string id. The most important is order that dependency objects are passed to factory function. The order should be the same as the order in the dependencies array.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>In this module we export only in the constructor function that returns object that uses <em>render</em> function to draw the visual component on the screen. In our case, this is part of HTML file with text for specific module.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>The <code>contentLoader</code> object loaded from <em>app/modules/util/new-content-loader.js</em> (refer the <em>config.js</em>), instantiated by RequireJS and is ready to use.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>RequreJS also supports CommonJS module format.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define(function(require, exports, module) {
+    "use strict";
+    var AuctionDTO;
+    module.exports = AuctionDTO = (function() {
+
+        function AuctionDTO(_arg) {
+            this.auctionState = _arg.auctionState;
+            this.item = _arg.item;
+            this.bestBid = _arg.bestBid;
+            this.auctionId = _arg.auctionId;
+        }
+
+        AuctionDTO.prototype.toJson = function() {
+            return JSON.stringify(this);
+        };
+
+        return AuctionDTO;
+    })();
+
+    return AuctionDTO;
+});</code></pre>
+</div>
 </div>
 
 </div>
 <div class="sect3">
 <h4 id="requirejs_plugins">RequireJS plugins</h4>
 <div class="paragraph">
-<p>TBD <code>async.js</code> and <code>order.js</code></p>
+<p>RequireJS plugins are special modules that implement a specific API. Plugins can extend the default loader&#8217;s functionality. For example, the <em>text</em> plugin allows to specify a text file as a dependency, <em>cs!</em> translates <em>CoffeeScript</em> files into JavaScript. The plugin&#8217;s module name comes before the <em>!</em> separator.</p>
+</div>
+<div class="paragraph">
+<p>In the Save Sick Child application we use <em>async.js</em> and <em>order.js</em> plugins. <em>Async</em> is the  plugin for loading Google Maps dependency asynchronously. The <em>order</em> is a plugin that allows to specify the exact order in which the dependencies should be loaded.</p>
+</div>
+<div class="paragraph">
+<p>You can find the full list of the available RequireJS plugins at the following <a href="https://github.com/jrburke/requirejs/wiki/Plugins">wiki page</a>.</p>
 </div>
 
 </div>
@@ -14845,7 +14919,7 @@ var buttonClickHandler = function(event) {
 <div id="rjs_gruntfile_list" class="listingblock">
 
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">'use strict';
+<pre class="highlight"><code class="javascript language-javascript">"use strict";
 
 module.exports = function (grunt) {
 
@@ -14853,38 +14927,38 @@ module.exports = function (grunt) {
     grunt.initConfig({
         // Task configuration.
         clean: {
-            files: ['dist'] // <i class="conum">1</i>
+            files: ["dist"] // <i class="conum">1</i>
         },
         requirejs: {        // <i class="conum">2</i>
             compile: {
                 options: {
-                    name: 'config',
-                    mainConfigFile: 'app/config.js',
-                    out: '&lt;%= concat.dist.dest %&gt;',
-                    optimize: 'none'
+                    name: "config",
+                    mainConfigFile: "app/config.js",
+                    out: "&lt;%= concat.dist.dest %&gt;",
+                    optimize: "none"
                 }
             }
         },
         concat: {       // <i class="conum">3</i>
             dist: {
-                src: ['components/requirejs/require.js', '&lt;%= concat.dist.dest %&gt;'],
-                dest: 'dist/require.js'
+                src: ["components/requirejs/require.js", "&lt;%= concat.dist.dest %&gt;"],
+                dest: "dist/require.js"
             }
         },
         uglify: {       // <i class="conum">4</i>
             dist: {
-                src: '&lt;%= concat.dist.dest %&gt;',
-                dest: 'dist/require.min.js'
+                src: "&lt;%= concat.dist.dest %&gt;",
+                dest: "dist/require.min.js"
             }
         }
     });
 
-    grunt.loadNpmTasks('grunt-contrib-clean');      // <i class="conum">5</i>
-    grunt.loadNpmTasks('grunt-contrib-requirejs');
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks("grunt-contrib-clean");      // <i class="conum">5</i>
+    grunt.loadNpmTasks("grunt-contrib-requirejs");
+    grunt.loadNpmTasks("grunt-contrib-concat");
+    grunt.loadNpmTasks("grunt-contrib-uglify");
 
-    grunt.registerTask('default', ['clean', 'requirejs', 'concat', 'uglify']);  // <i class="conum">6</i>
+    grunt.registerTask("default", ["clean", "requirejs", "concat", "uglify"]);  // <i class="conum">6</i>
 };</code></pre>
 </div>
 </div>
@@ -18820,10 +18894,10 @@ As soon as the handshake completes successfully, the server side code that imple
 
 <ol class="arabic">
 <li>
-<p>In addition to your Web application that works on desktops develop separate version of native applications for each mobile device. Developing of native mobile applications is not covered in this book.</p>
+<p>In addition to your Web application that works on desktops develop a separate version of the native applications for multiple mobile devices. Development of native mobile applications is not covered in this book.</p>
 </li>
 <li>
-<p>Develop one HTML5 Web application, but create several different UI layouts that will be applied automatically based on the screen size of the user&#8217;s device.</p>
+<p>Develop a single HTML5 Web application, but create several different UI layouts that will be applied automatically based on the screen size of the user&#8217;s device.</p>
 </li>
 <li>
 <p>In addition to your Web application that works on desktops develop a <em>hybrid application</em>, which is a Web application on steroids - it works inside the mobile browser, but can invoke native API of the mobile device too. Chapter 14 is dedicated to hybrid applications.</p>
@@ -24557,10 +24631,10 @@ If you&#8217;ve architected your hybrid application in a modularized fashion as 
 <p>Hybrid applications allow you to take your HTML5-based Web application, connect it to the native API of the mobile device and package it as a native application. The selling point of using hybrids is that you can reuse the existing HTML5/JavaScript expertise. In the enterprise setup maintaining bugs in a one-language bug database is a lot more easier than if you have multiple versions of the application written in different languages. Maintaining a single set of images, videos, and CSS files makes is yet another advantage that lowers both time to market and cost of ownership of the application.</p>
 </div>
 <div class="paragraph">
-<p>Thorough testing of hybrid application is a must. With the BYOD policies even the enterprise applications nust be tested on a variety devices. Development manager and application owners have to agree on the list of mobile devices where your application will be deployed first. This has to be done in writing in the early stages of the project and be as detailed as possible. The statements like "The initial version of the application will run on iOS devices" is not good enough, because the difference between iPhone 3GS and iPhone 5 is huge. The former has 256MB of RAM, 600 Mhz CPU, and 480x320 pixels screen, while the latter champions 1GB RAM, 3-core A6 CPU at 1.3Ghz, and 1135x640 pixels display.</p>
+<p>Thorough testing of hybrid application is a must. With the BYOD policies even the enterprise applications nust be tested on a variety devices. Development manager and application owners have to agree on the list of mobile devices where your application will be deployed first. This has to be done in writing in the early stages of the project and be as detailed as possible. The statements like "The initial version of the application will run on iOS devices" is not good enough, because the difference between iPhone 3GS and iPhone 5 is huge. The former has 256MB of RAM, 600 Mhz CPU, and 480x320 pixels screen, while the latter champions 1GB of RAM, 3-core A6 CPU at 1.3Ghz, and 1135x640 pixels display.</p>
 </div>
 <div class="paragraph">
-<p>Hybrid applications not only give access to native capabilities of the mobile devices, but allow distribute your HTML5 application through multiple App Stores or Market Places offered by the device manufacturers.</p>
+<p>Hybrid applications not only give the developers and users access to native capabilities of the mobile devices, but allow distribute your HTML5 application through multiple App Stores or Market Places offered by the device manufacturers.</p>
 </div>
 <div class="paragraph">
 <p>Enterprise managers are always concerned with the availability of the paid technical support. A substantial part of this chapter was about using PhoneGap, and Adobe offers <a href="http://phonegap.com/support/#developer">various support packages</a> for purchase.</p>
