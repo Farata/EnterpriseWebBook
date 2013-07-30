@@ -168,6 +168,7 @@ http://browserify.org/
 https://github.com/substack/node-browserify
 
 
+[[amd_section]]
 ==== Asynchronous Module Definition
 
 AMD began as a draft specification for module format in CommonJS, but since the full consensus about its content was not reached, the further development of the module format moved to the https://github.com/amdjs[amdjs Github page].
@@ -407,6 +408,7 @@ Once RequireJS downloaded and placed into the project directory, add it to the h
 <1> Once the RequireJS library is loaded it will look for the `data-main` attribute and attempt to load the `app/config.js` script asynchronously. The `app/config.js` is the entry point of our application.
 
 
+[[inside_config]]
 ==== Inside +config.js+
 
 RequiredJS  uses a configuration object that includes that modules and dependencies that have to be managed by the framework.
@@ -457,15 +459,45 @@ The `!` sign in the module id string literals means that RequireJS delegates som
 
 <2> An array of modules that can be loaded on demand.
 
-<3> The function that will produce click handled described in <<load_ondemand_snippet>> snippet. 
+<3> Here we're using approach that we described in <<load_ondemand_snippet>> section. This factory function produces button on-click handler. It uses RequireJS API to load the module once user clicked button.
+
 <4> Instantiate the click handler and apply it to button defined in module config.
 
-<5> Finally, we need to initialize each module button with the lazy loading handler.
+<5> On the last step, we need to initialize each module button with the lazy loading handler.
+
+// vik
+
+At this point, you should get the idea how to load module's code. Next, let's see how make your modules recognizable by RequireJS loader. 
+
+[source,javascript]
+----
+include::include/ch7_module_contentLoader.js[]
+----
+<1> As we discussed in <<amd_section>> section, code that we want to expose as module should be wrapped in the +define+ function call. First parameter is array of dependencies. Location of dependencies files we're defined <<inside_config>>. Dependency object not necessary should have same name as dependency string id. Most important is order that dependency objects are passed to factory function. Order should be the same as order in dependencies array.
+
+<2> in this module we export only on constructor function that returns object that uses +render+ function to draw visual component (in our case, this is part of HTML file with text for specific module) to screen. 
+
+<3> The +contentLoader+ object loaded form +app/modules/util/new-content-loader.js+ (refer the +config.js+), instantiated by RequireJS and ready to use. 
+
+RequreJS also supports CommonJS module format.
+
+[source,javascript]
+----
+include::include/ch7_commonjs_require.js[]
+----
+
+// TBD
 
 [[requirejs_plugins]]
 ==== RequireJS plugins
 
-TBD +async.js+ and +order.js+
+RequireJS plugins are special module that implement a specific API. Plugins can extend default loader's functionality. For example +text+ plugin allows to specify text file as dependency, +cs!+ translates _CoffeeScript_ files in to JavaScript. The plugin's module name comes before the +!+ separator.
+
+In Save Sick Child application we're using +async.js+ and +order.js+ plugins. +Async+ is a plugin for asynchronous dependency load Google Maps. +Order+ is plugin that allows specify exact order in that the dependencies should be loaded.
+
+Full list of available RequireJS plugins you can find in https://github.com/jrburke/requirejs/wiki/Plugins[official wiki page].
+
+// /vik
 
 
 [[using_reuiqrejs_optimizer]]
