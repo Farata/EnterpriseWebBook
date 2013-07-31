@@ -15,16 +15,25 @@ From the application design code of view, we don't need to push include the code
 .MB USA: Europian Delivery 
 image::fig_07_01.png[image]
 
-As you see, 1.9Mb worth of code and other resources have been downloaded as a result of this click. Should the application architects of the MB USA IT decided to load this code on the initial load of mbusa.com, the user would have to wait for another second or more, which would be a wrong design because only a tiny number of American driver would be interested in even looking at the European Delivery option. This is an example of modularization and lazy loading in action.
+As you see, _1.9Mb_ worth of code and other resources have been downloaded as a result of this click. Should the application architects of the MB USA IT decided to load this code on the initial load of http://mbusa.com, the user would have to wait for another second or more, which would be a wrong design because only a tiny number of American driver would be interested in even looking at the European Delivery option. This is an example of modularization and lazy loading in action.
 
-Our Save Sick Child application is not as big as Mercedes Benz site. But we'll use it to give you an example of how to build  modularized Web applications that won't bring the monolithic ten megabyte application to the client's machine, but will load the code on as needed basis. We'll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.
+Our Save Sick Child application is not as big as Mercedes Benz site. But we'll use it to give you an example of how to build modularized Web applications that won't bring the monolithic ten megabyte application to the client's machine, but will load the code on as needed basis. We'll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.
 
 People consider your web application fast for one of two reasons: either it's actually fast or it gives an impression of being fast. Ideally, you should do your best to create an web application that is very responsive. No matter how slow your web application is, it should never feel like freezing.
 
 This chapter is about modularization techniques that will quickly render the first page of your web application on the user's Browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save Sick Child application to illustrate using modules.
 
+=== Modularization basics
+
+// vik
+
+Modules are pieces of code that are focused on a specific set of functionality, written using a specific pattern to facilitate modular use of the code.
+
 There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this with introduction a _module concept_ in the JavaScript language itself. But it's the future.
 
+Aren't +JS+ files simply modules already? 
+
+// /vik
 Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive translates into an additional HTTP call to the server. As the application gets larger the latency will growth accordingly, which is illustrated in the following code sample.
 <<LISTING_SCRIPT_TAG,Here is an example>>.
 
@@ -69,34 +78,19 @@ Of course, we can load each JavaScript file using `<script>` tag. But this appro
 
 <3> The main application script should be loaded after all dependencies.
 
-We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS example, and http://requirejs.org/[RequireJS] as AMD example.
+We need a different path to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS example, and http://requirejs.org/[RequireJS] as AMD example.
 
-You'll see how the upcoming EcmaScript 6 specification suggests dealing with modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
+You'll see how the upcoming ECMAScript 6 specification suggests dealing with modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
 
 Finally, we're going to discuss such advanced topics as intermodule-communication and Dependency Injection in JavaScript.
 
-The code of the Save Sick Child application will be refactored to implement module system based on RequireJS for lazy loading of the  application components.
+The code of the Save Sick Child application will be refactored to implement module system based on RequireJS for lazy loading of the application components.
 
-****
-.[underline]#Plan for chapter#
-* [line-through]#History: the Module pattern, namespaces#
-* CommonJS
-* AMD ~70%
-* [blue line-through]#https://github.com/umdjs/umd[UMD]#
-* Advanced topics:
-** https://gist.github.com/wycats/51c96e3adcdb3a68cbc3[ES6 modules] (http://wiki.ecmascript.org/doku.php?id=harmony:modules) and TypeScript modules
-** Inter-Module communication, Mediator pattern, Pub/Sub/EventBus example
-** _Dependency Injection_
-* ExtJS style (sidebar example ???)
-****
+// vik
 
-=== Modularization basics
+In the next section, we start our journey to the approaches and patterns one can use to create modular JaveScript architecture.
 
-//Those are raw notes of thoughts 
-//Aren't Js Files Simply Modules Already?
-//Modules are pieces of code that are focused on a specific set of functionality, written using a specific pattern to facilitate modular use of the code.
-//There's several approaches one can use to create modular JS.
-//We'll be focusing on code that can be consumed by a module loader.
+// /vik
 
 === The Paths To Modularization
 
@@ -129,7 +123,6 @@ include::include/ch7_iife_namespace_loginModule.js[]
 This approach doesn't scale well because when working with an application with a large number of modules, very soon you may find yourself adding lots of boilerplate checks of objects existence in the global scope for each new module. Also, you need to be very careful with managing namespaces. Because you are the one who put an object into the global scope, you need to think about how to avoid accidental names conflicts.
 
 There is one huge disadvantage of using the Module pattern - we still need to deal with manual dependency management and manually arranging `<script>` tags in the HTML document.
-
 
 ==== CommonJS
 
@@ -465,8 +458,10 @@ The `!` sign in the module id string literals means that RequireJS delegates som
 
 <5> On the last step, we need to initialize each module button with the lazy loading handler.
 
+// vik
+At this point, you should get the idea how to load module's code. Next, let's see what is inside a module's file that it can be consumed by a module loader.
 
-At this point, you should get the idea how to load module's code. Next, let's see how make your modules recognizable by RequireJS loader. 
+// vik
 
 [source,javascript]
 ----
@@ -558,4 +553,4 @@ The size of your application tends to increase, and sooner or later you'll need 
 
 In this chapter we've reviewed several options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using just the classical  Module Pattern. These advantages include avoiding creating global variables for each module and better support for static and dynamic dependency management.
 
-Understanding various technologies and frameworks available in JavaScript, combined with the knowledge of different ways of linking modules and libraries is crucial for developrs who want their JavaScript applications to be more responsive.
+Understanding various technologies and frameworks available in JavaScript, combined with the knowledge of different ways of linking modules and libraries is crucial for developers who want their JavaScript applications to be more responsive.
