@@ -545,6 +545,36 @@ You can find more information about different optimization topics on the Require
 * DI/IOC
 * Patterns (mediator, service locator)
 
+[[mediator_section]]
+==== Mediator Design Pattern
+
+// vik
+
+Almost any complex screen of a enterprise application consists of a number of components and modules.
+
+A simple (but wrong) approach to arrange communication between the components is to just put all these components on the page and program direct communications among these components. This would produce a monolithic application with tightly coupled components that know about each other and where removal of one component would lead to multiple code changes in the application.
+
+The better approach is to create loosely coupled components that are self-contained, do not know about one another's existence, and can communicate with the "outside world" by sending and receiving events.
+
+If you'll need to build a UI of the application from reusable components, applying messaging techniques allows you to create loosely coupled components. Say you've created a window for a financial trader. This windows get the data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be is implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
+
+Three years ago O'Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we've described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending-receiving events from the mediator object. The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can't be underestimated. 
+
+A _Mediator_ is a behavioral design pattern that allows to unify a way how the different components of a application can communicate.
+
+<<FIG1-2>> is an illustration from that Enterprise Flex book. The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask panel, the Pricing Panel just sends the event with the relevant information like JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc. In HTML5 realm, we can say that the Pricing Panel invokes `parent.postMessage()` and shoots the message to the mediator (a.k.a. main window).    
+
+[[FIG1-2]]
+.Before the trader clicked on the Price Panel
+image::fig_07_06.png[]
+
+.After the trader clicked on the Price Panel
+image::fig_07_07.png[]
+
+The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending-receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some portal that's used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it's easy to reuse the existing code in such a dashboard.
+
+// vik
+
 TBD
 
 === Summary
