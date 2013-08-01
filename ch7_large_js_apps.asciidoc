@@ -25,16 +25,10 @@ This chapter is about modularization techniques that will quickly render the fir
 
 === Modularization basics
 
-// vik
 
-Modules are pieces of code that are focused on a specific set of functionality, written using a specific pattern to facilitate modular use of the code.
+Modules are code fragments that implement specific functionality written using a specific pattern. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the _module concept_ in the JavaScript language itself. This is the future. Aren't .js files modules already? 
 
-There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this with introduction a _module concept_ in the JavaScript language itself. But it's the future.
-
-Aren't +JS+ files simply modules already? 
-
-// /vik
-Of course, we can load each JavaScript file using `<script>` tag. But this approach slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive translates into an additional HTTP call to the server. As the application gets larger the latency will growth accordingly, which is illustrated in the following code sample.
+Of course, you can load each JavaScript file using the `<script>` tag. But this approach is slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive means additional HTTP call to the server. As the application gets larger the latency grows accordingly, which is illustrated in the following code sample.
 <<LISTING_SCRIPT_TAG,Here is an example>>.
 
 
@@ -72,31 +66,28 @@ Of course, we can load each JavaScript file using `<script>` tag. But this appro
 </body>
 </html>
 ----
-<1> All modules depend on the code from Core jQuery library - loading it first.
+<1> All modules depend on the code from Core jQuery library hence load it first.
 
 <2> The application components may also have dependencies on other scripts. Those scripts need to be loaded before the component itself. The order of these script tags is very important.
 
 <3> The main application script should be loaded after all dependencies.
 
-We need a different path to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to implementing modularization. Both CommonJS and AMD are specifications and set of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS example, and http://requirejs.org/[RequireJS] as AMD example.
+We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications and sets of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS example, and http://requirejs.org/[RequireJS] as AMD example.
 
-You'll see how the upcoming ECMAScript 6 specification suggests dealing with modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
+The upcoming ECMAScript 6 specification suggests hoe to handle modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
 
-Finally, we're going to discuss such advanced topics as intermodule-communication and Dependency Injection in JavaScript.
+Finally, we're going to discuss such advanced topics as inter-module communications and Dependency Injection in JavaScript.
 
-The code of the Save Sick Child application will be refactored to implement module system based on RequireJS for lazy loading of the application components.
-
-// vik
+The code of the Save Sick Child application will be refactored to implement the module system based on RequireJS for lazy loading of the application components.
 
 In the next section, we start our journey to the approaches and patterns one can use to create modular JaveScript architecture.
 
-// /vik
 
-=== The Paths To Modularization
+=== Different Roads To Modularization
 
 ==== Module Pattern
 
-In general software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We're able to include both public/private methods and variables inside a single object, thus hiding particular section of code from global scope. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts, but used in the same application's scope.
+In software engineering, the Module Pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We're able to include both public/private methods and variables inside a single object, thus hiding particular section of code from global scope. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts, but used in the same application's scope.
 
 Ultimately, it's just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using various JavaScript syntax. Here are couple examples how Module Pattern could be implemented using IIFEs.
 
@@ -458,10 +449,8 @@ The `!` sign in the module id string literals means that RequireJS delegates som
 
 <5> On the last step, we need to initialize each module button with the lazy loading handler.
 
-// vik
-At this point, you should get the idea how to load module's code. Next, let's see what is inside a module's file that it can be consumed by a module loader.
+Now that you know how to load the module's code, let's see the module's file internals that make it consumable by the module loader.
 
-// vik
 
 [source,javascript]
 ----
@@ -548,17 +537,15 @@ You can find more information about different optimization topics on the Require
 [[mediator_section]]
 ==== Mediator Design Pattern
 
-// vik
-
 Almost any complex screen of a enterprise application consists of a number of components and modules.
 
-A simple (but wrong) approach to arrange communication between the components is to just put all these components on the page and program direct communications among these components. This would produce a monolithic application with tightly coupled components that know about each other and where removal of one component would lead to multiple code changes in the application.
+A low hanging approach to arrange communication between the components is to just put all these components on the page and program direct communications among these components. This would produce a monolithic application with tightly coupled components that know about each other and where removal of one component would lead to multiple code changes in the application.
 
 The better approach is to create loosely coupled components that are self-contained, do not know about one another's existence, and can communicate with the "outside world" by sending and receiving events.
 
-If you'll need to build a UI of the application from reusable components, applying messaging techniques allows you to create loosely coupled components. Say you've created a window for a financial trader. This windows get the data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be is implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
+Creating the UI of from reusable components applying messaging techniques requires creation of  loosely coupled components. Say you've created a window for a financial trader. This window get the data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
 
-Three years ago O'Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we've described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending-receiving events from the mediator object. The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can't be underestimated. 
+Three years ago O'Reilly has published another book written by us. That book was titled "Enterprise Development with Flex" and in particular, we've described there how to apply the Mediator design pattern for creating UI where components can communicate with each other by sending-receiving events to/from a _mediator_ object. The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can't be underestimated. 
 
 A _Mediator_ is a behavioral design pattern that allows to unify a way how the different components of a application can communicate.
 
@@ -571,9 +558,8 @@ image::fig_07_06.png[]
 .After the trader clicked on the Price Panel
 image::fig_07_07.png[]
 
-The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending-receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some portal that's used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it's easy to reuse the existing code in such a dashboard.
+The Mediator receives the message and re-posts it toits other child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communicating by sending-receiving messages to/from the mediator. Such a loosely coupled design allows reusing the same code in different applications. For example, the Pricing Panel can be reused in some portal that's used by the company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to the Order Panel, it's easy to reuse the existing code in such a dashboard.
 
-// vik
 
 TBD
 
