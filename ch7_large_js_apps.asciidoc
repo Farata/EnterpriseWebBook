@@ -28,7 +28,13 @@ This chapter is about modularization techniques that will quickly render the fir
 
 Modules are code fragments that implement specific functionality written using a specific pattern. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the _module concept_ in the JavaScript language itself. This is the future. Aren't .js files modules already? 
 
-Of course, you can load each JavaScript file using the `<script>` tag. But this approach is slow and error prone. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive means additional HTTP call to the server. As the application gets larger the latency grows accordingly, which is illustrated in the following code sample.
+// vik
+
+Of course, you can load each JavaScript file using the `<script>` tag. But this approach is error prone and slow. Developer has to manage dependencies and loading order manually. Moreover, each `<script>` tag directive means additional HTTP call to the server and browsers have limited number of simultaneous connections to one host.
+
+// /vik
+
+As the application gets larger the latency grows accordingly, which is illustrated in the following code sample.
 <<LISTING_SCRIPT_TAG,Here is an example>>.
 
 
@@ -76,11 +82,49 @@ We need a different approach to modularizing applications. Let's  start with usi
 
 The upcoming ECMAScript 6 specification suggests hoe to handle modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
 
+// vik
+For example, consider following snippet of ES6 module import syntax:
+
+.ES6 format for importing module dependency
+[source, javascript]
+----
+import "login" as login;
+var result = login("admin", "password");
+----
+
+Using ES6 transpiler form Square team this code could be translated in following:
+
+.Module defined in AMD format
+[source,javascript]
+----
+define("main",
+  ["login"],
+  function(login) {
+    "use strict";
+    var result = login("admin", "password");
+  });
+----
+
+.Module defined in CommonJS format
+[source,javascript]
+----
+"use strict";
+var login = require("login");
+var result = login("admin", "password");
+----
+
+More details about CommonJS, AMD and ES6 module format you can find in corresponding sections of this chapter.
+
+// /vik
+
 Finally, we're going to discuss such advanced topics as inter-module communications and Dependency Injection in JavaScript.
 
 The code of the Save Sick Child application will be refactored to implement the module system based on RequireJS for lazy loading of the application components.
 
-In the next section, we start our journey to the approaches and patterns one can use to create modular JaveScript architecture.
+// vik
+In the next section, we start our journey to the approaches and patterns of modular JavaScript architectures.
+
+// /vik
 
 
 === Different Roads To Modularization
@@ -393,7 +437,7 @@ Once RequireJS downloaded and placed into the project directory, add it to the h
 
 
 [[inside_config]]
-==== Inside +config.js+
+==== Inside config.js
 
 RequiredJS  uses a configuration object that includes that modules and dependencies that have to be managed by the framework.
 
@@ -462,14 +506,25 @@ include::include/ch7_module_contentLoader.js[]
 
 <3> The `contentLoader` object loaded from _app/modules/util/new-content-loader.js_ (refer the _config.js_), instantiated by RequireJS and is ready to use. 
 
-RequreJS also supports CommonJS module format.
+// vik
 
+RequreJS also supports CommonJS module format with slightly different signature of `define()` function. That helps bridge the gap between AMD and CommonJS. If your factory function accepts parameters, but you omit the dependency array, the AMD environment assumes you wish to emulate a CommonJS module environment. The standard `require`, `exports`, and `module` variables are injected as parameters to the factory.
+
+Here is an example of CommonJS module format with ReuiqreJS.
+
+.Using CommonJS module format in RequireJS
 [source,javascript]
 ----
 include::include/ch7_commonjs_require.js[]
 ----
+<1> Factory receives up to three arguments that emulate the CommonJS `require`, `exports`, and `module` variables. 
 
-// TBD
+<2> You should export your module, rather than return it. There are two ways how to export object - assign the the module directly to `module.exports` (shown in this snippet)or set properties on the `exports` object. There are use cases for each export mechanism, but that is out of a scope of this chapter.
+
+<3> In CommonJS, dependencies are assigned to local variables using `require(id)` function.
+
+// / vik
+
 
 [[requirejs_plugins]]
 ==== RequireJS plugins
@@ -545,11 +600,13 @@ The better approach is to create loosely coupled components that are self-contai
 
 Creating the UI of from reusable components applying messaging techniques requires creation of  loosely coupled components. Say you've created a window for a financial trader. This window get the data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
 
-Three years ago O'Reilly has published another book written by us. That book was titled "Enterprise Development with Flex" and in particular, we've described there how to apply the Mediator design pattern for creating UI where components can communicate with each other by sending-receiving events to/from a _mediator_ object. The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can't be underestimated. 
+// vik
 
-A _Mediator_ is a behavioral design pattern that allows to unify a way how the different components of a application can communicate.
+A _Mediator_ is a behavioral design pattern that allows to unify a way how the different components of a application can communicate. The Mediator Pattern promotes the use of a single shared subject that handles communication with multiple objects. Basically, all components are not aware about rest of the components and communicate with each other through the mediator. By placing mediators, communication can be handled through a single object, rather than having multiple objects communicating with each other.
 
-<<FIG1-2>> is an illustration from that Enterprise Flex book. The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask panel, the Pricing Panel just sends the event with the relevant information like JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc. In HTML5 realm, we can say that the Pricing Panel invokes `parent.postMessage()` and shoots the message to the mediator (a.k.a. main window).    
+In chapter one we introduced example of trader's desktop. Let's reuse same example and refactor it with Mediator object. 
+
+The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask panel, the Pricing Panel just sends the event with the relevant information like JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc.
 
 [[FIG1-2]]
 .Before the trader clicked on the Price Panel
@@ -558,10 +615,50 @@ image::fig_07_06.png[]
 .After the trader clicked on the Price Panel
 image::fig_07_07.png[]
 
-The Mediator receives the message and re-posts it toits other child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communicating by sending-receiving messages to/from the mediator. Such a loosely coupled design allows reusing the same code in different applications. For example, the Pricing Panel can be reused in some portal that's used by the company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to the Order Panel, it's easy to reuse the existing code in such a dashboard.
+[source,html]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>An example of Mediator Design Pattern</title>
+    <script data-main="app/config" src="bower_components/requirejs/require.js"></script>
+</head>
+<body>
+<h1>mediator_require running!</h1>
+<label for="priceInput">Bid price:</label>
+<input type="text" id="priceInput" placeholder="bid price"/>
+</body>
+</html>
+----
 
 
-TBD
+[source,javascript]
+----
+include::include/ch7_mediator.js[]
+----
+<1> A mediator maintains collection components. With `Mediator.register()` function we can store component in that collection. A `name` function parameter 
+
+[source,javascript]
+----
+include::include/ch7_mediator_usage.js[]
+----
+<1> 
+<2> With `Mediator.broadcast()` function a mediator object 
+<3> 
+
+[source,javascript]
+----
+include::include/ch7_pricepanel.js[]
+----
+
+[source,javascript]
+----
+include::include/ch7_orderpanel.js[]
+----
+
+
+As you can notice, introduction of a mediator increases the reusability of the components by decoupling them from the system. A mediator simplifies maintenance of the system by centralizing control logic, reduces the variety of messages sent between objects in the system. A drawback of the Mediator pattern is that without proper design, the Mediator object itself can become overly complex.
 
 === Summary
 
