@@ -114,10 +114,16 @@ Finally, we're going to discuss such advanced topics as inter-module communicati
 
 The code of the Save Sick Child application will be refactored to implement the module system based on RequireJS for lazy loading of the application components.
 
-
 In the next section we start reviewing the approaches and patterns of modular JavaScript architectures.
 
 === Different Roads To Modularization
+
+// /vik
+Thus JavaScript has no build-in support of modules. Nonetheless developer's community managed to work around using existing syntax constructs, libraries and conventions to emulate modules-like behavior. A _Module Patter_ doesn't required any additional frameworks and work perfectly out-of-the box in any JavaScript environment. _CommonJS_ module format is widely adopted for server-side JavaSctipt, and _AMD_ format have found huge audience of adopters for a browser environment. 
+
+Next you'll learn all this techniques in more details.
+
+// /vik
 
 ==== Module Pattern
 
@@ -125,25 +131,33 @@ In software engineering, the Module Pattern was originally defined as a way to i
 
 Ultimately, it's just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using various JavaScript syntax. Here are couple examples how Module Pattern could be implemented using IIFEs.
 
+// /vik
+
 .Returning the value from a module 
 [source,javascript]
 ----
 include::include/ch7_iife_loginModule.js[]
 ----
-// TBD callouts
+<1> // TBD
+<2> Because of JavaScript's function scoping, other parts of the code unable to access code inside closure. With this approach you can emulate private member constructs available in other object-oriented languages.
 
 .Piggiybacking on global object
 [source,javascript]
 ----
 include::include/ch7_iife_global_loginModule.js[]
 ----
-// TBD callouts
+<1> This approach is similar to previous one. Here we passing global object as parameter of factory function.
+<2> We attaching newly created object to global object. After that, `loginModule` object can be accessed from other parts of application as `window.loginModule` or just `loginModule`.
 
 .Application Namespace in global object
 [source,javascript]
 ----
 include::include/ch7_iife_namespace_loginModule.js[]
 ----
+<1> Here we have modification of an approach described in previous snipped. Now we can create namespace for our application called `ssc`.
+<2> Now we can logically structure application code using namespaces. Global `ssc` object will contain only code related to Save Sick Child application.
+
+// /vik
 
 This approach doesn't scale well because when working with an application with a large number of modules, very soon you may find yourself adding lots of boilerplate checks of objects existence in the global scope for each new module. Also, you need to be very careful with managing namespaces. Because you are the one who put an object into the global scope, you need to think about how to avoid accidental names conflicts.
 
@@ -151,39 +165,45 @@ There is one huge disadvantage of using the Module pattern - we still need to de
 
 ==== CommonJS
 
-// TDB
+// vik
 
-http://www.commonjs.org/[CommonJS] is a working group that works on design, prototyping and standardization of JavaScript APIs. They've attempted to develop standards for both modules and packages. The CommonJS module proposal specifies simple API for declaring modules, but mainly on the server-side.
+http://www.commonjs.org/[CommonJS] is a working group that works on design, prototyping and standardization of JavaScript APIs. They've attempted to develop standards for both modules and packages. The CommonJS module proposal specifies simple API for declaring modules, but mainly on the server-side. CommonJS module format are optimized for non-browser environments since the early days of server-side JavaScript.
 
-http://browserify.org/[Browserify] takes all of your scripts and concatenates them itto one large file.
+On the browser side, we're always need to consider slow HTTP communication. One of the solutions is to concatenate the our code into a handful of bundles to decrease number of HTTP calls. But server-side engines ignore this step since file access is nearly instantaneous. Moreover, this is allow to dedicate each file to exactly one module for ease development, testing and maintainability.
 
-* require
-* exports
-* module
+The CommonJS specification standardizes three scoped variables: `require`, `exports`, and `module`:
 
-// provide the example
-Each module is executed in its own scope.
-How to make that code available if it's not in global scope?
+[source,javascript]
+----
+include::include/ch7_commonjs.js[]
+----
+<1> If a module requires other modules, you can declare references to the other modules into the current module's scope by using the `require` function. You need to call `require(id)` for each module that your code depend on.  Module id has slashes in which is like a file path or a url to indicate namespaces for modules. The modules are grouped with related modules into a packages.
 
-`exports`
-The exports variable is an object that has the implicit value of your module. When your module is requested, the code is executed and then exports is returned for you.
+<2> The `exports` object exposes the public API of a module. All objects, functions, constructors, etc. that your module provides must be declared as properties of the exports object. The rest of the module is not exposed.
 
-CommonJS pros:
+<3> The `module` variable provides metadata about module. It holds the `id` and unique `uri` of each module. The `module.export` exposes `exports` object as it's property. Because objects in JavaScript are passed as references, then `exports` and `module.exports` are the same object.
+
+TIP: From the snippet above may seem that all module's code is executed in global scope. But it's not. Each module is executed in its own scope which helps to isolate the modules. This works automatically when you write modules for NodeJS. To use CommonJS module format in browser you need to introduce extra tool to generate _transport format_ from _authoring format_. http://browserify.org/[Browserify] takes all of your scripts and concatenates them it to one large file. But the build step complicates the development process and makes it harder to get started on a new project.
+
+[underline]#CommonJS pros:#
 
 * It's a simple API for writing and using modules.
 * This modules organization pattern is widespread in server-side JavaScript, e.g. NodeJS.
 
-CommonJS cons:
+[underline]#CommonJS cons:#
 
-* The additional build step required. We will discuss this in <<Browserify>> section.
+* The browsers can't consume CommonJS modules because browsers don't create the scoped variables `require`, `exports`, `module`. The additional build step required.
 * The `require` method is synchronous, but module values may not be fully loaded during the execution.
-* It's Suitable for loading +js+ files, but can't load other assets via CommonJS APIs.
+* It's suitable for loading +js+ files, but can't load other assets like css and HTML via CommonJS APIs.
 
-[[Browserify]]
-===== Browserify
+NOTE: If you want to write modules in format that can be used in the different environments, we will provide couple advices in <<umd>> section on this chapter.
 
-http://browserify.org/
-https://github.com/substack/node-browserify
+Further reading:
+
+* http://wiki.commonjs.org/wiki/Modules/1.1[CommonJS Modules 1.1 specification]
+* http://nodejs.org/docs/latest/api/modules.html#modules_modules[Node.js Modules Reference]
+
+// /vik
 
 
 [[amd_section]]
@@ -281,6 +301,7 @@ AMD Cons:
 * Easy to get a mismatch between dependency array and callback arguments (Example TBD).
 
 
+[[umd]]
 ==== Universal Module Definition
 
 Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. Here is an example of module definition using the UMD notation. In the following example, the module can be used with the AMD loader as one of variations of the Module Pattern.
