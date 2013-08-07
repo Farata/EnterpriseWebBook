@@ -1,15 +1,23 @@
-(function(global) {
-    'use strict';
+(function(global) {     //<1>
+    "use strict";
     var module = {};
+
+    var privateVariable = 42;
+    var privateLogin = function(userNameValue, userPasswordValue) {
+        if (userNameValue === "admin" && userPasswordValue === "secret") {
+            return privateVariable;
+        }
+    };
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
-        console.log('login implementation omitted');
+        privateLogin(userNameValue, userPasswordValue);
+        console.log("rest of login implementation is omitted");
     };
 
     module.logout = function() {
-        console.log('logout implementation omitted');
+        console.log("logout implementation omitted");
     };
 
     global.loginModule = module;
-})(window);
+})(window);  // <2>
