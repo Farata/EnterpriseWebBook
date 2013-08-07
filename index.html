@@ -988,13 +988,13 @@ p.tableblock.header { color: #6d6e71; }
 <li>
 <ol type="none" class="sectlevel2">
 <li><a href="#_modularization_basics">Modularization basics</a></li>
-<li><a href="#_different_roads_to_modularization">Different Roads To Modularization</a></li>
+<li><a href="#_roads_to_modularization">Roads To Modularization</a></li>
 <li>
 <ol type="none" class="sectlevel3">
 <li><a href="#_module_pattern">Module Pattern</a></li>
 <li><a href="#_commonjs">CommonJS</a></li>
 <li><a href="#amd_section">Asynchronous Module Definition</a></li>
-<li><a href="#_universal_module_definition">Universal Module Definition</a></li>
+<li><a href="#umd">Universal Module Definition</a></li>
 <li><a href="#_ecmascript_6_modules">ECMAScript 6 Modules</a></li>
 </ol>
 </li>
@@ -14016,68 +14016,113 @@ var result = login("admin", "password");</code></pre>
 
 </div>
 <div class="sect2">
-<h3 id="_different_roads_to_modularization">Different Roads To Modularization</h3>
+<h3 id="_roads_to_modularization">Roads To Modularization</h3>
+<div class="paragraph">
+<p>JavaScript has no build-in language support of modules. Nonetheless developers' community managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. The <em>Module pattern</em> doesn&#8217;t require any additional frameworks and works in any JavaScript environment. The <em>CommonJS</em> module format is widely adopted for server-side JavaSctipt, and the  <em>AMD</em> format is very popular in applications that run in Web browsers. In this section you&#8217;ll learn all these techniques in  details.</p>
+</div>
 <div class="sect3">
 <h4 id="_module_pattern">Module Pattern</h4>
 <div class="paragraph">
-<p>In software engineering, the Module Pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We&#8217;re able to include both public/private methods and variables inside a single object, thus hiding particular section of code from global scope. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts, but used in the same application&#8217;s scope.</p>
+<p>In software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We&#8217;re able to include both public/private methods and variables inside a single object, thus hiding the encapsulated code from being visible from global scope. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts, but used in the same application&#8217;s scope.</p>
 </div>
 <div class="paragraph">
-<p>Ultimately, it&#8217;s just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using various JavaScript syntax. Here are couple examples how Module Pattern could be implemented using IIFEs.</p>
+<p>Ultimately, it&#8217;s just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using various JavaScript syntax. Here are couple examples of how the Module pattern could be implemented using IIFEs.</p>
 </div>
 <div class="listingblock">
 <div class="title">Returning the value from a module</div>
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">var loginModule = (function() {
-    'use strict';
+<pre class="highlight"><code class="javascript language-javascript">var loginModule = (function() {     // <i class="conum">1</i>
+    "use strict";
 
     var module = {};
+    var privateVariable = 42;
+
+    var privateLogin = function(userNameValue, userPasswordValue) {     // <i class="conum">2</i>
+        if (userNameValue === "admin" &amp;&amp; userPasswordValue === "secret") {
+            return privateVariable;
+        }
+    };
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
-        console.log('login implementation omitted');
+        privateLogin(userNameValue, userPasswordValue);
+        console.log("login implementation omitted");
     };
 
     module.logout = function() {
-        console.log('logout implementation omitted');
+        console.log("logout implementation omitted");
     };
 
     return module;
 })();</code></pre>
 </div>
 </div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>// TBD</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>Because of JavaScript&#8217;s function scoping, other parts of the code unable to access code inside closure. With this approach you can emulate private member constructs available in other object-oriented languages.</td>
+</tr>
+</table>
+</div>
 <div class="listingblock">
 <div class="title">Piggiybacking on global object</div>
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">(function(global) {
-    'use strict';
+<pre class="highlight"><code class="javascript language-javascript">(function(global) {     //<i class="conum">1</i>
+    "use strict";
     var module = {};
+
+    var privateVariable = 42;
+    var privateLogin = function(userNameValue, userPasswordValue) {
+        if (userNameValue === "admin" &amp;&amp; userPasswordValue === "secret") {
+            return privateVariable;
+        }
+    };
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
-        console.log('login implementation omitted');
+        privateLogin(userNameValue, userPasswordValue);
+        console.log("rest of login implementation is omitted");
     };
 
     module.logout = function() {
-        console.log('logout implementation omitted');
+        console.log("logout implementation omitted");
     };
 
     global.loginModule = module;
-})(window);</code></pre>
+})(window);  // <i class="conum">2</i></code></pre>
 </div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>This approach is similar to the previous one. Here we passing global object as parameter of factory function.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>Attaching the newly created object to global object. After that, <code>loginModule</code> object can be accessed from other parts of application as <code>window.loginModule</code> or just <code>loginModule</code>.</td>
+</tr>
+</table>
 </div>
 <div class="listingblock">
 <div class="title">Application Namespace in global object</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">(function(global) {
 
-    var ssc = global.ssc;
+    var ssc = global.ssc;   // <i class="conum">1</i>
     if (!ssc) {
         ssc = {};
         global.ssc = ssc;
     }
 
-    var module = ssc.loginModule = {};
+    var module = ssc.loginModule = {};  // <i class="conum">2</i>
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
@@ -14090,46 +14135,107 @@ var result = login("admin", "password");</code></pre>
 })(window);</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>This approach doesn&#8217;t scale well because when working with an application with a large number of modules, very soon you may find yourself adding lots of boilerplate checks of objects existence in the global scope for each new module. Also, you need to be very careful with managing namespaces. Because you are the one who put an object into the global scope, you need to think about how to avoid accidental names conflicts.</p>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>Here we have modification of an approach described in previous snipped. Now we can create namespace for our application called <code>ssc</code>.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>Now we can logically structure application code using namespaces. The global <code>ssc</code> object will contain only the code related to the Save Sick Child application.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>There is one huge disadvantage of using the Module pattern - we still need to deal with manual dependency management and manually arranging <code>&lt;script&gt;</code> tags in the HTML document.</p>
+<p>This approach doesn&#8217;t scale well because when working with an application with the large number of modules, very soon you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.</p>
+</div>
+<div class="paragraph">
+<p>The Module pattern has a serious drawback - we still need to deal with manual dependency management and manually arrange <code>&lt;script&gt;</code> tags in the HTML document.</p>
 </div>
 
 </div>
 <div class="sect3">
 <h4 id="_commonjs">CommonJS</h4>
 <div class="paragraph">
-<p><a href="http://www.commonjs.org/">CommonJS</a> is a working group that works on design, prototyping and standardization of JavaScript APIs. They&#8217;ve attempted to develop standards for both modules and packages. The CommonJS module proposal specifies simple API for declaring modules, but mainly on the server-side.</p>
+<p><a href="http://www.commonjs.org/">CommonJS</a> is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for modules and packages too. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of server-side JavaScript.</p>
 </div>
 <div class="paragraph">
-<p><a href="http://browserify.org/">Browserify</a> takes all of your scripts and concatenates them itto one large file.</p>
+<p>On the Web browser side, you always need to consider potentially slow HTTP communications. One of the solutions is to concatenate al your scripts into a handful of bundles to decrease number of HTTP calls, which was not a concern for the server-side JavaScript enginesbecause file access is nearly instantaneous. Moreover, separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.</p>
 </div>
-<div class="ulist">
+<div class="paragraph">
+<p>In brief, the CommonJS specification standardizes three scoped variables: <code>require</code>, <code>exports</code>, and <code>module</code>:</p>
+</div>
+<div class="listingblock">
 
-<ul>
-<li>
-<p>require</p>
-</li>
-<li>
-<p>exports</p>
-</li>
-<li>
-<p>module</p>
-</li>
-</ul>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">/*jslint node: true */
+"use strict";
+var loginModule = {};
+var privateVariable = 42;
+
+var ldapLogin = require("login/ldap");      // <i class="conum">1</i>
+var otherImportantDep = require("modules/util/strings"); // <i class="conum">1</i>
+
+var privateLogin = function(userNameValue, userPasswordValue) {
+    if (userNameValue === "admin" &amp;&amp; userPasswordValue === "secret") {
+        ldapLogin.login(userNameValue, userPasswordValue);
+        return privateVariable;
+    }
+};
+
+loginModule.myConstant = 1984;
+loginModule.login = function(userNameValue, userPasswordValue) {
+    privateLogin(userNameValue, userPasswordValue);
+    console.log("login implementation omitted");
+};
+
+loginModule.logout = function() {
+    console.log("logout implementation omitted");
+};
+
+exports.login = loginModule;        // <i class="conum">2</i>
+//module.exports = loginModule      // <i class="conum">3</i>
+
+loginModule.printMetadata = function(){
+    console.log(module.id);     // <i class="conum">3</i>
+    console.log(module.uri);
+};</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>If a module requires other modules, declare references to those modules inside the current module&#8217;s scope by using the <code>require</code> function. You need to call <code>require(id)</code> for each module that your code depends on.  The module id has slashes defining the file path or a url to indicate namespaces for modules. The modules are grouped with related modules into a packages.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>The <code>exports</code> object exposes public API of a module. All objects, functions, constructors that your module exoses must be declared as properties of the exports object. The rest of the module is not exposed.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>The <code>module</code> variable provides metadata about module. It holds the <code>id</code> and a unique <code>uri</code> of each module. The <code>module.export</code> exposes <code>exports</code> object as it&#8217;s property. Because objects in JavaScript are passed as references, then <code>exports</code> and <code>module.exports</code> are the same object.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+The snippet above may give you an impression that all module&#8217;s code is executed in global scope, but it&#8217;s not. Each module is executed in its own scope which helps to isolate modules. This works automatically when you write modules for NodeJS running on the server. To use CommonJS module format in the Web browser you need to use an extra tool to generate <em>transport format</em> from <em>authoring format</em>. <a href="http://browserify.org/">Browserify</a> takes all your scripts and concatenates them it to one large file. But the build step complicates the development process and makes it harder to get started on a new project.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
-<p>Each module is executed in its own scope.
-How to make that code available if it&#8217;s not in global scope?</p>
-</div>
-<div class="paragraph">
-<p><code>exports</code>
-The exports variable is an object that has the implicit value of your module. When your module is requested, the code is executed and then exports is returned for you.</p>
-</div>
-<div class="paragraph">
-<p>CommonJS pros:</p>
+<p><span class="underline">CommonJS pros:</span></p>
 </div>
 <div class="ulist">
 
@@ -14138,34 +14244,53 @@ The exports variable is an object that has the implicit value of your module. Wh
 <p>It&#8217;s a simple API for writing and using modules.</p>
 </li>
 <li>
-<p>This modules organization pattern is widespread in server-side JavaScript, e.g. NodeJS.</p>
+<p>Such a pattern of organizing  modules is widespread in the server-side JavaScript, e.g. NodeJS.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>CommonJS cons:</p>
+<p><span class="underline">CommonJS cons:</span></p>
 </div>
 <div class="ulist">
 
 <ul>
 <li>
-<p>The additional build step required. We will discuss this in <a href="#Browserify">Browserify</a> section.</p>
+<p>Browsers can&#8217;t work with CommonJS modules because browsers don&#8217;t automatically create the scoped variables <code>require</code>, <code>exports</code>, <code>module</code> hence the additional build step is required.</p>
 </li>
 <li>
 <p>The <code>require</code> method is synchronous, but module values may not be fully loaded during the execution.</p>
 </li>
 <li>
-<p>It&#8217;s Suitable for loading <code>js</code> files, but can&#8217;t load other assets via CommonJS APIs.</p>
+<p>CommonJS API is suitable for loading <code>js</code> files, but it can&#8217;t load other assets like css and HTML.</p>
 </li>
 </ul>
 </div>
-<div class="sect4">
-<h5 id="Browserify">Browserify</h5>
-<div class="paragraph">
-<p><a href="http://browserify.org/">http://browserify.org/</a>
-<a href="https://github.com/substack/node-browserify">https://github.com/substack/node-browserify</a></p>
-</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
 
+If you want to write modules in the format that can be used in the different environments read our suggestions in the  <a href="#umd">Universal Module Definition</a> section on this chapter.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Further reading:</p>
+</div>
+<div class="ulist">
+
+<ul>
+<li>
+<p><a href="http://wiki.commonjs.org/wiki/Modules/1.1">CommonJS Modules 1.1 specification</a></p>
+</li>
+<li>
+<p><a href="http://nodejs.org/docs/latest/api/modules.html#modules_modules">Node.js Modules Reference</a></p>
+</li>
+</ul>
 </div>
 
 </div>
@@ -14370,7 +14495,7 @@ Distinctions from CommonJS</p>
 
 </div>
 <div class="sect3">
-<h4 id="_universal_module_definition">Universal Module Definition</h4>
+<h4 id="umd">Universal Module Definition</h4>
 <div class="paragraph">
 <p>Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. Here is an example of module definition using the UMD notation. In the following example, the module can be used with the AMD loader as one of variations of the Module Pattern.</p>
 </div>
