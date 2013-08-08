@@ -9,7 +9,7 @@ Reducing the startup latency and implementing lazy loading of certain parts of t
 
 One of the option to purchase a vehicle is called European Delivery. An American resident can combine car purchase with  vacation. He or she would fly to Europe to the car factory, pick up the car there and then would be vacationing for two weeks driving your new vehicle in Europe. After the vacation your car would be shipped to your home town in the USA.  It's a really nice program, but would have added several thousand dollars to the price of the car.
 
-From the application design code of view, we don't need to push include the code that support the European Delivery to each and every user's who decided to visit mbusa.com. If and only if the user will visit the menu Owners and will click on the European Delivery link, then the required code and resources has to be pushed to the user's computer or mobile device. The snapshot in <<FIG7-1>> was taken after clicking on this link with Chrome Developer tools panel open.
+From the application design code of view, we don't need to include the code that support the European Delivery to each and every user's who decided to visit mbusa.com. If and only if the user will visit the menu Owners and will click on the European Delivery link, then the required code and resources has to be pushed to the user's computer or mobile device. The snapshot in <<FIG7-1>> was taken after clicking on this link with Chrome Developer tools panel open.
 
 [[FIG7-1]]
 .MB USA: Europian Delivery 
@@ -74,7 +74,14 @@ As the application gets larger the latency grows accordingly, which is illustrat
 
 <3> The main application script should be loaded after all dependencies.
 
-We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications and sets of APIs. In this chapter we will use http://browserify.org/[Browserify] as CommonJS example, and http://requirejs.org/[RequireJS] as AMD example.
+We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications and sets of APIs. 
+
+// vik 
+You'll learn pros and cons of both formats. But for our opinion, the AMD module format is suitable to play nicely with the asynchronous nature of Web. In this chapter we will use AMD module format and http://requirejs.org/[RequireJS] framework to implement modularized version of _SaveSickChild.org_.
+
+Also, you'll see how to use RequireJS APIs to implement on-demand loading of the application components.
+
+// /vik
 
 The upcoming ECMAScript 6 specification suggests hoe to handle modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
 
@@ -110,9 +117,10 @@ var result = login("admin", "password");
 
 You can find more details about CommonJS, AMD and ES6 module format in the corresponding sections of this chapter.
 
-Finally, we're going to discuss such advanced topics as inter-module communications and Dependency Injection in JavaScript.
+// vik
+Once we would manage how to asynchronously the load application modules, we need to allow them to communicate to each other. Straightforward approach to explicitly specify the components dependencies with work will fairy small code base and with very small amount of components. You're going to learn how to handle inter-module communications in loosely coupled fashion using the _Mediator_ pattern.
 
-The code of the Save Sick Child application will be refactored to implement the module system based on RequireJS for lazy loading of the application components.
+// /vik
 
 In the next section we start reviewing the approaches and patterns of modular JavaScript architectures.
 
@@ -128,13 +136,14 @@ In software engineering, the Module pattern was originally defined as a way to i
 
 Ultimately, it's just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using various JavaScript syntax. Here are couple examples of how the Module pattern could be implemented using IIFEs.
 
+// vik
 
 .Returning the value from a module 
 [source,javascript]
 ----
 include::include/ch7_iife_loginModule.js[]
 ----
-<1> // TBD
+<1> Exporting to variable a module object that was created in closure.
 <2> Because of JavaScript's function scoping, other parts of the code unable to access code inside closure. With this approach you can emulate private member constructs available in other object-oriented languages.
 
 .Piggiybacking on global object
@@ -142,8 +151,10 @@ include::include/ch7_iife_loginModule.js[]
 ----
 include::include/ch7_iife_global_loginModule.js[]
 ----
-<1> This approach is similar to the previous one. Here we passing global object as parameter of factory function.
+<1> Instead of exporting a module to a variable, like we did in previous example, here we passing global object as parameter of closure.
 <2> Attaching the newly created object to global object. After that, `loginModule` object can be accessed from other parts of application as `window.loginModule` or just `loginModule`.
+
+// /vik
 
 .Application Namespace in global object
 [source,javascript]
@@ -164,7 +175,7 @@ http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. 
 
 On the Web browser side, you always need to consider potentially slow HTTP communications. One of the solutions is to concatenate al your scripts into a handful of bundles to decrease number of HTTP calls, which was not a concern for the server-side JavaScript enginesbecause file access is nearly instantaneous. Moreover, separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.
 
-In brief, the CommonJS specification standardizes three scoped variables: `require`, `exports`, and `module`:
+In brief, the CommonJS specification standardizes three module-scoped variables: `require`, `exports`, and `module`:
 
 [source,javascript]
 ----
@@ -176,7 +187,10 @@ include::include/ch7_commonjs.js[]
 
 <3> The `module` variable provides metadata about module. It holds the `id` and a unique `uri` of each module. The `module.export` exposes `exports` object as it's property. Because objects in JavaScript are passed as references, then `exports` and `module.exports` are the same object.
 
-TIP: The snippet above may give you an impression that all module's code is executed in global scope, but it's not. Each module is executed in its own scope which helps to isolate modules. This works automatically when you write modules for NodeJS running on the server. To use CommonJS module format in the Web browser you need to use an extra tool to generate _transport format_ from _authoring format_. http://browserify.org/[Browserify] takes all your scripts and concatenates them it to one large file. But the build step complicates the development process and makes it harder to get started on a new project.
+// vik
+WARNING: The snippet above may give you an impression that all module's code is executed in global scope, but it's not. Each module is executed in its own scope which helps to isolate modules. This works automatically when you write modules for NodeJS running on the server. But to use CommonJS module format in the Web browser you need to use an extra tool to generate _transport format_ (that will be delivered and executed by browser) from _authoring format_. http://browserify.org/[Browserify] takes all your scripts and concatenates them it to one large file. Resulted bundle code, besides modules code, will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development process (the approach "_code/save/refresh browser_" doesn't work in this case anymore) and makes it harder to get started on a new project (required to install additional build tool, setup the build scripts). 
+
+// /vik
 
 [underline]#CommonJS pros:#
 
