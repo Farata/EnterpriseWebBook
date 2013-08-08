@@ -991,7 +991,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_roads_to_modularization">Roads To Modularization</a></li>
 <li>
 <ol type="none" class="sectlevel3">
-<li><a href="#_module_pattern">Module Pattern</a></li>
+<li><a href="#_the_module_pattern">The Module Pattern</a></li>
 <li><a href="#_commonjs">CommonJS</a></li>
 <li><a href="#amd_section">Asynchronous Module Definition</a></li>
 <li><a href="#umd">Universal Module Definition</a></li>
@@ -7283,6 +7283,19 @@ document.body.appendChile(myScript);</code></pre>
 </div>
 <div class="paragraph">
 <p>This is a pretty basic example of the integrating GeoLocation with the mapping software. Google Maps API consists of dozens JavaScript objects and supports various events that allow you to build interactive and engaging Web pages that include maps. Refer to the <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions">Google Maps JavaScript API Reference</a> for the complete list of available parameters (properties) of all objects used in project-08-geolocation-maps and more. In Chapter 4 you&#8217;ll see a more advanced example of using Google maps - we&#8217;ll read the JSON data stream containing coordinates of sick children so the donors can find them based on the specified postal code.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+For a great illustration of using Google Maps API look at the <a href="https://www.padmapper.com">PadMapper</a> Web application. We use it for finding rental apartments in Manhattan.
+</td>
+</tr>
+</table>
 </div>
 
 </div>
@@ -13880,7 +13893,7 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 <p>One of the option to purchase a vehicle is called European Delivery. An American resident can combine car purchase with  vacation. He or she would fly to Europe to the car factory, pick up the car there and then would be vacationing for two weeks driving your new vehicle in Europe. After the vacation your car would be shipped to your home town in the USA.  It&#8217;s a really nice program, but would have added several thousand dollars to the price of the car.</p>
 </div>
 <div class="paragraph">
-<p>From the application design code of view, we don&#8217;t need to push include the code that support the European Delivery to each and every user&#8217;s who decided to visit mbusa.com. If and only if the user will visit the menu Owners and will click on the European Delivery link, then the required code and resources has to be pushed to the user&#8217;s computer or mobile device. The snapshot in <a href="#FIG7-1">MB USA: Europian Delivery</a> was taken after clicking on this link with Chrome Developer tools panel open.</p>
+<p>From the application design code of view, we don&#8217;t need to include the code that support the European Delivery to each and every user&#8217;s who decided to visit mbusa.com. If and only if the user will visit the menu Owners and will click on the European Delivery link, then the required code and resources has to be pushed to the user&#8217;s computer or mobile device. The snapshot in <a href="#FIG7-1">MB USA: Europian Delivery</a> was taken after clicking on this link with Chrome Developer tools panel open.</p>
 </div>
 <div id="FIG7-1" class="imageblock">
 <div class="content">
@@ -13964,7 +13977,13 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 </table>
 </div>
 <div class="paragraph">
-<p>We need a different approach to modularizing applications. Let&#8217;s  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications and sets of APIs. In this chapter we will use <a href="http://browserify.org/">Browserify</a> as CommonJS example, and <a href="http://requirejs.org/">RequireJS</a> as AMD example.</p>
+<p>We need a different approach to modularizing applications. Let&#8217;s  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications and sets of APIs.</p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll learn pros and cons of both formats later in the chapter, but in our opinion, the AMD module format is suitable to play nicely with the asynchronous nature of Web. In this chapter we will use the AMD module format and <a href="http://requirejs.org/">RequireJS</a> framework to implement the modularized version of the Save Sick Child application.</p>
+</div>
+<div class="paragraph">
+<p>Also, you&#8217;ll see how to use the RequireJS APIs to implement on-demand loading of application components.</p>
 </div>
 <div class="paragraph">
 <p>The upcoming ECMAScript 6 specification suggests hoe to handle modules, and how you can start using ES6 module syntax today with the help of third-party tools like <a href="http://corner.squareup.com/2013/02/es6-module-transpiler.html">transpiler</a>. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.</p>
@@ -14002,16 +14021,10 @@ var result = login("admin", "password");</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You can find more details about CommonJS, AMD and ES6 module format in the corresponding sections of this chapter.</p>
+<p>You can find more details about CommonJS, AMD and the ES6 module format in the corresponding sections of this chapter.</p>
 </div>
 <div class="paragraph">
-<p>Finally, we&#8217;re going to discuss such advanced topics as inter-module communications and Dependency Injection in JavaScript.</p>
-</div>
-<div class="paragraph">
-<p>The code of the Save Sick Child application will be refactored to implement the module system based on RequireJS for lazy loading of the application components.</p>
-</div>
-<div class="paragraph">
-<p>In the next section we start reviewing the approaches and patterns of modular JavaScript architectures.</p>
+<p>After application modules are asynchronously loaded, they need to communicate to each other. You can explicitly specify the components dependencies, wwhich work will fine if you have a handful of  components. A more generic approach is to handle inter-module communications in a loosely coupled fashion using the <em>Mediator</em> pattern, CommonJS or AMD formats. In the next section we start reviewing the approaches and patterns of modular JavaScript architectures.</p>
 </div>
 
 </div>
@@ -14021,15 +14034,15 @@ var result = login("admin", "password");</code></pre>
 <p>JavaScript has no build-in language support of modules. Nonetheless developers' community managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. The <em>Module pattern</em> doesn&#8217;t require any additional frameworks and works in any JavaScript environment. The <em>CommonJS</em> module format is widely adopted for server-side JavaSctipt, and the  <em>AMD</em> format is very popular in applications that run in Web browsers. In this section you&#8217;ll learn all these techniques in  details.</p>
 </div>
 <div class="sect3">
-<h4 id="_module_pattern">Module Pattern</h4>
+<h4 id="_the_module_pattern">The Module Pattern</h4>
 <div class="paragraph">
 <p>In software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We&#8217;re able to include both public/private methods and variables inside a single object, thus hiding the encapsulated code from being visible from global scope. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts, but used in the same application&#8217;s scope.</p>
 </div>
 <div class="paragraph">
-<p>Ultimately, it&#8217;s just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using various JavaScript syntax. Here are couple examples of how the Module pattern could be implemented using IIFEs.</p>
+<p>Ultimately, it&#8217;s just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using JavaScript syntax. Here are couple examples of how the Module pattern could be implemented using IIFEs.</p>
 </div>
 <div class="listingblock">
-<div class="title">Returning the value from a module</div>
+<div class="title">Returning a value from a module</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">var loginModule = (function() {     // <i class="conum">1</i>
     "use strict";
@@ -14062,16 +14075,16 @@ var result = login("admin", "password");</code></pre>
 <table>
 <tr>
 <td><i class="conum">1</i></td>
-<td>// TBD</td>
+<td>Assigning the module object that was created in the closure to the variable <code>loginModule</code>.</td>
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
-<td>Because of JavaScript&#8217;s function scoping, other parts of the code unable to access code inside closure. With this approach you can emulate private member constructs available in other object-oriented languages.</td>
+<td>Because of the JavaScript&#8217;s function scoping, other parts of the code can&#8217;t access the code inside the closure. With this approach you can implement encapsulation and private members.</td>
 </tr>
 </table>
 </div>
 <div class="listingblock">
-<div class="title">Piggiybacking on global object</div>
+<div class="title">Piggiybacking on the global object</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">(function(global) {     //<i class="conum">1</i>
     "use strict";
@@ -14103,11 +14116,11 @@ var result = login("admin", "password");</code></pre>
 <table>
 <tr>
 <td><i class="conum">1</i></td>
-<td>This approach is similar to the previous one. Here we passing global object as parameter of factory function.</td>
+<td>Instead of exporting the module to a variable as in the previous example, here we&#8217;re passing the global object as a parameter of the closure.</td>
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
-<td>Attaching the newly created object to global object. After that, <code>loginModule</code> object can be accessed from other parts of application as <code>window.loginModule</code> or just <code>loginModule</code>.</td>
+<td>Attaching the newly created object to the global object. After that the <code>loginModule</code> object can be accessed from the external application code as <code>window.loginModule</code> or just <code>loginModule</code>.</td>
 </tr>
 </table>
 </div>
@@ -14165,7 +14178,7 @@ var result = login("admin", "password");</code></pre>
 <p>On the Web browser side, you always need to consider potentially slow HTTP communications. One of the solutions is to concatenate al your scripts into a handful of bundles to decrease number of HTTP calls, which was not a concern for the server-side JavaScript enginesbecause file access is nearly instantaneous. Moreover, separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.</p>
 </div>
 <div class="paragraph">
-<p>In brief, the CommonJS specification standardizes three scoped variables: <code>require</code>, <code>exports</code>, and <code>module</code>:</p>
+<p>In brief, the CommonJS specification standardizes <a href="http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context">three free variables</a>: <code>require</code>, <code>exports</code>, and <code>module</code>:</p>
 </div>
 <div class="listingblock">
 
@@ -14196,7 +14209,7 @@ loginModule.logout = function() {
 };
 
 exports.login = loginModule;        // <i class="conum">2</i>
-//module.exports = loginModule      // <i class="conum">3</i>
+//module.exports = loginModule;      // <i class="conum">3</i>
 
 loginModule.printMetadata = function(){
     console.log(module.id);     // <i class="conum">3</i>
@@ -14221,15 +14234,15 @@ loginModule.printMetadata = function(){
 </tr>
 </table>
 </div>
-<div class="admonitionblock tip">
+<div class="admonitionblock warning">
 <table>
 <tr>
 <td class="icon">
-<i class="icon-tip" title="Tip"></i>
+<i class="icon-warning" title="Warning"></i>
 </td>
 <td class="content">
 
-The snippet above may give you an impression that all module&#8217;s code is executed in global scope, but it&#8217;s not. Each module is executed in its own scope which helps to isolate modules. This works automatically when you write modules for NodeJS running on the server. To use CommonJS module format in the Web browser you need to use an extra tool to generate <em>transport format</em> from <em>authoring format</em>. <a href="http://browserify.org/">Browserify</a> takes all your scripts and concatenates them it to one large file. But the build step complicates the development process and makes it harder to get started on a new project.
+The snippet above may give you an impression that all module&#8217;s code is executed in global scope, but it&#8217;s not. Each module is executed in its own scope which helps to isolate modules. This works automatically when you write modules for NodeJS running on the server. But to use CommonJS module format in the Web browser you need to use an extra tool to generate <em>transport format</em> (to be delivered and executed by the browser) from <em>authoring format</em>. <a href="http://browserify.org/">Browserify</a> takes all your scripts and concatenates them it to one large file.  Besides modules' the resulted code will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development process (the approach "<em>code/save/refresh browser</em>" doesn&#8217;t work in this case) and makes it harder to get started on a new project as you need to install the additional build tool and setup the build scripts.
 </td>
 </tr>
 </table>
@@ -24501,16 +24514,16 @@ While native applications have full access to all APIs of the mobile device (e.g
 <p>UI components of the HTML5 framework of your choice may not look native enough too. The selling point is that PhoneGap allows you to leverage existing HTML/JavaScript developers' skills for all major mobile platforms, and their native API is easy to learn.</p>
 </div>
 <div class="paragraph">
-<p>Titanium offers its own set of tools and more extensive API. You&#8217;d be writing code in JavaScript (no HTML or CSS) and would need to learn lots of APIs. The compiled and deployed application is a JavaScript code embedded inside Java or Objective-C code plus the JavaScript interpreter plus the platform-specific Titanium API. JavaScript objects talk to their native Titanium piers via proxies. There is no Web view rendering here - the JavaScript code is evaluated by the embedded interpreter, but UI components are from Titanium itself.</p>
+<p>Titanium offers its own set of tools and more extensive API. You&#8217;d be writing code in JavaScript (no HTML or CSS) and would need to learn lots of APIs. The compiled and deployed application is a JavaScript code embedded inside Java or Objective-C code plus the JavaScript interpreter plus the platform-specific Titanium API. An important difference between Phonegap and Titanium is that the latter has no Web view container that renders Web application. The business logic written in JavaScript is executed by the embedded interpreter, the final UI components are delivered by native to iOS or Android components from Titanium.</p>
 </div>
 <div class="paragraph">
-<p>Titanium UI components can be extended to use native OS interface abilities to their fullest. But if you want to go this route, why not writing the entire application natively? Besides, as new platform will be introduced, you&#8217;ll depend on the willingness of the Titanium developers to create a new set of components in a timely fashion.</p>
+<p>Titanium UI components can be extended to use native OS interface abilities to their fullest. Some components are cross-platform - Titanium has a compatibility layer, while others are platform-specific. But if you want to learn platform-specific components, you might rather invest time in learning to develop the entire application in the native language and APIs. Besides, as new platform will be introduced, you&#8217;ll depend on the willingness of the Titanium developers to create a new set of components in a timely fashion.</p>
 </div>
 <div class="paragraph">
-<p>You may not see the high performance from the Rhino JavaScript engine, which is used by Titanium for Android and Blackberry applications. The latest JavaScript engine from Oracle is called Nashorn, but it&#8217;s available only for the very latest Java version, which doesn&#8217;t run on Android, and will not run in the foreseeable future. Nashorn is as fast as <a href="http://v8.googlecode.com/svn/data/benchmarks/v7/run.html">Google&#8217;s V8</a>, but Rhino is  slower. Does it mean that Titanium applications on Android and Blackberry will alway run slower? This seems to be the case unless Oracle and Google will find a way to stop their quarrel around Java.</p>
+<p>You may not see the high performance from the Rhino JavaScript engine, which is used by Titanium for Android and Blackberry applications. The latest JavaScript engine from Oracle is called Nashorn, but it&#8217;s available only for the very latest Java version, which doesn&#8217;t run on Android, and will not run in the foreseeable future. Nashorn is as fast as <a href="http://v8.googlecode.com/svn/data/benchmarks/v7/run.html">Google&#8217;s V8</a>, but Rhino is slower. Does it mean that Titanium applications on Android and Blackberry will alway run slower? This seems to be the case unless Oracle and Google will find a way to stop their quarrels around Java.</p>
 </div>
 <div class="paragraph">
-<p>The learning curve of the Titanium API is steeper than with PhoneGap.</p>
+<p>The learning curve of the Titanium API is steeper (they have over 5000 APIs) than with PhoneGap. At the time of this writing, Titanium supports iOS, Android, and older versions of Blackbery devices. At the time of this writing they are looking into supporting Windows phones too.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -24530,7 +24543,7 @@ PhoneGap and Titanium are not the only solutions that allow building hybrid appl
 <div class="sect2">
 <h3 id="_the_bottom_line">The Bottom Line</h3>
 <div class="paragraph">
-<p>If a particular enterprise application is intended only for internal use by people carrying a  limited variety of mobile devices, and if making these people productive is the main goal - develop native applications. Start with developing and deploying such the first application for the pilot mobile OS (typically for the latest iOS or Android OS), and then gradually add support for more  platforms, budget permitting. If you are planning to develop a Web application with relatively simple UI (as in Save Sick Child) and have to support a wide variety of unknown consumer devices (e.g. you want to  enable people to donate from any device) - develop the HTML5 Web application.</p>
+<p>If a particular enterprise application is intended only for internal use by people carrying a  limited variety of mobile devices, and if making these people productive is the main goal - develop native applications. Start with developing and deploying such the first application for the pilot mobile OS (typically for the latest iOS or Android OS), and then gradually add support for more  platforms, budget permitting. If you are planning to develop a Web application with relatively simple UI (as in Save Sick Child) and have to support a wide variety of unknown consumer devices (e.g. you want to  enable people to donate from any device) - develop an HTML5 Web application.</p>
 </div>
 <div class="paragraph">
 <p>Consider developing a hybrid application for anything in between, and in this chapter we&#8217;ll create a hybrid version of our Save Sick Child application with <a href="http://phonegap.com/">PhoneGap</a> framework. To be more specific, we&#8217;ll access the camera of the smartphone.</p>
@@ -24557,7 +24570,7 @@ PhoneGap and Titanium are not the only solutions that allow building hybrid appl
 <p>The second workflow requires running a trivial install of cordova and then you just trust the Build PhoneGap server to do the proper build for you. The first one is more involved, and we&#8217;ll illustrate it by showing how to use the local SDKs for iOS deployment.</p>
 </div>
 <div class="paragraph">
-<p>In any case you&#8217;ll need to install cordova according to the instructions for <a href="http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface">http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface</a> [the command-line interface]. Start with installing Node.js, which will also install its package manager <em>npm</em> used for installing cordova (and phonegap library). We&#8217;re developing on MAC OS X, and here&#8217;s the command that will install cordova:</p>
+<p>In any case you&#8217;ll need to install cordova according to the instructions from <a href="http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface">the command-line interface</a>. Start with installing Node.js, which will also install its package manager <em>npm</em> used for installing cordova (and phonegap library). We&#8217;re developing on MAC OS X, and here&#8217;s the command that will install cordova:</p>
 </div>
 <div class="paragraph">
 <p><em>sudo npm install -g cordova</em></p>
