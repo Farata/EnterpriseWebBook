@@ -1002,17 +1002,13 @@ p.tableblock.header { color: #6d6e71; }
 <li>
 <ol type="none" class="sectlevel3">
 <li><a href="#inside_config">Inside config.js</a></li>
+<li><a href="#_writing_modules">Writing Modules</a></li>
 <li><a href="#_loading_modules_on_demand">Loading Modules On-Demand</a></li>
 <li><a href="#requirejs_plugins">RequireJS plugins</a></li>
 <li><a href="#using_reuiqrejs_optimizer">Using RequireJS Optimizer</a></li>
 </ol>
 </li>
-<li><a href="#_advanced_modularization_topics">Advanced Modularization Topics</a></li>
-<li>
-<ol type="none" class="sectlevel3">
-<li><a href="#mediator_section">Mediator Design Pattern</a></li>
-</ol>
-</li>
+<li><a href="#mediator_section">Handling inter-module communications with Mediator Design Pattern</a></li>
 <li><a href="#_summary_8">Summary</a></li>
 </ol>
 </li>
@@ -13922,8 +13918,8 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 <p>Of course, you can load each JavaScript file using the <code>&lt;script&gt;</code> tag. But this approach is error prone and slow. Developers have to manage dependencies and loading order manually. Moreover, each <code>&lt;script&gt;</code> tag results in an additional HTTP call to the server.</p>
 </div>
 <div class="paragraph">
-<p>As the application gets larger the latency grows accordingly, which is illustrated in the following code sample.
-<a href="#LISTING_SCRIPT_TAG">Here is an example</a>.</p>
+<p>As the application gets larger the latency grows accordingly, which is illustrated in the following
+<a href="#LISTING_SCRIPT_TAG">code sample</a>.</p>
 </div>
 <div id="LISTING_SCRIPT_TAG" class="listingblock">
 <div class="title">Tons of <code>&lt;script&gt;</code> tags leads to loosing control of the application dependencies</div>
@@ -14128,6 +14124,7 @@ var result = login("admin", "password");</code></pre>
 <div class="title">Application Namespace in global object</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">(function(global) {
+    "use strict";
 
     var ssc = global.ssc;   // <i class="conum">1</i>
     if (!ssc) {
@@ -14175,7 +14172,7 @@ var result = login("admin", "password");</code></pre>
 <p><a href="http://www.commonjs.org/">CommonJS</a> is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for modules and packages too. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of server-side JavaScript.</p>
 </div>
 <div class="paragraph">
-<p>On the Web browser side, you always need to consider potentially slow HTTP communications. One of the solutions is to concatenate al your scripts into a handful of bundles to decrease number of HTTP calls, which was not a concern for the server-side JavaScript enginesbecause file access is nearly instantaneous. Moreover, separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.</p>
+<p>On the Web browser side, you always need to consider potentially slow HTTP communications. One of the solutions is to concatenate al your scripts into a handful of bundles to decrease number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. Moreover, separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.</p>
 </div>
 <div class="paragraph">
 <p>In brief, the CommonJS specification standardizes <a href="http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context">three free variables</a>: <code>require</code>, <code>exports</code>, and <code>module</code>:</p>
@@ -14209,7 +14206,8 @@ loginModule.logout = function() {
 };
 
 exports.login = loginModule;        // <i class="conum">2</i>
-//module.exports = loginModule;      // <i class="conum">3</i>
+// or
+module.exports = loginModule;      // <i class="conum">3</i>
 
 loginModule.printMetadata = function(){
     console.log(module.id);     // <i class="conum">3</i>
@@ -14310,7 +14308,7 @@ If you want to write modules in the format that can be used in the different env
 <div class="sect3">
 <h4 id="amd_section">Asynchronous Module Definition</h4>
 <div class="paragraph">
-<p>AMD began as a draft specification for module format in CommonJS, but since the full consensus about its content was not reached, the further development of the module format moved to the <a href="https://github.com/amdjs">amdjs Github page</a>.</p>
+<p>AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further development of the module format moved to the <a href="https://github.com/amdjs">amdjs Github page</a>.</p>
 </div>
 <div class="paragraph">
 <p>The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded.
@@ -14330,7 +14328,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <li>
 <p>A callback function (often referred to as a <em>factory function</em>), which will be invoked when dependencies are loaded. This also can be a value to use directory as the module&#8217;s value.</p>
 <div id="LISTING_define_func" class="listingblock">
-<div class="title">The example of a <code>define</code> function</div>
+<div class="title">The signature of a <code>define</code> function</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">define(
     module_id,          // <i class="conum">1</i>
@@ -14352,28 +14350,27 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 </tr>
 <tr>
 <td><i class="conum">3</i></td>
-<td>The function for instantiating the module or object.</td>
+<td>The function for instantiating the module or object. The factory function will only be executed once</td>
 </tr>
 </table>
 </div>
 <div id="LISTING_define_modeule" class="listingblock">
-<div class="title">The Definition of the <code>wayToGive</code> module</div>
+<div class="title">The definition of the <code>wayToGive</code> module</div>
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">define(['newContentLoader'], function(contentLoader) { // <i class="conum">1</i>
-    'use strict';
-    var wayToGive;
+<pre class="highlight"><code class="javascript language-javascript">define(["newContentLoader"], function(contentLoader) { // <i class="conum">1</i>
+    "use strict";
 
-    console.log('way-to-give module is loaded');
-    wayToGive = function() {
+    console.log("way-to-give module is loaded");
+    var wayToGive = function() {
         return {
             render: function() {
-                contentLoader.getNewContent('way-to-give', // <i class="conum">2</i>
-                                            'way-to-give-container',
-                                            'assets/html-includes/way-to-give.html');
-                return console.log('way-to-give module is rendered');
+                contentLoader.getNewContent("way-to-give", // <i class="conum">2</i>
+                                            "way-to-give-container",
+                                            "assets/html-includes/way-to-give.html");
+                return console.log("way-to-give module is rendered");
             },
             init: function() {
-                return console.log('way-to-give init');
+                return console.log("way-to-give init");
             }
         };
     };
@@ -14386,7 +14383,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <table>
 <tr>
 <td><i class="conum">1</i></td>
-<td>In this example, we are not providing the optional <code>module_id</code>. The file name without the <code>.js</code> extension will be used as <code>module_id</code>. Our module has one dependency on the module called <code>newContentLoader</code>. The module instance will be passed in the factory method as variable <code>contentLoader</code>.</td>
+<td>In this example, we are not providing the optional <code>module_id</code>. The file name without the <code>.js</code> extension will be used as <code>module_id</code>. Our module has one dependency on the module called <code>newContentLoader</code>. The dependent module instance will be passed in the factory method as variable <code>contentLoader</code>.</td>
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
@@ -14420,7 +14417,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <li>
 <p>A callback to be executed once those modules are available. The modules loaded by ID are passed into the callback in their relative positions. <a href="#LISTING_Require_func">Here is example</a> of <code>require</code> function usage.</p>
 <div id="LISTING_require_func" class="listingblock">
-<div class="title">Example of <code>require</code> function usage</div>
+<div class="title">The example of <code>require</code> function usage</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">require(["main"], function() {
     console.log("module main is loaded");
@@ -14445,13 +14442,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 </ul>
 </div>
 <div class="paragraph">
-<p><code>exports</code>
-Distinctions from CommonJS</p>
-</div>
-<div class="sect4">
-<h5 id="_amd_pros_and_cons">AMD Pros and Cons</h5>
-<div class="paragraph">
-<p>AMD pros:</p>
+<p><span class="underline">AMD pros:</span></p>
 </div>
 <div class="ulist">
 
@@ -14463,24 +14454,27 @@ Distinctions from CommonJS</p>
 <p>A wide variety of loaders is available. You&#8217;ll find more coverage on loaders in the <a href="#REQUIREJS">RequireJS section</a>.</p>
 </li>
 <li>
-<p>Plugins offer an immense amount of flexibility</p>
+<p>A CommonJS module authoring format is supported by the majority of loaders. You&#8217;ll see an example of modules later in the <a href="#require_cjs">Using CommonJS module format in RequireJS</a> section.</p>
 </li>
 <li>
-<p>Easy To Debug</p>
+<p>Plugins offer an immense amount of flexibility.</p>
+</li>
+<li>
+<p>AMD is easy to debug.</p>
 <div class="paragraph">
-<p>Consider following error messages that JavaScript interpretor can throw:</p>
+<p>Consider the following error messages that JavaScript interpreter may throw:</p>
 </div>
 <div class="paragraph">
-<p><em>There was an error in /modules/loginModule.js on line 42</em></p>
+<p><em>There was an error in <code>/modules/loginModule.js</code> on line</em> <strong>42</strong></p>
 </div>
 <div class="paragraph">
 <p><strong>vs</strong></p>
 </div>
 <div class="paragraph">
-<p><em>There was an error in /built-app.js on line 1984.</em></p>
+<p><em>There was an error in <code>/built-app.js</code> on line</em> <strong>1984</strong></p>
 </div>
 <div class="paragraph">
-<p>When your application if modularized you can identify the error easier.</p>
+<p>In modularized applications you can easier localize the error.</p>
 </div>
 
 </li>
@@ -14490,20 +14484,60 @@ Distinctions from CommonJS</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>AMD Cons:</p>
+<p><span class="underline">AMD Cons:</span></p>
 </div>
 <div class="ulist">
 
 <ul>
 <li>
-<p>The dependency array can get rather large for complex modules (Example TBD).</p>
-</li>
-<li>
-<p>Easy to get a mismatch between dependency array and callback arguments (Example TBD).</p>
-</li>
-</ul>
+<p>The dependency array can get rather large for complex modules.</p>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define(
+       ["alpha", "beta", "gamma", "delta", "epsilon", "omega"], // <i class="conum">1</i>
+       function(alpha, beta, gamma, delta, epsilon, omega){
+            "use strict";
+            // module's code omitted
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>In the real-world enterprise applications the array of dependency modules might be pretty large.</td>
+</tr>
+</table>
 </div>
 
+</li>
+<li>
+<p>It&#8217;s easy to get a mismatch between dependency array and callback arguments.</p>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define(
+       ["alpha", "beta", "gamma", "delta", "epsilon", "omega"],
+       function(alpha, beta, gamma, delta, omega, epsilon){     // <i class="conum">1</i>
+            "use strict";
+            // module's code omitted
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>The mismatch of module IDs and factory function arguments will cause module usage problems.</td>
+</tr>
+</table>
+</div>
+
+</li>
+</ul>
 </div>
 
 </div>
@@ -14516,21 +14550,21 @@ Distinctions from CommonJS</p>
 
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">(function(root, factory) {
-    'use strict';
-    if (typeof define === 'function' &amp;&amp; define.amd) { // <i class="conum">1</i>
-        define(['login'], factory);
+    "use strict";
+    if (typeof define === "function" &amp;&amp; define.amd) { // <i class="conum">1</i>
+        define(["login"], factory);
     } else {
         root.ssc = factory(root.login); // <i class="conum">2</i>
     }
 }(this, function(login) { // <i class="conum">3</i>
-    'use strict';
+    "use strict";
     return {
         myConstant: 1984,
         login: function(userNameValue, userPasswordValue) {
-            console.log('login for ' + userNameValue + ' and ' + userPasswordValue);
+            console.log("login for " + userNameValue + " and " + userPasswordValue);
         },
         logout: function() {
-            console.log('logout implementation omitted');
+            console.log("logout implementation omitted");
         }
     };
 }));</code></pre>
@@ -14569,11 +14603,19 @@ Distinctions from CommonJS</p>
 <div class="listingblock">
 <div class="title">Login module definition</div>
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">function Login(userNameValue, userPasswordValue) {
+<pre class="highlight"><code class="javascript language-javascript">export function login(userNameValue, userPasswordValue) { // <i class="conum">1</i>
     console.log("login implementation omitted");
-};
-export = Login;</code></pre>
+};</code></pre>
 </div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>A keyword <code>export</code> used to precify what function or object will be exposed.</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>And this is how can be used:</p>
@@ -14581,18 +14623,205 @@ export = Login;</code></pre>
 <div class="listingblock">
 <div class="title">Main application module</div>
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">import "login" as Login;
-var result = Login("admin", "password");</code></pre>
+<pre class="highlight"><code class="javascript language-javascript">import login from 'login'
+var result = login("admin", "password");</code></pre>
 </div>
 </div>
 <div class="sidebarblock">
 <div class="content">
 <div class="title">ES6 module transpilers</div>
 <div class="paragraph">
-<p><a href="http://corner.squareup.com/2013/02/es6-module-transpiler.html">ES6 transpiler</a> developed by <a href="http://squareup.com/">Square</a> Engineers.</p>
+<p>Although ES6 standard features are not implemented yet by most of browsers you can use the third party tools to get a flavor of upcoming enhancements in JavaScript language. <a href="http://corner.squareup.com/2013/02/es6-module-transpiler.html">ES6 transpiler</a> developed by the <a href="http://squareup.com/">Square</a> Engineers helps using the module authoring syntax from ES6 and compile it down to the transport formats that you learned earlier in this chapter.</p>
 </div>
 <div class="paragraph">
-<p>TDB: TypeSctript module feature</p>
+<p>Consider the following example.</p>
+</div>
+<div class="listingblock">
+<div class="title">A <code>circle.js</code> module</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">export function area(radius) {
+  return Math.PI * radius * radius;
+}
+
+export function circumference(radius) {
+  return 2 * Math.PI * radius;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above module exports two functions: <code>area()</code> and <code>circumference()</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">The <code>main.js</code> uses functions from <code>circle.js</code> module</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">import { area, circumference } from 'circle';     // <i class="conum">1</i>
+
+console.log("Area of the circle: " + area(2) + " meter squared");   // <i class="conum">2</i>
+console.log("Circumference of the circle: " + circumference(5) + " meters");</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>The <code>import</code> keyword specifies the objects we want to use from the module.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>Sample use of the imported functions</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now, using ES6 transpiler command</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre>compile-modules circle.js --type amd --to ../js/  #<i class="conum">1</i>
+compile-modules main.js --type amd --to ../js/</pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>With the <code>type</code> command line switch we can specify that output format will be: <em>amd</em>, <em>cjs</em> and <em>globals</em>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>we compile those modules to:</p>
+</div>
+<div class="ulist">
+
+<ul>
+<li>
+<p><strong>CommonJS</strong> format</p>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">"use strict";
+
+function area(radius) {
+    return Math.PI * radius * radius;
+}
+
+function circumference(radius) {
+    return 2 * Math.PI * radius;
+}
+exports.area = area;
+exports.circumference = circumference;</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">main.js</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">"use strict";
+var __dependency1__ = require("circle");
+var area = __dependency1__.area;
+var circumference = __dependency1__.circumference;
+
+console.log("Area of the circle: " + area(2) + " meter squared");
+console.log("Circumference of the circle: " + circumference(5) + " meters");</code></pre>
+</div>
+</div>
+
+</li>
+<li>
+<p><strong>AMD</strong> format</p>
+<div class="listingblock">
+<div class="title">circle.js</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define("circle", ["exports"],
+    function(__exports__) {
+        "use strict";
+
+        function area(radius) {
+            return Math.PI * radius * radius;
+        }
+
+        function circumference(radius) {
+            return 2 * Math.PI * radius;
+        }
+        __exports__.area = area;
+        __exports__.circumference = circumference;
+    });</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">main.js</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define("main", ["circle"],
+    function(__dependency1__) {
+        "use strict";
+        var area = __dependency1__.area;
+        var circumference = __dependency1__.circumference;
+
+        console.log("Area of the circle: " + area(2) + " meter squared");
+        console.log("Circumference of the circle: " + circumference(5) + " meters");
+
+    });</code></pre>
+</div>
+</div>
+
+</li>
+<li>
+<p>Browser globals</p>
+<div class="listingblock">
+<div class="title">circle.js</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">(function(exports) {
+    "use strict";
+
+    function area(radius) {
+        return Math.PI * radius * radius;
+    }
+
+    function circumference(radius) {
+        return 2 * Math.PI * radius;
+    }
+    exports.circle.area = area;
+    exports.circle.circumference = circumference;
+})(window);</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">main.js</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">(function(circle) {
+    "use strict";
+    var area = circle.area;
+    var circumference = circle.circumference;
+
+    console.log("Area of the circle: " + area(2) + " meter squared");
+    console.log("Circumference of the circle: " + circumference(5) + " meters");
+
+})(window.circle);
+</code></pre>
+</div>
+</div>
+
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To learn what features of ECMAScript 6 are supported on browsers you can visit <a href="http://kangax.github.io/es5-compat-table/es6/">ECMAScript 6 compatibility table</a>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+
+<a href="http://www.typescriptlang.org/">TypeScript</a> - a modern open-source language from Microsoft what compiles to JavaScript - tends to bring object-oriented concepts like classes and modules to JavaScript. It has a module syntax of which is very similar that upcoming ES6 standard proposed. TypeScript compiler can produce CommonJS and AMD module formats. you can learn more about TypeScript from <a href="http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf">language specification</a>. You can find Save Sick Child application written in TypeScript in Appendix X (????)
+</td>
+</tr>
+</table>
 </div>
 
 </div>
@@ -14683,7 +14912,13 @@ var result = Login("admin", "password");</code></pre>
 <p>Bower installs RequireJS into <em>components/requirejs</em> directory and saves information about dependencies in bower.json configuration file.</p>
 </div>
 <div class="paragraph">
-<p>Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means that you don&#8217;t necessarily need to store dependencies of your application next to a application files in the source code repository. Your application could have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - <code>bower install</code>. And you can find all your dependency files in <code>components</code> directory. Here is the content of the file bower.json for our Save Sick Child application.</p>
+<p>Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means that you don&#8217;t necessarily need to store dependencies of your application next to a application files in the source code repository.</p>
+</div>
+<div class="paragraph">
+<p>If you&#8217;re not sure if you need to check your JavaScript dependencies under the source control, read the <a href="http://addyosmani.com/blog/checking-in-front-end-dependencies/">article by Addi Osmani</a> that covers this subject.</p>
+</div>
+<div class="paragraph">
+<p>Your application could have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - <code>bower install</code>. And you can find all your dependency files in <code>components</code> directory. Here is the content of the file bower.json for our Save Sick Child application.</p>
 </div>
 <div class="listingblock">
 
@@ -14717,7 +14952,7 @@ var result = Login("admin", "password");</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Once RequireJS downloaded and placed into the project directory, add it to the html file as  demonstrated in <a href="#add_requirejs">Adding RequireJS to the web page</a> snippet.</p>
+<p>Once RequireJS downloaded and placed into the project directory, add it to the html file as demonstrated in <a href="#add_requirejs">Adding RequireJS to the web page</a> snippet.</p>
 </div>
 <div id="add_requirejs" class="listingblock">
 <div class="title">Adding RequireJS to the web page</div>
@@ -14748,7 +14983,7 @@ var result = Login("admin", "password");</code></pre>
 <div class="sect3">
 <h4 id="inside_config">Inside config.js</h4>
 <div class="paragraph">
-<p>RequiredJS  uses a configuration object that includes that modules and dependencies that have to be managed by the framework.</p>
+<p>RequiredJS uses a configuration object that includes that modules and dependencies that have to be managed by the framework.</p>
 </div>
 <div class="listingblock">
 
@@ -14796,6 +15031,98 @@ require(['main'], function() {}); // <i class="conum">3</i></code></pre>
 
 </div>
 <div class="sect3">
+<h4 id="_writing_modules">Writing Modules</h4>
+<div class="paragraph">
+<p>Let&#8217;s take a closer look at the module&#8217;s internals that make it consumable by the RequireJS module loader.</p>
+</div>
+<div class="listingblock">
+
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define(["newContentLoader"], function(contentLoader) {      // <i class="conum">1</i>
+    "use strict";
+    var genericModule;
+
+    genericModule = function(moduleId) {    // <i class="conum">2</i>
+        return {
+            render: function(button, containerId, dataUrl) {
+                contentLoader.getNewContent(button, containerId, dataUrl);  // <i class="conum">3</i>
+                console.log("Module " + moduleId + " is rendered...");
+            }
+        };
+    };
+    return genericModule;
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>As we discussed in the <a href="#amd_section">Asynchronous Module Definition</a> section, the code that you want to expose as a module should be wrapped in the <code>define()</code> function call. The first parameter is an array of dependencies. The location of dependencies files we&#8217;re defined <a href="#inside_config">Inside config.js</a>. The dependency object doesn&#8217;t have the same name as the dependency string id. The most important is order that dependency objects are passed to factory function. The order should be the same as the order in the dependencies array.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>In this module we export only in the constructor function that returns object that uses <em>render</em> function to draw the visual component on the screen. In our case, this is part of HTML file with text for specific module.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>The <code>contentLoader</code> object loaded from <em>app/modules/util/new-content-loader.js</em> (refer the <em>config.js</em>), instantiated by RequireJS and is ready to use.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>RequreJS also supports the CommonJS module format with a slightly different signature of <code>define()</code> function. This helps to bridge the gap between AMD and CommonJS. If your factory function accepts parameters but you omit the dependency array, the AMD environment assumes you wish to emulate a CommonJS module environment. The standard <code>require</code>, <code>exports</code>, and <code>module</code> variables are injected as parameters to the factory.</p>
+</div>
+<div class="paragraph">
+<p>Here is an example of CommonJS module format with RequireJS.</p>
+</div>
+<div id="require_cjs" class="listingblock">
+<div class="title">Using CommonJS module format in RequireJS</div>
+<div class="content monospaced">
+<pre class="highlight"><code class="javascript language-javascript">define(function(require, exports, module) { // <i class="conum">1</i>
+    "use strict";
+    module.exports = (function() {      // <i class="conum">2</i>
+
+        var dependency = require("dependencyId");   // <i class="conum">3</i>
+
+        function AuctionDTO(_arg) {
+            this.auctionState = _arg.auctionState;
+            this.item = _arg.item;
+            this.bestBid = _arg.bestBid;
+            this.auctionId = _arg.auctionId;
+            dependency.doStuff();
+        }
+
+        AuctionDTO.prototype.toJson = function() {
+            return JSON.stringify(this);
+        };
+
+        return AuctionDTO;
+    })();
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+
+<table>
+<tr>
+<td><i class="conum">1</i></td>
+<td>The factory receives up to three arguments that emulate the CommonJS <code>require</code>, <code>exports</code>, and <code>module</code> variables.</td>
+</tr>
+<tr>
+<td><i class="conum">2</i></td>
+<td>You should export your module rather than returning it. You can export an object in two ways - assign the the module directly to <code>module.exports</code> as shown in this snippet, or set the  properties on the <code>exports</code> object.</td>
+</tr>
+<tr>
+<td><i class="conum">3</i></td>
+<td>In CommonJS, dependencies are assigned to local variables using the <code>require(id)</code> function.</td>
+</tr>
+</table>
+</div>
+
+</div>
+<div class="sect3">
 <h4 id="_loading_modules_on_demand">Loading Modules On-Demand</h4>
 <div class="paragraph">
 <p>A couple of components of our application don&#8217;t necessarily need to be loaded at the time when the  application starts. Similar to Mercedes Benz website example, some functionality of Save Sick Child can be loaded later when user needs it. For example, the user might never want to visit the "Where we work" section. Hence this functionality is a great candidate for the "load on-demand" module. You may want to load a module on demand when the user clicks the button or selects a menu item. The module can be in one of three states:</p>
@@ -14812,7 +15139,7 @@ require(['main'], function() {}); // <i class="conum">3</i></code></pre>
 <li>
 <p>fully loaded (<code>module !== null</code>).</p>
 <div id="load_ondemand_snippet" class="listingblock">
-<div class="title">Loading <code>widget1</code> module on demand</div>
+<div class="title">Loading widget1 module on demand</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">var module;
 var buttonClickHandler = function(event) {
@@ -14858,7 +15185,7 @@ var buttonClickHandler = function(event) {
 </table>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s apply technique demonstrated in <a href="#load_ondemand_snippet">Loading <code>widget1</code> module on demand</a> snippet for Save Sich Child application to load the "Who We Are", "What We Do", "Where We Work" and "What To Give" sections only if the user clicked on the corresponding top bar link.</p>
+<p>Let&#8217;s apply technique demonstrated in <a href="#load_ondemand_snippet">Loading widget1 module on demand</a> snippet for Save Sich Child application to load the "Who We Are", "What We Do", "Where We Work" and "What To Give" sections only if the user clicked on the corresponding top bar link.</p>
 </div>
 <div class="listingblock">
 <div class="title">The Main Module</div>
@@ -14939,7 +15266,7 @@ var buttonClickHandler = function(event) {
 </tr>
 <tr>
 <td><i class="conum">3</i></td>
-<td>Here we&#8217;re using approach that we described in <a href="#load_ondemand_snippet">Loading <code>widget1</code> module on demand</a> section. This factory function produces button on-click handler. It uses RequireJS API to load the module once user clicked button.</td>
+<td>Here we&#8217;re using approach that we described in <a href="#load_ondemand_snippet">Loading widget1 module on demand</a> section. This factory function produces button on-click handler. It uses RequireJS API to load the module once user clicked button.</td>
 </tr>
 <tr>
 <td><i class="conum">4</i></td>
@@ -14948,94 +15275,6 @@ var buttonClickHandler = function(event) {
 <tr>
 <td><i class="conum">5</i></td>
 <td>On the last step, we need to initialize each module button with the lazy loading handler.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>Now that you know how to load the module&#8217;s code, let&#8217;s see the module&#8217;s file internals that make it consumable by the module loader.</p>
-</div>
-<div class="listingblock">
-
-<div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">define(["newContentLoader"], function(contentLoader) {      // <i class="conum">1</i>
-    "use strict";
-    var genericModule;
-
-    genericModule = function(moduleId) {    // <i class="conum">2</i>
-        return {
-            render: function(button, containerId, dataUrl) {
-                contentLoader.getNewContent(button, containerId, dataUrl);  // <i class="conum">3</i>
-                console.log("Module " + moduleId + " is rendered...");
-            }
-        };
-    };
-    return genericModule;
-});</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-
-<table>
-<tr>
-<td><i class="conum">1</i></td>
-<td>As we discussed in the <a href="#amd_section">Asynchronous Module Definition</a> section, the code that you want to expose as a module should be wrapped in the <code>define()</code> function call. The first parameter is an array of dependencies. The location of dependencies files we&#8217;re defined <a href="#inside_config">Inside config.js</a>. The dependency object doesn&#8217;t have the same name as the dependency string id. The most important is order that dependency objects are passed to factory function. The order should be the same as the order in the dependencies array.</td>
-</tr>
-<tr>
-<td><i class="conum">2</i></td>
-<td>In this module we export only in the constructor function that returns object that uses <em>render</em> function to draw the visual component on the screen. In our case, this is part of HTML file with text for specific module.</td>
-</tr>
-<tr>
-<td><i class="conum">3</i></td>
-<td>The <code>contentLoader</code> object loaded from <em>app/modules/util/new-content-loader.js</em> (refer the <em>config.js</em>), instantiated by RequireJS and is ready to use.</td>
-</tr>
-</table>
-</div>
-<div class="paragraph">
-<p>RequreJS also supports the CommonJS module format with a slightly different signature of <code>define()</code> function. This helps to bridge the gap between AMD and CommonJS. If your factory function accepts parameters but you omit the dependency array, the AMD environment assumes you wish to emulate a CommonJS module environment. The standard <code>require</code>, <code>exports</code>, and <code>module</code> variables are injected as parameters to the factory.</p>
-</div>
-<div class="paragraph">
-<p>Here is an example of CommonJS module format with ReuiqreJS.</p>
-</div>
-<div class="listingblock">
-<div class="title">Using CommonJS module format in RequireJS</div>
-<div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">define(function(require, exports, module) { // <i class="conum">1</i>
-    "use strict";
-    module.exports = (function() {      // <i class="conum">2</i>
-
-        var dependency = require("dependencyId");   // <i class="conum">3</i>
-
-        function AuctionDTO(_arg) {
-            this.auctionState = _arg.auctionState;
-            this.item = _arg.item;
-            this.bestBid = _arg.bestBid;
-            this.auctionId = _arg.auctionId;
-            dependency.doStuff();
-        }
-
-        AuctionDTO.prototype.toJson = function() {
-            return JSON.stringify(this);
-        };
-
-        return AuctionDTO;
-    })();
-});</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-
-<table>
-<tr>
-<td><i class="conum">1</i></td>
-<td>The factory receives up to three arguments that emulate the CommonJS <code>require</code>, <code>exports</code>, and <code>module</code> variables.</td>
-</tr>
-<tr>
-<td><i class="conum">2</i></td>
-<td>You should export your module rather than returning it. You can export an object in two ways - assign the the module directly to <code>module.exports</code> as shown in this snippet, or set the  properties on the <code>exports</code> object.</td>
-</tr>
-<tr>
-<td><i class="conum">3</i></td>
-<td>In CommonJS, dependencies are assigned to local variables using the <code>require(id)</code> function.</td>
 </tr>
 </table>
 </div>
@@ -15181,20 +15420,7 @@ module.exports = function (grunt) {
 
 </div>
 <div class="sect2">
-<h3 id="_advanced_modularization_topics">Advanced Modularization Topics</h3>
-<div class="ulist">
-
-<ul>
-<li>
-<p>DI/IOC</p>
-</li>
-<li>
-<p>Patterns (mediator, service locator)</p>
-</li>
-</ul>
-</div>
-<div class="sect3">
-<h4 id="mediator_section">Mediator Design Pattern</h4>
+<h3 id="mediator_section">Handling inter-module communications with Mediator Design Pattern</h3>
 <div class="paragraph">
 <p>Almost any complex screen of a enterprise application consists of a number of components and modules.</p>
 </div>
@@ -15466,8 +15692,6 @@ module.exports = function (grunt) {
 </div>
 <div class="paragraph">
 <p>The introduction of the mediator increases the reusability of the components by decoupling them from each other. The Mediator pattern simplifies the maintenance of the system by centralizing navigational logic, and it reduces the variety of messages sent between objects in the system. Be aware that without proper design the Mediator object itself can become overly complex.</p>
-</div>
-
 </div>
 
 </div>
@@ -25188,7 +25412,7 @@ var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-36390249-1"]);_gaq.push(["_setDom
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-07-22 18:48:25 EDT
+Last updated 2013-08-09 06:24:46 EDT
 </div>
 </div>
 </body>
