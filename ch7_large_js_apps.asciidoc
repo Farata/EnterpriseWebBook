@@ -30,8 +30,8 @@ Modules are code fragments that implement specific functionality written using a
 
 Of course, you can load each JavaScript file using the `<script>` tag. But this approach is error prone and slow. Developers have to manage dependencies and loading order manually. Moreover, each `<script>` tag results in an additional HTTP call to the server.
 
-As the application gets larger the latency grows accordingly, which is illustrated in the following code sample.
-<<LISTING_SCRIPT_TAG,Here is an example>>.
+As the application gets larger the latency grows accordingly, which is illustrated in the following 
+<<LISTING_SCRIPT_TAG, code sample>>.
 
 
 [[LISTING_SCRIPT_TAG]]
@@ -260,18 +260,15 @@ require(["main"], function() {
 
 * A wide variety of loaders is available. You'll find more coverage on loaders in the <<REQUIREJS, RequireJS section>>.
 
-// vik
+* A CommonJS module authoring format is supported by the majority of loaders. You'll see an example of modules later in the <<require_cjs>> section. 
 
-* A CommonJS module authoring format is supported by majority of loaders. You'll see example of modules later in <<require_cjs>> section. 
 
-// /vik
+* Plugins offer an immense amount of flexibility.
 
-* Plugins offer an immense amount of flexibility
-
-* Easy To Debug
+* AMD is easy to debug.
 +
 
-Consider following error messages that JavaScript interpretor can throw:
+Consider the following error messages that JavaScript interpreter may throw:
 +
 
 _There was an error in +/modules/loginModule.js+ on line_ *42*
@@ -283,13 +280,11 @@ _There was an error in +/modules/loginModule.js+ on line_ *42*
 _There was an error in +/built-app.js+ on line_ *1984*
 +
 
-When your application if modularized you can identify the error easier.
+In modularized applications you can easier localize the error.
 
 * Performance: module are loaded only when required hence the initial portion of the application's code become smaller.
 
 [underline]#AMD Cons:#
-
-// vik
 
 * The dependency array can get rather large for complex modules.
 +
@@ -298,18 +293,17 @@ When your application if modularized you can identify the error easier.
 ----
 include::include/ch7_define_large_array_of_deps.js[]
 ----
-<1> In real-world enterprise applications array of dependency modules might be very big.
+<1> In the real-world enterprise applications the array of dependency modules might be pretty large.
 
-* Easy to get a mismatch between dependency array and callback arguments.
+* It's easy to get a mismatch between dependency array and callback arguments.
 +
 
 [source,javascript]
 ----
 include::include/ch7_define_module_ids_order.js[]
 ----
-<1>  Module IDs and factory function arguments mismatch will cause module usage problems.
+<1>  The mismatch of module IDs and factory function arguments will cause module usage problems.
 
-// /vik
 
 [[umd]]
 ==== Universal Module Definition
@@ -355,27 +349,26 @@ import login from 'login'
 var result = login("admin", "password");
 ----
 
-// vik
 .ES6 module transpilers
 ****
-Since ES6 standard features not yet implemented by a wide majority of browser manufactures you can use third party tools to get a flavor of upcoming enhancements in JavaScript language. http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 transpiler] developed by http://squareup.com/[Square] Engineers helps to use module authoring syntax from ES6 and compile it down to transport formats that you learned earlier in this chapter.
+Although ES6 standard features are not implemented yet by most of browsers you can use the third party tools to get a flavor of upcoming enhancements in JavaScript language. http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 transpiler] developed by the http://squareup.com/[Square] Engineers helps using the module authoring syntax from ES6 and compile it down to the transport formats that you learned earlier in this chapter.
 
-Consider following example. 
+Consider the following example. 
 
 .A `circle.js` module
 [source, javascript]
 ----
-export function area(radius) {  // <1>
+export function area(radius) { 
   return Math.PI * radius * radius;
 }
 
-export function circumference(radius) { // <1>
+export function circumference(radius) { 
   return 2 * Math.PI * radius;
 }
 ----
-<1> A module exports two functions: `area` and `circumference`.
+The above module exports two functions: `area()` and `circumference()`.
 
-.A `main.js` that uses fucntions from `circle.js` module
+.The `main.js` uses functions from `circle.js` module
 [source, javascript]
 ----
 import { area, circumference } from 'circle';     // <1>
@@ -383,8 +376,8 @@ import { area, circumference } from 'circle';     // <1>
 console.log("Area of the circle: " + area(2) + " meter squared");   // <2>
 console.log("Circumference of the circle: " + circumference(5) + " meters");
 ----
-<1> A `import` keyword uses to specify that objects we want to use from module.
-<2> Here we're using imported functions.
+<1> The `import` keyword specifies the objects we want to use from the module.
+<2> Sample use of the imported functions
 
 Now, using ES6 transpiler command
 
@@ -392,7 +385,7 @@ Now, using ES6 transpiler command
 compile-modules circle.js --type amd --to ../js/  #<1>
 compile-modules main.js --type amd --to ../js/
 ----
-<1> With `type` command line switch we can specify that output format will be: _amd_, _cjs_ and _globals_.
+<1> With the `type` command line switch we can specify that output format will be: _amd_, _cjs_ and _globals_.
 
 we compile those modules to:
 
@@ -508,7 +501,6 @@ NOTE: http://www.typescriptlang.org/[TypeScript] - a modern open-source language
 
 ****
 
-// /vik
 
 [[REQUIREJS]]
 === Mincing the Save Sick Child Application Into Modules
@@ -557,11 +549,8 @@ Bower installs RequireJS into _components/requirejs_ directory and saves informa
 
 Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means that you don't necessarily need to store dependencies of your application next to a application files in the source code repository. 
 
-// vik
 
-If you not sure that you need or don't need to check your JavaScript dependencies under source control, read the http://addyosmani.com/blog/checking-in-front-end-dependencies/[article by Addi Osmani] that covers different aspects of this question.
-
-// /vik
+If you're not sure if you need to check your JavaScript dependencies under the source control, read the http://addyosmani.com/blog/checking-in-front-end-dependencies/[article by Addi Osmani] that covers this subject.
 
 Your application could have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`. And you can find all your dependency files in +components+ directory. Here is the content of the file bower.json for our Save Sick Child application. 
 
@@ -628,12 +617,11 @@ include::include/ch7_require_config.js[]
 
 <3> After configuring the modules' paths we're loading the 'main' module. The navigation of our application flow starts there.
 
-// vik
+
 ==== Writing Modules
 
-Once we delegated the modules loading to RequireJS let's see the module's file internals that make it consumable by the module loader.
+Let's take a closer look at the module's internals that make it consumable by the RequireJS module loader.
 
-// /vik
 
 [source,javascript]
 ----
