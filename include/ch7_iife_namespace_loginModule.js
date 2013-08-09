@@ -1,4 +1,5 @@
 (function(global) {
+    "use strict";
 
     var ssc = global.ssc;   // <1>
     if (!ssc) {
