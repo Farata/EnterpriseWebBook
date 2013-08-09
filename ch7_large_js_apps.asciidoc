@@ -163,7 +163,7 @@ The Module pattern has a serious drawback - we still need to deal with manual de
 
 http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for modules and packages too. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of server-side JavaScript.
 
-On the Web browser side, you always need to consider potentially slow HTTP communications. One of the solutions is to concatenate al your scripts into a handful of bundles to decrease number of HTTP calls, which was not a concern for the server-side JavaScript enginesbecause file access is nearly instantaneous. Moreover, separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.
+On the Web browser side, you always need to consider potentially slow HTTP communications. One of the solutions is to concatenate al your scripts into a handful of bundles to decrease number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. Moreover, separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.
 
 In brief, the CommonJS specification standardizes http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context[three free variables]: `require`, `exports`, and `module`:
 
@@ -202,7 +202,7 @@ Further reading:
 [[amd_section]]
 ==== Asynchronous Module Definition
 
-AMD began as a draft specification for module format in CommonJS, but since the full consensus about its content was not reached, the further development of the module format moved to the https://github.com/amdjs[amdjs Github page].
+AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further development of the module format moved to the https://github.com/amdjs[amdjs Github page].
 
 The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded. 
 The AMD API is based on a https://github.com/amdjs/amdjs-api/wiki/AMD[this specification]. The AMD API have the following main functions:
@@ -214,7 +214,7 @@ The AMD API is based on a https://github.com/amdjs/amdjs-api/wiki/AMD[this speci
 +
 
 [[LISTING_define_func]]
-.The example of a `define` function
+.The signature of a `define` function
 [source,javascript]
 ----
 define(
@@ -225,16 +225,16 @@ define(
 ----
 <1> This string literal is an optional parameter. It defines +module_id+ that will be used by AMD for loading this module.
 <2> An optional array of dependencies' ids.
-<3> The function for instantiating the module or object.
+<3> The function for instantiating the module or object. The factory function will only be executed once
 +
 
 [[LISTING_define_modeule]]
-.The Definition of the `wayToGive` module
+.The definition of the `wayToGive` module
 [source,javascript]
 ----
 include::include/ch7_define_wayToGive.js[]
 ----
-<1> In this example, we are not providing the optional +module_id+. The file name without the `.js` extension will be used as +module_id+. Our module has one dependency on the module called +newContentLoader+. The module instance will be passed in the factory method as variable +contentLoader+. 
+<1> In this example, we are not providing the optional +module_id+. The file name without the `.js` extension will be used as +module_id+. Our module has one dependency on the module called +newContentLoader+. The dependent module instance will be passed in the factory method as variable +contentLoader+. 
 <2> We can start use dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.
 <3> Module defines and returns constructor function for new objects.
 
@@ -245,7 +245,7 @@ include::include/ch7_define_wayToGive.js[]
 +
 
 [[LISTING_require_func]]
-.Example of `require` function usage
+.The example of `require` function usage
 [source,javascript]
 ----
 require(["main"], function() {
@@ -254,18 +254,17 @@ require(["main"], function() {
 ----
 <1> Loads module with id +main+ and executes the anonymous function after module and all its dependencies are loaded.
 
-`exports` 
-Distinctions from CommonJS
-
-//TBD
-
-===== AMD Pros and Cons
-
-AMD pros:
+[underline]#AMD pros:#
 
 * It's a very simple API that has only two functions - `require` and `define`. 
 
 * A wide variety of loaders is available. You'll find more coverage on loaders in the <<REQUIREJS, RequireJS section>>.
+
+// vik
+
+* A CommonJS module authoring format is supported by majority of loaders. You'll see example of modules later in <<require_cjs>> section. 
+
+// /vik
 
 * Plugins offer an immense amount of flexibility
 
@@ -275,24 +274,42 @@ AMD pros:
 Consider following error messages that JavaScript interpretor can throw:
 +
 
-_There was an error in /modules/loginModule.js on line 42_
+_There was an error in +/modules/loginModule.js+ on line_ *42*
 +
 
 *vs*
 +
 
-_There was an error in /built-app.js on line 1984._
+_There was an error in +/built-app.js+ on line_ *1984*
 +
 
 When your application if modularized you can identify the error easier.
 
 * Performance: module are loaded only when required hence the initial portion of the application's code become smaller.
 
-AMD Cons:
+[underline]#AMD Cons:#
 
-* The dependency array can get rather large for complex modules (Example TBD).
-* Easy to get a mismatch between dependency array and callback arguments (Example TBD).
+// vik
 
+* The dependency array can get rather large for complex modules.
++
+
+[source,javascript]
+----
+include::include/ch7_define_large_array_of_deps.js[]
+----
+<1> In real-world enterprise applications array of dependency modules might be very big.
+
+* Easy to get a mismatch between dependency array and callback arguments.
++
+
+[source,javascript]
+----
+include::include/ch7_define_module_ids_order.js[]
+----
+<1>  Module IDs and factory function arguments mismatch will cause module usage problems.
+
+// /vik
 
 [[umd]]
 ==== Universal Module Definition
@@ -323,27 +340,175 @@ The ECMAScript 6 (ES6) specification is an evolving draft outlining changes and 
 .Login module definition
 [source,javascript]
 ----
-function Login(userNameValue, userPasswordValue) {
+export function login(userNameValue, userPasswordValue) { // <1>
     console.log("login implementation omitted");
 };
-export = Login;
 ----
+<1> A keyword `export` used to precify what function or object will be exposed.
 
 And this is how can be used:
 
 .Main application module
 [source,javascript]
 ----
-import "login" as Login;
-var result = Login("admin", "password");
+import login from 'login'
+var result = login("admin", "password");
 ----
 
+// vik
 .ES6 module transpilers
 ****
-http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 transpiler] developed by http://squareup.com/[Square] Engineers.
+Since ES6 standard features not yet implemented by a wide majority of browser manufactures you can use third party tools to get a flavor of upcoming enhancements in JavaScript language. http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 transpiler] developed by http://squareup.com/[Square] Engineers helps to use module authoring syntax from ES6 and compile it down to transport formats that you learned earlier in this chapter.
 
-TDB: TypeSctript module feature
+Consider following example. 
+
+.A `circle.js` module
+[source, javascript]
+----
+export function area(radius) {  // <1>
+  return Math.PI * radius * radius;
+}
+
+export function circumference(radius) { // <1>
+  return 2 * Math.PI * radius;
+}
+----
+<1> A module exports two functions: `area` and `circumference`.
+
+.A `main.js` that uses fucntions from `circle.js` module
+[source, javascript]
+----
+import { area, circumference } from 'circle';     // <1>
+
+console.log("Area of the circle: " + area(2) + " meter squared");   // <2>
+console.log("Circumference of the circle: " + circumference(5) + " meters");
+----
+<1> A `import` keyword uses to specify that objects we want to use from module.
+<2> Here we're using imported functions.
+
+Now, using ES6 transpiler command
+
+----
+compile-modules circle.js --type amd --to ../js/  #<1>
+compile-modules main.js --type amd --to ../js/
+----
+<1> With `type` command line switch we can specify that output format will be: _amd_, _cjs_ and _globals_.
+
+we compile those modules to:
+
+* *CommonJS* format
++
+
+[source,javascript]
+----
+"use strict";
+
+function area(radius) {
+    return Math.PI * radius * radius;
+}
+
+function circumference(radius) {
+    return 2 * Math.PI * radius;
+}
+exports.area = area;
+exports.circumference = circumference;
+----
++
+
+.main.js
+[source,javascript]
+----
+"use strict";
+var __dependency1__ = require("circle");
+var area = __dependency1__.area;
+var circumference = __dependency1__.circumference;
+
+console.log("Area of the circle: " + area(2) + " meter squared");
+console.log("Circumference of the circle: " + circumference(5) + " meters");
+----
+
+* *AMD* format
++
+
+.circle.js
+[source,javascript]
+----
+define("circle", ["exports"],
+    function(__exports__) {
+        "use strict";
+
+        function area(radius) {
+            return Math.PI * radius * radius;
+        }
+
+        function circumference(radius) {
+            return 2 * Math.PI * radius;
+        }
+        __exports__.area = area;
+        __exports__.circumference = circumference;
+    });
+----
++
+
+.main.js
+[source,javascript]
+----
+define("main", ["circle"],
+    function(__dependency1__) {
+        "use strict";
+        var area = __dependency1__.area;
+        var circumference = __dependency1__.circumference;
+
+        console.log("Area of the circle: " + area(2) + " meter squared");
+        console.log("Circumference of the circle: " + circumference(5) + " meters");
+
+    });
+----
+
+* Browser globals
++
+
+.circle.js
+[source,javascript]
+----
+(function(exports) {
+    "use strict";
+
+    function area(radius) {
+        return Math.PI * radius * radius;
+    }
+
+    function circumference(radius) {
+        return 2 * Math.PI * radius;
+    }
+    exports.circle.area = area;
+    exports.circle.circumference = circumference;
+})(window);
+----
++
+
+.main.js
+[source,javascript]
+----
+(function(circle) {
+    "use strict";
+    var area = circle.area;
+    var circumference = circle.circumference;
+
+    console.log("Area of the circle: " + area(2) + " meter squared");
+    console.log("Circumference of the circle: " + circumference(5) + " meters");
+
+})(window.circle);
+
+----
+
+To learn what features of ECMAScript 6 are supported on browsers you can visit http://kangax.github.io/es5-compat-table/es6/[ECMAScript 6 compatibility table].
+
+NOTE: http://www.typescriptlang.org/[TypeScript] - a modern open-source language from Microsoft what compiles to JavaScript - tends to bring object-oriented concepts like classes and modules to JavaScript. It has a module syntax of which is very similar that upcoming ES6 standard proposed. TypeScript compiler can produce CommonJS and AMD module formats. you can learn more about TypeScript from http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf[language specification]. You can find Save Sick Child application written in TypeScript in Appendix X (????)
+
 ****
+
+// /vik
 
 [[REQUIREJS]]
 === Mincing the Save Sick Child Application Into Modules
@@ -390,7 +555,15 @@ bower install requirejs --save
 ----
 Bower installs RequireJS into _components/requirejs_ directory and saves information about dependencies in bower.json configuration file.
 
-Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means that you don't necessarily need to store dependencies of your application next to a application files in the source code repository. Your application could have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`. And you can find all your dependency files in +components+ directory. Here is the content of the file bower.json for our Save Sick Child application.
+Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means that you don't necessarily need to store dependencies of your application next to a application files in the source code repository. 
+
+// vik
+
+If you not sure that you need or don't need to check your JavaScript dependencies under source control, read the http://addyosmani.com/blog/checking-in-front-end-dependencies/[article by Addi Osmani] that covers different aspects of this question.
+
+// /vik
+
+Your application could have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`. And you can find all your dependency files in +components+ directory. Here is the content of the file bower.json for our Save Sick Child application. 
 
 [source,javascript]
 ----
@@ -417,7 +590,7 @@ Also, there is a http://sindresorhus.com/bower-components/[Bower search tool] to
 
 ****
 
-Once RequireJS downloaded and placed into the project directory, add it to the html file as  demonstrated in <<add_requirejs>> snippet.
+Once RequireJS downloaded and placed into the project directory, add it to the html file as demonstrated in <<add_requirejs>> snippet.
 
 [[add_requirejs]]
 .Adding RequireJS to the web page
@@ -443,7 +616,7 @@ Once RequireJS downloaded and placed into the project directory, add it to the h
 [[inside_config]]
 ==== Inside config.js
 
-RequiredJS  uses a configuration object that includes that modules and dependencies that have to be managed by the framework.
+RequiredJS uses a configuration object that includes that modules and dependencies that have to be managed by the framework.
 
 [source,javascript]
 ----
@@ -455,6 +628,38 @@ include::include/ch7_require_config.js[]
 
 <3> After configuring the modules' paths we're loading the 'main' module. The navigation of our application flow starts there.
 
+// vik
+==== Writing Modules
+
+Once we delegated the modules loading to RequireJS let's see the module's file internals that make it consumable by the module loader.
+
+// /vik
+
+[source,javascript]
+----
+include::include/ch7_module_contentLoader.js[]
+----
+<1> As we discussed in the <<amd_section>> section, the code that you want to expose as a module should be wrapped in the `define()` function call. The first parameter is an array of dependencies. The location of dependencies files we're defined <<inside_config>>. The dependency object doesn't have the same name as the dependency string id. The most important is order that dependency objects are passed to factory function. The order should be the same as the order in the dependencies array.
+
+<2> In this module we export only in the constructor function that returns object that uses _render_ function to draw the visual component on the screen. In our case, this is part of HTML file with text for specific module. 
+
+<3> The `contentLoader` object loaded from _app/modules/util/new-content-loader.js_ (refer the _config.js_), instantiated by RequireJS and is ready to use. 
+
+RequreJS also supports the CommonJS module format with a slightly different signature of `define()` function. This helps to bridge the gap between AMD and CommonJS. If your factory function accepts parameters but you omit the dependency array, the AMD environment assumes you wish to emulate a CommonJS module environment. The standard `require`, `exports`, and `module` variables are injected as parameters to the factory.
+
+Here is an example of CommonJS module format with RequireJS.
+
+[[require_cjs]]
+.Using CommonJS module format in RequireJS
+[source,javascript]
+----
+include::include/ch7_commonjs_require.js[]
+----
+<1> The factory receives up to three arguments that emulate the CommonJS `require`, `exports`, and `module` variables. 
+
+<2> You should export your module rather than returning it. You can export an object in two ways - assign the the module directly to `module.exports` as shown in this snippet, or set the  properties on the `exports` object. 
+
+<3> In CommonJS, dependencies are assigned to local variables using the `require(id)` function.
 
 ==== Loading Modules On-Demand
 
@@ -466,7 +671,7 @@ A couple of components of our application don't necessarily need to be loaded at
 +
 
 [[load_ondemand_snippet]]
-.Loading +widget1+ module on demand
+.Loading widget1 module on demand
 [source,javascript]
 ----
 include::include/ch7_module_ondemand.js[]
@@ -497,33 +702,6 @@ The `!` sign in the module id string literals means that RequireJS delegates som
 
 <5> On the last step, we need to initialize each module button with the lazy loading handler.
 
-Now that you know how to load the module's code, let's see the module's file internals that make it consumable by the module loader.
-
-
-[source,javascript]
-----
-include::include/ch7_module_contentLoader.js[]
-----
-<1> As we discussed in the <<amd_section>> section, the code that you want to expose as a module should be wrapped in the `define()` function call. The first parameter is an array of dependencies. The location of dependencies files we're defined <<inside_config>>. The dependency object doesn't have the same name as the dependency string id. The most important is order that dependency objects are passed to factory function. The order should be the same as the order in the dependencies array.
-
-<2> In this module we export only in the constructor function that returns object that uses _render_ function to draw the visual component on the screen. In our case, this is part of HTML file with text for specific module. 
-
-<3> The `contentLoader` object loaded from _app/modules/util/new-content-loader.js_ (refer the _config.js_), instantiated by RequireJS and is ready to use. 
-
-RequreJS also supports the CommonJS module format with a slightly different signature of `define()` function. This helps to bridge the gap between AMD and CommonJS. If your factory function accepts parameters but you omit the dependency array, the AMD environment assumes you wish to emulate a CommonJS module environment. The standard `require`, `exports`, and `module` variables are injected as parameters to the factory.
-
-Here is an example of CommonJS module format with ReuiqreJS.
-
-.Using CommonJS module format in RequireJS
-[source,javascript]
-----
-include::include/ch7_commonjs_require.js[]
-----
-<1> The factory receives up to three arguments that emulate the CommonJS `require`, `exports`, and `module` variables. 
-
-<2> You should export your module rather than returning it. You can export an object in two ways - assign the the module directly to `module.exports` as shown in this snippet, or set the  properties on the `exports` object. 
-
-<3> In CommonJS, dependencies are assigned to local variables using the `require(id)` function.
 
 [[requirejs_plugins]]
 ==== RequireJS plugins
@@ -583,13 +761,8 @@ image::fig_07_03.png[]
 
 You can find more information about different optimization topics on the RequireJS documentation site under http://requirejs.org/docs/optimization.html[``Optimization''] section.
 
-=== Advanced Modularization Topics
-
-* DI/IOC
-* Patterns (mediator, service locator)
-
 [[mediator_section]]
-==== Mediator Design Pattern
+=== Handling inter-module communications with Mediator Design Pattern
 
 Almost any complex screen of a enterprise application consists of a number of components and modules.
 

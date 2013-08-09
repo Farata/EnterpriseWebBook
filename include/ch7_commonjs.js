@@ -24,7 +24,8 @@ loginModule.logout = function() {
 };
 
 exports.login = loginModule;        // <2>
-//module.exports = loginModule;      // <3>
+// or
+module.exports = loginModule;      // <3>
 
 loginModule.printMetadata = function(){
     console.log(module.id);     // <3>
