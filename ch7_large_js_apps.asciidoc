@@ -5,37 +5,38 @@
 
 == Large-Scale JavaScript Projects
 
-Reducing the startup latency and implementing lazy loading of certain parts of the application are main reasons for modularizing Web applications. A good illustration of why you may want to consider cutting the code base of your Web application is a well designed Web application of the http://www.mbusa.com/[Mercedes Benz USA]. This Web application serves people who live in America and either own or consider purchasing cars from this prestigious European car manufacturer.
+Reducing the  startup latency and implementing lazy loading of certain parts of the application are the main reasons for modularization. A good illustration of why you may want to consider cutting the code into pieces is a well designed Web application of the http://www.mbusa.com/[Mercedes Benz USA]. This Web application serves people who live in America and either own or consider purchasing cars from this European car manufacturer.
 
-One of the option to purchase a vehicle is called European Delivery. An American resident can combine car purchase with  vacation. He or she would fly to Europe to the car factory, pick up the car there and then would be vacationing for two weeks driving your new vehicle in Europe. After the vacation your car would be shipped to your home town in the USA.  It's a really nice program, but would have added several thousand dollars to the price of the car.
+One of the options to purchase a vehicle is called European Delivery. An American resident can combine car purchase with a vacation. She would fly to Europe to the Mercedes Benz factory, pick up the car there and then she would be vacationing for two weeks driving her new vehicle in Europe. After the vacation is over, this car would be shipped to her home town in the USA.  This really nice program  would have added several thousand dollars to the price of the car.
 
-From the application design code of view, we don't need to include the code that support the European Delivery to each and every user's who decided to visit mbusa.com. If and only if the user will visit the menu Owners and will click on the European Delivery link, then the required code and resources has to be pushed to the user's computer or mobile device. The snapshot in <<FIG7-1>> was taken after clicking on this link with Chrome Developer tools panel open.
+From the application design code of view, we don't need to include the code that supports the European Delivery to each and every user's who decided to visit mbusa.com. _If and only if_ the user visits the menu Owners and clicks on the European Delivery link, then the required code and resources have to be pushed to the user's computer or mobile device. The snapshot in <<FIG7-1>> was taken after clicking on this link with Chrome Developer tools panel open.
 
 [[FIG7-1]]
 .MB USA: Europian Delivery 
 image::fig_07_01.png[image]
 
-As you see, _1.9Mb_ worth of code and other resources have been downloaded as a result of this click. Should the application architects of the MB USA IT decided to load this code on the initial load of http://mbusa.com, the user would have to wait for another second or more, which would be a wrong design because only a tiny number of American driver would be interested in even looking at the European Delivery option. This is an example of modularization and lazy loading in action.
+As you see, _1.9Mb_ worth of code and other resources have been downloaded as a result of this click. Should the application architects of the MB USA decided to bring this code to the user's device on the initial load of http://mbusa.com, the wait time would increase by another second or more. This  is unnecessary because only a tiny number of American drivers would be interested in exploring the European Delivery option. This example illustrates the use case where modularization and lazy loading is needed.
 
-Our Save Sick Child application is not as big as Mercedes Benz site. But we'll use it to give you an example of how to build modularized Web applications that won't bring the monolithic ten megabyte application to the client's machine, but will load the code on as needed basis. We'll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.
+Our Save Sick Child application is not as big as the Mercedes Benz site. But we'll use it to give you an example of how to build modularized Web applications that won't bring the large and monolithic application to the client's machine, but will load the code on as needed basis. We'll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.
 
-People consider your web application fast for one of two reasons: either it's actually fast or it gives an impression of being fast. Ideally, you should do your best to create an web application that is very responsive. No matter how slow your web application is, it should never feel like freezing.
+Users consider a Web application fast for one of two reasons: either it's actually fast or it gives an impression of being fast. Ideally, you should do your best to create a Web application that's very responsive. 
 
-This chapter is about modularization techniques that will quickly render the first page of your web application on the user's Browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save Sick Child application to illustrate using modules.
+TIP: No matter how slow your Web application is, it should never feel like it's being frozen.
+
+This chapter is about modularization techniques that will allow quick rendering of the first page of your Web application by the user's browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save Sick Child application to illustrate using modules.
 
 === Modularization basics
 
+Modules are code fragments that implement certain   functionality written using a specific techniques. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the _module concept_ in the JavaScript language itself. This is the future. 
 
-Modules are code fragments that implement specific functionality written using a specific pattern. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the _module concept_ in the JavaScript language itself. This is the future. Aren't .js files modules already? 
+You may ask, "Aren't .js files modules already?" Of course, you can include and load each JavaScript file using the `<script>` tag. But this approach is error prone and slow. Developers have to manually manage dependencies and file loading order. Moreover, each `<script>` tag results in the  additional HTTP call to the server.
 
-Of course, you can load each JavaScript file using the `<script>` tag. But this approach is error prone and slow. Developers have to manage dependencies and loading order manually. Moreover, each `<script>` tag results in an additional HTTP call to the server.
-
-As the application gets larger the latency grows accordingly, which is illustrated in the following 
+As the application gets larger the number of script files grows accordingly, which is illustrated in the following 
 <<LISTING_SCRIPT_TAG, code sample>>.
 
 
 [[LISTING_SCRIPT_TAG]]
-.Tons of `<script>` tags leads to loosing control of the application dependencies
+.Multiple `<script>` tags complicate controlling  application dependencies
 [source,html]
 ----
 <!DOCTYPE html>
@@ -68,68 +69,35 @@ As the application gets larger the latency grows accordingly, which is illustrat
 </body>
 </html>
 ----
-<1> All modules depend on the code from Core jQuery library hence load it first.
+<1> Loading the jQuery first because all other modules depend on it.
 
-<2> The application components may also have dependencies on other scripts. Those scripts need to be loaded before the component itself. The order of these script tags is very important.
+<2> Other application components may also have internal dependencies on other scripts. Those scripts need to be loaded before the respective components. Having the proper order of these script tags is very important.
 
-<3> The main application script should be loaded after all dependencies.
+<3> The script for the main Web page should be loaded after all dependencies have finished loading.
 
-We need a different approach to modularizing applications. Let's  start with using the Module pattern to leverage Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we will introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications and sets of APIs. 
+We need other than adding `<script>` tags approach to modularizing applications. Let's start with using the Module pattern to leverage so called Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we'll introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications defining sets of APIs. 
 
-You'll learn pros and cons of both formats later in the chapter, but in our opinion, the AMD module format is suitable to play nicely with the asynchronous nature of Web. In this chapter we will use the AMD module format and http://requirejs.org/[RequireJS] framework to implement the modularized version of the Save Sick Child application.
+You'll learn pros and cons of both formats later in the chapter, but the AMD module format plays nicely with the asynchronous nature of Web. In this chapter you'll see the use of the AMD module format and http://requirejs.org/[RequireJS] framework to implement the modularized version of the Save Sick Child application.
 
-Also, you'll see how to use the RequireJS APIs to implement on-demand loading of application components.
+Also, you'll see how to use the RequireJS APIs to implement on-demand loading of the application components (e.g. What We Do, Ways To Give et al.)
 
-The upcoming ECMAScript 6 specification suggests hoe to handle modules, and how you can start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD.
+The upcoming ECMAScript 6 specification suggests how to handle modules, and how to start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD. You can find more details about CommonJS, AMD and the ES6 module format in the corresponding sections of this chapter.
 
-For example, consider the following import code snippet from the ES6 module:
+After application modules are asynchronously loaded, they need to communicate to each other. You can explicitly specify the components dependencies, which is fine as long as you have a handful of  components. A more generic approach is to handle inter-module communications in a loosely coupled fashion using the _Mediator_ pattern, CommonJS or AMD formats. By _loosely coupled_ we mean that components are not aware of each other's existence.
 
-.ES6 format for importing module dependency
-[source, javascript]
-----
-import "login" as login;
-var result = login("admin", "password");
-----
-
-With the ES6 transpiler from Square team this code could be translated into the following:
-
-.Module defined in AMD format
-[source,javascript]
-----
-define("main",
-  ["login"],
-  function(login) {
-    "use strict";
-    var result = login("admin", "password");
-  });
-----
-
-.Module defined in CommonJS format
-[source,javascript]
-----
-"use strict";
-var login = require("login");
-var result = login("admin", "password");
-----
-
-You can find more details about CommonJS, AMD and the ES6 module format in the corresponding sections of this chapter.
-
-After application modules are asynchronously loaded, they need to communicate to each other. You can explicitly specify the components dependencies, wwhich work will fine if you have a handful of  components. A more generic approach is to handle inter-module communications in a loosely coupled fashion using the _Mediator_ pattern, CommonJS or AMD formats. In the next section we start reviewing the approaches and patterns of modular JavaScript architectures.
+The next section reviews various approaches and patterns of modular JavaScript applications.
 
 === Roads To Modularization
 
-
-JavaScript has no build-in language support of modules. Nonetheless developers' community managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. The _Module pattern_ doesn't require any additional frameworks and works in any JavaScript environment. The _CommonJS_ module format is widely adopted for server-side JavaSctipt, and the  _AMD_ format is very popular in applications that run in Web browsers. In this section you'll learn all these techniques in  details.
-
+Although JavaScript has no build-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. The _Module pattern_ doesn't require any additional frameworks and works in any JavaScript environment. The _CommonJS_ module format is widely adopted for the server-side JavaSctipt, while the _AMD_ format is popular in the applications running in Web browsers. 
 
 ==== The Module Pattern
 
-In software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We're able to include both public/private methods and variables inside a single object, thus hiding the encapsulated code from being visible from global scope. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts, but used in the same application's scope.
+In software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We're able to include both public and private methods as well as variables inside the single object, thus hiding the encapsulated code from other global scope objects. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts that could be used in the same application's scope.
 
-Ultimately, it's just some code in an IIFE that creates a module object in the internal scope of a function and exposes that module to the global scope using JavaScript syntax. Here are couple examples of how the Module pattern could be implemented using IIFEs.
+Ultimately, it's just some code in an IIFE that creates a module object in the internal scope of a function and exposes this module to the global scope using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs.
 
-
-.Returning a value from a module 
+.Returning the value from a module 
 [source,javascript]
 ----
 include::include/ch7_iife_loginModule.js[]
@@ -137,26 +105,25 @@ include::include/ch7_iife_loginModule.js[]
 <1> Assigning the module object that was created in the closure to the variable `loginModule`.
 <2> Because of the JavaScript's function scoping, other parts of the code can't access the code inside the closure. With this approach you can implement encapsulation and private members.
 
-.Piggiybacking on the global object
+.Injecting the module into the global object 
 [source,javascript]
 ----
 include::include/ch7_iife_global_loginModule.js[]
 ----
-<1> Instead of exporting the module to a variable as in the previous example, here we're passing the global object as a parameter of the closure.
+<1> Instead of exporting the module to a variable as in the previous example, we're passing the global object as a parameter inside the closure.
 <2> Attaching the newly created object to the global object. After that the `loginModule` object can be accessed from the external application code as `window.loginModule` or just `loginModule`.
 
-
-.Application Namespace in global object
+.Introducing namespaces in the global object
 [source,javascript]
 ----
 include::include/ch7_iife_namespace_loginModule.js[]
 ----
-<1> Here we have modification of an approach described in previous snipped. Now we can create namespace for our application called `ssc`.
+<1> Here we have modification of the approach described in previous snippet. To avoid name conflicts, create a namespace for our application called `ssc`. Note that we check for this object existence in the next line.
 <2> Now we can logically structure application code using namespaces. The global `ssc` object will contain only the code related to the Save Sick Child application.
 
-This approach doesn't scale well because when working with an application with the large number of modules, very soon you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.
+The Module patterns works well for implementing encapsulation in a rather small applications. It's easy to implement and is frameworks agnostic. However this approach doesn't scale well because when working with an application with the large number of modules you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.
 
-The Module pattern has a serious drawback - we still need to deal with manual dependency management and manually arrange `<script>` tags in the HTML document.
+The Module pattern has a serious drawback - you  still need to deal with manual dependency management and manually arrange `<script>` tags in the HTML document. 
 
 ==== CommonJS
 
