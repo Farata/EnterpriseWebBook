@@ -127,24 +127,23 @@ The Module pattern has a serious drawback - you  still need to deal with manual 
 
 ==== CommonJS
 
+http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for both modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of the server-side JavaScript.
 
-http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for modules and packages too. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of server-side JavaScript.
+On the Web browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One of the solutions suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. On the server side separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.
 
-On the Web browser side, you always need to consider potentially slow HTTP communications. One of the solutions is to concatenate al your scripts into a handful of bundles to decrease number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. Moreover, separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.
-
-In brief, the CommonJS specification standardizes http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context[three free variables]: `require`, `exports`, and `module`:
+In brief, the CommonJS specification requires the environment to have  http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context[three free variables]: `require`, `exports`, and `module`. The syntax to define the module is called _authoring format_. To make the module loadable by a Web browser it has to be transformed into _transport format_. 
 
 [source,javascript]
 ----
 include::include/ch7_commonjs.js[]
 ----
-<1> If a module requires other modules, declare references to those modules inside the current module's scope by using the `require` function. You need to call `require(id)` for each module that your code depends on.  The module id has slashes defining the file path or a url to indicate namespaces for modules. The modules are grouped with related modules into a packages.
+<1> If a module requires other modules, declare references to those modules inside the current module's scope by using the `require` function. You need to call `require(id)` for each module it  depends on.  The module id has slashes defining the file path or a URL to indicate namespaces for external modules. Modules are grouped into a packages.
 
-<2> The `exports` object exposes public API of a module. All objects, functions, constructors that your module exoses must be declared as properties of the exports object. The rest of the module is not exposed.
+<2> The `exports` object exposes the public API of a module. All objects, functions, constructors that your module exposes must be declared as properties of the `exports` object. The rest of the module's code won't be exposed.
 
-<3> The `module` variable provides metadata about module. It holds the `id` and a unique `uri` of each module. The `module.export` exposes `exports` object as it's property. Because objects in JavaScript are passed as references, then `exports` and `module.exports` are the same object.
+<3> The `module` variable provides the metadata about the module. It holds such properties as `id` and a unique `uri` of each module. The `module.export` exposes `exports` object as its property. Because objects in JavaScript are passed as references, the `exports` and `module.exports` point at the same object.
 
-WARNING: The snippet above may give you an impression that all module's code is executed in global scope, but it's not. Each module is executed in its own scope which helps to isolate modules. This works automatically when you write modules for NodeJS running on the server. But to use CommonJS module format in the Web browser you need to use an extra tool to generate _transport format_ (to be delivered and executed by the browser) from _authoring format_. http://browserify.org/[Browserify] takes all your scripts and concatenates them it to one large file.  Besides modules' the resulted code will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development process (the approach "_code/save/refresh browser_" doesn't work in this case) and makes it harder to get started on a new project as you need to install the additional build tool and setup the build scripts. 
+WARNING: The snippet above may give you an impression that the module's code is executed in the global scope, but it's not. Each module is executed in its own scope which helps to isolate them. This works automatically when you write modules for NodeJS environment running on the server (see Chapter 8). But to use CommonJS module format in the Web browser you need to use an extra tool to generate transport format from _authoring format_. http://browserify.org/[Browserify] takes all your scripts and concatenates them it to one large file.  Besides the module's code the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually developers perform the _code/save/refresh browser_ routine, but it doesn't work in this case and requires an extra steps as you need to install the additional build tool and write  build scripts. 
 
 
 [underline]#CommonJS pros:#
@@ -154,11 +153,11 @@ WARNING: The snippet above may give you an impression that all module's code is 
 
 [underline]#CommonJS cons:#
 
-* Browsers can't work with CommonJS modules because browsers don't automatically create the scoped variables `require`, `exports`, `module` hence the additional build step is required.
-* The `require` method is synchronous, but module values may not be fully loaded during the execution.
-* CommonJS API is suitable for loading +js+ files, but it can't load other assets like css and HTML.
+* Web browsers don't automatically create the scoped variables `require`, `exports`, `module` hence the additional build step is required.
+* The `require` method is synchronous, but there is no exact indication if dependent module's values are fully loaded because of the asynchronous nature of Web browsers. There is no event to notify the application that 100% of the required resources is loaded. 
+* CommonJS API is suitable for loading +.js+ files, but it can't load other assets like CSS and HTML.
 
-NOTE: If you want to write modules in the format that can be used in the different environments read our suggestions in the  <<umd>> section on this chapter.
+NOTE: If you want to write modules in the format that can be used in both browser and server's  environments read our suggestions in the  <<umd>> section on this chapter.
 
 Further reading:
 
@@ -169,15 +168,16 @@ Further reading:
 [[amd_section]]
 ==== Asynchronous Module Definition
 
-AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further development of the module format moved to the https://github.com/amdjs[amdjs Github page].
+AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further work on module's format moved to the https://github.com/amdjs[amdjs Github page].
 
 The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded. 
-The AMD API is based on a https://github.com/amdjs/amdjs-api/wiki/AMD[this specification]. The AMD API have the following main functions:
+The AMD API is based on https://github.com/amdjs/amdjs-api/wiki/AMD[this specification]. The AMD API have the following main functions:
 
 [[DEFINE_DESC]]
-* `define` for facilitating module definition. A function takes two arguments:
-** An optional array of modules IDs, which serve as this module's dependencies
-** A callback function (often referred to as a _factory function_), which will be invoked when dependencies are loaded. This also can be a value to use directory as the module's value.
+* `define` for facilitating module definition. This function takes tree arguments:
+** The optional module id
+** An optional array of modules' IDs of dependencies
+** A callback function (a.k.a _factory function_), which will be invoked when dependencies are loaded. 
 +
 
 [[LISTING_define_func]]
@@ -190,9 +190,12 @@ define(
     function {}         // <3>
 );
 ----
-<1> This string literal is an optional parameter. It defines +module_id+ that will be used by AMD for loading this module.
+<1> This string literal defines +module_id+ that will be used by the AMD loader for loading this module.
 <2> An optional array of dependencies' ids.
 <3> The function for instantiating the module or object. The factory function will only be executed once
++
+
+For example, the Save Sick Child application has a menu Way To Give, which in turn depends on other module called `otherContent`. If the user clicks on this menu, we can load the module that can be defined in the wayToGive.js as follows:
 +
 
 [[LISTING_define_modeule]]
@@ -201,14 +204,14 @@ define(
 ----
 include::include/ch7_define_wayToGive.js[]
 ----
-<1> In this example, we are not providing the optional +module_id+. The file name without the `.js` extension will be used as +module_id+. Our module has one dependency on the module called +newContentLoader+. The dependent module instance will be passed in the factory method as variable +contentLoader+. 
-<2> We can start use dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.
-<3> Module defines and returns constructor function for new objects.
+<1> This code doesn't have the optional +module_id+. The loader will use the file name without the `.js` extension as +module_id+. Our module has one dependency on the module called +otherContent+. The dependent module instance will be passed in the factory method as variable +contentLoader+. 
+<2> We can start using the dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.
+<3> The module returns constructor function to be used for creation of new objects.
 
 [[REQUIRE_DESC]]
-* `require` function takes two arguments
+* The `require` function takes two arguments
 ** An array of module IDs to load. Module ID is a string literal.
-** A callback to be executed once those modules are available. The modules loaded by ID are passed into the callback in their relative positions. <<LISTING_Require_func,Here is example>> of `require` function usage.
+** A callback to be executed once those modules are available. The modules loaded by IDs are passed into the callback in order. <<LISTING_Require_func,Here is example>> of the `require` function usage.
 +
 
 [[LISTING_require_func]]
@@ -217,9 +220,8 @@ include::include/ch7_define_wayToGive.js[]
 ----
 require(["main"], function() {
     console.log("module main is loaded");
-}); // <1>
+}); 
 ----
-<1> Loads module with id +main+ and executes the anonymous function after module and all its dependencies are loaded.
 
 [underline]#AMD pros:#
 
@@ -247,7 +249,7 @@ _There was an error in +/modules/loginModule.js+ on line_ *42*
 _There was an error in +/built-app.js+ on line_ *1984*
 +
 
-In modularized applications you can easier localize the error.
+In modularized applications you can easier localize errors.
 
 * Performance: module are loaded only when required hence the initial portion of the application's code become smaller.
 
@@ -262,7 +264,7 @@ include::include/ch7_define_large_array_of_deps.js[]
 ----
 <1> In the real-world enterprise applications the array of dependency modules might be pretty large.
 
-* It's easy to get a mismatch between dependency array and callback arguments.
+* Human errors can result in mismatch between dependency array and callback arguments.
 +
 
 [source,javascript]
@@ -275,26 +277,24 @@ include::include/ch7_define_module_ids_order.js[]
 [[umd]]
 ==== Universal Module Definition
 
-Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. Here is an example of module definition using the UMD notation. In the following example, the module can be used with the AMD loader as one of variations of the Module Pattern.
+Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used to support multiple module formats. Here is an example of the module definition in UMD notation. In the following example, the module can be used with the AMD loader and as one of the variations of the Module Pattern.
 
 
 [source,javascript]
 ----
 include::include/ch7_umd_amd_globals.js[]
 ----
-<1> Checking if the AMD loader is available. If it is, proceed with defining the module according AMD specification.
+<1> If the AMD loader is available proceed with defining the module according to AMD specification.
 
-<2> If the AMD loader isn't present, use the factory method to instantiate object and attach it to the global scope (i.e. `window` object in case of executing this code in a Web browser).
+<2> If the AMD loader isn't present, use the factory method to instantiate the object and attach it to the `window` object.
 
 <3> Passing the top-level context and providing a implementation of a factory function.
 
-It's worth mentioning that UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules shall run in more than one type of environment (e.g. a browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.
+It's worth mentioning that UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules will run in more than one type of environment (e.g. a Web browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.
 
 You can find more information about UMD and commented code snippets for different situations in https://github.com/umdjs/umd[the UMD project repository].
 
 ==== ECMAScript 6 Modules
-
-// This section under active development
 
 The ECMAScript 6 (ES6) specification is an evolving draft outlining changes and features for the next version of JavaScript. This specification will be finalized soon, but before that happens the browsers' support for anything defined in ES6 will be experimental at best and cannot be relied upon for Web applications that must run in multiple browsers. One of the most important features of the upcoming ES6 specification is the _module syntax_. Here is an example of how it suggests to define and use a module:
 
