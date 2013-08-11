@@ -14153,13 +14153,13 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <div class="sect3">
 <h4 id="_commonjs">CommonJS</h4>
 <div class="paragraph">
-<p><a href="http://www.commonjs.org/">CommonJS</a> is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for modules and packages too. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of server-side JavaScript.</p>
+<p><a href="http://www.commonjs.org/">CommonJS</a> is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for both modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of the server-side JavaScript.</p>
 </div>
 <div class="paragraph">
-<p>On the Web browser side, you always need to consider potentially slow HTTP communications. One of the solutions is to concatenate al your scripts into a handful of bundles to decrease number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. Moreover, separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.</p>
+<p>On the Web browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One of the solutions suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. On the server side separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.</p>
 </div>
 <div class="paragraph">
-<p>In brief, the CommonJS specification standardizes <a href="http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context">three free variables</a>: <code>require</code>, <code>exports</code>, and <code>module</code>:</p>
+<p>In brief, the CommonJS specification requires the environment to have  <a href="http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context">three free variables</a>: <code>require</code>, <code>exports</code>, and <code>module</code>. The syntax to define the module is called <em>authoring format</em>. To make the module loadable by a Web browser it has to be transformed into <em>transport format</em>.</p>
 </div>
 <div class="listingblock">
 
@@ -14204,15 +14204,15 @@ loginModule.printMetadata = function(){
 <table>
 <tr>
 <td><i class="conum">1</i></td>
-<td>If a module requires other modules, declare references to those modules inside the current module&#8217;s scope by using the <code>require</code> function. You need to call <code>require(id)</code> for each module that your code depends on.  The module id has slashes defining the file path or a url to indicate namespaces for modules. The modules are grouped with related modules into a packages.</td>
+<td>If a module requires other modules, declare references to those modules inside the current module&#8217;s scope by using the <code>require</code> function. You need to call <code>require(id)</code> for each module it  depends on.  The module id has slashes defining the file path or a URL to indicate namespaces for external modules. Modules are grouped into a packages.</td>
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
-<td>The <code>exports</code> object exposes public API of a module. All objects, functions, constructors that your module exoses must be declared as properties of the exports object. The rest of the module is not exposed.</td>
+<td>The <code>exports</code> object exposes the public API of a module. All objects, functions, constructors that your module exposes must be declared as properties of the <code>exports</code> object. The rest of the module&#8217;s code won&#8217;t be exposed.</td>
 </tr>
 <tr>
 <td><i class="conum">3</i></td>
-<td>The <code>module</code> variable provides metadata about module. It holds the <code>id</code> and a unique <code>uri</code> of each module. The <code>module.export</code> exposes <code>exports</code> object as it&#8217;s property. Because objects in JavaScript are passed as references, then <code>exports</code> and <code>module.exports</code> are the same object.</td>
+<td>The <code>module</code> variable provides the metadata about the module. It holds such properties as <code>id</code> and a unique <code>uri</code> of each module. The <code>module.export</code> exposes <code>exports</code> object as its property. Because objects in JavaScript are passed as references, the <code>exports</code> and <code>module.exports</code> point at the same object.</td>
 </tr>
 </table>
 </div>
@@ -14224,7 +14224,7 @@ loginModule.printMetadata = function(){
 </td>
 <td class="content">
 
-The snippet above may give you an impression that all module&#8217;s code is executed in global scope, but it&#8217;s not. Each module is executed in its own scope which helps to isolate modules. This works automatically when you write modules for NodeJS running on the server. But to use CommonJS module format in the Web browser you need to use an extra tool to generate <em>transport format</em> (to be delivered and executed by the browser) from <em>authoring format</em>. <a href="http://browserify.org/">Browserify</a> takes all your scripts and concatenates them it to one large file.  Besides modules' the resulted code will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development process (the approach "<em>code/save/refresh browser</em>" doesn&#8217;t work in this case) and makes it harder to get started on a new project as you need to install the additional build tool and setup the build scripts.
+The snippet above may give you an impression that the module&#8217;s code is executed in the global scope, but it&#8217;s not. Each module is executed in its own scope which helps to isolate them. This works automatically when you write modules for NodeJS environment running on the server (see Chapter 8). But to use CommonJS module format in the Web browser you need to use an extra tool to generate transport format from <em>authoring format</em>. <a href="http://browserify.org/">Browserify</a> takes all your scripts and concatenates them it to one large file.  Besides the module&#8217;s code the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually developers perform the <em>code/save/refresh browser</em> routine, but it doesn&#8217;t work in this case and requires an extra steps as you need to install the additional build tool and write  build scripts.
 </td>
 </tr>
 </table>
@@ -14250,13 +14250,13 @@ The snippet above may give you an impression that all module&#8217;s code is exe
 
 <ul>
 <li>
-<p>Browsers can&#8217;t work with CommonJS modules because browsers don&#8217;t automatically create the scoped variables <code>require</code>, <code>exports</code>, <code>module</code> hence the additional build step is required.</p>
+<p>Web browsers don&#8217;t automatically create the scoped variables <code>require</code>, <code>exports</code>, <code>module</code> hence the additional build step is required.</p>
 </li>
 <li>
-<p>The <code>require</code> method is synchronous, but module values may not be fully loaded during the execution.</p>
+<p>The <code>require</code> method is synchronous, but there is no exact indication if dependent module&#8217;s values are fully loaded because of the asynchronous nature of Web browsers. There is no event to notify the application that 100% of the required resources is loaded.</p>
 </li>
 <li>
-<p>CommonJS API is suitable for loading <code>js</code> files, but it can&#8217;t load other assets like css and HTML.</p>
+<p>CommonJS API is suitable for loading <code>.js</code> files, but it can&#8217;t load other assets like CSS and HTML.</p>
 </li>
 </ul>
 </div>
@@ -14268,7 +14268,7 @@ The snippet above may give you an impression that all module&#8217;s code is exe
 </td>
 <td class="content">
 
-If you want to write modules in the format that can be used in the different environments read our suggestions in the  <a href="#umd">Universal Module Definition</a> section on this chapter.
+If you want to write modules in the format that can be used in both browser and server&#8217;s  environments read our suggestions in the  <a href="#umd">Universal Module Definition</a> section on this chapter.
 </td>
 </tr>
 </table>
@@ -14292,25 +14292,28 @@ If you want to write modules in the format that can be used in the different env
 <div class="sect3">
 <h4 id="amd_section">Asynchronous Module Definition</h4>
 <div class="paragraph">
-<p>AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further development of the module format moved to the <a href="https://github.com/amdjs">amdjs Github page</a>.</p>
+<p>AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further work on module&#8217;s format moved to the <a href="https://github.com/amdjs">amdjs Github page</a>.</p>
 </div>
 <div class="paragraph">
 <p>The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded.
-The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">this specification</a>. The AMD API have the following main functions:</p>
+The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">this specification</a>. The AMD API have the following main functions:</p>
 </div>
 <div id="DEFINE_DESC" class="ulist">
 
 <ul>
 <li>
-<p><code>define</code> for facilitating module definition. A function takes two arguments:</p>
+<p><code>define</code> for facilitating module definition. This function takes tree arguments:</p>
 <div class="ulist">
 
 <ul>
 <li>
-<p>An optional array of modules IDs, which serve as this module&#8217;s dependencies</p>
+<p>The optional module id</p>
 </li>
 <li>
-<p>A callback function (often referred to as a <em>factory function</em>), which will be invoked when dependencies are loaded. This also can be a value to use directory as the module&#8217;s value.</p>
+<p>An optional array of modules' IDs of dependencies</p>
+</li>
+<li>
+<p>A callback function (a.k.a <em>factory function</em>), which will be invoked when dependencies are loaded.</p>
 <div id="LISTING_define_func" class="listingblock">
 <div class="title">The signature of a <code>define</code> function</div>
 <div class="content monospaced">
@@ -14326,7 +14329,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <table>
 <tr>
 <td><i class="conum">1</i></td>
-<td>This string literal is an optional parameter. It defines <code>module_id</code> that will be used by AMD for loading this module.</td>
+<td>This string literal defines <code>module_id</code> that will be used by the AMD loader for loading this module.</td>
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
@@ -14338,17 +14341,20 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>For example, the Save Sick Child application has a menu Way To Give, which in turn depends on other module called <code>otherContent</code>. If the user clicks on this menu, we can load the module that can be defined in the wayToGive.js as follows:</p>
+</div>
 <div id="LISTING_define_modeule" class="listingblock">
 <div class="title">The definition of the <code>wayToGive</code> module</div>
 <div class="content monospaced">
-<pre class="highlight"><code class="javascript language-javascript">define(["newContentLoader"], function(contentLoader) { // <i class="conum">1</i>
+<pre class="highlight"><code class="javascript language-javascript">define(["otherContent"], function(otherContent) { // <i class="conum">1</i>
     "use strict";
 
     console.log("way-to-give module is loaded");
     var wayToGive = function() {
         return {
             render: function() {
-                contentLoader.getNewContent("way-to-give", // <i class="conum">2</i>
+                otherContent.getNewContent("way-to-give", // <i class="conum">2</i>
                                             "way-to-give-container",
                                             "assets/html-includes/way-to-give.html");
                 return console.log("way-to-give module is rendered");
@@ -14367,15 +14373,15 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <table>
 <tr>
 <td><i class="conum">1</i></td>
-<td>In this example, we are not providing the optional <code>module_id</code>. The file name without the <code>.js</code> extension will be used as <code>module_id</code>. Our module has one dependency on the module called <code>newContentLoader</code>. The dependent module instance will be passed in the factory method as variable <code>contentLoader</code>.</td>
+<td>This code doesn&#8217;t have the optional <code>module_id</code>. The loader will use the file name without the <code>.js</code> extension as <code>module_id</code>. Our module has one dependency on the module called <code>otherContent</code>. The dependent module instance will be passed in the factory method as variable <code>contentLoader</code>.</td>
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
-<td>We can start use dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.</td>
+<td>We can start using the dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.</td>
 </tr>
 <tr>
 <td><i class="conum">3</i></td>
-<td>Module defines and returns constructor function for new objects.</td>
+<td>The module returns constructor function to be used for creation of new objects.</td>
 </tr>
 </table>
 </div>
@@ -14391,7 +14397,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 
 <ul>
 <li>
-<p><code>require</code> function takes two arguments</p>
+<p>The <code>require</code> function takes two arguments</p>
 <div class="ulist">
 
 <ul>
@@ -14399,23 +14405,14 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <p>An array of module IDs to load. Module ID is a string literal.</p>
 </li>
 <li>
-<p>A callback to be executed once those modules are available. The modules loaded by ID are passed into the callback in their relative positions. <a href="#LISTING_Require_func">Here is example</a> of <code>require</code> function usage.</p>
+<p>A callback to be executed once those modules are available. The modules loaded by IDs are passed into the callback in order. <a href="#LISTING_Require_func">Here is example</a> of the <code>require</code> function usage.</p>
 <div id="LISTING_require_func" class="listingblock">
 <div class="title">The example of <code>require</code> function usage</div>
 <div class="content monospaced">
 <pre class="highlight"><code class="javascript language-javascript">require(["main"], function() {
     console.log("module main is loaded");
-}); // <i class="conum">1</i></code></pre>
+});</code></pre>
 </div>
-</div>
-<div class="colist arabic">
-
-<table>
-<tr>
-<td><i class="conum">1</i></td>
-<td>Loads module with id <code>main</code> and executes the anonymous function after module and all its dependencies are loaded.</td>
-</tr>
-</table>
 </div>
 
 </li>
@@ -14458,7 +14455,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <p><em>There was an error in <code>/built-app.js</code> on line</em> <strong>1984</strong></p>
 </div>
 <div class="paragraph">
-<p>In modularized applications you can easier localize the error.</p>
+<p>In modularized applications you can easier localize errors.</p>
 </div>
 
 </li>
@@ -14498,7 +14495,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 
 </li>
 <li>
-<p>It&#8217;s easy to get a mismatch between dependency array and callback arguments.</p>
+<p>Human errors can result in mismatch between dependency array and callback arguments.</p>
 <div class="listingblock">
 
 <div class="content monospaced">
@@ -14528,7 +14525,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <div class="sect3">
 <h4 id="umd">Universal Module Definition</h4>
 <div class="paragraph">
-<p>Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used support multiple modules formats. Here is an example of module definition using the UMD notation. In the following example, the module can be used with the AMD loader as one of variations of the Module Pattern.</p>
+<p>Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used to support multiple module formats. Here is an example of the module definition in UMD notation. In the following example, the module can be used with the AMD loader and as one of the variations of the Module Pattern.</p>
 </div>
 <div class="listingblock">
 
@@ -14559,11 +14556,11 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 <table>
 <tr>
 <td><i class="conum">1</i></td>
-<td>Checking if the AMD loader is available. If it is, proceed with defining the module according AMD specification.</td>
+<td>If the AMD loader is available proceed with defining the module according to AMD specification.</td>
 </tr>
 <tr>
 <td><i class="conum">2</i></td>
-<td>If the AMD loader isn&#8217;t present, use the factory method to instantiate object and attach it to the global scope (i.e. <code>window</code> object in case of executing this code in a Web browser).</td>
+<td>If the AMD loader isn&#8217;t present, use the factory method to instantiate the object and attach it to the <code>window</code> object.</td>
 </tr>
 <tr>
 <td><i class="conum">3</i></td>
@@ -14572,7 +14569,7 @@ The AMD API is based on a <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">
 </table>
 </div>
 <div class="paragraph">
-<p>It&#8217;s worth mentioning that UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules shall run in more than one type of environment (e.g. a browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.</p>
+<p>It&#8217;s worth mentioning that UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules will run in more than one type of environment (e.g. a Web browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.</p>
 </div>
 <div class="paragraph">
 <p>You can find more information about UMD and commented code snippets for different situations in <a href="https://github.com/umdjs/umd">the UMD project repository</a>.</p>
