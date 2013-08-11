@@ -87,31 +87,30 @@ _sudo npm install -g cordova_
 
 // Using 3.0 CLI http://blog.safaribooksonline.com/2013/07/19/streamline-cross-platform-development-using-apache-cordova-phonegap-cli/
 
-The above command installs the JavaScript file _cordova_ in _/usr/local/bin_ and the cordova library and its supporting files in the _/usr/local/lib/node_modules/cordova_ - Figure <<FIG14-2>> shows the snapshot of some of the files and diresctories that come with cordova. We've highlighted the create.js script, which will be used for generating Hello World and Save Sick Child projects. 
+The above command installs the JavaScript file _cordova_ in _/usr/local/bin_ and the cordova library and its supporting files in the _/usr/local/lib/node_modules/cordova_ - Figure <<FIG14-2>> shows the snapshot of some of the files and directories that come with cordova. We've highlighted the create.js script, which will be used for generating Hello World and Save Sick Child projects. 
 
 
 [[FIG14-2]]
 .Cordova 3.0 Installed
 image::images/fig_14_02.png[]
 
-In this chapter we'll be developing sample applications for iOS platform, to illustrate the most complex deployment-deployment cycle. It requires https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. After installing Xcode open its menu Preferences and install Command Line Tools (CLT) from the Downloads panel. By default, Xcode comes with the latest iOS simulator, which is version 6.1 at the time of this writing. 
+In this chapter we'll be developing sample applications for iOS platform, to illustrate the most complex deployment-deployment cycle. It requires https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. After installing Xcode open its menu Preferences and install Command Line Tools (CLT) from the Downloads panel. By default, Xcode comes with the latest iOS simulator (it's version 6.1 at the time of this writing). 
 
 ==== Hello World
 
-It's time for the PhoneGap Hello World. We are going to generate the initial project using  Cordova command line interface (CLI) as described in the same http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface[document] we used for installing cordova in the section titled "Create the App". We'll be running the _cordova_ script passing it the command _create_:
+The time has come for a PhoneGap version of the  Hello World application. We are going to generate the initial project using  Cordova command line interface (CLI) as described in the same http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface[document] we used for installing cordova in the section titled "Create the App". We'll be running the _cordova_ script passing it the command _create_:
 
 _sudo cordova create HelloWorld com.example.hello "Hello World"_
 
 After generating Hello World with _cordova create_ command Cordova CLI creates files and directories shown on Figure <<FIG14-3>>. 
  
-
 [[FIG14-3]]
 .Cordova-generated project Hello World
 image::images/fig_14_03.png[] 
 
-NOTE: If you used the command exactly as it shown in the documentation _cordova create HelloWorld com.example.hello "Hello World"_, keep in mind that when you'll be creating the certificate to run it on the iOS device, it has to be valid for applications packages in com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
+NOTE: If you'll be using the command exactly as it shown in the documentation (i.e. 	_cordova create HelloWorld com.example.hello "Hello World"_), keep in mind that when you'll be creating the certificate required for running it on the iOS device, it has to be valid for applications packages located under  com.example. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
 
-The content of generated index.html is shown next. It includes several meta tags to use the entire screen of the mobile device and don't allow scaling by user's gestures. Then it includes a couple of JavaScript files. 
+The content of generated index.html is shown next. It includes several meta tags instructing the browser to use the entire screen of the mobile device and don't allow scaling by user's gestures. Then it includes a couple of JavaScript files in the`<script>` tags. 
 
 [source, html]
 ----
@@ -141,7 +140,7 @@ The content of generated index.html is shown next. It includes several meta tags
 </html>
 ----
 
-This HTML includes the code to load the cordova.js library and the initialization code from index.js, and then immediately calls `app.initialize()`. But if you look at <<FIG14-3>> the file cordova.js is missing. Cordova CLI will add it to the project during the next phase of code generation when you'll run the command _cordova platform add_ to add specific mobile platforms to your project. For now, let's look at the code of the index.js.
+This HTML file includes the code to load the cordova.js library and the initialization code from index.js.Then it calls `app.initialize()`. But if you look at <<FIG14-3>> the file cordova.js is missing. Cordova CLI will add it to the project during the next phase of code generation when you'll run the command _cordova platform add_ to add specific mobile platforms to your project. Let's look at the code of the index.js.
 
 [source, javascript]
 ----
@@ -175,19 +174,19 @@ var app = {
 
 <2> The mobile OS sends the `deviceready` event to the PhoneGap application when it's ready to invoke native APIs.
 
-<3> The function `report()` is called from the `deviceready` event handler. It hides the `.pending <p>` and shows the `.complete <p>` in index.html. Technically, `split('hide')` followed by `join('')` perform removal of the word hide.
+<3> The function `report()` is called from the `deviceready` event handler. It hides the text `.pending <p>` and shows the `.complete <p>` in index.html. Technically, `split('hide')` followed by `join('')` perform the removal of the word _hide_.
 
-WARNING: It's not too difficult to prepare such simple HTML and JavaScript files manually, but we prefer using code generators - they are faster and less error prone. 
+It wouldn't be too difficult to prepare such simple HTML and JavaScript files manually, but we prefer using code generators - they are faster and less error prone. 
 
-According some Cordova CLI documentation after the code is generated you need to add the platforms for which you are planning to prepare PhoneGap builds. For example, you can run the following commands from the Terminal window (inside the HelloWorld directory) to request the builds for ios, android, and blackberry:
+According some Cordova CLI documentation after the code is generated you need to add the platforms for which you are planning to prepare PhoneGap builds. For example, you can run the following commands from the Mac OS X Terminal window (inside the HelloWorld directory) to request the builds for iOS, Android, and Blackberry:
 
 _cordova platform add ios_
 
 _cordova platform add android_
 
-NOTE: The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK as described in the sidebar. There are two ways of working with PhoneGap applications: either you install required SDKs and prepare the builds locally, or develop an application for one platform and send it to the PhoneGap Build server that will create multiple builds for different platforms. The  description of the workflow with the Build Phonegap server will follow.
+NOTE: The first command will run fine, because we have Xcode installed. The second command will be giving you errors until you install the latest Android SDK as described in the sidebar. There are two ways of working with PhoneGap applications: either you install required SDKs and prepare the builds locally, or develop the application just for one platform and send it to the PhoneGap Build server that will create multiple builds for different platforms. The  description of the workflow with the Build Phonegap server will follow.
 
-After running these commands, the initially empty directory _platforms_ will be filled with additional sub-directories specific to each platform. Technically, these commands generate separate Hello World projects - one per platform. Each of them will have its own _www_ directory with index.html and cordova.js that was missing during the initial project generation. You can see on Figure <<FIG14-4>> the content of the ios folder that was generated as a result of executing command _cordova platform add ios_.
+After running the above commands, the initially empty directory _platforms_ will be filled with additional sub-directories specific to each platform. Technically, these commands generate separate Hello World projects - one per platform. Each of them will have its own _www_ directory with index.html and cordova.js that was missing during the initial project generation. You can see on Figure <<FIG14-4>> the content of the ios folder that was generated as a result of executing command _cordova platform add ios_.
 
 [[FIG14-4]]
 .Cordova-generated project for iOS platform
