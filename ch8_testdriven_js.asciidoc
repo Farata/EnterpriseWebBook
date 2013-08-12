@@ -7,13 +7,18 @@
 
 To shorten the development cycle of your Web application you need to start testing it on the early stages of the project. It seems obvious, but many enterprise IT organizations haven't adopted agile testing methodologies, which costs them dearly. JavaScript is dynamically typed interpreted language, which means that there is no compiler to help in  identifying errors as it's done in compiled languages like Java. This means that a lot more time should be allocated for testing for JavaScript Web applications. Moreover, a programmer who didn't introduce testing techniques into his daily routine can't be 100% sure that his code works properly.
 
-The static code analysis and code quality tools such as http://esprima.org/[Esprima] and http://www.jshint.com/[JSHint] will help in reducing the number of syntax errors and improve quality of your code. Later in this chapter we will demonstrate how to setup +JSHint+ for your JavaScript project and automate the process of checking your code for the syntax errors. 
+The static code analysis and code quality tools such as http://esprima.org/[Esprima] and http://www.jshint.com/[JSHint] will help in reducing the number of syntax errors and improve quality of your code. 
+
+// vik
+We demonstrated how to setup +JSHint+ for your JavaScript project and automate the process of checking your code for the syntax errors in <<appendix_a>>.
+
+// /vik
 
 To switch to a test-driven development mode, make testing a part of your development process in its early stages rather than scheduling testing after the development cycle is complete.
 
-Introduction of test-driven development may substantially improve your code quality. It is very important to receive the feedback about your code on a regular basis. That's why tests must be automated and should run as soon as you've changed the code. In this chapter we are going to introduce Grunt - the task runner tool - that can help you with automation of repetitive operations like running tests when the code changes. 
+Introduction of test-driven development may substantially improve your code quality. It is very important to receive the feedback about your code on a regular basis. That's why tests must be automated and should run as soon as you've changed the code. 
 
-There are many testing frameworks in JavaScript world, but we'll give you a brief overview of two of them: http://qunitjs.com/[QUnit] and http://pivotal.github.com/jasmine/[Jasmine]. The main goal of each framework is to test small pieces of code a.k.a. _units_.  You'll learn how to make your JavaScript project lifecycle independent from any specific frameworks or libraries using Grunt tool.
+There are many testing frameworks in JavaScript world, but we'll give you a brief overview of two of them: http://qunitjs.com/[QUnit] and http://pivotal.github.com/jasmine/[Jasmine]. The main goal of each framework is to test small pieces of code a.k.a. _units_.
 
 We will go through basic testing techniques known as "Test-Driven Development" and "Test First". You'll learn how to automate the testing process in multiple browsers with https://github.com/airportyh/testem[Testem Runner] or by running tests in so called _headless_ mode with http://phantomjs.org/[PhantomJS]. You'll learn how to mock and stub selected artifacts of the environment (such as `XMLHTTPRequiest` object or a timer) with http://sinonjs.org/[Sinon.js] and how to unit test the DOM manipulation code.
 
@@ -61,12 +66,16 @@ Selenium is an advanced browser automation tool suite that has capabilities to r
 
 CasperJS is a scripting framework written in JavaScript. CasperJS allows to create interaction scenarios like defining and ordering the navigation steps, filling and submitting forms or even scrapping Web content and making Web page screenshots. CasperJS works on top of PhantomJS browser, which limits he testing runtime environment to WebKit-based browsers only. Still it's a very useful tool when you want to run tests in a Continuous Integration (CI)environment. You can read more about <<WHAT_IS_PHANTOMJS,PhantomJS>> and <<WHAT_IS_CI,CI>> later in the corresponding sidebars later in this chapter.
 
+// vik
+
 [[WHAT_IS_PHANTOMJS]]
 .What is PhantomJS?
 ****
-PhantomJS is a headless WebKit-based rendering engine with JavaScript API.  Think of PhantomJS as a browser that doesn't have any graphical user interface. PhantomJS can execute HTML, CSS, and JavaScript code. Because PhantomJS is not required to render GUI, it can be used in display-less environments (e.g. CI server) to run tests. In our case, Grunt automatically spawns PhantomJS instance, executes the code of our tests, reads the execution results using PhantomJS API, and prints them out in the console.
+PhantomJS is a headless WebKit-based rendering engine with JavaScript API.  Think of PhantomJS as a browser that doesn't have any graphical user interface. PhantomJS can execute HTML, CSS, and JavaScript code. Because PhantomJS is not required to render GUI, it can be used in display-less environments (e.g. CI server) to run tests. In our case, Grunt automatically spawns PhantomJS instance, executes the code of our tests, reads the execution results using PhantomJS API, and prints them out in the console. 
+If you're not familiar with Grunt tasks, please, refer <<appendix_a>> for additional information about usage Grunt in Save Sick Child project.
 ****
 
+// /vik
 
 ==== Load Testing
 
@@ -180,191 +189,6 @@ In the _Assert_ phase you verify the behavior through assertions.
 There is one more phase: _Reset_. In this phase, if needed, you reset the environment to the initial state. For example, erase the DOM elements created in the _Arrange_ phase.
 
 Later in this chapter, you'll see how different frameworks implements _AAAR_ pattern.
-
-==== Automate Everything
-
-You should automate testing as much as you can to reduce the cost of building, deploying, and maintaining your application. 
-
-Now lets start building the foundation for our refactored application. We are going to use the tasks running framework for the JavaScript project called http://gruntjs.com/[Grunt]. With Grunt's help we'll automate process of running tests once the code changes. The tests should help in assessing the quality of our code. You'll learn how to setup Grunt to watch your code changes and run tests right after you modified the code and saved the changes. 
-
-With the Grunt tool you can have a script to run all your tests. If you came from the Java world, you know about Apache Ant, a general-purpose command-line tool to drive processes described in _build files_ as _targets_. Grunt also running the tasks described in scripts. There is a wide range of tasks available today - starting with running automated unit tests and ending with JavaScript code minification. Grunt provides a separate layer of abstraction where you can define tasks in special DSL (domain-specific language) in Gruntfile for execution.
-
-===== The Simplest Grunt File
-
-.Node.js, V8, and NPM
-****
-Node.js (or simply Node) is a server-side JavaScript framework. Node uses V8, the JavaScript engine by Google used in Chrome/Chromium. The V8 engine provides JavaScript API for accessing the file system, sockets and  running processes. The Grunt tool is built on top of Node JavaScript APIs. You can find more information about Node.js at  http://nodejs.org/about/[their website].
-
-Node Package Manager (NPM) is a utility as well as https://npmjs.org/[community repository] for open source JavaScript projects. NPM provides unified API and metadata model for managing dependencies in JavaScript projects. A `package.json` file is the project's dependencies descriptor. NPM installs project dependencies using information from `package.json`.
-
-Node and NPM are cross-platform software and binaries available for Windows, Linux and Mac OS X operating systems. 
-
-To use code samples from this chapter you need to download and install Node from http://nodejs.org/download/[their web site]. Then follow http://gruntjs.com/getting-started[ the instructions from Grunt's  website] to install it on your machine.
-****
-
-Let's start with the simplest Grunt project setup. The following two files must be present in the project directory:
-
-* `package.json`: This file is used by NPM to store metadata and a project dependencies. 
-+
-List Grunt and its plugins that your project needs as _devDependencies_ in this file.
-
-* `Gruntfile`: This file is named `Gruntfile.js` or `Gruntfile.coffee` and is used to configure or define the tasks and load Grunt plugins.
-
-.The simplest possible Gruntfile
-[source,javascript]
-----------------------------------------------------------------------
-module.exports = function (grunt) {
-    'use strict';
-
-    grunt.registerTask('hello', 'say hello', function(){    // <1>
-        grunt.log.writeln("Hello from grunt");              // <2>
-    });
-
-    grunt.registerTask('default', 'hello');                 // <3>              
-};
-----------------------------------------------------------------------
-
-<1> Register a new task named `hello`.
-
-<2> Print the greeting text using http://gruntjs.com/api/grunt.log[grunt's log API].
-
-<3> With `grunt.registerTask` we define a default task to run when Grunt is called without any parameters. 
-
-Each task can be called separately from the command line by passing the task's name as a command line parameter. For example, `grunt hello` would only execute the task named "hello" from the above script.
-
-Let's run this `hello` task with the following command 
-`grunt --gruntfile Grunt_simple.js hello`.
-
-[source,bash]
-----------------------------------------------------------------------
-Running "hello" task
-Hello from grunt
-
-Done, without errors.
-----------------------------------------------------------------------
-
-Now after covering the basics of Grunt tool we can use it for something more interesting than just printing "_hello world_" on the screen. Since JavaScript is a interpreted language there is no compiler to help catch syntax errors. But you can use http://www.jshint.com/[JSHint], an open source tool, which helps with identifying errors in JavaScript code in lieu of compiler. Consider the following JavaScript <<LISTING_WITH_ERRORS,code>>.
-
-.A JavaScript array with a couple typos
-[[LISTING_WITH_ERRORS]]
-[source,javascript]
-----
-include::include/jshint_example.js[]
-----
-<1> We want to define an array that contains names of actors who played James Bond in a canonical series.
-
-<2> Here is example of a typical typo. A developer commented out the line containing an array element but kept the coma in previous line.
-
-<3> A missing semicolon is a typical typo. It is not an actual error, but omitting semicolon is not a good habit. An automatic semicolon insertion (ASI) will get you covered in this case.
-
-.What is a Automatic Semicolon Insertion?
-****
-In JavaScript, you can omit a semicolon between two statements written in separate lines. Automatic semicolon insertion is a source code parsing procedure that infers omitted semicolons in certain contexts into your program. You can read more about optional semicolons in JavaScript in the chapter "Optional Semicolons" in  <<flanagan, 'JavaScript. Definitive Guide. 6th Edition'>> book.
-****
-
-The above code snippet is a fairly simple example that can cause trouble and frustration if you don't have proper tools to check the code semantics and syntax. Let's see how JSHint can help in this situation. JSHint can be installed via NPM with command `npm install jshint -g`. Now you can run JSHint against our code snippet:
-
-[source,bash]
-----
-> jshint jshint_example.js
-jshint_example.js: line 7, col 27, Extra comma. (it breaks older versions of IE)
-jshint_example.js: line 9, col 10, Missing semicolon. # <1>
-
-2 errors            # <2>
-----
-<1> JSHint reports the location of error and a short description of the problem.
-
-<2> The total count of errors 
-
-TIP: WebStorm IDE has http://blogs.jetbrains.com/idea/2012/05/lint-your-javascript-with-jslintjshint-in-real-time/[built-in support] for JSHint tool. There is 3rd party plugin for Eclipse - http://github.eclipsesource.com/jshint-eclipse/[jshint-eclipse].
-
-Grunt also has a task to run JSHint against your JavaScript code base. Here is how JSHint configuration in Grunt looks like.
-
-.A grunt file with JSHint support
-[source,javascript]
-----
-module.exports = function(grunt) {
-  grunt.initConfig({
-    jshint: {
-      gruntfile: {          // <1>
-        src: ['Gruntfile_jshint.js']
-      },
-      app: {
-        src: ['app/js/app.js']
-      }
-    }
-  });
-  grunt.loadNpmTasks('grunt-contrib-jshint');       
-  grunt.registerTask('default', ['jshint']);        // <2>
-};
-----
-<1> Because Gruntfile is JavaScript file, JSHint can check it as well and identify the errors.
-
-<2> When grunt will be run without any parameters, default task +jshint+ will be triggered.
-
-[source,bash]
-----
-> grunt 
-
-Running "jshint:gruntfile" (jshint) task
->> 1 file lint free.
-
-Running "jshint:app" (jshint) task
->> 1 file lint free.
-
-Done, without errors.
-----
-
-Another handy task that to use in developer's environment is the `watch` task. The purpose of this task is to monitor files in pre-configured locations. When the watcher detects any changes in those files it will run the configured task. Here is how a <<LIST_WATCH_TASK,watch task config>> looks like:
-
-.A `watch` task config 
-[source,javascript]
-----
-module.exports = function(grunt) {
-    grunt.initConfig({
-        jshint: {
-            // ... configuration code is omitted 
-        },
-        watch: {        // <1>
-            reload: {
-                files: ['app/*.html', 'app/data/**/*.json', 'app/assets/css/*.css', 'app/js/**/*.js', 'test/test/tests.js', 'test/spec/*.js'],  // <2>
-                tasks: ['jshint']           // <3>
-            }
-        }
-    });
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.registerTask('default', ['jshint']);
-};
-----
-
-<1> The `watch` task configuration starts here
-
-<2> The list of the files that need to be monitored for changes
-
-<3> A array of tasks to be triggered after file change event occurs
-
-[source,bash]
-----
-> grunt watch
-
-Running "watch" task
-Waiting...OK
->> File "app/js/Player.js" changed.
-Running "jshint:gruntfile" (jshint) task
->> 1 file lint free.
-
-Running "jshint:app" (jshint) task
->> 1 file lint free.
-
-Done, without errors.
-
-Completed in 0.50s at Tue May 07 2013 00:41:42 GMT-0400 (EDT) - Waiting...
-----
-
-Later in this chapter we will use the `watch` task to automatically run tests after the production code or the code of the tests is changed.
-
-In this section we've introduced a convenient tool - the task runner Grunt - that can be used to automate different aspects of the JavaScript development workflow. Grunt will perform syntax and semantic checks of your code with JSHint. Also, to minimize repetitive tasks we showed how to setup `watch` task to monitor changes in our code base.
 
 In next sections we will dive into the testing frameworks for JavaScript. Our fist stop is QUnit.
 
@@ -493,7 +317,6 @@ The idea behind _behavior-driven development_ (BDD) is to use the natural langua
 
 Similarly to unit tests, with BDD you write short specifications that test one feature at a time. Specifications should be sentences. For example, "Calculator adds two positive numbers". Such sentences will help you to easy identify the failed test by simply reading this sentence in the resulting report. Now we'll demonstrate this concept using Jasmine - the BDD frameworks for JavaScript. Jasmine provides a very nice way to group, execute, and report JavaScript unit tests. 
 
-
 ===== Setup Grunt with Jasmine
 
 You've learned already how to use the Grunt tool to automate boilerplate tasks. Now let's execute a Jasmine specification with Grunt. The next section covers Jasmine basics, but for now think of Jasmine as a piece of code that should be executed by Grunt.
@@ -590,8 +413,6 @@ This allows you to identify issues in the code early.
 Authors of this book successfully use an open source framework called http://jenkins-ci.org/[Jenkins] (there are other similar CI servers) for establishing continuous build process.
 
 With Jenkins, you can have scripts that run either at a specified time interval or on each source code repository check-in of the new code. You may also force an additional build process whenever you like. The Grunt command line tool should be installed and be available on CI machine to allow the Jenkins server invoke Grunt scrips and publish test results.
-
-// TODO: Add screenshot with grunt-based job for savesickchild.org website + test results 
 
 We use it to ensure continuous builds of the internal and open source projects.
 
@@ -1408,5 +1229,4 @@ The enterprises that have adopted test-driven development (as well as behavior-d
 Automating unit tests reduces the number of bugs and decreases the amount of time developers need to spend manually testing their code. If automatically launched test scripts (unit, integration, functional, and load testing) don't reveal any issues, you can rest assured that the latest code changes did not break the application logic, and that the application performs according to SLA. 
 
 [bibliography]
-- [[[flanagan]]] David Flanagan. 'Javascript. The Definitive Guide. 6th Edition'. O'Reilly. 2011.
 - [[[fowler]]] Martin Fowler. 'Refactoring. Improving the Design of Existing Code' 2002 p.212
