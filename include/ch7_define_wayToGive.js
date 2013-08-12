@@ -1,13 +1,16 @@
 define(["otherContent"], function(otherContent) { // <1>
-    "use strict";
+    var wayToGive;
 
     console.log("way-to-give module is loaded");
-    var wayToGive = function() {
+    wayToGive = function() {
         return {
             render: function() {
-                otherContent.getNewContent("way-to-give", // <2>
-                                            "way-to-give-container",
-                                            "assets/html-includes/way-to-give.html");
+                var dataUrl, newContainerID, whatWeDoButton;
+
+                whatWeDoButton = "way-to-give";
+                newContainerID = "way-to-give-container";
+                dataUrl = "assets/html-includes/way-to-give.html";
+                otherContent.getNewContent(whatWeDoButton, newContainerID, dataUrl); // <2>
                 return console.log("way-to-give module is rendered");
             },
             init: function() {
@@ -15,5 +18,5 @@ define(["otherContent"], function(otherContent) { // <1>
             }
         };
     };
-    return wayToGive;   // <3>
+    return wayToGive; // <3>
 });
