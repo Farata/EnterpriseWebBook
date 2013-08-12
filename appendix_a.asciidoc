@@ -1,0 +1,197 @@
+:toc:
+:toclevels: 4
+:icons: font
+:imagesdir: ./images
+
+[[appendix_a]]
+== Appendix A: Automate Everything
+
+You should automate every aspect of your application development workflow as much as you can to reduce the cost of building, deploying, and maintaining your application. 
+
+In this appendix we are going to introduce http://gruntjs.com/[Grunt] - the tasks running framework for the JavaScript project - that can help you with automation of repetitive operations like running tests when the code changes.
+
+With Grunt's help we'll automate process of running tests once the code changes. The tests should help in assessing the quality of our code. You'll learn how to setup Grunt to watch your code changes and run tests right after you modified the code and saved the changes. 
+
+With the Grunt tool you can have a script to run all your tests. If you came from the Java world, you know about Apache Ant, a general-purpose command-line tool to drive processes described in _build files_ as _targets_. Grunt also running the tasks described in scripts. There is a wide range of tasks available today - starting with running automated unit tests and ending with JavaScript code minification. Grunt provides a separate layer of abstraction where you can define tasks in special DSL (domain-specific language) in Gruntfile for execution.
+
+=== The Simplest Grunt File
+
+Let's start with the simplest Grunt project setup. The following two files must be present in the project directory:
+
+* `package.json`: This file is used by NPM to store metadata and a project dependencies. 
++
+List Grunt and its plugins that your project needs as _devDependencies_ in this file.
+
+* `Gruntfile`: This file is named `Gruntfile.js` or `Gruntfile.coffee` and is used to configure or define the tasks and load Grunt plugins.
+
+.The simplest possible Gruntfile
+[source,javascript]
+----------------------------------------------------------------------
+module.exports = function (grunt) {
+    'use strict';
+
+    grunt.registerTask('hello', 'say hello', function(){    // <1>
+        grunt.log.writeln("Hello from grunt");              // <2>
+    });
+
+    grunt.registerTask('default', 'hello');                 // <3>              
+};
+----------------------------------------------------------------------
+
+<1> Register a new task named `hello`.
+
+<2> Print the greeting text using http://gruntjs.com/api/grunt.log[grunt's log API].
+
+<3> With `grunt.registerTask` we define a default task to run when Grunt is called without any parameters. 
+
+Each task can be called separately from the command line by passing the task's name as a command line parameter. For example, `grunt hello` would only execute the task named "hello" from the above script.
+
+Let's run this `hello` task with the following command 
+`grunt --gruntfile Grunt_simple.js hello`.
+
+[source,bash]
+----------------------------------------------------------------------
+Running "hello" task
+Hello from grunt
+
+Done, without errors.
+----------------------------------------------------------------------
+
+=== Using Grunt to run JSHint checks
+
+Now after covering the basics of Grunt tool we can use it for something more interesting than just printing "_hello world_" on the screen. Since JavaScript is a interpreted language there is no compiler to help catch syntax errors. But you can use http://www.jshint.com/[JSHint], an open source tool, which helps with identifying errors in JavaScript code in lieu of compiler. Consider the following JavaScript <<LISTING_WITH_ERRORS,code>>.
+
+[[LISTING_WITH_ERRORS]]
+
+.A JavaScript array with a couple typos
+[source,javascript]
+----
+var bonds = [                   // <1>
+            'Sean Connery',
+            'George Lazenby',
+            'Roger Moore',
+            'Timothy Dalton',
+            'Pierce Brosnan',
+            'Daniel Craig',     // <2>
+            //'Unknow yet actor' 
+        ]                       // <3>
+----
+<1> We want to define an array that contains names of actors who played James Bond in a canonical series.
+<2> Here is example of a typical typo. A developer commented out the line containing an array element but kept the coma in previous line.
+<3> A missing semicolon is a typical typo. It is not an actual error, but omitting semicolon is not a good habit. An automatic semicolon insertion (ASI) will get you covered in this case.
+
+.What is a Automatic Semicolon Insertion?
+****
+In JavaScript, you can omit a semicolon between two statements written in separate lines. Automatic semicolon insertion is a source code parsing procedure that infers omitted semicolons in certain contexts into your program. You can read more about optional semicolons in JavaScript in the chapter "Optional Semicolons" in  <<flanagan, 'JavaScript. Definitive Guide. 6th Edition'>> book.
+****
+
+The above code snippet is a fairly simple example that can cause trouble and frustration if you don't have proper tools to check the code semantics and syntax. Let's see how JSHint can help in this situation. JSHint can be installed via NPM with command `npm install jshint -g`. Now you can run JSHint against our code snippet:
+
+[source,bash]
+----
+> jshint jshint_example.js
+jshint_example.js: line 7, col 27, Extra comma. (it breaks older versions of IE)
+jshint_example.js: line 9, col 10, Missing semicolon. # <1>
+
+2 errors            # <2>
+----
+<1> JSHint reports the location of error and a short description of the problem.
+
+<2> The total count of errors 
+
+TIP: WebStorm IDE has http://blogs.jetbrains.com/idea/2012/05/lint-your-javascript-with-jslintjshint-in-real-time/[built-in support] for JSHint tool. There is 3rd party plugin for Eclipse - http://github.eclipsesource.com/jshint-eclipse/[jshint-eclipse].
+
+Grunt also has a task to run JSHint against your JavaScript code base. Here is how JSHint configuration in Grunt looks like.
+
+.A grunt file with JSHint support
+[source,javascript]
+----
+module.exports = function(grunt) {
+  grunt.initConfig({
+    jshint: {
+      gruntfile: {          // <1>
+        src: ['Gruntfile_jshint.js']
+      },
+      app: {
+        src: ['app/js/app.js']
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-jshint');       
+  grunt.registerTask('default', ['jshint']);        // <2>
+};
+----
+<1> Because Gruntfile is JavaScript file, JSHint can check it as well and identify the errors.
+
+<2> When grunt will be run without any parameters, default task +jshint+ will be triggered.
+
+[source,bash]
+----
+> grunt 
+
+Running "jshint:gruntfile" (jshint) task
+>> 1 file lint free.
+
+Running "jshint:app" (jshint) task
+>> 1 file lint free.
+
+Done, without errors.
+----
+
+=== Watching For the File Changes
+
+Another handy task that to use in developer's environment is the `watch` task. The purpose of this task is to monitor files in pre-configured locations. When the watcher detects any changes in those files it will run the configured task. Here is how a <<LIST_WATCH_TASK,watch task config>> looks like:
+
+.A `watch` task config 
+[source,javascript]
+----
+module.exports = function(grunt) {
+    grunt.initConfig({
+        jshint: {
+            // ... configuration code is omitted 
+        },
+        watch: {        // <1>
+            reload: {
+                files: ['app/*.html', 'app/data/**/*.json', 'app/assets/css/*.css', 'app/js/**/*.js', 'test/test/tests.js', 'test/spec/*.js'],  // <2>
+                tasks: ['jshint']           // <3>
+            }
+        }
+    });
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.registerTask('default', ['jshint']);
+};
+----
+
+<1> The `watch` task configuration starts here
+
+<2> The list of the files that need to be monitored for changes
+
+<3> A array of tasks to be triggered after file change event occurs
+
+[source,bash]
+----
+> grunt watch
+
+Running "watch" task
+Waiting...OK
+>> File "app/js/Player.js" changed.
+Running "jshint:gruntfile" (jshint) task
+>> 1 file lint free.
+
+Running "jshint:app" (jshint) task
+>> 1 file lint free.
+
+Done, without errors.
+
+Completed in 0.50s at Tue May 07 2013 00:41:42 GMT-0400 (EDT) - Waiting...
+----
+
+Later in this chapter we will use the `watch` task to automatically run tests after the production code or the code of the tests is changed.
+
+=== Summary
+
+In this section we've introduced a convenient tool - the task runner Grunt - that can be used to automate different aspects of the JavaScript development workflow. Grunt will perform syntax and semantic checks of your code with JSHint. Also, to minimize repetitive tasks we showed how to setup `watch` task to monitor changes in our code base.
+
+[bibliography]
+- [[[flanagan]]] David Flanagan. 'Javascript. The Definitive Guide. 6th Edition'. O'Reilly. 2011.
