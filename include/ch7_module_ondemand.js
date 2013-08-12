@@ -8,7 +8,7 @@ var buttonClickHandler = function(event) {
     module.render();
   } else {
     module = "loading";         // <3>
-    require(["modules/widget1"], function(ModuleObject) { // <4>
+    require(["modules/wereWeWork"], function(ModuleObject) { // <4>
       module = new ModuleObject();
       module.render();
     });
