@@ -296,7 +296,9 @@ You can find more information about UMD and commented code snippets for differen
 
 ==== ECMAScript 6 Modules
 
-The ECMAScript 6 (ES6) specification is an evolving draft outlining changes and features for the next version of JavaScript. This specification will be finalized soon, but before that happens the browsers' support for anything defined in ES6 will be experimental at best and cannot be relied upon for Web applications that must run in multiple browsers. One of the most important features of the upcoming ES6 specification is the _module syntax_. Here is an example of how it suggests to define and use a module:
+The ECMAScript 6 (ES6) specification is an evolving draft outlining changes and features for the next version of the JavaScript language. This specification is not finalized yet and the browsers' support for anything defined in ES6 will be experimental at best and cannot be relied upon for Web applications that must be deployed in production mode in multiple browsers. 
+
+One of the most important features of ES6 specification is the _module syntax_. Here is an example of some login module definition:
 
 .Login module definition
 [source,javascript]
@@ -305,9 +307,7 @@ export function login(userNameValue, userPasswordValue) { // <1>
     console.log("login implementation omitted");
 };
 ----
-<1> A keyword `export` used to precify what function or object will be exposed.
-
-And this is how can be used:
+<1> The keyword `export` specifies the function or object (a separate file) to be exposed as a module, which can be used from any other JavaScript code as follows:
 
 .Main application module
 [source,javascript]
@@ -316,11 +316,11 @@ import login from 'login'
 var result = login("admin", "password");
 ----
 
-.ES6 module transpilers
+.ES6 Module Transpiler
 ****
-Although ES6 standard features are not implemented yet by most of browsers you can use the third party tools to get a flavor of upcoming enhancements in JavaScript language. http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 transpiler] developed by the http://squareup.com/[Square] Engineers helps using the module authoring syntax from ES6 and compile it down to the transport formats that you learned earlier in this chapter.
+Although ES6 standard is not implemented yet by most of browsers you can use the third party tools to get a taste of upcoming enhancements in JavaScript language. http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 Module Transpiler] library developed by the http://squareup.com/[Square] Engineers helps using the module authoring syntax from ES6 and compile it down to the transport formats that you learned earlier in this chapter.
 
-Consider the following example. 
+Consider the following module circle.js: 
 
 .A `circle.js` module
 [source, javascript]
@@ -333,9 +333,9 @@ export function circumference(radius) {
   return 2 * Math.PI * radius;
 }
 ----
-The above module exports two functions: `area()` and `circumference()`.
+This module exports two functions: `area()` and `circumference()`.
 
-.The `main.js` uses functions from `circle.js` module
+.The main application's script `main.js` can use these functions
 [source, javascript]
 ----
 import { area, circumference } from 'circle';     // <1>
@@ -344,21 +344,19 @@ console.log("Area of the circle: " + area(2) + " meter squared");   // <2>
 console.log("Circumference of the circle: " + circumference(5) + " meters");
 ----
 <1> The `import` keyword specifies the objects we want to use from the module.
-<2> Sample use of the imported functions
+<2> A sample use of the imported functions
 
-Now, using ES6 transpiler command
+The ES6 Module Transpiler's command `compile-module` can compile the module to be compliant with CommonJS, AMD, or the code that implements the Module pattern. With the `type` command line option you can specify that output format will be: _amd_, _cjs_ and _globals_.
 
 ----
-compile-modules circle.js --type amd --to ../js/  #<1>
-compile-modules main.js --type amd --to ../js/
+compile-modules circle.js --type cjs --to ../js/  
+compile-modules main.js --type cjs --to ../js/
 ----
-<1> With the `type` command line switch we can specify that output format will be: _amd_, _cjs_ and _globals_.
-
-we compile those modules to:
 
 * *CommonJS* format
 +
 
+.circle.js
 [source,javascript]
 ----
 "use strict";
@@ -386,6 +384,8 @@ var circumference = __dependency1__.circumference;
 console.log("Area of the circle: " + area(2) + " meter squared");
 console.log("Circumference of the circle: " + circumference(5) + " meters");
 ----
+
+Should we compiled the modules into the AMD format using the option _amd_, we would have received a different output in the AMD format.
 
 * *AMD* format
 +
@@ -425,6 +425,8 @@ define("main", ["circle"],
     });
 ----
 
+Using the _globals_ option in the _compile-modules_ command line produces the code that can be used as described in the Module Patter section earlier in the chapter. 
+
 * Browser globals
 +
 
@@ -462,21 +464,19 @@ define("main", ["circle"],
 
 ----
 
-To learn what features of ECMAScript 6 are supported on browsers you can visit http://kangax.github.io/es5-compat-table/es6/[ECMAScript 6 compatibility table].
-
-NOTE: http://www.typescriptlang.org/[TypeScript] - a modern open-source language from Microsoft what compiles to JavaScript - tends to bring object-oriented concepts like classes and modules to JavaScript. It has a module syntax of which is very similar that upcoming ES6 standard proposed. TypeScript compiler can produce CommonJS and AMD module formats. you can learn more about TypeScript from http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf[language specification]. You can find Save Sick Child application written in TypeScript in Appendix X (????)
-
+To learn the up-to-date information on the ES6 browsers' support visit http://kangax.github.io/es5-compat-table/es6/[ECMAScript 6 compatibility table].
 ****
 
+NOTE: http://www.typescriptlang.org/[TypeScript] is an open-source language from Microsoft that compiles to JavaScript and brings object-oriented concepts like classes and modules to JavaScript. It has a module syntax, which is very similar to what ES6 standard proposes. The TypeScript compiler can produce CommonJS and AMD module formats. You can learn more about TypeScript from http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf[language specification]. You can find Save Sick Child application written in TypeScript in Appendix A.
 
 [[REQUIREJS]]
-=== Mincing the Save Sick Child Application Into Modules
+=== Dicing the Save Sick Child Application Into Modules
 
-Now that you know the basics of AMD and different modularization patterns, let's  modularize our Save Sick Child application. In this section we'll apply the AMD-complaint module loader - the framework http://requirejs.org/[RequireJS].
+Now that you know the basics of AMD and different modularization patterns, let's see how you can dice our Save Sick Child application into smaller pieces. In this section we'll apply the AMD-complaint module loader from the framework http://requirejs.org/[RequireJS].
 
-TIP: http://github.com/cujojs/curl[curl.js] is another AMD-compliant asynchronous loader. curl.js and RequireJS are very similar frameworks. To learn differences between them you can follow https://groups.google.com/forum/#!topic/requirejs/niUyLZrivgs[this thread on RequireJS group]. In this thread you can find answers of the developers of RequireJS (James Burke) and curl.js (John Hann).
+TIP: http://github.com/cujojs/curl[curl.js] offers  another AMD-compliant asynchronous resource loader. Both curl.js and RequireJS have similar functionality, and to learn how they differ follow https://groups.google.com/forum/#!topic/requirejs/niUyLZrivgs[this thread on RequireJS group]. 
 
-Let's start with brief explanation of the directory structure of the modularized Save Sick Child.
+Let's start with a brief explanation of the directory structure of the modularized Save Sick Child application.
 
 [[ssc_structure]]
 .A directory structure of Save Sick Child
@@ -487,26 +487,32 @@ image::fig_07_05.png[align="center"]
 
 Inside the _modules_ directory you can have as many nested folders as you want, e.g. _utils_ folder.
 
-2. The application assests remain the same as in previous chapters.
-3. We keep all Bower-managed dependencies in the _components_ directory: RequireJS and its plugins, jQuery etc. For more details on Bower please read <<what_is_bower>> sidebar.
-4. The _dist_  directory will serve as the location for the optimized version of our application. We will cover optimization with `r.js` later in <<using_reuiqrejs_optimizer>> section.
-5. The QUnit/Jasmine tests will live in the _test_ directory. Testing will be covered in the next chapter <<tdd_with_javasctipt>>. 
+2. The application assets remain the same as in previous chapters.
+3. We keep all Bower-managed dependencies (see the sidebar <<what_is_bower>> ) in the _components_ directory such as  RequireJS, jQuery etc. 
+4. The _dist_  directory serves as the location for the optimized version of our application. We will cover optimization with `r.js` later in the <<using_reuiqrejs_optimizer>> section.
+5. The QUnit/Jasmine tests will live in the _test_ directory. Testing will be covered in Chapter 8. 
 
-You can download require.js from its github repository or use a package manager like <<what_is_bower,Bower>>.
+We are not going to dice the Save Sick Child application into multiple modules, but will just show you how to start this process. <<ssc_modules_graph>> illustrates the modules' dependencies. For example, the `main` module depends on `login`, `svg-pie-chart`, `campaigns-map`, `donation`, and `generic`. There is also a group of modules that will be loaded on demand: `whereWeWork`, `whatWeDo`, `wayToGive`, `whoWeAre`.
+
+[[ssc_modules_graph]]
+.The modules graph of Save Sick Child
+image::fig_07_08.png[align="center"]
+
+To dice the application into modules you'll need the the modularization framework RequireJS, which can either be downloaded from its github repository or you can install it using a package manager <<what_is_bower,Bower>>.
 
 [[what_is_bower]]
 .What is *Bower*?
 ****
-https://github.com/bower/bower[Bower] is a package manager for the web projects. Twitter has  donated it to the open-source community. Bower is a utility and a community driven repository of libraries and frameworks for front-end development. Bower's idea is very similar to NPM, but the latter is more suitable for the server-side projects. Bower was designed and implemented to handle dependencies for web projects.
+https://github.com/bower/bower[Bower] is a package manager for Web projects. Twitter has  donated it to the open-source community. Bower is a utility and a community driven repository of libraries that help in downloading the third-party software required for the application code that will run in a Web  browser. The Bower's purpose is very similar to NPM, but the latter is more suitable for the server-side projects.
 
-Bower will take care of transitive (dependency of a dependency) dependencies and download all required library components. Each Bower package has bower.json file, which contains the package metadata for managing the package's transitive dependencies. Also, bower.json can contain information about the package repository, readme file, license et al. You can find bower.json in the root directory of the package. For example, the path _components/requirejs/bower.json_ is a path for the RequireJS metadata file. Bower can installed via NPM. The following line shows how to install Bower globally in your system.
+Bower can take care of transitive (dependency of a dependency) dependencies and download all required library components. Each Bower's package has a bower.json file, which contains the package metadata for managing the package's transitive dependencies. Also, bower.json can contain information about the package repository, readme file, license et al. You can find bower.json in the root directory of the package. For example, _components/requirejs/bower.json_ is a path for the RequireJS metadata file. Bower can installed via NPM. The following line shows how to install Bower globally in your system.
 
 [source,bash]
 ----
 npm install -g bower    
 ----
 
-Next you can start using Bower. For example, here is a Bower's command to install RequireJS.
+You can start using Bower now. For example, here is a Bower's command to install RequireJS.
 
 [source,bash]
 ----
@@ -514,12 +520,11 @@ bower install requirejs --save
 ----
 Bower installs RequireJS into _components/requirejs_ directory and saves information about dependencies in bower.json configuration file.
 
-Bower, as well as NPM, simplifies delivery of dependencies into target platform. Which means that you don't necessarily need to store dependencies of your application next to a application files in the source code repository. 
+Bower simplifies the delivery of dependencies into target platform, which means that you don't need to store dependencies of your application in the source control system. Just keep you application code there and let Bower to bring all other dependencies described in its configuration file. 
 
+TIP: There are pros and cons for storing dependencies in the source control repositories. Read the http://addyosmani.com/blog/checking-in-front-end-dependencies/[article by Addi Osmani] that covers this subject in more detail.
 
-If you're not sure if you need to check your JavaScript dependencies under the source control, read the http://addyosmani.com/blog/checking-in-front-end-dependencies/[article by Addi Osmani] that covers this subject.
-
-Your application could have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`. And you can find all your dependency files in +components+ directory. Here is the content of the file bower.json for our Save Sick Child application. 
+Your application will have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`, which will deliver all your dependency files into the +components+ directory. Here is the content of the file bower.json for our Save Sick Child application. 
 
 [source,javascript]
 ----
@@ -536,17 +541,17 @@ Your application could have its own file bower.json with the list of the depende
 }
 ----
 
-Application dependencies are specified in corresponding "dependencies section.
+Application dependencies are specified in corresponding "dependencies section. The _>=_ sign specifies that the corresponding software has to be not older than the specified version.
 
 [[application_components]]
 .Directory structure of application's components
 image::fig_07_04.png[align="center"]
 
-Also, there is a http://sindresorhus.com/bower-components/[Bower search tool] to find desired component in repository.
+Also, there is a http://sindresorhus.com/bower-components/[Bower search tool] to find the desired component in its repository.
 
 ****
 
-Once RequireJS downloaded and placed into the project directory, add it to the html file as demonstrated in <<add_requirejs>> snippet.
+Once RequireJS downloaded and placed into the project directory, add it to the index.html file as demonstrated in <<add_requirejs>> snippet.
 
 [[add_requirejs]]
 .Adding RequireJS to the web page
@@ -566,26 +571,26 @@ Once RequireJS downloaded and placed into the project directory, add it to the h
 </html>
 ----
 [[data_main_attrib]]
-<1> Once the RequireJS library is loaded it will look for the `data-main` attribute and attempt to load the `app/config.js` script asynchronously. The `app/config.js` is the entry point of our application.
+<1> Once the RequireJS library is loaded it will look for the `data-main` attribute and attempt to load the `app/config.js` script asynchronously. The `app/config.js` will become the entry point of our application.
 
 
 [[inside_config]]
 ==== Inside config.js
 
-RequiredJS uses a configuration object that includes that modules and dependencies that have to be managed by the framework.
+RequiredJS uses a configuration object that includes modules and dependencies that have to be managed by the framework.
 
 [source,javascript]
 ----
 include::include/ch7_require_config.js[]
 ----
-<1> http://requirejs.org/docs/api.html#config[RequireJS Documentation] has a comprehensive overview of all configuration options. We've included some of them here. 
+<1> The http://requirejs.org/docs/api.html#config[RequireJS documentation] has a comprehensive overview of all configuration options. We've included some of them here. 
 
-<2> The `paths` configuration option defines the mapping for module names and its paths. The `paths` is used for module names and shouldn't contain file extensions.
+<2> The `paths` configuration option defines the mapping for module names and their paths. The `paths` is used for module names and shouldn't contain file extensions.
 
 <3> After configuring the modules' paths we're loading the 'main' module. The navigation of our application flow starts there.
 
 
-==== Writing Modules
+==== Writing AMD Modules
 
 Let's take a closer look at the module's internals that make it consumable by the RequireJS module loader.
 
@@ -594,13 +599,13 @@ Let's take a closer look at the module's internals that make it consumable by th
 ----
 include::include/ch7_module_contentLoader.js[]
 ----
-<1> As we discussed in the <<amd_section>> section, the code that you want to expose as a module should be wrapped in the `define()` function call. The first parameter is an array of dependencies. The location of dependencies files we're defined <<inside_config>>. The dependency object doesn't have the same name as the dependency string id. The most important is order that dependency objects are passed to factory function. The order should be the same as the order in the dependencies array.
+<1> As we discussed in the <<amd_section>> section, the code that you want to expose as a module should be wrapped in the `define()` function call. The first parameter is an array of dependencies. The location of dependencies files is defined <<inside_config, inside the config file>>. The dependency object doesn't have the same name as the dependency string id. The order of arguments in the factory function should be the same as the order in the dependencies array.
 
-<2> In this module we export only in the constructor function that returns object that uses _render_ function to draw the visual component on the screen. In our case, this is part of HTML file with text for specific module. 
+<2> In this module we export only in the constructor function that returns the object that uses the _render_ function to draw the visual component on the screen.  
 
-<3> The `contentLoader` object loaded from _app/modules/util/new-content-loader.js_ (refer the _config.js_), instantiated by RequireJS and is ready to use. 
+<3> The `contentLoader` object loaded from _app/modules/util/new-content-loader.js_ (see the `paths` property <<inside_config, in RequireJS config object>>), is instantiated by RequireJS and is ready to use. 
 
-RequreJS also supports the CommonJS module format with a slightly different signature of `define()` function. This helps to bridge the gap between AMD and CommonJS. If your factory function accepts parameters but you omit the dependency array, the AMD environment assumes you wish to emulate a CommonJS module environment. The standard `require`, `exports`, and `module` variables are injected as parameters to the factory.
+RequreJS also supports the CommonJS module format with a slightly different signature of the `define()` function. This helps to bridge the gap between AMD and CommonJS. If your factory function accepts parameters but no dependency array, the AMD environment assumes that you wish to emulate the  CommonJS module environment. The standard `require`, `exports`, and `module` variables will be injected as parameters into the factory.
 
 Here is an example of CommonJS module format with RequireJS.
 
@@ -612,82 +617,77 @@ include::include/ch7_commonjs_require.js[]
 ----
 <1> The factory receives up to three arguments that emulate the CommonJS `require`, `exports`, and `module` variables. 
 
-<2> You should export your module rather than returning it. You can export an object in two ways - assign the the module directly to `module.exports` as shown in this snippet, or set the  properties on the `exports` object. 
+<2> Export your module rather than returning it. You can export an object in two ways - assign the the module directly to `module.exports` as shown in this snippet, or set the  properties on the `exports` object. 
 
 <3> In CommonJS, dependencies are assigned to local variables using the `require(id)` function.
 
 ==== Loading Modules On-Demand
 
-A couple of components of our application don't necessarily need to be loaded at the time when the  application starts. Similar to Mercedes Benz website example, some functionality of Save Sick Child can be loaded later when user needs it. For example, the user might never want to visit the "Where we work" section. Hence this functionality is a great candidate for the "load on-demand" module. You may want to load a module on demand when the user clicks the button or selects a menu item. The module can be in one of three states: 
+As per the Save Sick Child modules graph, some components shouldn't when the application starts. Similar to Mercedes Benz website example, some functionality of Save Sick Child can be loaded later when user needs it. The user might never want to visit the "Where we work" section. Hence this functionality is a good candidate for the _load on-demand_ module. You may want to load such a module on demand when the user clicks the button or selects a menu item. 
+
+At any given time a module can be in one of three states: 
 
 * not loaded (`module === null`)
-* loading in progress (`module === 'loading'`)
+* loading is in progress (`module === 'loading'`)
 * fully loaded (`module !== null`).
 +
 
 [[load_ondemand_snippet]]
-.Loading widget1 module on demand
+.Loading the module on demand
 [source,javascript]
 ----
 include::include/ch7_module_ondemand.js[]
-----
+---- 
 
 <1> Checking if module loading in progress.
 <2> Don't re-load the same module. If the module was already loaded just call the method to render the widget on the Web page.
 <3> Setting the module into the intermediate state until it's fully loaded. 
-<4> Once the module is loaded, instantiate the new widget object and render it on the page.
+<4> Once the `whereWeWork` module is loaded, the callback will receive the reference to this module - instantiate `whereWeWork` and render it on the page.
 
-Let's apply technique demonstrated in <<load_ondemand_snippet>> snippet for Save Sich Child application to load the "Who We Are", "What We Do", "Where We Work" and "What To Give" sections only if the user clicked on the corresponding top bar link.
+Let's apply the technique demonstrated in <<load_ondemand_snippet>> snippet for Save Sick Child application to lazy load the "Who We Are", "What We Do", "Where We Work" and "What To Give" modules only if the user clicked on the corresponding top bar link.
 
 .The Main Module
 [source,javascript]
 ----
 include::include/ch7_main_module.js[]
 ----
-<1> The first argument of the `define` function receives the array of dependencies.
-+
-
-The `!` sign in the module id string literals means that RequireJS delegates some work to a  plugin - it's `order` in our example. This plugin enforces the loading order. We will talk about RequireJS plugins later in this chapter in the <<requirejs_plugins>> section.
+<1> The first argument of the `define` function is an array of dependencies. The `!` sign in the module id string literals means that RequireJS delegates some work to a  plugin such as `order` in our example. This plugin enforces the loading order. We will talk about RequireJS plugins later in this chapter in the <<requirejs_plugins>> section.
 
 <2> An array of modules that can be loaded on demand.
 
-<3> Here we're using approach that we described in <<load_ondemand_snippet>> section. This factory function produces button on-click handler. It uses RequireJS API to load the module once user clicked button.
+<3> Here we're using the approach described in the <<load_ondemand_snippet>> section. This factory function produces the handler for the button click event. It uses RequireJS API to load the module once the  user clicked on the button.
 
-<4> Instantiate the click handler and apply it to button defined in module config.
+<4> Instantiate the click handler function using `lazyLoadingEventHandlerFactory` and assign it to the button defined in the module config.
 
-<5> On the last step, we need to initialize each module button with the lazy loading handler.
+<5> In the last step, we need to initialize each module button with the lazy loading handler.
 
 
 [[requirejs_plugins]]
 ==== RequireJS plugins
 
-RequireJS plugins are special modules that implement a specific API. Plugins can extend the default loader's functionality. For example, the _text_ plugin allows to specify a text file as a dependency, _cs!_ translates _CoffeeScript_ files into JavaScript. The plugin's module name comes before the _!_ separator.
+RequireJS plugins are special modules that implement specific API. For example, the _text_ plugin allows to specify a text file as a dependency, _cs!_ translates _CoffeeScript_ files into JavaScript. The plugin's module name comes before the _!_ separator. Plugins can extend the default loader's functionality.
 
-In the Save Sick Child application we use _async.js_ and _order.js_ plugins. _Async_ is the  plugin for loading Google Maps dependency asynchronously. The _order_ is a plugin that allows to specify the exact order in which the dependencies should be loaded.
-
-You can find the full list of the available RequireJS plugins at the following https://github.com/jrburke/requirejs/wiki/Plugins[wiki page].
+In the Save Sick Child application we use the _order.js_ plugin that allows to specify the exact order in which the dependencies should be loaded. You can find the full list of the available RequireJS plugins at the following https://github.com/jrburke/requirejs/wiki/Plugins[wiki page].
 
 
 [[using_reuiqrejs_optimizer]]
 ==== Using RequireJS Optimizer
 
-RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that does optimization of modules. 
-
-Earlier in this chapter, we've specified the dependencies as array of string literals that are passed to top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
+RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that performs module optimization. 
+Earlier in this chapter, we've specified the dependencies as an array of string literals that are passed to the top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
 
 Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files.
 
-*TODO*: _Make introduction of Grunt Tools in this chapter not next chapter._ 
 
-Let's configure our Grunt project to enable optimization task. Here'e the command to install requirejs, clean, concat and uglify grunt tasks packages and save them as development dependency in package.json:
+Let's configure our Grunt project to enable the optimization task. Here's the command to install RequireJS, and Grunt's task packages clean, concat and uglify and save them as development dependencies in the file package.json:
 
-.Add RequireJS dependency to package.json
+.Adding dependencies to package.json
 [source,bash]
 ----
 > npm install grunt-contrib-requirejs grunt-contrib-concat grunt-contrib-clean grunt-contrib-uglify --saveDev 
 ----
 
-<<rjs_gruntfile_list,Following listing>> describes how to setup RequireJS optimizer and related optimization tasks for Grunt.
+<<rjs_gruntfile_list,The following listing>> describes the script to setup RequireJS optimizer and the related optimization tasks for Grunt. You'll need to run this script to generate optimized version of the Save Sick Child application. 
 
 [[rjs_gruntfile_list]]
 [source,javascript]
@@ -697,37 +697,40 @@ include::include/ch7_rjs_Gruntfile.js[]
 
 <1> The +clean+ task cleans output directory. In the `files` section of task config we specify what folder should be cleaned.
 <2> The +requirejs+ task. The configuration properties of +requrejs+ task are self-explanatory. +mainConfigFile+ points at the same file that <<data_main_attrib,`data-main` attribute>> of RequireJS script tag. +out+ parameter specifies output directory where optimized script will be created.
-<3> The +concat+ task combines/concatenates together optimized modules code and RequireJS loader code.
-<4> The +uglify+ task minifies provided files using http://lisperator.net/uglifyjs/[UglifyJS] - a compressor/minifier tool. UglifyJS produces significantly smaller version of original script by reducing Abstract Source Tree (AST) and mangling local variable to single-letters.
+<3> The +concat+ task combines/concatenates  optimized modules code and RequireJS loader code.
+<4> The +uglify+ task minifies provided files (see `src` properties) using http://lisperator.net/uglifyjs/[UglifyJS] - a compressor/minifier tool. UglifyJS produces significantly smaller version of the original script by reducing the http://en.wikipedia.org/wiki/Abstract_syntax_tree[Abstract Syntax Tree (AST)] and changing local variable names to single-letters.
 <5> Loading plugins that provide necessary tasks.
 <6> The default task to execute all tasks in order.
 
-Run the Save Sick Child application built with RequireJS and monitor the network traffic in Chrome Developer Tools, and you'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 requests that browser sends are for loading all required modules.
+Run the http://localhost:8080/ssc-requirejs[Save Sick Child] application built with RequireJS and monitor the network traffic in Chrome Developer Tools. You'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 browser's requests are for loading all required modules. The modules that may be loaded on demand are not here.
 
 [[unoptim_require_fig]]
 .Unoptimized version of the Save Sick Child Application
 image::fig_07_02.png[]
 
-The next <<optim_with_rjs_fig,screenshot>> shows loading of the Save Sick Child application optimized with RequireJS optimizer. We managed to pack all our modules, its dependencies and loader's code into a single file, which considerably decreased the number of server-side calls.
+The next <<optim_with_rjs_fig,screenshot>> shows loading of the Save Sick Child application optimized with RequireJS optimizer. We've managed to pack all our modules, their dependencies and loader's code into a single file, which considerably decreased the number of the server-side calls.
 
 [[optim_with_rjs_fig]]
 .Loading of optimized version of the Save Sick Child 
 image::fig_07_03.png[]
 
-You can find more information about different optimization topics on the RequireJS documentation site under http://requirejs.org/docs/optimization.html[``Optimization''] section.
+TIP: Read more on optimization topics in the RequireJS documentation site under http://requirejs.org/docs/optimization.html[``Optimization''] section.
+
+
+RequireJS took care of the optimal module loading, but you should properly arrange the inter-module communication. The Save Sick Child application doesn't have modules that heed to exchange data so we'll describe how to properly arrange inter-module communications in a separate application.
 
 [[mediator_section]]
 === Handling inter-module communications with Mediator Design Pattern
 
 Almost any complex screen of a enterprise application consists of a number of components and modules.
 
-A low hanging approach to arrange communication between the components is to just put all these components on the page and program direct communications among these components. This would produce a monolithic application with tightly coupled components that know about each other and where removal of one component would lead to multiple code changes in the application.
+A simple approach of arranging communication between the components is to just put all these components on the page and access their public properties directly. This would produce an application with tightly coupled components that know about each other and removal of one component would lead to multiple code changes in the application.
 
-The better approach is to create loosely coupled components that are self-contained, do not know about one another's existence, and can communicate with the "outside world" by sending and receiving events.
+The better approach is to create loosely coupled components that are self-contained, do not know about one another and can communicate with the "outside world" by sending and receiving events.
 
-Creating the UI of from reusable components applying messaging techniques requires creation of  loosely coupled components. Say you've created a window for a financial trader. This window get the data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
+Creating the UI of from reusable components applying messaging techniques requires creation of  loosely coupled components. Say you've created a window for a financial trader. This window gets a data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
 
-A _Mediator_ is a behavioral design pattern that allows to unify communication of the application components. The Mediator pattern promotes the use of a single shared subject that handles (mediates) the communication with multiple objects. None of the components is aware of the others, but each of them knows about a single object - the mediator.
+_Mediator_ is a behavioral design pattern that allows to unify communications of the application components. The Mediator pattern promotes the use of a single shared object that handles (mediates) the communication between other objects. None of the components is aware of the others, but each of them knows about a single object - the mediator.
 
 In Chapter 1 we've introduced an example of trader's desktop. Let's reuse the same example and refactor it with the Mediator object.  
 
@@ -800,11 +803,11 @@ include::include/ch7_pricepanel.js[]
 include::include/ch7_orderpanel.js[]
 ----
 
-The introduction of the mediator increases the reusability of the components by decoupling them from each other. The Mediator pattern simplifies the maintenance of the system by centralizing navigational logic, and it reduces the variety of messages sent between objects in the system. Be aware that without proper design the Mediator object itself can become overly complex.
+The introduction of the mediator increases reusability of components by decoupling them from each other. The Mediator pattern simplifies the maintenance of any application by centralizing the  navigational logic.
 
 === Summary
 
-The size of your application tends to increase, and sooner or later you'll need to decide how to cut it into several loadable blocks of functionality. The sooner you start modularizing your application the better. 
+The size of any application tends to increase, and sooner or later you'll need to decide how to cut it into several loadable blocks of functionality. The sooner you start modularizing your application the better. 
 
 In this chapter we've reviewed several options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using just the classical  Module Pattern. These advantages include avoiding creating global variables for each module and better support for static and dynamic dependency management.
 

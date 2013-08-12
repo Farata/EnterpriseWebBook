@@ -46,12 +46,15 @@ define(["order!login", "order!donation", "order!svg-pie-chart", "modules/generic
                 }
             };
         };
+        
         initModule = function(module) {     // <4>
             var handler;
 
-            handler = lazyLoadingEventHandlerFactory(module.moduleId, module.containerId, module.htmlContentUrl);
+            handler = lazyLoadingEventHandlerFactory(module.moduleId, 
+                      module.containerId, module.htmlContentUrl);
             return module.button.addEventListener("click", handler, false);
         };
+
         for (_i = 0, _len = modulesConfig.length; _i < _len; _i++) {    // <5>
             module = modulesConfig[_i];
             initModule(module);
