@@ -6,21 +6,21 @@ define(["mediator"], function() {
         function PricePanel() {
         }
 
-        PricePanel.prototype.onBidClick = function(currentPrice) {
+        PricePanel.prototype.setMediator = function(m) {    // <1>
+            mediator = m;
+        };
+
+        PricePanel.prototype.getMediator = function() {     // <2>
+            return mediator;
+        };
+
+        PricePanel.prototype.onBidClick = function(currentPrice) {      // <3>
             console.log("Bid clicked on price " + currentPrice);
             this.getMediator().broadcast("PriceUpdate", [currentPrice]);
         };
 
-        PricePanel.prototype.onAskClick = function() {
+        PricePanel.prototype.onAskClick = function() {      // <4>
             console.log("Ask clicked");
-        };
-
-        PricePanel.prototype.getMediator = function() {
-            return mediator;
-        };
-
-        PricePanel.prototype.setMediator = function(m) {
-            mediator = m;
         };
 
         return PricePanel;
