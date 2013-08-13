@@ -1,12 +1,14 @@
-define(["mediator", "pricePanel", "orderPanel"], function(Mediator, PricePanel, OrderPanel) {
+define(["mediator", "pricePanel", "orderPanel"], function(Mediator, PricePanel, OrderPanel) {   // <1>
     "use strict";
     return (function() {
-        document.getElementById("priceInput").addEventListener("change", function() {   // <1>
+        Mediator.registerComponent("pricePanel", new PricePanel());     // <2>
+        Mediator.registerComponent("orderPanel", new OrderPanel());
+
+        document.getElementById("priceInput").addEventListener("click", function() {   // <3>
             if ( !! this.value) {
-                return Mediator.broadcast("BidClick", [this.value]);     // <2>
+                return Mediator.broadcast("BidClick", [this.value]);     // <4>
             }
         });
-        Mediator.registerComponent("pricePanel", new PricePanel());     // <3>
-        Mediator.registerComponent("orderPanel", new OrderPanel());
+        
     })();
 });

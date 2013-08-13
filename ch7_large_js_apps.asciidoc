@@ -34,7 +34,6 @@ You may ask, "Aren't .js files modules already?" Of course, you can include and 
 As the application gets larger the number of script files grows accordingly, which is illustrated in the following 
 <<LISTING_SCRIPT_TAG, code sample>>.
 
-
 [[LISTING_SCRIPT_TAG]]
 .Multiple `<script>` tags complicate controlling  application dependencies
 [source,html]
@@ -738,7 +737,8 @@ RequireJS took care of the optimal module loading, but you should properly arran
 [[mediator_section]]
 === Handling inter-module communications with Mediator Design Pattern
 
-Almost any complex screen of a enterprise application consists of a number of components and modules.
+// vik
+Almost any complex enterprise Web application consists of a number of components and modules.
 
 A simple approach of arranging communication between the components is to just put all these components on the page and access their public properties directly. This would produce an application with tightly coupled components that know about each other and removal of one component would lead to multiple code changes in the application.
 
@@ -759,6 +759,8 @@ image::fig_07_06.png[]
 .After the trader clicked on the Price Panel
 image::fig_07_07.png[]
 
+Here is a HTML code snipped that implements described above user interface specification.
+
 [source,html]
 ----
 <!DOCTYPE html>
@@ -769,56 +771,74 @@ image::fig_07_07.png[]
     <script data-main="app/config" src="bower_components/requirejs/require.js"></script>
 </head>
 <body>
-<h1>mediator_require running!</h1>
-<label for="priceInput">Bid price:</label>
-<input type="text" id="priceInput" placeholder="bid price"/>
+    <h1>mediator and RequireJS example</h1>
+
+    <div id="pricePanel">       <!-- <1> -->
+        <p>IBM</p>
+        <label for="priceInput">Bid:</label>
+        <input type="text" id="priceInput" placeholder="bid price"/>
+
+        <label for="priceInput">Ask:</label>
+        <input type="text" id="priceInput" placeholder="bid price"/>
+    </div>
+    <div id="orderPanel">       <!-- <2> -->
+        <p id="priceText"></p>
+        <label for="quantityInput">Quantity:</label>
+        <input type="text" id="quantityInput" placeholder=""/>
+        <button id="goButton">Go!</button>
+        <button id="cancelButton">cancel</button>
+    </div>
+
 </body>
 </html>
 ----
+<1> The following `div` element is a container that represents _Pricing Panel_ with Bid and Ask controls.
+<2> The following `div` element is a container that represents _Order Panel_ with Quantity, Go and Cancel controls.
 
+As we described before, Mediator will handle communication between the application components. The components need to register itself with mediator so it can route communication. In a following snipper, you can simple possible Mediator implementation.
 
+[[mediator_impl]]
+.The implementation of Mediator pattern.
 [source,javascript]
 ----
 include::include/ch7_mediator.js[]
 ----
-<1> A mediator maintains collection components. With `Mediator.register()` function we can store component in that collection. A `name` function parameter 
+<1> A private private object that will store registered components
+<2> With `Mediator.register()` function we can store component in a associative array.
+<3> Setting mediator instance to registered component.
+<4> Registering component in components associative array with provided `name` as key.
+<5> Component can invoke `Mediator.broadcast()` when it have some information to share with the rest of the application components.
+<6> If component has property, which is a function and if whose name matches the pattern `"on" + event`, e.g. `onClickEvent` Mediator will invoke this function in context of `source` object.
 
 [source,javascript]
 ----
 include::include/ch7_mediator_usage.js[]
 ----
-<1> 
-<2> With `Mediator.broadcast()` function a mediator object 
-<3> 
+<1> Required modules will be loaded by RequireJS.
+<2> Registering the components in Mediator.
+<3> We're setting the `click` event listener for Bid price component.
+<4> When Bid price changes Mediator will broadcast "BidClick" event to all registered component. Only component that has specific event handler, which name matches the pattern `"on" + event`, would be able to receive event.
+
+Let's see how actual components' code looks like. Following code snippets 
 
 [source,javascript]
 ----
 include::include/ch7_pricepanel.js[]
 ----
+<1> Setter of Mediator object. Mediator injects its' instance during component registration (refer to <<mediator_impl>> snippet).
+<2> Getter of Mediator object.
+<3> The `onBidClick` event handler. Mediator will call this function once `BidClick` event will be broadcast. Using getter `getMediator` we can broadcast `PriceUpdate` event to registered components.
 
 [source,javascript]
 ----
 include::include/ch7_orderpanel.js[]
 ----
+<1> Mediator getter and setter have purpose similar to described in previous snippet.
+<2> In `OrderPanel` component code we have definition of `PriceUpdate` event handler - `onPriceUpdate()`.
 
-[source,javascript]
-----
-include::include/ch7_mediator_usage.js[]
-----
-<1> 
-<2> With `Mediator.broadcast()` function a mediator object 
-<3> 
+As you noticed, `OrderPanel` and `PricePanel` don't know about existence of each other, but nevertheless they can sent and receive data with little help of intermediate - Mediator object.
 
-[source,javascript]
-----
-include::include/ch7_pricepanel.js[]
-----
-
-[source,javascript]
-----
-include::include/ch7_orderpanel.js[]
-----
-
+// /vik
 The introduction of the mediator increases reusability of components by decoupling them from each other. The Mediator pattern simplifies the maintenance of any application by centralizing the  navigational logic.
 
 === Summary
