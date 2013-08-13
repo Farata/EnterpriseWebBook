@@ -14,7 +14,7 @@ define(function () {
             mediator = m;
         };
 
-        OrderPanel.prototype.onPriceUpdate = function (price) {     // <2>
+        OrderPanel.prototype.onPlaceBid = function (price) {     // <2>
             console.log("price updated to " + price);
             var priceTextElement = document.getElementById("priceText");
             priceTextElement.value = price;

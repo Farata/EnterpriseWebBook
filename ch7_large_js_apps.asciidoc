@@ -686,13 +686,7 @@ In the Save Sick Child application we use the _order.js_ plugin that allows to s
 RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that performs module optimization. 
 Earlier in this chapter, we've specified the dependencies as an array of string literals that are passed to the top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
 
-Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files.
-
-// vik
-
-We are going to use the tasks running framework for the JavaScript project called http://gruntjs.com/[Grunt]. If you're not familiar with Grunt please refer <<appendix_a>> for additional information about usage Grunt in Save Sick Child project.
-
-// /vik
+Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files. We are going to use http://gruntjs.com/[Grunt] - the JavaScript task runner. If you're not familiar with Grunt please refer <<appendix_a>> for the additional information about usage Grunt in Save Sick Child project.
 
 Let's configure our Grunt project to enable the optimization task. Here's the command to install RequireJS, and Grunt's task packages clean, concat and uglify and save them as development dependencies in the file package.json:
 
@@ -735,31 +729,30 @@ TIP: Read more on optimization topics in the RequireJS documentation site under 
 RequireJS took care of the optimal module loading, but you should properly arrange the inter-module communication. The Save Sick Child application doesn't have modules that heed to exchange data so we'll describe how to properly arrange inter-module communications in a separate application.
 
 [[mediator_section]]
-=== Handling inter-module communications with Mediator Design Pattern
+=== Loosely-Coupled Inter-Module Communications With Mediator
 
-// vik
 Almost any complex enterprise Web application consists of a number of components and modules.
 
-A simple approach of arranging communication between the components is to just put all these components on the page and access their public properties directly. This would produce an application with tightly coupled components that know about each other and removal of one component would lead to multiple code changes in the application.
+A simple approach of arranging communications between the components is to allow all these components directly accessing public properties of each other. This would produce an application with tightly coupled components that know about each other and removal of one component could lead to multiple code changes in the application.
 
-The better approach is to create loosely coupled components that are self-contained, do not know about one another and can communicate with the "outside world" by sending and receiving events.
+A better approach is to create loosely coupled components that are self-contained, do not know about one another and can communicate with the "outside world" by sending and receiving events.
 
-Creating the UI of from reusable components applying messaging techniques requires creation of  loosely coupled components. Say you've created a window for a financial trader. This window gets a data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
+Creating UI of from reusable components applying messaging techniques requires creation of loosely coupled components. Say you've created a window for a financial trader. This window gets a data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate component  and establishing inter-component communications the right way is really important. 
 
-_Mediator_ is a behavioral design pattern that allows to unify communications of the application components. The Mediator pattern promotes the use of a single shared object that handles (mediates) the communication between other objects. None of the components is aware of the others, but each of them knows about a single object - the mediator.
+As you've learned from Chapter 2, _Mediator_ is a behavioral design pattern that allows to unify communications of the application components. The Mediator pattern promotes the use of a single shared object that handles (mediates) communication between other objects. None of the components is aware of the others, but each of them knows about a single object - the mediator.
 
-In Chapter 1 we've introduced an example of trader's desktop. Let's reuse the same example and refactor it with the Mediator object.  
+In Chapter 2 we've introduced an example of a small fragment of a trader's desktop. Let's reuse the same example, but this time not with `postMessage` but with the Mediator object.  
 
-The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask button, the Pricing Panel just sends the event with the relevant trade information, e.g. a JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc.
+In Figure <<FIG7-6>>, the Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask button, the Pricing Panel just sends the event with the relevant trade information, e.g. a JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc.
 
-[[FIG1-2]]
+[[FIG7-6]]
 .Before the trader clicked on the Price Panel
 image::fig_07_06.png[]
 
 .After the trader clicked on the Price Panel
 image::fig_07_07.png[]
 
-Here is a HTML code snipped that implements described above user interface specification.
+Here is a HTML code snipped that implements the above scenario.
 
 [source,html]
 ----
@@ -792,10 +785,10 @@ Here is a HTML code snipped that implements described above user interface speci
 </body>
 </html>
 ----
-<1> The following `div` element is a container that represents _Pricing Panel_ with Bid and Ask controls.
-<2> The following `div` element is a container that represents _Order Panel_ with Quantity, Go and Cancel controls.
+<1> This `div` element contains _Pricing Panel_ with Bid and Ask controls.
+<2> This `div` element contains _Order Panel_ with Quantity, Go and Cancel controls.
 
-As we described before, Mediator will handle communication between the application components. The components need to register itself with mediator so it can route communication. In a following snipper, you can simple possible Mediator implementation.
+As we stated before, we need a Mediator to handle communication between the application components. The components need to register themselves with the  Mediator so it knows about them and can route communications. The following snippet is a sample  Mediator implementation (we use `define` and `require` from RequireJS here).
 
 [[mediator_impl]]
 .The implementation of Mediator pattern.
@@ -803,43 +796,44 @@ As we described before, Mediator will handle communication between the applicati
 ----
 include::include/ch7_mediator.js[]
 ----
-<1> A private private object that will store registered components
-<2> With `Mediator.register()` function we can store component in a associative array.
-<3> Setting mediator instance to registered component.
-<4> Registering component in components associative array with provided `name` as key.
-<5> Component can invoke `Mediator.broadcast()` when it have some information to share with the rest of the application components.
-<6> If component has property, which is a function and if whose name matches the pattern `"on" + event`, e.g. `onClickEvent` Mediator will invoke this function in context of `source` object.
+<1> Return the private object that stores registered components.
+<2> With the `Mediator.register()` function we can store components in the associative array. The Mediator is a singleton object here.
+<3> Assigning the mediator instance to the component being registered.
+<4> Registering component in the array using  provided `name` as key.
+<5> The component can invoke `Mediator.broadcast()` when it has some information to share with other  application components.
+<6> If a component has a function property with the  name matching the pattern `"on" + event`, e.g. `onClickEvent`, the Mediator will invoke this function in the context of `source` object.
+
+The following code sample shows the main entry point of the application that uses the above mediator.    
 
 [source,javascript]
 ----
 include::include/ch7_mediator_usage.js[]
 ----
 <1> Required modules will be loaded by RequireJS.
-<2> Registering the components in Mediator.
-<3> We're setting the `click` event listener for Bid price component.
-<4> When Bid price changes Mediator will broadcast "BidClick" event to all registered component. Only component that has specific event handler, which name matches the pattern `"on" + event`, would be able to receive event.
+<2> Registering our components with the Mediator.
+<3> Adding the `click` event listener for the Bid Price component.
+<4> When the user clicks on the bid price the Mediator will broadcast the `BidClick` event to all registered component. Only the component that has this specific event handler with the name matching  the pattern `"on" + event` will receive this event.
 
-Let's see how actual components' code looks like. Following code snippets 
+Let's see how the code of the `PricePanel` and `OrderPanel` components looks like.  
 
 [source,javascript]
 ----
 include::include/ch7_pricepanel.js[]
 ----
-<1> Setter of Mediator object. Mediator injects its' instance during component registration (refer to <<mediator_impl>> snippet).
-<2> Getter of Mediator object.
-<3> The `onBidClick` event handler. Mediator will call this function once `BidClick` event will be broadcast. Using getter `getMediator` we can broadcast `PriceUpdate` event to registered components.
+<1> The setter of the Mediator object. Mediator injects its' instance during component registration (refer to <<mediator_impl>> snippet).
+<2> The getter of the Mediator object.
+<3> The `onBidClick` event handler. The Mediator will call this function when the `BidClick` event will be broadcast. Using getter `getMediator` we can broadcast `PlaceBid` event to all registered components. 
 
 [source,javascript]
 ----
 include::include/ch7_orderpanel.js[]
 ----
-<1> Mediator getter and setter have purpose similar to described in previous snippet.
-<2> In `OrderPanel` component code we have definition of `PriceUpdate` event handler - `onPriceUpdate()`.
+<1> The Mediator's getter and setter have the purpose similar to described in previous snippet.
+<2> Defining the `PlaceBid` event handler - `onPlaceBid()`.
 
-As you noticed, `OrderPanel` and `PricePanel` don't know about existence of each other, but nevertheless they can sent and receive data with little help of intermediate - Mediator object.
+As you noticed, both `OrderPanel` and `PricePanel` don't know about the existence of each other, but nevertheless they can sent and receive data with the help of intermediary - the Mediator object.
 
-// /vik
-The introduction of the mediator increases reusability of components by decoupling them from each other. The Mediator pattern simplifies the maintenance of any application by centralizing the  navigational logic.
+The introduction of the Mediator increases reusability of components by decoupling them from each other. The Mediator pattern simplifies the maintenance of any application by centralizing the  navigational logic.
 
 === Summary
 

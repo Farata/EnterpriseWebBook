@@ -16,7 +16,7 @@ define(["mediator"], function() {
 
         PricePanel.prototype.onBidClick = function(currentPrice) {      // <3>
             console.log("Bid clicked on price " + currentPrice);
-            this.getMediator().broadcast("PriceUpdate", [currentPrice]);
+            this.getMediator().broadcast("PlaceBid", [currentPrice]);
         };
 
         PricePanel.prototype.onAskClick = function() {      // <4>
