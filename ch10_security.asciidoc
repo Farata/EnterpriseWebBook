@@ -1,26 +1,79 @@
 :toc:
 :toclevels: 4
 
-== Security 
+== Securing Web Applications 
 
-This chapter is a brief overview of the major security vulnerabilities that Web application developers need to be aware of. There is plenty of books and online articles that cover security, and any enterprise should have a dedicated person or a team that handles security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won't have any revelations for security professionals. But software developers should have at least broad understanding of what makes a Web application more or less secure, and this is exactly what this chapter is about. 
+Every newly deployed Web application creates a new security hole in accessing your organization's data. The hackers get access to the data that are supposedly hidden behind the firewalls by entering through the ports used by Web application. There is no way to guarantee that your Web application is 100% secure. If it was never attached by hackers this means that it's too small, has almost no users, and is of no interest to hackers. 
+ 
+This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There is plenty of books and online articles that cover security, and enterprises usually have dedicated people, which handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won't have any revelations for security professionals. But software developers should have at least broad understanding of what makes a Web application more or less secure and which threats Web applications face -  this is exactly what this chapter is about. 
 
 === HTTP vs HTTPS 
+
+Imagine a popular night club with a tall fence and two entry doors. People are waining in lines to get in. The door number 80 is no guarded in any way - a teenager checks the tickets and let people in. The other door has a number 443 on it and there is an armed bully letting people in. The chances of unwanted people getting into the club through the door 443 are pretty slim (unless the bully is corrupted), which is not the case with door 80 - once in a while people that have no right to be there get inside.
+
+On a similar note, your organization created _network security_ with a firewall (the fence) with only two ports opened: 80 for HTTP requests and 443 for HTTPS. One door's not secure, the other one is.
+
+WARNING: Do not assume that your Web application is secure if the users access it from behind the firewall. As long as you have ports open that allow the external users accessing your Web application, you need to invest into the _application security_ too.
+
+This little extra S in https means _secure_. In the past, you would see a URL starting with https mainly in the Web pages that deal with logins, payments or obviously sensitive data. Today, more and more URLs start with https and rightly so, because it forces  Web browsers use Secure Socket Layer (SSL) or Transport Layer Security (TSL) protocol for encrypting all the data (including request and response headers) that travel between the browser and the server. 
+
+The organization that runs the Web server creates a public key certificate that has to be signed by a trusted certificate authority to ensure that Web browsers accept it without displaying warnings. The authority certifies that the holder of the certificate is the valid operator of the Web server.  These SSL/TSL layers authenticate the servers using these certificates to ensure that the browser's request is being processed by the proper server and not by some hacker's site.
+
+TIP: Annual Blackhat conferences
+
+If https is clearly more secure than http, why not every Web site uses only https communications? Since https encrypts all the messages that travel between the client's browser and the server, such communications are a little bit slower comparing to  http-based. 
+
+ 
+TIP: When entering any sensitive or private information always pay attention to the URL to make sure that it uses https protocol.
 
 
 === Top security risks
 
-https://www.owasp.org[OWASP] is a non-profit organization focused on improving security of software. In particular, they offer guides and tools to increase security of Web applications. It publishes and maintains the list of top 10 security risks. Figure <<FIG10-1>> shows this top 10 list looked in 2013:
+https://www.owasp.org[ Open Web Application Security Project (OWASP)] is an open sourced project focused on improving security of Web applications. They offer guides and tools to increase security of Web applications. OWASP publishes and maintains the list of top 10 security risks. Figure <<FIG10-1>> shows this top 10 list looked in 2013:
 
 [[FIG10-1]]
-.Top 10 security risks
+.Top 10 security risks circa 2013
 image::images/fig_10_01.png[]
 
-This Web site offers a way to drill down on each of the items from this list, see the illustration of the selected security vulnerability and recommendations on how to prevent it.  
+This Web site offers a way to drill down on each of the items from this list, see the illustration of the selected security vulnerability and recommendations on how to prevent it.  Let's discuss some of the top 10 security threats.
 
-Cross-site scripting (XSS) - the users of your Web application gets receive some unwanted code fragments from a malicious server that reaches the user via the site that a person visited (hence cross-site). This can happen in two ways: 
-* phishing - the Web page contains a link that seems valid, but when the user clicks on it, 
+==== Injection
 
+If a bad guy will be able to _inject_ a piece of code that will run inside your Web application it can steal or damage the data from your Web application. In the world of compiled libraries and executable injecting malicious code would be a rather difficult task. But if an application uses interpreted languages (e.g. JavaScript or clear text SQL) the task of injecting malicious code becomes a lot easier than you might think. Let's look at a typical example of SQL injection.
+
+Say your application has an ability to search for data based on some keywords the user enters into a text input field. For example, to find all donors in the city of New York the user will enter the following: 
+
+_'New York'; delete from donors;_ 
+
+If the server side code of your application would be simply attaching the entered text this could result in execution of the following command:
+
+_Select * from donors where city='New York'; delete from donors;_
+
+This command doesn't require additional comments, does it? Is there a way to prevent the users of you Web application from entering something like this? The first thing that comes to mind is to not allow the user to enter the city, but force him to select it from the list. But such a list of possible values might be huge. Besides, the hacker can modify the HTTP request after the browser sends it to the server. 
+Hence the importance of the server-side validation can't be underestimated. In some scenarios you can come up with a regular expression that checks for the matching patterns in the data received from the clients. In other cases you can write a regular expression that invalidate the data if it contains SQL (or other) keywords that leads to modification of the data on the server.   
+
+In the ideal world the client-side code should not even send non-validated data to the server. But in real-world you'll wind up in duplicating some of the validation code in both the client and the server side code. 
+
+==== Cross-Site Scripting
+
+Cross-site scripting (XSS) - the user of your Web application receive some unwanted code fragments from a malicious server that reaches the user via the site that a person visited (hence cross-site). This can happen in three ways: 
+
+* Reflected (a.k.a. phishing) - the Web page contains a link that seems valid, but when the user clicks on it, the user's browser receives and executes the the script created by the attacker.
+
+* Stored - the external attacker managed to store the malicious script on the server that hosts someone's  Web application so every user will get it as a part of the Web page and their Web browser will execute it. For example, if a user's forum allows posting texts that include JavaScript code, a malicious code typed by a "bad guy" can be saved in the server's database and executed by users' browsers visited this forum afterward.
+
+* Local - no server is involved. Web page A opens Web page B with malicious code, which in turn modifies the code of the page A. If your application uses a hash-tag(#) in URLs (e.g. http://savesickchild.org#something), make sure that before processing this _something_ doesn't contain anything like "_javascript:somecode_", which may have been attached to the URL by an attacker. 
+
+NOTE: While we worked on the section describing getting developer's certificate (Chapter 14) for Apple's App Store, their Web site was hacked and was not available for about two weeks.
+
+
+=== Plain Text Passwords
+
+SHA-1 hash 
 
 === Summary
- 
+
+Every enterprise Web application has to include the code to increase _application security_. The worst mistake you can make is to say that since the application runs inside the firewall - it's secure. First, if you're opening at least one port to the outside world, the malicious code can sneak in. Second, there can be an "angry employee" or just a "curious programmer" inside the organization who can inject the unwanted code.
+
+Take the validation of the received data very seriously. Ideally, use the _white list_ validation to compare the user's input against the list of allowed values. Otherwise do a _black list_ validation to compare against the keywords that are not allowed in the data entered by the user.
+
