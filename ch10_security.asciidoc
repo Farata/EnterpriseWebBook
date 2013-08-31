@@ -1,11 +1,11 @@
 :toc:
 :toclevels: 4
 
-== Securing Web Applications 
+== Introduction to Web Applications Security 
 
 Every newly deployed Web application creates a new security hole in accessing your organization's data. The hackers get access to the data that are supposedly hidden behind the firewalls by entering through the ports used by Web application. There is no way to guarantee that your Web application is 100% secure. If it was never attached by hackers this means that it's too small, has almost no users, and is of no interest to hackers. 
  
-This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There is plenty of books and online articles that cover security, and enterprises usually have dedicated people, which handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won't have any revelations for security professionals. But software developers should have at least broad understanding of what makes a Web application more or less secure and which threats Web applications face -  this is exactly what this chapter is about. 
+This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won't have any revelations for security professionals. But software developers should have at least a broad understanding of what makes a Web application more or less secure and which threats Web applications face -  this is what this chapter is about. 
 
 === HTTP vs HTTPS 
 
@@ -15,15 +15,14 @@ On a similar note, your organization created _network security_ with a firewall 
 
 WARNING: Do not assume that your Web application is secure if the users access it from behind the firewall. As long as you have ports open that allow the external users accessing your Web application, you need to invest into the _application security_ too.
 
-This little extra S in https means _secure_. In the past, you would see a URL starting with https mainly in the Web pages that deal with logins, payments or obviously sensitive data. Today, more and more URLs start with https and rightly so, because it forces  Web browsers use Secure Socket Layer (SSL) or Transport Layer Security (TSL) protocol for encrypting all the data (including request and response headers) that travel between the browser and the server. 
+This  extra _s_ in https means _secure_. In the past, only the Web pages deal with logins, payments or obviously sensitive data would use URL's starting with https. Today, more and more Web pages use https and rightly so, because it forces  Web browsers use Secure Socket Layer (SSL) or Transport Layer Security (TSL) protocol for encrypting all the data (including request and response headers) that travel between the browser and the server. 
 
-The organization that runs the Web server creates a public key certificate that has to be signed by a trusted certificate authority to ensure that Web browsers accept it without displaying warnings. The authority certifies that the holder of the certificate is the valid operator of the Web server.  These SSL/TSL layers authenticate the servers using these certificates to ensure that the browser's request is being processed by the proper server and not by some hacker's site.
+The organization that runs a Web server creates the  public key certificate that has to be signed by a trusted certificate authority to ensure that Web browsers accept it without displaying warnings. The authority certifies that the holder of the certificate is the valid operator of the Web server.  These SSL/TSL layers authenticate the servers using these certificates to ensure that the browser's request is being processed by the proper server and not by some hacker's site.
 
 TIP: Annual Blackhat conferences
 
 If https is clearly more secure than http, why not every Web site uses only https communications? Since https encrypts all the messages that travel between the client's browser and the server, such communications are a little bit slower comparing to  http-based. 
 
- 
 TIP: When entering any sensitive or private information always pay attention to the URL to make sure that it uses https protocol.
 
 
@@ -49,7 +48,7 @@ If the server side code of your application would be simply attaching the entere
 
 _Select * from donors where city='New York'; delete from donors;_
 
-This command doesn't require additional comments, does it? Is there a way to prevent the users of you Web application from entering something like this? The first thing that comes to mind is to not allow the user to enter the city, but force him to select it from the list. But such a list of possible values might be huge. Besides, the hacker can modify the HTTP request after the browser sends it to the server. 
+This command doesn't require any additional comments, does it? Is there a way to prevent the users of you Web application from entering something like this? The first thing that comes to mind is to not allow the user to enter the city, but force him to select it from the list. But such a list of possible values might be huge. Besides, the hacker can modify the HTTP request after the browser sends it to the server. 
 Hence the importance of the server-side validation can't be underestimated. In some scenarios you can come up with a regular expression that checks for the matching patterns in the data received from the clients. In other cases you can write a regular expression that invalidate the data if it contains SQL (or other) keywords that leads to modification of the data on the server.   
 
 In the ideal world the client-side code should not even send non-validated data to the server. But in real-world you'll wind up in duplicating some of the validation code in both the client and the server side code. 
@@ -67,13 +66,73 @@ Cross-site scripting (XSS) - the user of your Web application receive some unwan
 NOTE: While we worked on the section describing getting developer's certificate (Chapter 14) for Apple's App Store, their Web site was hacked and was not available for about two weeks.
 
 
-=== Plain Text Passwords
+=== Authentication and Passwords
 
-SHA-1 hash 
+_Authentication_ is an ability to confirm that the user is who he claims to be. The fact the the user has provided a valid id/password combination proves that he is known to the Web application. That's all. 
+Passwords must never be transferred to the server in a clear text.
+
+Specifying the correct user id/password combination may not be enough for some of the Web application. Banks often ask for additional information like what's your pet's name or a favorite movie. 
+
+Authors of this book often consult Wall Street companies, which often use the RSA Secure ID (a.k.a. RSA hard token), which is a device with randomly generated combination of digits. This combination changes every minute, and has to be entered as a part of the authentication process. Besides physical devices, there are programs (soft tokens) that perform the same functionality. 
+
+To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who are willing and successfully pass a special background check are entered into the system used in the passport control checkpoints. On the borders the applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the _authenticated_ person can pass the border without waiting in long lines.
+
+Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user's computer are very inexpensive. In some of the Manhattan's apartment buildings you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to bws-request@nist.gov with _subscribe_ as the subject. 
+
+==== Single Sign-on and Social Networks Logins
+
+Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement a single sign-on (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, if the user signs out from one of these applications, terminates his access to all of them. 
+
+Typically, user's credentials are verified by making a call to a corporate LDAP server, and then single sign-on software (e.g. Oracle Enterprise Single Sign-On, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO) enters the  application passwords automatically without the need to modify the application's code. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).
+
+In the consumer-oriented Internet space single sign-on solutions become more and more popular. For example, some Web applications allow you to reuse your Twitter or Facebook credentials (provided that you've logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegates authentication procedures to FaceBook, Twitter et al. 
+
+Back in 2010, Facebook has introduced their SSO solution that helps millions of people log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking users to enter credentials, your application can show the button "Login with FaceBook". 
+
+FaceBook has published JavaScript API that allows implement FaceBook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit the online documentation on https://developers.facebook.com/docs/facebook-login/[FaceBook Login API].
+
+If you prefer your application to have the button "Login with Twitter", refer to the Sign in with Twitter API https://dev.twitter.com/docs/auth/sign-twitter[documentation].
+
+LinkedIn is popular social network LinkedIn for professionals. It also offers an API to create the button "Sign in with LinkedIn". For details visit LinkedIn http://developer.linkedin.com/javascript[online documentation] for developers.
+
+Google also offers the authentication API. Details about their client library for JavaScript are published at https://developers.google.com/api-client-library/javascript/features/authentication[online]. For implementing SSO with Google, visit  https://developers.google.com/commerce/wallet/online/sso[this Web page].
+
+
+.Open Standards OAuth and OAuth 2
+*******
+OAuth tbd
+*******
+
+.SHA-1 hash in passwords
+*******
+Don't send passwords in clear text...
+*******
+
+=== Authorization
+
+_Authorization_ is a way to determine which operations the user can perform and what data he can access. For example, the owner of the company can perform money withdrawals and transfers from the online business bank account, while the company accountant is provide the read-only access. 
+
+
+
+.STRIDE - Classification of Security Threats
+*******
+Microsoft has published http://msdn.microsoft.com/en-us/magazine/cc163519.aspx#S2[a classification] that divides security threats into six categories (hence six letters in the acronym STRIDE):
+
+* Spoofing - an attacker pretends to be a legitimate user of some application, e.g. a banking system. This may be implemented using XSS. 
+* Tampering - modifying the data that were not supposed to be modified (e.g. via SQL injection).
+* Repudiation - the user denies that he made an online transaction (e.g. a purchase) by modifying application's log files. 
+* Information disclosure - an attacker get an access to the classified information
+* Denial of Service (a.k.a. DoS) - make a server unavailable for the legitimate users, which often is implemented by generating a large number of simultaneous requests to saturate the server.
+* Elevation of privilege - gaining an elevated access to the data, e.g. by obtaining administrative rights. 
+******* 
+
+
+
+
+
 
 === Summary
 
-Every enterprise Web application has to include the code to increase _application security_. The worst mistake you can make is to say that since the application runs inside the firewall - it's secure. First, if you're opening at least one port to the outside world, the malicious code can sneak in. Second, there can be an "angry employee" or just a "curious programmer" inside the organization who can inject the unwanted code.
+Every enterprise Web application has to implement  _application security_. The fact that the application runs inside the firewall doen't make it secure. First, if you're opening at least one port to the outside world, a malicious code can sneak in. Second, there can be an "angry employee" or just a "curious programmer" inside the organization who can inject the unwanted code.
 
-Take the validation of the received data very seriously. Ideally, use the _white list_ validation to compare the user's input against the list of allowed values. Otherwise do a _black list_ validation to compare against the keywords that are not allowed in the data entered by the user.
-
+Take the validation of the received data very seriously. Ideally, use the _white list_ validation to compare the user's input against the list of allowed values. Otherwise do a _black list_ validation to compare against the keywords that are not allowed in the data entered by the user.  ted@tedpatrick.com
