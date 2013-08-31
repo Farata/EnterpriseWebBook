@@ -1094,6 +1094,14 @@ p.tableblock.header { color: #6d6e71; }
 <li>
 <ol type="none" class="sectlevel2">
 <li><a href="#_http_vs_https">HTTP vs HTTPS</a></li>
+<li><a href="#_authentication_and_passwords">Authentication and Passwords</a></li>
+<li>
+<ol type="none" class="sectlevel3">
+<li><a href="#_basic_and_digest_authentication">Basic and Digest Authentication</a></li>
+<li><a href="#_single_sign_on_and_social_networks_logins">Single Sign-on and Social Networks Logins</a></li>
+</ol>
+</li>
+<li><a href="#_authorization">Authorization</a></li>
 <li><a href="#_top_security_risks">Top security risks</a></li>
 <li>
 <ol type="none" class="sectlevel3">
@@ -1101,13 +1109,6 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_cross_site_scripting">Cross-Site Scripting</a></li>
 </ol>
 </li>
-<li><a href="#_authentication_and_passwords">Authentication and Passwords</a></li>
-<li>
-<ol type="none" class="sectlevel3">
-<li><a href="#_single_sign_on_and_social_networks_logins">Single Sign-on and Social Networks Logins</a></li>
-</ol>
-</li>
-<li><a href="#_authorization">Authorization</a></li>
 <li><a href="#_summary_11">Summary</a></li>
 </ol>
 </li>
@@ -19351,7 +19352,7 @@ As soon as the handshake completes successfully, the server side code that imple
 <p>Every newly deployed Web application creates a new security hole in accessing your organization&#8217;s data. The hackers get access to the data that are supposedly hidden behind the firewalls by entering through the ports used by Web application. There is no way to guarantee that your Web application is 100% secure. If it was never attached by hackers this means that it&#8217;s too small, has almost no users, and is of no interest to hackers.</p>
 </div>
 <div class="paragraph">
-<p>This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won&#8217;t have any revelations for security professionals. But software developers should have at least a broad understanding of what makes a Web application more or less secure and which threats Web applications face -  this is what this chapter is about.</p>
+<p>This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won&#8217;t have any revelations for security professionals. But software developers should have at least a broad understanding of what makes a Web application more or less secure and which threats Web applications face - this is what this chapter is about. To implement any of the mentioned security mechanism you&#8217;ll need to do and additional research.</p>
 </div>
 <div class="sect2">
 <h3 id="_http_vs_https">HTTP vs HTTPS</h3>
@@ -19388,7 +19389,7 @@ Do not assume that your Web application is secure if the users access it from be
 </td>
 <td class="content">
 
-Annual Blackhat conferences
+There is an annual Black Hat computer security conference dedicated to the information security. This conference is attended by both hackers and security professionals.
 </td>
 </tr>
 </table>
@@ -19412,6 +19413,141 @@ When entering any sensitive or private information always pay attention to the U
 
 </div>
 <div class="sect2">
+<h3 id="_authentication_and_passwords">Authentication and Passwords</h3>
+<div class="paragraph">
+<p><em>Authentication</em> is an ability to confirm that the user is who he claims to be. The fact the the user has provided a valid id/password combination proves that he is known to the Web application. That&#8217;s all.
+Passwords must never be transferred to the server in a clear text.</p>
+</div>
+<div class="paragraph">
+<p>Specifying the correct user id/password combination may not be enough for some of the Web application. Banks often ask for additional information like what&#8217;s your pet&#8217;s name or a favorite movie.</p>
+</div>
+<div class="paragraph">
+<p>Authors of this book often consult Wall Street companies, which often use the RSA Secure ID (a.k.a. RSA hard token), which is a device with randomly generated combination of digits. This combination changes every minute, and has to be entered as a part of the authentication process. Besides physical devices, there are programs (soft tokens) that perform the same functionality.</p>
+</div>
+<div class="paragraph">
+<p>To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who are willing and successfully pass a special background check are entered into the system used in the passport control checkpoints. On the borders the applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the <em>authenticated</em> person can pass the border without waiting in long lines.</p>
+</div>
+<div class="paragraph">
+<p>Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user&#8217;s computer are very inexpensive. In some of the Manhattan&#8217;s apartment buildings you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to <a href="mailto:bws-request@nist.gov">bws-request@nist.gov</a> with <em>subscribe</em> as the subject.</p>
+</div>
+<div class="sect3">
+<h4 id="_basic_and_digest_authentication">Basic and Digest Authentication</h4>
+<div class="paragraph">
+<p>HTTP protocol defines two types of authentication: <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic</a> and <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">Digest</a>. All web browsers support them, but basic authentication uses base64 encoding, but not encryption hence it can be used only with https protocol.</p>
+</div>
+<div class="paragraph">
+<p>If a Web server administrator decided that certain resources must require basic user authentication, when a Web browser requests such protected resource , the server sends the HTTP response containing HTTP status code 401 - <em>Unauthorized</em> and <em>WWW-Authenticate: Basic</em>. The browser pops up the login dialog box. The user enters the ID/password, which are turned into an encoded <em>userID:password</em> string and sent to the server as a part of HTTP header. Basic authentication provides no confidentiality because it doesn&#8217;t encrypt the transmitted credentials.</p>
+</div>
+<div class="paragraph">
+<p>With the digest authentication, the server also responds with 401, but the <em>WWW-Authenticate: Digest</em> has additional data so the Web browser can apply a  hash function to the password. Then the browser sends encrypted password to the server. Digest authentication is more secure than the basic one, but it&#8217;s still less secure than authentication that uses public keys or Kerberos authentication protocol.</p>
+</div>
+
+</div>
+<div class="sect3">
+<h4 id="_single_sign_on_and_social_networks_logins">Single Sign-on and Social Networks Logins</h4>
+<div class="paragraph">
+<p>Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement a single sign-on (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, if the user signs out from one of these applications, terminates his access to all of them.</p>
+</div>
+<div class="paragraph">
+<p>Typically, user&#8217;s credentials are verified by making a call to a corporate LDAP server, and then single sign-on software (e.g. Oracle Enterprise Single Sign-On, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO) enters the  application passwords automatically without the need to modify the application&#8217;s code. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).</p>
+</div>
+<div class="paragraph">
+<p>In the consumer-oriented Internet space single sign-on solutions become more and more popular. For example, some Web applications allow you to reuse your Twitter or Facebook credentials (provided that you&#8217;ve logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegates authentication procedures to FaceBook, Twitter et al.</p>
+</div>
+<div class="paragraph">
+<p>Back in 2010, Facebook has introduced their SSO solution that helps millions of people log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking users to enter credentials, your application can show the button "Login with FaceBook".</p>
+</div>
+<div class="paragraph">
+<p>FaceBook has published JavaScript API that allows implement FaceBook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit the online documentation on <a href="https://developers.facebook.com/docs/facebook-login/">FaceBook Login API</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you prefer your application to have the button "Login with Twitter", refer to the Sign in with Twitter API <a href="https://dev.twitter.com/docs/auth/sign-twitter">documentation</a>.</p>
+</div>
+<div class="paragraph">
+<p>LinkedIn is popular social network LinkedIn for professionals. It also offers an API to create the button "Sign in with LinkedIn". For details visit LinkedIn <a href="http://developer.linkedin.com/javascript">online documentation</a> for developers.</p>
+</div>
+<div class="paragraph">
+<p>Google also offers the authentication API. Details about their client library for JavaScript are published at <a href="https://developers.google.com/api-client-library/javascript/features/authentication">online</a>. For implementing SSO with Google, visit  <a href="https://developers.google.com/commerce/wallet/online/sso">this Web page</a>.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Open Standards OAuth and OAuth 2</div>
+<div class="paragraph">
+<p>OAuth tbd</p>
+</div>
+
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+
+Don&#8217;t send passwords in clear text. Use Secure Hash Algorithms (SHA).
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+The longer passwords are more secured, because if an attacker will try to use dictionaries to generate every possible combination of characters, it&#8217;ll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker&#8217;s work more difficult too.
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+</div>
+<div class="sect2">
+<h3 id="_authorization">Authorization</h3>
+<div class="paragraph">
+<p><em>Authorization</em> is a way to determine which operations the user can perform and what data he can access. For example, the owner of the company can perform money withdrawals and transfers from the online business bank account, while the company accountant is provide the read-only access.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">STRIDE - Classification of Security Threats</div>
+<div class="paragraph">
+<p>Microsoft has published <a href="http://msdn.microsoft.com/en-us/magazine/cc163519.aspx#S2">a classification</a> that divides security threats into six categories (hence six letters in the acronym STRIDE):</p>
+</div>
+<div class="ulist">
+
+<ul>
+<li>
+<p>Spoofing - an attacker pretends to be a legitimate user of some application, e.g. a banking system. This may be implemented using XSS.</p>
+</li>
+<li>
+<p>Tampering - modifying the data that were not supposed to be modified (e.g. via SQL injection).</p>
+</li>
+<li>
+<p>Repudiation - the user denies that he made an online transaction (e.g. a purchase) by modifying application&#8217;s log files.</p>
+</li>
+<li>
+<p>Information disclosure - an attacker get an access to the classified information</p>
+</li>
+<li>
+<p>Denial of Service (a.k.a. DoS) - make a server unavailable for the legitimate users, which often is implemented by generating a large number of simultaneous requests to saturate the server.</p>
+</li>
+<li>
+<p>Elevation of privilege - gaining an elevated access to the data, e.g. by obtaining administrative rights.</p>
+</li>
+</ul>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="sect2">
 <h3 id="_top_security_risks">Top security risks</h3>
 <div class="paragraph">
 <p><a href="https://www.owasp.org"> Open Web Application Security Project (OWASP)</a> is an open sourced project focused on improving security of Web applications. They offer guides and tools to increase security of Web applications. OWASP publishes and maintains the list of top 10 security risks. Figure <a href="#FIG10-1">Top 10 security risks circa 2013</a> shows this top 10 list looked in 2013:</p>
@@ -19424,6 +19560,19 @@ When entering any sensitive or private information always pay attention to the U
 </div>
 <div class="paragraph">
 <p>This Web site offers a way to drill down on each of the items from this list, see the illustration of the selected security vulnerability and recommendations on how to prevent it.  Let&#8217;s discuss some of the top 10 security threats.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+
+In application security the term <em>man in the middle attack</em> refers to the case when an attacker intercepts and modifies the data transmitted between two parties (usually the client and the server).
+</td>
+</tr>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_injection">Injection</h4>
@@ -19478,7 +19627,7 @@ Hence the importance of the server-side validation can&#8217;t be underestimated
 </td>
 <td class="content">
 
-While we worked on the section describing getting developer&#8217;s certificate (Chapter 14) for Apple&#8217;s App Store, their Web site was hacked and was not available for about two weeks.
+While we&#8217;ve been working on the section describing Apple&#8217;s developers certificates (Chapter 14) their Web site was hacked and was not available for about two weeks.
 </td>
 </tr>
 </table>
@@ -19488,117 +19637,15 @@ While we worked on the section describing getting developer&#8217;s certificate 
 
 </div>
 <div class="sect2">
-<h3 id="_authentication_and_passwords">Authentication and Passwords</h3>
-<div class="paragraph">
-<p><em>Authentication</em> is an ability to confirm that the user is who he claims to be. The fact the the user has provided a valid id/password combination proves that he is known to the Web application. That&#8217;s all.
-Passwords must never be transferred to the server in a clear text.</p>
-</div>
-<div class="paragraph">
-<p>Specifying the correct user id/password combination may not be enough for some of the Web application. Banks often ask for additional information like what&#8217;s your pet&#8217;s name or a favorite movie.</p>
-</div>
-<div class="paragraph">
-<p>Authors of this book often consult Wall Street companies, which often use the RSA Secure ID (a.k.a. RSA hard token), which is a device with randomly generated combination of digits. This combination changes every minute, and has to be entered as a part of the authentication process. Besides physical devices, there are programs (soft tokens) that perform the same functionality.</p>
-</div>
-<div class="paragraph">
-<p>To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who are willing and successfully pass a special background check are entered into the system used in the passport control checkpoints. On the borders the applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the <em>authenticated</em> person can pass the border without waiting in long lines.</p>
-</div>
-<div class="paragraph">
-<p>Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user&#8217;s computer are very inexpensive. In some of the Manhattan&#8217;s apartment buildings you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to <a href="mailto:bws-request@nist.gov">bws-request@nist.gov</a> with <em>subscribe</em> as the subject.</p>
-</div>
-<div class="sect3">
-<h4 id="_single_sign_on_and_social_networks_logins">Single Sign-on and Social Networks Logins</h4>
-<div class="paragraph">
-<p>Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement a single sign-on (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, if the user signs out from one of these applications, terminates his access to all of them.</p>
-</div>
-<div class="paragraph">
-<p>Typically, user&#8217;s credentials are verified by making a call to a corporate LDAP server, and then single sign-on software (e.g. Oracle Enterprise Single Sign-On, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO) enters the  application passwords automatically without the need to modify the application&#8217;s code. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).</p>
-</div>
-<div class="paragraph">
-<p>In the consumer-oriented Internet space single sign-on solutions become more and more popular. For example, some Web applications allow you to reuse your Twitter or Facebook credentials (provided that you&#8217;ve logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegates authentication procedures to FaceBook, Twitter et al.</p>
-</div>
-<div class="paragraph">
-<p>Back in 2010, Facebook has introduced their SSO solution that helps millions of people log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking users to enter credentials, your application can show the button "Login with FaceBook".</p>
-</div>
-<div class="paragraph">
-<p>FaceBook has published JavaScript API that allows implement FaceBook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit the online documentation on <a href="https://developers.facebook.com/docs/facebook-login/">FaceBook Login API</a>.</p>
-</div>
-<div class="paragraph">
-<p>If you prefer your application to have the button "Login with Twitter", refer to the Sign in with Twitter API <a href="https://dev.twitter.com/docs/auth/sign-twitter">documentation</a>.</p>
-</div>
-<div class="paragraph">
-<p>LinkedIn is popular social network LinkedIn for professionals. It also offers an API to create the button "Sign in with LinkedIn". For details visit LinkedIn <a href="http://developer.linkedin.com/javascript">online documentation</a> for developers.</p>
-</div>
-<div class="paragraph">
-<p>Google also offers the authentication API. Details about their client library for JavaScript are published at <a href="https://developers.google.com/api-client-library/javascript/features/authentication">online</a>. For implementing SSO with Google, visit  <a href="https://developers.google.com/commerce/wallet/online/sso">this Web page</a>.</p>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Open Standards OAuth and OAuth 2</div>
-<div class="paragraph">
-<p>OAuth tbd</p>
-</div>
-
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">SHA-1 hash in passwords</div>
-<div class="paragraph">
-<p>Don&#8217;t send passwords in clear text&#8230;</p>
-</div>
-
-</div>
-</div>
-
-</div>
-
-</div>
-<div class="sect2">
-<h3 id="_authorization">Authorization</h3>
-<div class="paragraph">
-<p><em>Authorization</em> is a way to determine which operations the user can perform and what data he can access. For example, the owner of the company can perform money withdrawals and transfers from the online business bank account, while the company accountant is provide the read-only access.</p>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">STRIDE - Classification of Security Threats</div>
-<div class="paragraph">
-<p>Microsoft has published <a href="http://msdn.microsoft.com/en-us/magazine/cc163519.aspx#S2">a classification</a> that divides security threats into six categories (hence six letters in the acronym STRIDE):</p>
-</div>
-<div class="ulist">
-
-<ul>
-<li>
-<p>Spoofing - an attacker pretends to be a legitimate user of some application, e.g. a banking system. This may be implemented using XSS.</p>
-</li>
-<li>
-<p>Tampering - modifying the data that were not supposed to be modified (e.g. via SQL injection).</p>
-</li>
-<li>
-<p>Repudiation - the user denies that he made an online transaction (e.g. a purchase) by modifying application&#8217;s log files.</p>
-</li>
-<li>
-<p>Information disclosure - an attacker get an access to the classified information</p>
-</li>
-<li>
-<p>Denial of Service (a.k.a. DoS) - make a server unavailable for the legitimate users, which often is implemented by generating a large number of simultaneous requests to saturate the server.</p>
-</li>
-<li>
-<p>Elevation of privilege - gaining an elevated access to the data, e.g. by obtaining administrative rights.</p>
-</li>
-</ul>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="sect2">
 <h3 id="_summary_11">Summary</h3>
 <div class="paragraph">
-<p>Every enterprise Web application has to implement  <em>application security</em>. The fact that the application runs inside the firewall doen&#8217;t make it secure. First, if you&#8217;re opening at least one port to the outside world, a malicious code can sneak in. Second, there can be an "angry employee" or just a "curious programmer" inside the organization who can inject the unwanted code.</p>
+<p>Every enterprise Web application has to implement  <em>application security</em>. The fact that the application runs inside the firewall doesn&#8217;t make it secure. First, if you&#8217;re opening at least one port to the outside world, a malicious code can sneak in. Second, there can be an "angry employee" or just a "curious programmer" inside the organization who can inject the unwanted code.</p>
 </div>
 <div class="paragraph">
-<p>Take the validation of the received data very seriously. Ideally, use the <em>white list</em> validation to compare the user&#8217;s input against the list of allowed values. Otherwise do a <em>black list</em> validation to compare against the keywords that are not allowed in the data entered by the user.  <a href="mailto:ted@tedpatrick.com">ted@tedpatrick.com</a></p>
+<p>Take the validation of the received data very seriously. Ideally, use the <em>white list</em> validation to compare the user&#8217;s input against the list of allowed values. Otherwise do a <em>black list</em> validation to compare against the keywords that are not allowed in the data entered by the user.</p>
+</div>
+<div class="paragraph">
+<p>Use https protocol with all URLs.</p>
 </div>
 
 </div>
