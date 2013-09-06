@@ -52,11 +52,13 @@ https://build.phonegap.com/[PhoneGap Build] is a cloud service, where you upload
 
 For iOS applications the PhoneGap Build server creates an _.ipa_ file, for deployment on Android devices it generates an _.apk_ file and so on. After that, if you want to submit your application to a public or private application store, follow the procedure that exists for native applications for the selected store. The PhoneGap Build service can package your application for iOS, Android, Windows Phone, Blackberry, and some other platforms.
 
-Advocates of the native applications argue that PhoneGap applications may run slower comparing to the native ones, because there is a Web View (a Web renderer) between the application code and the native API of the device. The older versions of mobile OS may have slower Web rendering engines, but for the majority of enterprise applications the difference may not by noticeable given that  developers use best practices recommended for HTML5 applications. 
+PhoneGap applications may run slower comparing to the HTML-based applications running in the mobile Web browser, because there is yet another middle man - a Web View. In Android SDK a `WebView` control is being used to embed the HTML5 application into a native one, and in iOS SDK it's `UIWebView`. Both of these control perform slower than the respective mobile Web browsers. 
 
-The UI components of the HTML5 framework of your choice may not look native enough too. But the main  selling point is that PhoneGap (and Cordova) allows you to leverage existing HTML/JavaScript developers' skills for all major mobile platforms, and their bridge to native APIs is easy to learn. 
+TIP: To compare performance of the an application that runs in a mobile browser vs _WebView_ or _UIWebView_ control, you can use http://v8.googlecode.com/svn/data/benchmarks/v5/run.html[Google's V8 Benchmark Suite] or http://www.webkit.org/perf/sunspider/sunspider.html[SunSpider benchmark utility]. 
 
-Titanium offers its own set of tools and more extensive API. You'd be writing code in JavaScript (no HTML or CSS) and would need to learn lots of APIs. The compiled and deployed application is a JavaScript code embedded inside Java or Objective-C code plus the JavaScript interpreter plus the platform-specific Titanium API. An important difference between Phonegap and Titanium is that the latter has no Web view container that renders Web application. The business logic written in JavaScript is executed by the embedded interpreter, the final UI components are delivered by native to iOS or Android components from Titanium.
+The UI components of the HTML5 framework of your choice may not look native enough. But the main  selling point is that PhoneGap (and Cordova) allows you to leverage existing HTML/JavaScript developers' skills for all major mobile platforms, and their bridge to native APIs is easy to learn. 
+
+Titanium offers its own set of tools and more extensive API. You'd be writing code in JavaScript (no HTML or CSS) and would need to learn lots of APIs. The compiled and deployed application is a JavaScript code embedded inside Java or Objective-C code plus the JavaScript interpreter plus the platform-specific Titanium API. An important difference between Phonegap and Titanium is that the latter doesn't use any Web view container for rendering. The business logic written in JavaScript is executed by the embedded interpreter, the final UI components are delivered by native to iOS or Android components from Titanium.
 
 Titanium UI components can be extended to use native OS interface abilities to their fullest. Some components are cross-platform - Titanium has a compatibility layer, while others are platform-specific. But if you want to learn platform-specific components, you might rather invest time in learning to develop the entire application in the native language and APIs. Besides, as new platform will be introduced, you'll depend on the willingness of the Titanium developers to create a new set of components in a timely fashion.  
 
@@ -78,39 +80,39 @@ In this section you'll learn the entire process of building PhoneGap application
 
 1. Install all required mobile SDKs and tools for the mobile platforms you want to develop for (e.g. iOS and Android), generate the initial project using the Command Line Interface (CLI), write your HTML5  application code, build it locally, and test the application using IDE, simulators and physical devices.  
 
-2. Don't install any mobile SDK and tools. Just generate the initial project using CLI, add the application code, zip up the _www_ folder and upload it to https://build.phonegap.com/[Adobe PhoneGap Build] server, which will build the applicaion for all platforms. Then download and and test the application using physical devices.
+2. Don't install any mobile SDK and tools. Just generate the initial project using CLI, add the application code, zip up the _www_ folder and upload it to https://build.phonegap.com/[Adobe PhoneGap Build] server, which will build the application for all platforms. Then download and and test the application using physical devices.
 
-The second workflow requires running a trivial install of Cordova and then you just trust the Build PhoneGap server to do the proper build for you. The first one is more involved, and we'll illustrate it by showing how to use the local SDKs for iOS deployment.
+The second workflow requires running a trivial install of PhoneGap and then you just trust the Adobe's Build PhoneGap server to do the build for various mobile platforms. The first workflow is more involved, and we'll illustrate it by showing how to use the local SDKs for iOS deployment.
 
 NOTE: Keep in mind that for some platforms PhoneGap supports only local builds (e.g. BlackBerry 10, Windows Phone 8), while builds for WebOS and Symbian can only be done remotely.  
 
-In any case you'll need to install phonegap unility  according to the instructions from http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface[the command-line interface]. Start with installing Node.js, which will also install its package manager _npm_ used for installing cordova (and phonegap library). We're developing on MAC OS X, and here's the command that will install phonegap: 
+In any case you'll need to install PhoneGap software  according to the instructions from http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface[the command-line interface]. Start with installing Node.js, which will also install its package manager _npm_ used for installing cordova (and phonegap library). We're developing on MAC OS X, and here's the command that will install PhoneGap: 
 
 _sudo npm install -g phonegap_
 
 // Using 3.0 CLI http://blog.safaribooksonline.com/2013/07/19/streamline-cross-platform-development-using-apache-cordova-phonegap-cli/
 
-The above command installs the JavaScript file _phonegap_ in _/usr/local/bin_ and the cordova library and its supporting files in the _/usr/local/lib/node_modules/phonegap_ - Figure <<FIG14-2>> shows the snapshot of some of the files and directories that come with phonegap. We've highlighted the create.js script, which will be used for generating Hello World and Save Sick Child projects.  
+The above command installs the JavaScript file _phonegap_ in _/usr/local/bin_ and the cordova library and its supporting files in the _/usr/local/lib/node_modules/phonegap_ - Figure <<FIG14-2>> shows the snapshot of some of the files and directories that come with PhoneGap. We've highlighted the create.js script, which will be used for generating Hello World and Save Sick Child projects.  
 
 [[FIG14-2]]
-.Cordova 3.0 Installed
+.PhoneGap 3.0 Installed
 image::images/fig_14_02.png[]
 
-In this chapter we'll be developing sample applications for iOS platform, to illustrate the most complex deployment-deployment cycle. It requires https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. After installing Xcode open its menu Preferences and install Command Line Tools (CLT) from the Downloads panel. By default, Xcode comes with the latest iOS simulator (it's version 6.1 at the time of this writing). 
+In this chapter we'll be developing a sample application for the iOS platform to illustrate the most involved deployment-deployment cycle. It requires https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. After installing Xcode open its menu Preferences and install Command Line Tools (CLT) from the Downloads panel. By default, Xcode comes with the latest iOS simulator (it's version 6.1 at the time of this writing). 
 
-==== Hello World
+==== One More Hello World
 
 The time has come for a PhoneGap version of the  Hello World application. We are going to generate the initial project using CLI as described in the same http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface[document] we used for installing cordova in the section titled "Create the App". We'll be running the _phonegap_ script passing it the command _create_:
 
 _sudo phonegap create HelloWorld com.example.hello "Hello World"_
 
-After generating Hello World with the _phonegap create_ command, the CLI creates files and directories shown on Figure <<FIG14-3>>. 
+After generating the Hello World code with the _phonegap create_ command, you'll see the files and directories as on Figure <<FIG14-3>>. 
  
 [[FIG14-3]]
 .CLI-generated project Hello World
 image::images/fig_14_03.png[] 
 
-NOTE: If you'll be using the command exactly as it shown in the documentation (i.e. 	_phonegap create HelloWorld com.example.hello "Hello World"_), keep in mind that for iOS you'll be creating a  certificate, which has to be valid for applications packages located under  _com.example_. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
+NOTE: If you'll be using the _create_ command exactly as it shown in the documentation (i.e. 	_phonegap create HelloWorld com.example.hello "Hello World"_), keep in mind that in case of iOS you'll be creating a certificate, which has to be valid for applications packages located under  _com.example_. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
 
 The content of generated index.html is shown next. It includes several meta tags instructing the browser to use the entire screen of the mobile device and don't allow scaling by user's gestures. Then it includes a couple of JavaScript files in the`<script>` tags. 
 
@@ -133,7 +135,7 @@ The content of generated index.html is shown next. It includes several meta tags
              <p class="status complete blink hide">Device is Ready</p>
          </div>
      </div>
-     <script type="text/javascript" src="cordova.js"></script>
+     <script type="text/javascript" src="phonegap.js"></script>
      <script type="text/javascript" src="js/index.js"></script>
      <script type="text/javascript">
          app.initialize();
@@ -142,7 +144,7 @@ The content of generated index.html is shown next. It includes several meta tags
 </html>
 ----
 
-This HTML file includes the code to load the cordova.js library and the initialization code from index.js.Then it calls `app.initialize()`. But if you look at <<FIG14-3>> the file cordova.js is missing. The CLI will add it to the project during the next phase of code generation when you'll run the command _phonegap platform add_ to add specific mobile platforms to your project. Let's look at the code of the index.js.
+This HTML file includes the code to load the phonegap.js library and the initialization code from index.js.Then it calls `app.initialize()`. But if you look at <<FIG14-3>> the file phonegap.js is missing. The CLI tool will add it to the project during the next phase of code generation when you'll run the command _phonegap platform add_ to add specific mobile platforms to your project. Let's look at the code of the index.js.
 
 [source, javascript]
 ----
@@ -190,7 +192,9 @@ _phonegap install android_
 
 NOTE: The first command will run fine, because we have Xcode installed. The second command will fail until you install the latest Android SDK as described in the sidebar. 
 
-After running the above commands, the initially empty directory _platforms_ will be filled with additional sub-directories specific to each platform. Technically, these commands generate separate Hello World projects - one per platform. Each of them will have its own _www_ directory with index.html and cordova.js that was missing during the initial project generation. You can see on Figure <<FIG14-4>> the content of the ios folder that was generated as a result of executing command _phonegap install ios_.
+After running the above commands, the initially empty directory _platforms_ will be filled with additional sub-directories specific to each platform. Technically, these commands generate separate Hello World projects - one per platform. Each of them will have its own _www_ directory with index.html and phonegap.js that was missing during the initial project generation. Don't make any modifications in these _www_ folders as they will be regenerated each time when the _install_ or _run_ command are run. Make the required modification in the root _www_ folder.
+
+You can see on Figure <<FIG14-4>> the content of the _ios_ folder that was generated as a result of executing command _phonegap install ios_.
 
 [[FIG14-4]]
 .CLI-generated project for iOS platform
@@ -300,6 +304,8 @@ Now select all the content inside the _www_ folder and compress it into the zip 
 image::images/fig_14_04_3.png[]
 
 Click on the button "Ready to Build", to start the build for all available platforms. In you did everything right, after watching the wait cursor  above each icon, all the builds will successfully complete, and you'll see a blue line under each button. Figure <<FIG14-4-4>> illustrates the case when the build failed for iOS and BlackBerry platforms (the first and fourth buttons are underlined with in red). 
+
+TIP: You can create remote builds on with Adobe  PhoneGap Build service from the command line too (_phonegap remote build_). Read the section "Build Applications Remotely" in the http://docs.phonegap.com/en/3.0.0/guide_cli_index.md.html#The%20Command-line%20Interface[PhoneGap CLI Guide].
 
 Fixing the BlackBerry version of the application is not on our agenda. Refer to the http://docs.phonegap.com/en/edge/guide_platforms_index.md.html[Platform Guides] documentation that contains specific information on what has to be done to develop and deploy PhoneGap applications for each platform. We'll just take care of the iOS issue.
 
@@ -417,7 +423,7 @@ Check out one of the trading applications named https://www.trademonster.com/tra
 
 Enterprise IT managers need a cross platform development and deployment platform, which HTML5 is promising to be. Take with a grain of salt all the promises of being 100% cross-platform made by any HTML5 framework vendor. "With our HTML5 framework you won't need to worry about differences in Web browsers". Yeah, right! HTML5 is not a magic bullet, and don't expect it to be. But HTML5 is for real and may become the most practical development platform for your organization today.
 
-Unfortunately, developing an application in JavaScript is not overly productive. Some people use CoffeScript or TypeScript to be converted for JavaScript for deployment. We are closely watching the progress with Google's new programming language called Dart. It's a compiled language with an elegant and terse syntax, which is easy to understand to anyone who knows Java or C#. Although compiled version of the Dart code requires Dartium VM, which is currently available only in the Chromium browser, Google created dart2js compiler that turns your application code into JavaScript in seconds so it can run in all Web browsers today. Google also offers Dart IDE with debugger and autocomplete features. You can debug the Dart code in Dart Editor while running generated JavaScript in the browser. 
+Unfortunately, developing an application in JavaScript is not overly productive. Some people use CoffeScript or TypeScript to be converted for JavaScript for deployment. We are closely watching the progress with Google's new programming language called Dart, which is not a production-grade software as of yet. Dart is a compiled language with an elegant and terse syntax, which is easy to understand to anyone who knows Java or C#. Although compiled version of the Dart code requires Dartium VM, which is currently available only in the Chromium browser, Google created _dart2js_ compiler that turns your application code into JavaScript in seconds so it can run in all Web browsers today. Google also offers Dart IDE with debugger and autocomplete features. You can debug the Dart code in Dart Editor while running generated JavaScript in the browser. 
 
 Dart's VM can communicate with JavaScript's VM, so if you have a portion of your application written in JavaScript, it can peacefully coexist with the Dart code. You can literally have two buttons on the Web page: one written in JavaScript and the other in Dart. 
 
@@ -443,4 +449,4 @@ W3C published a document called https://dvcs.w3.org/hg/webcomponents/raw-file/ti
 
 This code extends the Web UI element `div` and includes a template, which uses binding. The value of the variable `count` is bound to `<span>` and as soon as a counter increases, the Web page immediately reflects its new value without the need to write any other code. The Web UI package will be replaced soon with the http://www.polymer-project.org/[Polymer Stack] built on top of Web components. In 2014, the popularity of Dart should increase if Google will remain committed to this project. In this case, we'll send a new proposal to O'Reilly Media for a book titled "Enterprise Web Development with Dart". 
 
-Having said that, we'd like yo uto know that at the time of this writing the popular job search engine Indeed.com reports that HTML5 is http://www.indeed.com/jobtrends[the #1 job trend] - the fastest growing keyword found in online job postings - ahead of iOS in third place and Adnroid in fourth place. We'll be happy if our book will help you in mastering HTML5 and finding an interesting and financially rewarding job! 
+Having said that, we'd like you to know that at the time of this writing the popular job search engine Indeed.com reports that HTML5 is http://www.indeed.com/jobtrends[the #1 job trend] - the fastest growing keyword found in online job postings - ahead of iOS in third place and Adnroid in fourth place. We'll be happy if our book will help you in mastering HTML5 and finding an interesting and financially rewarding job! 

@@ -1,94 +1,94 @@
 :toc:
 :toclevels: 4
 
-== Introduction to Web Applications Security 
+== Introduction to Web Application Security 
 
-Every newly deployed Web application creates a new security hole in accessing your organization's data. The hackers get access to the data that are supposedly hidden behind the firewalls by entering through the ports used by Web application. There is no way to guarantee that your Web application is 100% secure. If it was never attached by hackers this means that it's too small, has almost no users, and is of no interest to hackers. 
+Every newly deployed Web application creates a new security hole in accessing of your organization's data. The hackers get access to the data that are supposedly hidden behind the firewalls by entering through the ports used by Web application. There is no way to guarantee that your Web application is 100% secure. If it was never attacked by hackers this means that it's too small, has almost no users, and is of no interest to them. 
  
-This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won't have any revelations for security professionals. But software developers should have at least a broad understanding of what makes a Web application more or less secure and which threats Web applications face - this is what this chapter is about. To implement any of the mentioned security mechanism you'll need to do and additional research.
+This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won't have any revelations for security professionals. But software developers should have at least a broad understanding of what makes a Web application more or less secure and which threats Web applications face - this is what this chapter is about. But to implement any of the mentioned security mechanisms you'll need to do additional research.
 
 === HTTP vs HTTPS 
 
-Imagine a popular night club with a tall fence and two entry doors. People are waining in lines to get in. The door number 80 is no guarded in any way - a teenager checks the tickets and let people in. The other door has a number 443 on it and there is an armed bully letting people in. The chances of unwanted people getting into the club through the door 443 are pretty slim (unless the bully is corrupted), which is not the case with door 80 - once in a while people that have no right to be there get inside.
+Imagine a popular night club with a tall fence and two entry doors. People are waiting in lines to get in. The door number 80 is no guarded in any way - a college student checks the tickets and let people in. The other door has the number 443 on it, and it's protected by an armed bully letting qualified people in. The chances of unwanted people getting into the club through the door 443 are pretty slim (unless the bully is corrupted), which is not the case with door 80 - once in a while people that have no right to be there get inside.
 
-On a similar note, your organization created _network security_ with a firewall (the fence) with only two ports opened: 80 for HTTP requests and 443 for HTTPS. One door's not secure, the other one is.
+On a similar note, your organization created _network security_ with a firewall (the fence) with only two ports (the doors) opened: 80 for HTTP requests and 443 for HTTPS. One door's not secure, the other one is.
 
-WARNING: Do not assume that your Web application is secure if the users access it from behind the firewall. As long as you have ports open that allow the external users accessing your Web application, you need to invest into the _application security_ too.
+WARNING: Do not assume that your Web application is secure if it's deployed behind the firewall. As long as there are opened ports that allow external users accessing your Web application, you need to invest into the _application security_ too.
 
-This  extra _s_ in https means _secure_. In the past, only the Web pages deal with logins, payments or obviously sensitive data would use URL's starting with https. Today, more and more Web pages use https and rightly so, because it forces  Web browsers use Secure Socket Layer (SSL) or Transport Layer Security (TSL) protocol for encrypting all the data (including request and response headers) that travel between the browser and the server. 
+The letter "s" in https means _secure_. In the past, only the Web pages that dealt with logins, payments or obviously sensitive data would use URL's starting with https. Today, more and more Web pages use https and rightly so, because it forces  Web browsers use Secure Socket Layer (SSL) or Transport Layer Security (TSL) protocol for encrypting all the data (including request and response headers) that travel between the browser and the server. 
 
 The organization that runs a Web server creates the  public key certificate that has to be signed by a trusted certificate authority to ensure that Web browsers accept it without displaying warnings. The authority certifies that the holder of the certificate is the valid operator of the Web server.  These SSL/TSL layers authenticate the servers using these certificates to ensure that the browser's request is being processed by the proper server and not by some hacker's site.
 
-TIP: There is an annual Black Hat computer security conference dedicated to the information security. This conference is attended by both hackers and security professionals.
+TIP: The annual http://www.blackhat.com/[Black Hat] computer security conference is dedicated to the information security. This conference is attended by both hackers and security professionals.
 
-If https is clearly more secure than http, why not every Web site uses only https communications? Since https encrypts all the messages that travel between the client's browser and the server, such communications are a little bit slower comparing to  http-based. 
+If https is clearly more secure than http, why not every Web site uses only https communications? Since https encrypts all the messages that travel between the client's browser and the server, such communications are a slower comparing to  http-based. But such little slowness is not even noticeable in  most Web applications, but the benefits of using https are huge.
 
-TIP: When entering any sensitive or private information always pay attention to the URL to make sure that it uses https protocol.
+TIP: When entering any sensitive or private information in someone's Web application always pay attention to the URL to make sure that it uses https protocol.
 
 === Authentication and Passwords
 
 _Authentication_ is an ability to confirm that the user is who he claims to be. The fact the the user has provided a valid id/password combination proves that he is known to the Web application. That's all. 
-Passwords must never be transferred to the server in a clear text.
 
 Specifying the correct user id/password combination may not be enough for some of the Web application. Banks often ask for additional information like what's your pet's name or a favorite movie. 
 
-Authors of this book often consult Wall Street companies, which often use the RSA Secure ID (a.k.a. RSA hard token), which is a device with randomly generated combination of digits. This combination changes every minute, and has to be entered as a part of the authentication process. Besides physical devices, there are programs (soft tokens) that perform the same functionality. 
+If you ever worked for a large corporation, you know that they often use the RSA Secure ID (a.k.a. RSA hard token), which is a device with random-generated combination of digits. This combination changes every minute or so and has to be entered as a part of the authentication process. Beside physical devices there are programs (soft tokens) that perform user authentication in a similar way. 
 
-To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who are willing and successfully pass a special background check are entered into the system used in the passport control checkpoints. On the borders the applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the _authenticated_ person can pass the border without waiting in long lines.
+To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who successfully passed a special background check are entered into the system used in the passport control checkpoints. On the borders the applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the _authenticated_ person can pass the border without waiting in long lines.
 
 Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user's computer are very inexpensive. In some of the Manhattan's apartment buildings you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to bws-request@nist.gov with _subscribe_ as the subject. 
 
 ==== Basic and Digest Authentication 
 
-HTTP protocol defines two types of authentication: http://en.wikipedia.org/wiki/Basic_access_authentication[Basic] and http://en.wikipedia.org/wiki/Digest_access_authentication[Digest]. All web browsers support them, but basic authentication uses base64 encoding, but not encryption hence it can be used only with https protocol. 
+HTTP protocol defines two types of authentication: http://en.wikipedia.org/wiki/Basic_access_authentication[Basic] and http://en.wikipedia.org/wiki/Digest_access_authentication[Digest]. All modern web browsers support them, but basic authentication uses base64 encoding and no encryption, which means it should be used only with https protocol. 
 
-If a Web server administrator decided that certain resources must require basic user authentication, when a Web browser requests such protected resource , the server sends the HTTP response containing HTTP status code 401 - _Unauthorized_ and _WWW-Authenticate: Basic_. The browser pops up the login dialog box. The user enters the ID/password, which are turned into an encoded _userID:password_ string and sent to the server as a part of HTTP header. Basic authentication provides no confidentiality because it doesn't encrypt the transmitted credentials.
+If a Web server administrator configures certain resources to require basic user authentication  when a Web browser requests such protected resource, the server sends the HTTP response containing HTTP status code 401 - _Unauthorized_ and _WWW-Authenticate: Basic_. The browser pops up the login dialog box. The user enters the ID/password, which are turned into an encoded _userID:password_ string and sent to the server as a part of HTTP header. Basic authentication provides no confidentiality because it doesn't encrypt the transmitted credentials. Cookies are not used here.
 
-With the digest authentication, the server also responds with 401, but the _WWW-Authenticate: Digest_ has additional data so the Web browser can apply a  hash function to the password. Then the browser sends encrypted password to the server. Digest authentication is more secure than the basic one, but it's still less secure than authentication that uses public keys or Kerberos authentication protocol. 
+With the digest authentication, the server also responds with 401 with _WWW-Authenticate: Digest_ plus additional data so the Web browser can apply a  hash function to the password. Then the browser sends encrypted password to the server. Digest authentication is more secure than the basic one, but it's still less secure than authentication that uses public keys or Kerberos authentication protocol. 
 
 ==== Single Sign-on and Social Networks Logins
 
 Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement a single sign-on (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, if the user signs out from one of these applications, terminates his access to all of them. 
 
-Typically, user's credentials are verified by making a call to a corporate LDAP server, and then single sign-on software (e.g. Oracle Enterprise Single Sign-On, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO) enters the  application passwords automatically without the need to modify the application's code. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).
+Typically, user's credentials are verified by making a call to a corporate LDAP server, and then a single sign-on software (e.g. Oracle Enterprise Single Sign-On, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO) enters the  application passwords automatically. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).
 
-In the consumer-oriented Internet space single sign-on solutions become more and more popular. For example, some Web applications allow you to reuse your Twitter or Facebook credentials (provided that you've logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegates authentication procedures to FaceBook, Twitter et al. 
+In the consumer-oriented Internet space single (or reduced) sign-on solutions become more and more popular. For example, some Web applications allow you to reuse your Twitter or Facebook credentials (provided that you've logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegate authentication procedures to FaceBook, Twitter et al. 
 
-Back in 2010, Facebook has introduced their SSO solution that helps millions of people log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking users to enter credentials, your application can show the button "Login with FaceBook". 
+Back in 2010, Facebook has introduced their https://www.facebook.com/pages/Single-sign-on/108568432501463#[SSO solution] that helps millions of people log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking the user to enter credentials, your application can show the button "Login with FaceBook". 
 
-FaceBook has published JavaScript API that allows implement FaceBook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit the online documentation on https://developers.facebook.com/docs/facebook-login/[FaceBook Login API].
+FaceBook has published JavaScript API that allows implementing FaceBook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit online documentation on https://developers.facebook.com/docs/facebook-login/[FaceBook Login API].
 
 If you prefer your application to have the button "Login with Twitter", refer to the Sign in with Twitter API https://dev.twitter.com/docs/auth/sign-twitter[documentation].
 
-LinkedIn is popular social network LinkedIn for professionals. It also offers an API to create the button "Sign in with LinkedIn". For details visit LinkedIn http://developer.linkedin.com/javascript[online documentation] for developers.
+LinkedIn is a popular social network for professionals. It also offers API to create the button "Sign in with LinkedIn". For details visit LinkedIn http://developer.linkedin.com/javascript[online documentation] for developers.
 
-Google also offers the authentication API. Details about their client library for JavaScript are published at https://developers.google.com/api-client-library/javascript/features/authentication[online]. For implementing SSO with Google, visit  https://developers.google.com/commerce/wallet/online/sso[this Web page].
+Google also offers the authentication API. Details about their client library for JavaScript are published https://developers.google.com/api-client-library/javascript/features/authentication[online]. For implementing SSO with Google, visit  https://developers.google.com/commerce/wallet/online/sso[this Web page].
 
-
-.Open Standards OAuth and OAuth 2
+.OAuth2
 *******
-OAuth tbd
+OAuth2 tbd
 *******
 
-It might sound obvious, but we'll still note that the Web client should never send passwords in clear text. Use http://en.wikipedia.org/wiki/Secure_Hash_Algorithm[Secure Hash Algorithms] (SHA). The longer passwords are more secure, because if an attacker will try to use dictionaries to generate every possible combination of characters, it'll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker's work more difficult too. 
-
+It might sound obvious, but we'll still remind you  that the Web client should never send passwords in clear text. Use http://en.wikipedia.org/wiki/Secure_Hash_Algorithm[Secure Hash Algorithms] (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters, it'll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker's work more difficult too. 
 Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client's computer. Then, on each subsequent request to the server Web browser will place the session if in the HTTP request object and send it along with each request. So technically, user's identity is  always available at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource. 
 
 TIP: Always use https protocol to eliminate the possibility of an attacker stealing the user's session id.
 
-Have you ever wondered why Automated Teller Machines (ATM) often ask you to enter PIN more then once? Say, you've deposited a check and then want to check the balance. After the check deposit is complete the session is invalidated to protect the users who may rush out in a hurry as soon as transaction is finished. Otherwise the next person by the ATM could have requested a cash withdrawal from your bank account. 
+Have you ever wondered why Automated Teller Machines (ATM) often ask you to enter PIN more then once? Say, you've deposited a check and then want to see  the balance.on your account. After the check deposit has been completed your ATM session was invalidated to protect the careless users who may rush out from the bank in a hurry as soon as the transaction is finished. Otherwise the next person by the ATM could have requested a cash withdrawal from your bank account. 
 
-On the same note, if the Web application's session is idling more than allowed time interval, the session should be automatically invalidated.  If a trader in a brokerage house is not interacting with the Web trading application for some time, invalidate the session to exclude the situation when the trader stepped put and someone else is buying financial products on his behalf.
-
-
+On the same note, if the Web application's session is idling more than allowed time interval, the session should be automatically invalidated.  If a trader in a brokerage house is not interacting with the Web trading application for some time, invalidate the session to exclude the situation when the trader stepped out, and someone else is buying financial products on his behalf.
 
 === Authorization
 
-_Authorization_ is a way to determine which operations the user can perform and what data he can access. For example, the owner of the company can perform money withdrawals and transfers from the online business bank account, while the company accountant is provide the read-only access. 
+_Authorization_ is a way to determine which operations the user can perform and what data he can access. For example, the owner of the company can perform money withdrawals and transfers from the online business bank account, while the company accountant is provided with the read-only access. 
 
 NOTE: Similarly to authentication the user's authorization can be checked more than once during the user's session. As a matter of fact, authorization can even change during the user's session (e.g. a financial application can allow trades only during the business hours of the stock exchange).
 
-HTTP is stateless protocol.  If a user retrieves a Web page A from a  Web server, and then goes to another Web page, this second page does not know what has been shown or selected on the first one. For example, in case of an online store the user adds an item to the shopping cart and moves to another page to continue shopping. To preserve the data needed to more than one Web pages (e.g. the content of the shopping cart) the server-side code must implement session tracking.
+Users of the application are grouped by roles, and each role comes with a set of privileges. The user can be given a privilege to read and modify certain data, while other can be hidden. In the relational DBMS realm there is a term _row-level security_, which means that the same query can produce different results to different users. Such security policies are implemented at the data source level. 
+
+A simple use case where row-level security is really useful is a salary report. While the employee can see only his salary report, the head of department can see the data of all subordinates.
+
+Authorization is usually linked with the user's session. HTTP is stateless protocol.  If a user retrieves a Web page A from a  Web server, and then goes to another Web page, this second page does not know what has been shown or selected on the first one. For example, in case of an online store the user adds an item to the shopping cart and moves to another page to continue shopping. To preserve the data needed to more than one Web pages (e.g. the content of the shopping cart) the server-side code must implement session tracking. The session information can be passed all the way down to the database level when need be.
+
 
 
 
@@ -98,12 +98,13 @@ Microsoft has published http://msdn.microsoft.com/en-us/magazine/cc163519.aspx#S
 
 * Spoofing - an attacker pretends to be a legitimate user of some application, e.g. a banking system. This may be implemented using XSS. 
 * Tampering - modifying the data that were not supposed to be modified (e.g. via SQL injection).
-* Repudiation - the user denies that he made an online transaction (e.g. a purchase) by modifying application's log files. 
+* Repudiation - the user denies that he sent the data (e.g. made an online transaction like purchase or sale) by modifying application's log files. 
 * Information disclosure - an attacker get an access to the classified information
 * Denial of Service (a.k.a. DoS) - make a server unavailable for the legitimate users, which often is implemented by generating a large number of simultaneous requests to saturate the server.
 * Elevation of privilege - gaining an elevated access to the data, e.g. by obtaining administrative rights. 
 ******* 
 
+NOTE: While we've been working on the section describing Apple's developers certificates (Chapter 14) their Web site was hacked and was not available for about two weeks. 
 
 === Top security risks
 
@@ -144,9 +145,7 @@ Cross-site scripting (XSS) - the user of your Web application receive some unwan
 
 * Local - no server is involved. Web page A opens Web page B with malicious code, which in turn modifies the code of the page A. If your application uses a hash-tag(#) in URLs (e.g. http://savesickchild.org#something), make sure that before processing this _something_ doesn't contain anything like "_javascript:somecode_", which may have been attached to the URL by an attacker. 
 
-NOTE: While we've been working on the section describing Apple's developers certificates (Chapter 14) their Web site was hacked and was not available for about two weeks.
-
-
+IMPORTANT: One of the OWASP guides is titled https://www.owasp.org/index.php/Web_Application_Penetration_Testing[Web Application Penetration Testing]. In about 350 pages it explains the methodology of testing a Web application for each vulnerability. OWASP defines penetration test as a method of evaluating the security of a computer systems by simulating an attack. Hundreds of security experts from around the world have contributed to this guide. Running penetration tests should become a part of your development process, and the sooner you start running them the better.
 
 === Summary
 
@@ -154,4 +153,6 @@ Every enterprise Web application has to implement  _application security_. The f
 
 Take the validation of the received data very seriously. Ideally, use the _white list_ validation to compare the user's input against the list of allowed values. Otherwise do a _black list_ validation to compare against the keywords that are not allowed in the data entered by the user.
 
-Use https protocol with all URLs.
+With proliferation of clouds, social networks, and sites that offer free or cheap storage people lose control over security hoping that Amazon, Google or Dropbox will take care of it. The end users upload their personal files without thinking twice. Enterprises are more cautious and prefer private clouds installed on their own servers, where they administer and protect data themselves. The users who access Internet from their mobile devices have little or no control of how secure their devices are. So you, the developer have to make sure that your  applications are as secure as possible.  
+
+
