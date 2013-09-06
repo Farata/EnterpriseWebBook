@@ -63,15 +63,12 @@ LinkedIn is a popular social network for professionals. It also offers API to cr
 
 Google also offers the authentication API. Details about their client library for JavaScript are published https://developers.google.com/api-client-library/javascript/features/authentication[online]. For implementing SSO with Google, visit  https://developers.google.com/commerce/wallet/online/sso[this Web page].
 
-.OAuth2
-*******
-OAuth2 tbd
-*******
+
 
 It might sound obvious, but we'll still remind you  that the Web client should never send passwords in clear text. Use http://en.wikipedia.org/wiki/Secure_Hash_Algorithm[Secure Hash Algorithms] (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters, it'll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker's work more difficult too. 
 Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client's computer. Then, on each subsequent request to the server Web browser will place the session if in the HTTP request object and send it along with each request. So technically, user's identity is  always available at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource. 
 
-TIP: Always use https protocol to eliminate the possibility of an attacker stealing the user's session id.
+TIP: Always use the https protocol to prevent an attacker from stealing the user's session id.
 
 Have you ever wondered why Automated Teller Machines (ATM) often ask you to enter PIN more then once? Say, you've deposited a check and then want to see  the balance.on your account. After the check deposit has been completed your ATM session was invalidated to protect the careless users who may rush out from the bank in a hurry as soon as the transaction is finished. Otherwise the next person by the ATM could have requested a cash withdrawal from your bank account. 
 
@@ -89,8 +86,33 @@ A simple use case where row-level security is really useful is a salary report. 
 
 Authorization is usually linked with the user's session. HTTP is stateless protocol.  If a user retrieves a Web page A from a  Web server, and then goes to another Web page, this second page does not know what has been shown or selected on the first one. For example, in case of an online store the user adds an item to the shopping cart and moves to another page to continue shopping. To preserve the data needed to more than one Web pages (e.g. the content of the shopping cart) the server-side code must implement session tracking. The session information can be passed all the way down to the database level when need be.
 
+=== OAuth 2.0
 
+If the application A needs to access the application B, e.g. the user's Facebook account for authentication and authorization, the app A may ask the user's ID and password for the app B. This is not the right approach, because it gives the app A the complete  access to the user's account in app B. But the only thing the app A needed was to authenticate the user. Besides, the app A now knows the user's password to app B in clear text. There was a need for a mechanism to give a limited access to third party applications.
 
+http://oauth.net/[OAuth] is "An open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications".
+Its http://tools.ietf.org/html/rfc6749[current draft specification] provides the following definition: _The OAuth 2.0 authorization framework enables a third-party application to obtain limited access to an HTTP service, either on behalf of a resource owner by orchestrating an approval interaction between the resource owner and the HTTP service, or by allowing the third-party application to obtain access on its own behalf._
+
+OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of token with limited privileges and for a limited time. 
+
+NOTE: OAuth 2.0 uses only https protocol.
+
+The user who wants to use some service is called _resource owner_.
+
+The application that tries to authenticate the resource owner is called _the client_. This is an application that offers the buttons like "Login with FaceBook".
+
+The _resource server_ is a server that implemented OAuth API for the client. FaceBook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth 2 implementations visit http://oauth.net/2[oauth.net/2]. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation. 
+
+.Using Facebook with OAuth
+*******
+The process of using Facebook server is described in the document titled https://developers.facebook.com/docs/facebook-login/getting-started-web/[Getting Started with Facebook Login for Web].
+
+In short, you start with creating an application ID on the Facebook App Dashboard, and then copy/paste a JavaScript SDK code (provided by Facebook) into your application. Include the newly created app id there too. 
+
+Then add a JavaScript code to support Facebook login to your application.
+
+Facebook SDK will communicate with your application by sending events as soon as the login status changes. Facebook will send the authorization token to your application's code and will take care of its storage. Authorization token is a secure random string that identifies the user and the app, contains the   information about permissions and has expiration time. Now your application's JavaScript code is ready to make calls to Facebook SDK API, and each of these calls will include the token as a parameter.
+******* 
 
 .STRIDE - Classification of Security Threats
 *******
@@ -102,11 +124,11 @@ Microsoft has published http://msdn.microsoft.com/en-us/magazine/cc163519.aspx#S
 * Information disclosure - an attacker get an access to the classified information
 * Denial of Service (a.k.a. DoS) - make a server unavailable for the legitimate users, which often is implemented by generating a large number of simultaneous requests to saturate the server.
 * Elevation of privilege - gaining an elevated access to the data, e.g. by obtaining administrative rights. 
-******* 
 
 NOTE: While we've been working on the section describing Apple's developers certificates (Chapter 14) their Web site was hacked and was not available for about two weeks. 
+******* 
 
-=== Top security risks
+=== Top Security Risks
 
 https://www.owasp.org[ Open Web Application Security Project (OWASP)] is an open sourced project focused on improving security of Web applications. They offer guides and tools to increase security of Web applications. OWASP publishes and maintains the list of top 10 security risks. Figure <<FIG10-1>> shows this top 10 list looked in 2013:
 
@@ -153,6 +175,6 @@ Every enterprise Web application has to implement  _application security_. The f
 
 Take the validation of the received data very seriously. Ideally, use the _white list_ validation to compare the user's input against the list of allowed values. Otherwise do a _black list_ validation to compare against the keywords that are not allowed in the data entered by the user.
 
-With proliferation of clouds, social networks, and sites that offer free or cheap storage people lose control over security hoping that Amazon, Google or Dropbox will take care of it. The end users upload their personal files without thinking twice. Enterprises are more cautious and prefer private clouds installed on their own servers, where they administer and protect data themselves. The users who access Internet from their mobile devices have little or no control of how secure their devices are. So you, the developer have to make sure that your  applications are as secure as possible.  
+With proliferation of clouds, social networks, and sites that offer free or cheap storage people lose control over security hoping that Amazon, Google or Dropbox will take care of it, and they do. Besides software solutions, software-as-a-service providers deploy specialized hardware - security appliances that serve as firewalls, perform content filtering, virus and intrusion detection. Interestingly enough, hardware security appliances are also vulnerable.
 
-
+In any case, the end users upload their personal files without thinking twice. Enterprises are more cautious and prefer private clouds installed on their own servers, where they administer and protect data themselves. The users who access Internet from their mobile devices have little or no control of how secure their devices are. So you, the developer have to make sure that your applications are as secure as possible.  
