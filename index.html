@@ -1108,9 +1108,9 @@ p.tableblock.header { color: #6d6e71; }
 <ol type="none" class="sectlevel3">
 <li><a href="#_injection">Injection</a></li>
 <li><a href="#_cross_site_scripting">Cross-Site Scripting</a></li>
-<li><a href="#_security_for_a_small_enterprise">Security for a Small Enterprise</a></li>
 </ol>
 </li>
+<li><a href="#_some_application_security_considerations">Some Application Security Considerations</a></li>
 <li><a href="#_summary_11">Summary</a></li>
 </ol>
 </li>
@@ -19467,7 +19467,7 @@ The annual <a href="http://www.blackhat.com/">Black Hat</a> computer security co
 <p>Google also offers the authentication API. Details about their client library for JavaScript are published <a href="https://developers.google.com/api-client-library/javascript/features/authentication">online</a>. For implementing SSO with Google, visit  <a href="https://developers.google.com/commerce/wallet/online/sso">this Web page</a>.</p>
 </div>
 <div class="paragraph">
-<p>It might sound obvious, but we&#8217;ll still remind you  that the Web client should never send passwords in clear text. Use <a href="http://en.wikipedia.org/wiki/Secure_Hash_Algorithm">Secure Hash Algorithms</a> (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters, it&#8217;ll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker&#8217;s work more difficult too.
+<p>It might sound obvious, but we&#8217;ll still remind you  that the Web client should never send passwords in clear text. Use <a href="http://en.wikipedia.org/wiki/Secure_Hash_Algorithm">Secure Hash Algorithms</a> (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters (brute-forcing attack), it&#8217;ll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker&#8217;s work more difficult too.
 Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client&#8217;s computer. Then, on each subsequent request to the server Web browser will place the session if in the HTTP request object and send it along with each request. So technically, user&#8217;s identity is  always available at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource.</p>
 </div>
 <div class="paragraph">
@@ -19729,16 +19729,18 @@ One of the OWASP guides is titled <a href="https://www.owasp.org/index.php/Web_A
 </div>
 
 </div>
-<div class="sect3">
-<h4 id="_security_for_a_small_enterprise">Security for a Small Enterprise</h4>
+
+</div>
+<div class="sect2">
+<h3 id="_some_application_security_considerations">Some Application Security Considerations</h3>
 <div class="paragraph">
 <p>In this section we&#8217;ll share with you our experience of dealing with security while creating a company that sells software as service. Four years ago we&#8217;ve founded a startup that automates certain workflows for insurance agents. In addition to developing the application we had to set up the data centers and take care of security issues too.</p>
 </div>
 <div class="paragraph">
-<p>So far we&#8217;ve been discussing security vulnerabilities from the technical perspectives. But there is another aspect that can&#8217;t be ignored - regulatory compliance of the business customers that use your software.</p>
+<p>So far in this chapter we&#8217;ve been discussing security vulnerabilities from the technical perspective. But there is another aspect that can&#8217;t be ignored - regulatory compliance of the business customers that use your software.</p>
 </div>
 <div class="paragraph">
-<p>For example, our customers are insurance agencies and carriers. We charge for our services, and our customers pay using credit cards using UI of our application. This opens up a totally different category of security concerns. Where credit card numbers are stored? What if they get stolen? How secure is the payment portion of your application? How the card holder&#8217;s data is protected? Is there a firewall protecting customer&#8217;s data? How the data is encrypted?</p>
+<p>For example, our customers are insurance agencies and carriers. We charge for our services, and our customers pay using credit cards using our application. This opens up a totally different category of security concerns. Where the credit card numbers are stored? What if they get stolen? How secure is the payment portion of your application? How the card holder&#8217;s data is protected? Is there a firewall protecting customer&#8217;s data? How the data is encrypted?</p>
 </div>
 <div class="paragraph">
 <p>One of the first questions our perspective customers ask if our application is <em>PCI compliant</em>. They won&#8217;t work with us until they review the <em>application-level security</em> implemented in our system. As per the <a href="http://www.pcicomplianceguide.org/pci-basics.php">PCI Compliance Guide</a>, "the Payment Card Industry Data Security Standard is used by all card brands to assure the security of the data gathered while an employee is making a transaction at a bank or participating vendor".</p>
@@ -19747,25 +19749,60 @@ One of the OWASP guides is titled <a href="https://www.owasp.org/index.php/Web_A
 <p>Pretty often our perspective customers send us a questionnaire to see if our security measures are compliant with their requirements. In some cases this document can include as many as 300 questions.</p>
 </div>
 <div class="paragraph">
-<p>Even if you are not dealing with the credit card numbers, there are other areas, where the application data must be protected in a certain way. Take the human resources application. Social security numbers (unique ID&#8217;s of the USA residents)  of employees must be encrypted.</p>
+<p>If your application stores PCI data, authenticating via FaceBook, Google or a similar OAuth service won&#8217;t be an option. The users will be required to authenticate themselves by entering long passwords containing combinations of letters, numbers and special characters.</p>
 </div>
+<div class="paragraph">
+<p>Even if you are not dealing with the credit card information, there are other areas where the application data must be protected. Take the human resources application - social security numbers (unique ID&#8217;s of the USA residents) of employees must be encrypted.</p>
+</div>
+<div class="paragraph">
+<p>You may want to implement different levels of security depending on what devices is being used to access your application - a public computer, an internal corporate computer, iPad or an Android tablet. If a desktop user forgot his password, you may implement a recovery mechanism that send an email to the user and expects to receive a certain  response from him. If the user holds a smartphone, the application can send a text message to his device.</p>
+</div>
+<div class="paragraph">
+<p>If the user&#8217;s record contains both his email and the cell phone number, the application should ask where to send the password recovery instructions. If a mobile device runs the hybrid or native version of the application, the user can be automatically switched to a messaging app of the device so he can read the text message while the main application remains at the view where authentication was required.</p>
+</div>
+<div class="paragraph">
+<p>In the enterprise Web applications more than one layer of security must be implemented: at the communication protocol level, at the session level, and at the application level. The HTTP server <a href="http://nginx.com/">Nginx</a> besides being a high-performance proxy server and load balancer can serve as a security layer too. Your Web application can offload authentication tasks and validation of SSL certificates to Nginx.</p>
+</div>
+<div class="paragraph">
+<p>Most of the enterprise Web applications are deployed on the cluster of servers, which adds another task to your project plan: how to manage sessions in a cluster. The user&#8217;s session has to be shared between all servers in a cluster. High-end application servers may implement this feature out of the box. For example, IBM WebSphere server has an option to tightly integrate HTTP sessions with its application security module. Another example is Terracotta Cluster, which has the Terracotta Web Sessions module that allows session to survive the nod hops and failures. But small or mid-size applications may require some custom solutions for distributed sessions.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
 
+Minimize the amount of data stored in the user&#8217;s session to simplify session replication. Store the data in the application cache, that can be replicated quickly and efficiently using open source or commercial products (e.g. JGroups, Terracotta et al).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s another topic to consider: multiple data centers when each one runs a cluster of servers. To speed up the disaster recovery process, your Web application has to be deployed in more than one data centers located in different geographical regions. The user authentication must work even if one of the data centers becomes not operational.</p>
+</div>
+<div class="paragraph">
+<p>An external computer (e.g. Nginx server) can perform token-based authentication, but inside the system the token is used only when the access to protected resources is required. For example, when the application need to process a payment, it doesn&#8217;t need to know any credit card details - it just uses the token to authorize the transaction of the  previously authenticated user.</p>
+</div>
+<div class="paragraph">
+<p>This grab bag of security considerations mentioned in this section is not a complete list of security-related issues that your IT organization needs to take care of. Our message to you is simple: "Take security very seriously if you are planning to develop deploy, and run a production-grade  enterprise Web application".</p>
 </div>
 
 </div>
 <div class="sect2">
 <h3 id="_summary_11">Summary</h3>
 <div class="paragraph">
-<p>Every enterprise Web application has to implement  <em>application security</em>. The fact that the application runs inside the firewall doesn&#8217;t make it secure. First, if you&#8217;re opening at least one port to the outside world, a malicious code can sneak in. Second, there can be an "angry employee" or just a "curious programmer" inside the organization who can inject the unwanted code.</p>
+<p>Every enterprise Web application has to run in a secure environment. The mere fact that the application runs inside the firewall doesn&#8217;t make it secure. First, if you&#8217;re opening at least one port to the outside world, a malicious code can sneak in. Second, there can be an "angry employee" or just a "curious programmer" inside the organization who can inject the unwanted code.</p>
 </div>
 <div class="paragraph">
-<p>Take the validation of the received data very seriously. Ideally, use the <em>white list</em> validation to compare the user&#8217;s input against the list of allowed values. Otherwise do a <em>black list</em> validation to compare against the keywords that are not allowed in the data entered by the user.</p>
+<p>The proper validation of the received data is very important. Ideally, use the <em>white list</em> validation to compare the user&#8217;s input against the list of allowed values. Otherwise do a <em>black list</em> validation to compare against the keywords that are not allowed in the data entered by the user.</p>
 </div>
 <div class="paragraph">
-<p>With proliferation of clouds, social networks, and sites that offer free or cheap storage people lose control over security hoping that Amazon, Google or Dropbox will take care of it, and they do. Besides software solutions, software-as-a-service providers deploy specialized hardware - security appliances that serve as firewalls, perform content filtering, virus and intrusion detection. Interestingly enough, hardware security appliances are also vulnerable.</p>
+<p>With proliferation of clouds, social networks, and sites that offer free or cheap storage people lose control over security hoping that Amazon, Google or Dropbox will take care of it. Besides software solutions, software-as-a-service providers deploy specialized hardware - security appliances that serve as firewalls, perform content filtering, virus and intrusion detection. Interestingly enough, hardware security appliances are also vulnerable.</p>
 </div>
 <div class="paragraph">
-<p>In any case, the end users upload their personal files without thinking twice. Enterprises are more cautious and prefer private clouds installed on their own servers, where they administer and protect data themselves. The users who access Internet from their mobile devices have little or no control of how secure their devices are. So you, the developer have to make sure that your applications are as secure as possible.</p>
+<p>In any case, the end users upload their personal files without thinking twice. Enterprises are more cautious and prefer private clouds installed on their own servers, where they administer and protect data themselves. The users who access Internet from their mobile devices have little or no control of how secure their devices are. So the person in charge of the Web application has to make sure that it&#8217;s as secure as possible.</p>
 </div>
 
 </div>
