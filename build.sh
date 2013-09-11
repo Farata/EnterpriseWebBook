@@ -3,6 +3,7 @@
 #generate book, toclivel attribute is responsible for deep of table of contents
 #asciidoc -d book -b html5 -a icons -a iconsdir=images/icons -a theme=flask -a toc2 -a toclevels=3 --out-file out/index.html site.asciidoc
 asciidoctor --trace -v -d book -b html5 -a stylesheet=stylesheets/colony.css -a linkcss! -a icons=font -a source-highlighter=highlightjs -a toc -a toc2 -a toclevels=3 --out-file out/index.html site.asciidoc
+# asciidoctor -b docbook -d book -a toc -a numbered -a stylesheet=stylesheets/colony.css -a toc2 -a toclevels=3 -a linkcss! book.asciidoc
 #a2x -v -dbook -fchunked --no-xmllint --resource images/ --stylesheet=flask.css --icons --icons-dir=`brew --prefix asciidoc`/etc/asciidoc/images/icons --asciidoc-opts="-a theme=flask -a data-uri -a toc2 -a toclevels=3" --destination-dir=out/ site.asciidoc
 #asciidoc -d book -b bootstrap-docs -a icons -a iconsdir=`brew --prefix asciidoc`/etc/asciidoc/images/icons -a data-uri -a toc2 -a toclevels=2 --out-file book.html site.asciidoc
 
