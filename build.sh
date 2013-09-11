@@ -10,14 +10,9 @@ declare -r ASSETS_DIR=images
 
 function convert()
 {
-    echo -e "\t$1"
+    # echo -e "\t$@"
 
-    local src_file=$1
-    local src_path=$(dirname $src_file)
-    local sub_path=$(echo $src_path | cut -d'/' -f3-)
-    local dst_path=$OUT_DIR/$sub_path
-
-    makeDir $dst_path
+    local src_file=$@
 
     # asciidoctor --trace -v                     \
     asciidoctor                                  \
@@ -31,7 +26,7 @@ function convert()
             -a toc2                              \
             -a toclevels=3                       \
             --compact                            \
-            -D $dst_path                  \
+            -D $OUT_DIR                         \
             $src_file
 }
 
@@ -49,18 +44,17 @@ function makeDir()
 # Main flow execution
 # ===================
 
+# set -ex
+
 if [ "$1" = "html" ]; then
-    echo Building docs:
+    echo Building book...
 
     makeDir $OUT_DIR
 
     # list all asciidoc files in the DOCS_DIR
     adoc_files=(./acknowledgements.asciidoc ./appendix_a.asciidoc ./ch10_security.asciidoc ./ch11_responsive.asciidoc ./ch12_jquerymobile.asciidoc ./ch13_senchatouch.asciidoc ./ch14_hybrid.asciidoc ./ch1_advancedjs.asciidoc ./ch2_html.asciidoc ./ch3_mockup.asciidoc ./ch4_ajax_json.asciidoc ./ch5_jquery.asciidoc ./ch6_ext_js.asciidoc ./ch7_large_js_apps.asciidoc ./ch8_testdriven_js.asciidoc ./ch9_websockets.asciidoc ./Introduction.asciidoc)
 
-    # translate each asciidoc file separately
-    for adoc_file in "${adoc_files[@]}"; do
-        convert $adoc_file
-    done
+    convert `printf "%s " "${adoc_files[@]}" | cut -d " " -f 1-${#adoc_files[@]}`
 
     asciidoctor -d book -b html5 -a stylesheet=stylesheets/colony.css --out-file out/index.html site.asciidoc
 
