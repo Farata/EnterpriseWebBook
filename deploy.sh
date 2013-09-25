@@ -4,7 +4,7 @@
 # repository.
 
 echo "Building EnterpriseWebBook..."
-sh build.sh
+sh build.sh html
 
 set -ex
 
@@ -30,7 +30,7 @@ rm -rf *
 echo "enterprisewebbook.com" > CNAME
 
 # Copy website files from real repo
-cp -R ../out/index.html .
+cp -R ../out/*.html .
 
 #Copy images
 cp -R ../images .
