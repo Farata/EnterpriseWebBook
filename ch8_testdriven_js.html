@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="Asciidoctor 0.1.4">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test-Driven Development with JavaScript</title>
+<style>
+@import url(http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css);
+@import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic);
+/* normalize.css v2.1.1 | MIT License | git.io/normalize */
+/* ========================================================================== HTML5 display definitions ========================================================================== */
+/** Correct `block` display not defined in IE 8/9. */
+article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary { display: block; }
+/** Correct `inline-block` display not defined in IE 8/9. */
+audio, canvas, video { display: inline-block; }
+/** Prevent modern browsers from displaying `audio` without controls. Remove excess height in iOS 5 devices. */
+audio:not([controls]) { display: none; height: 0; }
+/** Address styling not present in IE 8/9. */
+[hidden] { display: none; }
+/* ========================================================================== Base ========================================================================== */
+/** 1. Prevent system color scheme's background color being used in Firefox, IE, and Opera. 2. Prevent system color scheme's text color being used in Firefox, IE, and Opera. 3. Set default font family to sans-serif. 4. Prevent iOS text size adjust after orientation change, without disabling user zoom. */
+html { background: #fff; /* 1 */ color: #000; /* 2 */ font-family: sans-serif; /* 3 */ -ms-text-size-adjust: 100%; /* 4 */ -webkit-text-size-adjust: 100%; /* 4 */ }
+/** Remove default margin. */
+body { margin: 0; }
+/* ========================================================================== Links ========================================================================== */
+/** Address `outline` inconsistency between Chrome and other browsers. */
+a:focus { outline: thin dotted; }
+/** Improve readability when focused and also mouse hovered in all browsers. */
+a:active, a:hover { outline: 0; }
+/* ========================================================================== Typography ========================================================================== */
+/** Address variable `h1` font-size and margin within `section` and `article` contexts in Firefox 4+, Safari 5, and Chrome. */
+h1 { font-size: 2em; margin: 0.67em 0; }
+/** Address styling not present in IE 8/9, Safari 5, and Chrome. */
+abbr[title] { border-bottom: 1px dotted; }
+/** Address style set to `bolder` in Firefox 4+, Safari 5, and Chrome. */
+b, strong { font-weight: bold; }
+/** Address styling not present in Safari 5 and Chrome. */
+dfn { font-style: italic; }
+/** Address differences between Firefox and other browsers. */
+hr { -moz-box-sizing: content-box; box-sizing: content-box; height: 0; }
+/** Address styling not present in IE 8/9. */
+mark { background: #ff0; color: #000; }
+/** Correct font family set oddly in Safari 5 and Chrome. */
+code, kbd, pre, samp { font-family: monospace, serif; font-size: 1em; }
+/** Improve readability of pre-formatted text in all browsers. */
+pre { white-space: pre-wrap; }
+/** Set consistent quote types. */
+q { quotes: "\201C" "\201D" "\2018" "\2019"; }
+/** Address inconsistent and variable font size in all browsers. */
+small { font-size: 80%; }
+/** Prevent `sub` and `sup` affecting `line-height` in all browsers. */
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+/* ========================================================================== Embedded content ========================================================================== */
+/** Remove border when inside `a` element in IE 8/9. */
+img { border: 0; }
+/** Correct overflow displayed oddly in IE 9. */
+svg:not(:root) { overflow: hidden; }
+/* ========================================================================== Figures ========================================================================== */
+/** Address margin not present in IE 8/9 and Safari 5. */
+figure { margin: 0; }
+/* ========================================================================== Forms ========================================================================== */
+/** Define consistent border, margin, and padding. */
+fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+/** 1. Correct `color` not being inherited in IE 8/9. 2. Remove padding so people aren't caught out if they zero out fieldsets. */
+legend { border: 0; /* 1 */ padding: 0; /* 2 */ }
+/** 1. Correct font family not being inherited in all browsers. 2. Correct font size not being inherited in all browsers. 3. Address margins set differently in Firefox 4+, Safari 5, and Chrome. */
+button, input, select, textarea { font-family: inherit; /* 1 */ font-size: 100%; /* 2 */ margin: 0; /* 3 */ }
+/** Address Firefox 4+ setting `line-height` on `input` using `!important` in the UA stylesheet. */
+button, input { line-height: normal; }
+/** Address inconsistent `text-transform` inheritance for `button` and `select`. All other form control elements do not inherit `text-transform` values. Correct `button` style inheritance in Chrome, Safari 5+, and IE 8+. Correct `select` style inheritance in Firefox 4+ and Opera. */
+button, select { text-transform: none; }
+/** 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio` and `video` controls. 2. Correct inability to style clickable `input` types in iOS. 3. Improve usability and consistency of cursor style between image-type `input` and others. */
+button, html input[type="button"], input[type="reset"], input[type="submit"] { -webkit-appearance: button; /* 2 */ cursor: pointer; /* 3 */ }
+/** Re-set default cursor for disabled elements. */
+button[disabled], html input[disabled] { cursor: default; }
+/** 1. Address box sizing set to `content-box` in IE 8/9. 2. Remove excess padding in IE 8/9. */
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; /* 1 */ padding: 0; /* 2 */ }
+/** 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome. 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome (include `-moz` to future-proof). */
+input[type="search"] { -webkit-appearance: textfield; /* 1 */ -moz-box-sizing: content-box; -webkit-box-sizing: content-box; /* 2 */ box-sizing: content-box; }
+/** Remove inner padding and search cancel button in Safari 5 and Chrome on OS X. */
+input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
+/** Remove inner padding and border in Firefox 4+. */
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+/** 1. Remove default vertical scrollbar in IE 8/9. 2. Improve readability and alignment in all browsers. */
+textarea { overflow: auto; /* 1 */ vertical-align: top; /* 2 */ }
+/* ========================================================================== Tables ========================================================================== */
+/** Remove most spacing between table cells. */
+table { border-collapse: collapse; border-spacing: 0; }
+*, *:before, *:after { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+html, body { font-size: 100%; }
+body { background: white; color: #222222; padding: 0; margin: 0; font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif; font-weight: normal; font-style: normal; line-height: 1; position: relative; cursor: auto; }
+a:hover { cursor: pointer; }
+a:focus { outline: none; }
+img, object, embed { max-width: 100%; height: auto; }
+object, embed { height: 100%; }
+img { -ms-interpolation-mode: bicubic; }
+#map_canvas img, #map_canvas embed, #map_canvas object, .map_canvas img, .map_canvas embed, .map_canvas object { max-width: none !important; }
+.left { float: left !important; }
+.right { float: right !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+.text-center { text-align: center !important; }
+.text-justify { text-align: justify !important; }
+.hide { display: none; }
+.antialiased, body { -webkit-font-smoothing: antialiased; }
+img { display: inline-block; vertical-align: middle; }
+textarea { height: auto; min-height: 50px; }
+select { width: 100%; }
+/* Grid HTML Classes */
+.row { width: 100%; margin-left: auto; margin-right: auto; margin-top: 0; margin-bottom: 0; max-width: 62.5em; *zoom: 1; }
+.row:before, .row:after { content: " "; display: table; }
+.row:after { clear: both; }
+.row.collapse .column, .row.collapse .columns { position: relative; padding-left: 0; padding-right: 0; float: left; }
+.row .row { width: auto; margin-left: -0.9375em; margin-right: -0.9375em; margin-top: 0; margin-bottom: 0; max-width: none; *zoom: 1; }
+.row .row:before, .row .row:after { content: " "; display: table; }
+.row .row:after { clear: both; }
+.row .row.collapse { width: auto; margin: 0; max-width: none; *zoom: 1; }
+.row .row.collapse:before, .row .row.collapse:after { content: " "; display: table; }
+.row .row.collapse:after { clear: both; }
+.column, .columns { position: relative; padding-left: 0.9375em; padding-right: 0.9375em; width: 100%; float: left; }
+@media only screen { .column, .columns { position: relative; padding-left: 0.9375em; padding-right: 0.9375em; float: left; }
+  .small-1 { position: relative; width: 8.33333%; }
+  .small-2 { position: relative; width: 16.66667%; }
+  .small-3 { position: relative; width: 25%; }
+  .small-4 { position: relative; width: 33.33333%; }
+  .small-5 { position: relative; width: 41.66667%; }
+  .small-6 { position: relative; width: 50%; }
+  .small-7 { position: relative; width: 58.33333%; }
+  .small-8 { position: relative; width: 66.66667%; }
+  .small-9 { position: relative; width: 75%; }
+  .small-10 { position: relative; width: 83.33333%; }
+  .small-11 { position: relative; width: 91.66667%; }
+  .small-12 { position: relative; width: 100%; }
+  .small-offset-0 { position: relative; margin-left: 0%; }
+  .small-offset-1 { position: relative; margin-left: 8.33333%; }
+  .small-offset-2 { position: relative; margin-left: 16.66667%; }
+  .small-offset-3 { position: relative; margin-left: 25%; }
+  .small-offset-4 { position: relative; margin-left: 33.33333%; }
+  .small-offset-5 { position: relative; margin-left: 41.66667%; }
+  .small-offset-6 { position: relative; margin-left: 50%; }
+  .small-offset-7 { position: relative; margin-left: 58.33333%; }
+  .small-offset-8 { position: relative; margin-left: 66.66667%; }
+  .small-offset-9 { position: relative; margin-left: 75%; }
+  .small-offset-10 { position: relative; margin-left: 83.33333%; }
+  [class*="column"] + [class*="column"]:last-child { float: right; }
+  [class*="column"] + [class*="column"].end { float: left; }
+  .column.small-centered, .columns.small-centered { position: relative; margin-left: auto; margin-right: auto; float: none !important; } }
+/* Styles for screens that are atleast 768px; */
+@media only screen and (min-width: 768px) { .large-1 { position: relative; width: 8.33333%; }
+  .large-2 { position: relative; width: 16.66667%; }
+  .large-3 { position: relative; width: 25%; }
+  .large-4 { position: relative; width: 33.33333%; }
+  .large-5 { position: relative; width: 41.66667%; }
+  .large-6 { position: relative; width: 50%; }
+  .large-7 { position: relative; width: 58.33333%; }
+  .large-8 { position: relative; width: 66.66667%; }
+  .large-9 { position: relative; width: 75%; }
+  .large-10 { position: relative; width: 83.33333%; }
+  .large-11 { position: relative; width: 91.66667%; }
+  .large-12 { position: relative; width: 100%; }
+  .row .large-offset-0 { position: relative; margin-left: 0%; }
+  .row .large-offset-1 { position: relative; margin-left: 8.33333%; }
+  .row .large-offset-2 { position: relative; margin-left: 16.66667%; }
+  .row .large-offset-3 { position: relative; margin-left: 25%; }
+  .row .large-offset-4 { position: relative; margin-left: 33.33333%; }
+  .row .large-offset-5 { position: relative; margin-left: 41.66667%; }
+  .row .large-offset-6 { position: relative; margin-left: 50%; }
+  .row .large-offset-7 { position: relative; margin-left: 58.33333%; }
+  .row .large-offset-8 { position: relative; margin-left: 66.66667%; }
+  .row .large-offset-9 { position: relative; margin-left: 75%; }
+  .row .large-offset-10 { position: relative; margin-left: 83.33333%; }
+  .row .large-offset-11 { position: relative; margin-left: 91.66667%; }
+  .push-1 { position: relative; left: 8.33333%; right: auto; }
+  .pull-1 { position: relative; right: 8.33333%; left: auto; }
+  .push-2 { position: relative; left: 16.66667%; right: auto; }
+  .pull-2 { position: relative; right: 16.66667%; left: auto; }
+  .push-3 { position: relative; left: 25%; right: auto; }
+  .pull-3 { position: relative; right: 25%; left: auto; }
+  .push-4 { position: relative; left: 33.33333%; right: auto; }
+  .pull-4 { position: relative; right: 33.33333%; left: auto; }
+  .push-5 { position: relative; left: 41.66667%; right: auto; }
+  .pull-5 { position: relative; right: 41.66667%; left: auto; }
+  .push-6 { position: relative; left: 50%; right: auto; }
+  .pull-6 { position: relative; right: 50%; left: auto; }
+  .push-7 { position: relative; left: 58.33333%; right: auto; }
+  .pull-7 { position: relative; right: 58.33333%; left: auto; }
+  .push-8 { position: relative; left: 66.66667%; right: auto; }
+  .pull-8 { position: relative; right: 66.66667%; left: auto; }
+  .push-9 { position: relative; left: 75%; right: auto; }
+  .pull-9 { position: relative; right: 75%; left: auto; }
+  .push-10 { position: relative; left: 83.33333%; right: auto; }
+  .pull-10 { position: relative; right: 83.33333%; left: auto; }
+  .push-11 { position: relative; left: 91.66667%; right: auto; }
+  .pull-11 { position: relative; right: 91.66667%; left: auto; }
+  .column.large-centered, .columns.large-centered { position: relative; margin-left: auto; margin-right: auto; float: none !important; }
+  .column.large-uncentered, .columns.large-uncentered { margin-left: 0; margin-right: 0; float: left !important; }
+  .column.large-uncentered.opposite, .columns.large-uncentered.opposite { float: right !important; } }
+/* Image Thumbnails */
+.th { line-height: 0; display: inline-block; border: solid 4px white; -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); -webkit-transition: all 200ms ease-out; -moz-transition: all 200ms ease-out; transition: all 200ms ease-out; }
+.th:hover, .th:focus { -webkit-box-shadow: 0 0 6px 1px rgba(43, 166, 203, 0.5); box-shadow: 0 0 6px 1px rgba(43, 166, 203, 0.5); }
+.th.radius { -webkit-border-radius: 3px; border-radius: 3px; }
+a.th { display: inline-block; }
+button, .button { border-style: solid; border-width: 1px; cursor: pointer; font-family: inherit; font-weight: bold; line-height: 1; margin: 0 0 1.25em; position: relative; text-decoration: none; text-align: center; display: inline-block; padding-top: 0.75em; padding-right: 1.5em; padding-bottom: 0.8125em; padding-left: 1.5em; font-size: 1em; background-color: #2ba6cb; border-color: #2284a1; color: white; }
+button:hover, button:focus, .button:hover, .button:focus { background-color: #2284a1; }
+button:hover, button:focus, .button:hover, .button:focus { color: white; }
+button.secondary, .button.secondary { background-color: #e9e9e9; border-color: #d0d0d0; color: #333333; }
+button.secondary:hover, button.secondary:focus, .button.secondary:hover, .button.secondary:focus { background-color: #d0d0d0; }
+button.secondary:hover, button.secondary:focus, .button.secondary:hover, .button.secondary:focus { color: #333333; }
+button.success, .button.success { background-color: #5da423; border-color: #457a1a; color: white; }
+button.success:hover, button.success:focus, .button.success:hover, .button.success:focus { background-color: #457a1a; }
+button.success:hover, button.success:focus, .button.success:hover, .button.success:focus { color: white; }
+button.alert, .button.alert { background-color: #c60f13; border-color: #970b0e; color: white; }
+button.alert:hover, button.alert:focus, .button.alert:hover, .button.alert:focus { background-color: #970b0e; }
+button.alert:hover, button.alert:focus, .button.alert:hover, .button.alert:focus { color: white; }
+button.large, .button.large { padding-top: 1em; padding-right: 2em; padding-bottom: 1.0625em; padding-left: 2em; font-size: 1.25em; }
+button.small, .button.small { padding-top: 0.5625em; padding-right: 1.125em; padding-bottom: 0.625em; padding-left: 1.125em; font-size: 0.8125em; }
+button.tiny, .button.tiny { padding-top: 0.4375em; padding-right: 0.875em; padding-bottom: 0.5em; padding-left: 0.875em; font-size: 0.6875em; }
+button.expand, .button.expand { padding-right: 0px; padding-left: 0px; width: 100%; }
+button.left-align, .button.left-align { text-align: left; text-indent: 0.75em; }
+button.right-align, .button.right-align { text-align: right; padding-right: 0.75em; }
+button.disabled, button[disabled], .button.disabled, .button[disabled] { background-color: #2ba6cb; border-color: #2284a1; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { background-color: #2284a1; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { color: white; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { background-color: #2ba6cb; }
+button.disabled.secondary, button[disabled].secondary, .button.disabled.secondary, .button[disabled].secondary { background-color: #e9e9e9; border-color: #d0d0d0; color: #333333; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { background-color: #d0d0d0; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { color: #333333; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { background-color: #e9e9e9; }
+button.disabled.success, button[disabled].success, .button.disabled.success, .button[disabled].success { background-color: #5da423; border-color: #457a1a; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { background-color: #457a1a; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { color: white; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { background-color: #5da423; }
+button.disabled.alert, button[disabled].alert, .button.disabled.alert, .button[disabled].alert { background-color: #c60f13; border-color: #970b0e; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { background-color: #970b0e; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { color: white; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { background-color: #c60f13; }
+button, .button { padding-top: 0.8125em; padding-bottom: 0.75em; -webkit-appearance: none; }
+button.tiny, .button.tiny { padding-top: 0.5em; padding-bottom: 0.4375em; -webkit-appearance: none; }
+button.small, .button.small { padding-top: 0.625em; padding-bottom: 0.5625em; -webkit-appearance: none; }
+button.large, .button.large { padding-top: 1.03125em; padding-bottom: 1.03125em; -webkit-appearance: none; }
+@media only screen { button, .button { -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; -webkit-transition: background-color 300ms ease-out; -moz-transition: background-color 300ms ease-out; transition: background-color 300ms ease-out; }
+  button:active, .button:active { -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) inset; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) inset; }
+  button.radius, .button.radius { -webkit-border-radius: 3px; border-radius: 3px; }
+  button.round, .button.round { -webkit-border-radius: 1000px; border-radius: 1000px; } }
+@media only screen and (min-width: 768px) { button, .button { display: inline-block; } }
+p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type p { font-size: 1.21875em; line-height: 1.6; }
+.subheader, #content #toctitle, .admonitionblock td.content > .title, .exampleblock > .title, .imageblock > .title, .videoblock > .title, .listingblock > .title, .literalblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, .sidebarblock > .title, .tableblock > .title, .verseblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title, .tableblock > caption { line-height: 1.4; color: #003b6b; font-weight: 300; margin-top: 0.2em; margin-bottom: 0.5em; }
+/* Typography resets */
+div, dl, dt, dd, ul, ol, li, h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6, pre, form, p, blockquote, th, td { margin: 0; padding: 0; direction: ltr; }
+/* Default Link Styles */
+a { color: #00579e; text-decoration: none; line-height: inherit; }
+a:hover, a:focus { color: #333333; }
+a img { border: none; }
+/* Default paragraph styles */
+p { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-weight: normal; font-size: 1em; line-height: 1.6; margin-bottom: 0.75em; text-rendering: optimizeLegibility; }
+p aside { font-size: 0.875em; line-height: 1.35; font-style: italic; }
+/* Default header styles */
+h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-weight: normal; font-style: normal; color: #7b2d00; text-rendering: optimizeLegibility; margin-top: 0.5em; margin-bottom: 0.5em; line-height: 1.2125em; }
+h1 small, h2 small, h3 small, #toctitle small, .sidebarblock > .content > .title small, h4 small, h5 small, h6 small { font-size: 60%; color: #ff6b15; line-height: 0; }
+h1 { font-size: 2.125em; }
+h2 { font-size: 1.6875em; }
+h3, #toctitle, .sidebarblock > .content > .title { font-size: 1.375em; }
+h4 { font-size: 1.125em; }
+h5 { font-size: 1.125em; }
+h6 { font-size: 1em; }
+hr { border: solid #dddddd; border-width: 1px 0 0; clear: both; margin: 1.25em 0 1.1875em; height: 0; }
+/* Helpful Typography Defaults */
+em, i { font-style: italic; line-height: inherit; }
+strong, b { font-weight: bold; line-height: inherit; }
+small { font-size: 60%; line-height: inherit; }
+code { font-family: Consolas, "Liberation Mono", Courier, monospace; font-weight: bold; color: #003426; }
+/* Lists */
+ul, ol, dl { font-size: 1em; line-height: 1.6; margin-bottom: 0.75em; list-style-position: outside; font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; }
+ul, ol { margin-left: 1.5em; }
+/* Unordered Lists */
+ul li ul, ul li ol { margin-left: 1.25em; margin-bottom: 0; font-size: 1em; /* Override nested font-size change */ }
+ul.square li ul, ul.circle li ul, ul.disc li ul { list-style: inherit; }
+ul.square { list-style-type: square; }
+ul.circle { list-style-type: circle; }
+ul.disc { list-style-type: disc; }
+ul.no-bullet { list-style: none; }
+/* Ordered Lists */
+ol li ul, ol li ol { margin-left: 1.25em; margin-bottom: 0; }
+/* Definition Lists */
+dl dt { margin-bottom: 0.3em; font-weight: bold; }
+dl dd { margin-bottom: 0.75em; }
+/* Abbreviations */
+abbr, acronym { text-transform: uppercase; font-size: 90%; color: black; border-bottom: 1px dotted #dddddd; cursor: help; }
+abbr { text-transform: none; }
+/* Blockquotes */
+blockquote { margin: 0 0 0.75em; padding: 0.5625em 1.25em 0 1.1875em; border-left: 1px solid #dddddd; }
+blockquote cite { display: block; font-size: 0.8125em; color: #e15200; }
+blockquote cite:before { content: "\2014 \0020"; }
+blockquote cite a, blockquote cite a:visited { color: #e15200; }
+blockquote, blockquote p { line-height: 1.6; color: #333333; }
+/* Microformats */
+.vcard { display: inline-block; margin: 0 0 1.25em 0; border: 1px solid #dddddd; padding: 0.625em 0.75em; }
+.vcard li { margin: 0; display: block; }
+.vcard .fn { font-weight: bold; font-size: 0.9375em; }
+.vevent .summary { font-weight: bold; }
+.vevent abbr { cursor: auto; text-decoration: none; font-weight: bold; border: none; padding: 0 0.0625em; }
+@media only screen and (min-width: 768px) { h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { line-height: 1.4; }
+  h1 { font-size: 2.75em; }
+  h2 { font-size: 2.3125em; }
+  h3, #toctitle, .sidebarblock > .content > .title { font-size: 1.6875em; }
+  h4 { font-size: 1.4375em; } }
+/* Print styles.  Inlined to avoid required HTTP connection: www.phpied.com/delay-loading-your-print-css/ Credit to Paul Irish and HTML5 Boilerplate (html5boilerplate.com)
+*/
+.print-only { display: none !important; }
+@media print { * { background: transparent !important; color: #000 !important; /* Black prints faster: h5bp.com/s */ box-shadow: none !important; text-shadow: none !important; }
+  a, a:visited { text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; /* h5bp.com/t */ }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page { margin: 0.5cm; }
+  p, h2, h3, #toctitle, .sidebarblock > .content > .title { orphans: 3; widows: 3; }
+  h2, h3, #toctitle, .sidebarblock > .content > .title { page-break-after: avoid; }
+  .hide-on-print { display: none !important; }
+  .print-only { display: block !important; }
+  .hide-for-print { display: none !important; }
+  .show-for-print { display: inherit !important; } }
+/* Tables */
+table { background: white; margin-bottom: 1.25em; border: solid 1px #d8d8ce; }
+table thead, table tfoot { background: -webkit-linear-gradient(top, #add386, #90b66a); font-weight: bold; }
+table thead tr th, table thead tr td, table tfoot tr th, table tfoot tr td { padding: 0.5em 0.625em 0.625em; font-size: inherit; color: white; text-align: left; }
+table tr th, table tr td { padding: 0.5625em 0.625em; font-size: inherit; color: #6d6e71; }
+table tr.even, table tr.alt, table tr:nth-of-type(even) { background: #edf2f2; }
+table thead tr th, table tfoot tr th, table tbody tr td, table tr td, table tfoot tr td { display: table-cell; line-height: 1.4; }
+a:hover, a:focus { text-decoration: underline; }
+.clearfix:before, .clearfix:after, .float-group:before, .float-group:after { content: " "; display: table; }
+.clearfix:after, .float-group:after { clear: both; }
+*:not(pre) > code { font-size: inherit; padding: 3px 2px 1px 2px; white-space: nowrap; background-color: #eeeeee; border: 1px solid #dddddd; -webkit-border-radius: 0; border-radius: 0; text-shadow: none; }
+pre, pre > code { line-height: 1.6; color: black; font-family: Consolas, "Liberation Mono", Courier, monospace; font-weight: normal; }
+kbd.keyseq { color: #333333; }
+kbd:not(.keyseq) { display: inline-block; color: black; font-size: 0.75em; line-height: 1.4; background-color: #F7F7F7; border: 1px solid #ccc; -webkit-border-radius: 3px; border-radius: 3px; -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset; margin: -0.15em 0.15em 0 0.15em; padding: 0.2em 0.6em 0.2em 0.5em; vertical-align: middle; white-space: nowrap; }
+kbd kbd:first-child { margin-left: 0; }
+kbd kbd:last-child { margin-right: 0; }
+.menuseq, .menu { color: black; }
+#header, #content, #footnotes, #footer { width: 100%; margin-left: auto; margin-right: auto; margin-top: 0; margin-bottom: 0; max-width: 62.5em; *zoom: 1; position: relative; padding-left: 1.5em; padding-right: 1.5em; }
+#header:before, #header:after, #content:before, #content:after, #footnotes:before, #footnotes:after, #footer:before, #footer:after { content: " "; display: table; }
+#header:after, #content:after, #footnotes:after, #footer:after { clear: both; }
+#header { margin-bottom: 2.5em; }
+#header > h1 { color: #7b2d00; font-weight: normal; border-bottom: 1px solid #dddddd; margin-bottom: -28px; padding-bottom: 32px; }
+#header span { color: #333333; }
+#header #revnumber { text-transform: capitalize; }
+#header br { display: none; }
+#header br + span { padding-left: 3px; }
+#header br + span:before { content: "\2013 \0020"; }
+#header br + span.author { padding-left: 0; }
+#header br + span.author:before { content: ", "; }
+#toc { border-bottom: 1px solid #dddddd; padding-bottom: 1.25em; }
+#toc > ul { margin-left: 0.25em; }
+#toc ul.sectlevel0 > li > a { font-style: italic; }
+#toc ul.sectlevel0 ul.sectlevel1 { margin-left: 0; margin-top: 0.5em; margin-bottom: 0.5em; }
+#toc ul { list-style-type: none; }
+#toctitle { color: #003b6b; }
+@media only screen and (min-width: 1280px) { body.toc2 { padding-left: 20em; }
+  #toc.toc2 { position: fixed; width: 20em; left: 0; top: 0; border-right: 1px solid #dddddd; border-bottom: 0; z-index: 1000; padding: 1em; height: 100%; overflow: auto; }
+  #toc.toc2 #toctitle { margin-top: 0; }
+  #toc.toc2 > ul { font-size: .95em; }
+  #toc.toc2 ul ul { margin-left: 0; padding-left: 1.25em; }
+  #toc.toc2 ul.sectlevel0 ul.sectlevel1 { padding-left: 0; margin-top: 0.5em; margin-bottom: 0.5em; }
+  body.toc2.toc-right { padding-left: 0; padding-right: 20em; }
+  body.toc2.toc-right #toc.toc2 { border-right: 0; border-left: 1px solid #dddddd; left: auto; right: 0; } }
+#content #toc { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; border-width: 0; -webkit-border-radius: 0; border-radius: 0; }
+#content #toc > :first-child { margin-top: 0; }
+#content #toc > :last-child { margin-bottom: 0; }
+#content #toc a { text-decoration: none; }
+#content #toctitle { font-weight: bold; font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-size: 1em; padding-left: 0.125em; }
+#footer { max-width: 100%; background-color: none; padding: 1.25em; }
+#footer-text { color: black; line-height: 1.44; }
+.sect1 { padding-bottom: 1.25em; }
+.sect1 + .sect1 { border-top: 1px solid #dddddd; }
+#content h1 > a.anchor, h2 > a.anchor, h3 > a.anchor, #toctitle > a.anchor, .sidebarblock > .content > .title > a.anchor, h4 > a.anchor, h5 > a.anchor, h6 > a.anchor { position: absolute; width: 1em; margin-left: -1em; display: block; text-decoration: none; visibility: hidden; text-align: center; font-weight: normal; }
+#content h1 > a.anchor:before, h2 > a.anchor:before, h3 > a.anchor:before, #toctitle > a.anchor:before, .sidebarblock > .content > .title > a.anchor:before, h4 > a.anchor:before, h5 > a.anchor:before, h6 > a.anchor:before { content: '\00A7'; font-size: .85em; vertical-align: text-top; display: block; margin-top: 0.05em; }
+#content h1:hover > a.anchor, #content h1 > a.anchor:hover, h2:hover > a.anchor, h2 > a.anchor:hover, h3:hover > a.anchor, #toctitle:hover > a.anchor, .sidebarblock > .content > .title:hover > a.anchor, h3 > a.anchor:hover, #toctitle > a.anchor:hover, .sidebarblock > .content > .title > a.anchor:hover, h4:hover > a.anchor, h4 > a.anchor:hover, h5:hover > a.anchor, h5 > a.anchor:hover, h6:hover > a.anchor, h6 > a.anchor:hover { visibility: visible; }
+#content h1 > a.link, h2 > a.link, h3 > a.link, #toctitle > a.link, .sidebarblock > .content > .title > a.link, h4 > a.link, h5 > a.link, h6 > a.link { color: #7b2d00; text-decoration: none; }
+#content h1 > a.link:hover, h2 > a.link:hover, h3 > a.link:hover, #toctitle > a.link:hover, .sidebarblock > .content > .title > a.link:hover, h4 > a.link:hover, h5 > a.link:hover, h6 > a.link:hover { color: #622400; }
+.imageblock, .literalblock, .listingblock, .verseblock, .videoblock { margin-bottom: 1.25em; }
+.admonitionblock td.content > .title, .exampleblock > .title, .imageblock > .title, .videoblock > .title, .listingblock > .title, .literalblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, .sidebarblock > .title, .tableblock > .title, .verseblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title { text-align: left; font-weight: bold; }
+.tableblock > caption { text-align: left; font-weight: bold; white-space: nowrap; overflow: visible; max-width: 0; }
+table.tableblock #preamble > .sectionbody > .paragraph:first-of-type p { font-size: inherit; }
+.admonitionblock > table { border: 0; background: none; width: 100%; }
+.admonitionblock > table td.icon { text-align: center; width: 80px; }
+.admonitionblock > table td.icon img { max-width: none; }
+.admonitionblock > table td.icon .title { font-weight: bold; text-transform: uppercase; }
+.admonitionblock > table td.content { padding-left: 1.125em; padding-right: 1.25em; border-left: 1px solid #dddddd; color: #333333; }
+.admonitionblock > table td.content > :last-child > :last-child { margin-bottom: 0; }
+.exampleblock > .content { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; -webkit-border-radius: 0; border-radius: 0; }
+.exampleblock > .content > :first-child { margin-top: 0; }
+.exampleblock > .content > :last-child { margin-bottom: 0; }
+.exampleblock > .content h1, .exampleblock > .content h2, .exampleblock > .content h3, .exampleblock > .content #toctitle, .sidebarblock.exampleblock > .content > .title, .exampleblock > .content h4, .exampleblock > .content h5, .exampleblock > .content h6, .exampleblock > .content p { color: #333333; }
+.exampleblock > .content h1, .exampleblock > .content h2, .exampleblock > .content h3, .exampleblock > .content #toctitle, .sidebarblock.exampleblock > .content > .title, .exampleblock > .content h4, .exampleblock > .content h5, .exampleblock > .content h6 { line-height: 1; margin-bottom: 0.625em; }
+.exampleblock > .content h1.subheader, .exampleblock > .content h2.subheader, .exampleblock > .content h3.subheader, .exampleblock > .content .subheader#toctitle, .sidebarblock.exampleblock > .content > .subheader.title, .exampleblock > .content h4.subheader, .exampleblock > .content h5.subheader, .exampleblock > .content h6.subheader { line-height: 1.4; }
+.exampleblock.result > .content { -webkit-box-shadow: 0 1px 8px #aaaaaa; box-shadow: 0 1px 8px #aaaaaa; }
+.sidebarblock { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; -webkit-border-radius: 0; border-radius: 0; }
+.sidebarblock > :first-child { margin-top: 0; }
+.sidebarblock > :last-child { margin-bottom: 0; }
+.sidebarblock h1, .sidebarblock h2, .sidebarblock h3, .sidebarblock #toctitle, .sidebarblock > .content > .title, .sidebarblock h4, .sidebarblock h5, .sidebarblock h6, .sidebarblock p { color: #333333; }
+.sidebarblock h1, .sidebarblock h2, .sidebarblock h3, .sidebarblock #toctitle, .sidebarblock > .content > .title, .sidebarblock h4, .sidebarblock h5, .sidebarblock h6 { line-height: 1; margin-bottom: 0.625em; }
+.sidebarblock h1.subheader, .sidebarblock h2.subheader, .sidebarblock h3.subheader, .sidebarblock .subheader#toctitle, .sidebarblock > .content > .subheader.title, .sidebarblock h4.subheader, .sidebarblock h5.subheader, .sidebarblock h6.subheader { line-height: 1.4; }
+.sidebarblock > .content > .title { color: #003b6b; margin-top: 0; line-height: 1.6; }
+.exampleblock > .content > :last-child > :last-child, .exampleblock > .content .olist > ol > li:last-child > :last-child, .exampleblock > .content .ulist > ul > li:last-child > :last-child, .exampleblock > .content .qlist > ol > li:last-child > :last-child, .sidebarblock > .content > :last-child > :last-child, .sidebarblock > .content .olist > ol > li:last-child > :last-child, .sidebarblock > .content .ulist > ul > li:last-child > :last-child, .sidebarblock > .content .qlist > ol > li:last-child > :last-child { margin-bottom: 0; }
+.literalblock > .content pre, .listingblock > .content pre { background: #eeeeee; border-width: 1px; border-style: dashed; border-color: #666666; -webkit-border-radius: 0; border-radius: 0; padding: 1.25em 1.5625em 1.125em 1.5625em; word-wrap: break-word; }
+.literalblock > .content pre.nowrap, .listingblock > .content pre.nowrap { overflow-x: auto; white-space: pre; word-wrap: normal; }
+.literalblock > .content pre > code, .listingblock > .content pre > code { display: block; }
+@media only screen { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.72em; } }
+@media only screen and (min-width: 768px) { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.81em; } }
+@media only screen and (min-width: 1280px) { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.9em; } }
+.listingblock > .content { position: relative; }
+.listingblock:hover code[class*=" language-"]:before { text-transform: uppercase; font-size: 0.9em; color: #999; position: absolute; top: 0.375em; right: 0.375em; }
+.listingblock:hover code.asciidoc:before { content: "asciidoc"; }
+.listingblock:hover code.clojure:before { content: "clojure"; }
+.listingblock:hover code.css:before { content: "css"; }
+.listingblock:hover code.groovy:before { content: "groovy"; }
+.listingblock:hover code.html:before { content: "html"; }
+.listingblock:hover code.java:before { content: "java"; }
+.listingblock:hover code.javascript:before { content: "javascript"; }
+.listingblock:hover code.python:before { content: "python"; }
+.listingblock:hover code.ruby:before { content: "ruby"; }
+.listingblock:hover code.scss:before { content: "scss"; }
+.listingblock:hover code.xml:before { content: "xml"; }
+.listingblock:hover code.yaml:before { content: "yaml"; }
+.listingblock.terminal pre .command:before { content: attr(data-prompt); padding-right: 0.5em; color: #999; }
+.listingblock.terminal pre .command:not([data-prompt]):before { content: '$'; }
+table.pyhltable { border: 0; margin-bottom: 0; }
+table.pyhltable td { vertical-align: top; padding-top: 0; padding-bottom: 0; }
+table.pyhltable td.code { padding-left: .75em; padding-right: 0; }
+.highlight.pygments .lineno, table.pyhltable td:not(.code) { color: #999; padding-left: 0; padding-right: .5em; border-right: 1px solid #dddddd; }
+.highlight.pygments .lineno { display: inline-block; margin-right: .25em; }
+table.pyhltable .linenodiv { background-color: transparent !important; padding-right: 0 !important; }
+.quoteblock { margin: 0 0 0.75em; padding: 0.5625em 1.25em 0 1.1875em; border-left: 1px solid #dddddd; }
+.quoteblock blockquote { margin: 0 0 0.75em 0; padding: 0 0 0.5625em 0; border: 0; }
+.quoteblock blockquote > .paragraph:last-child p { margin-bottom: 0; }
+.quoteblock .attribution { margin-top: -.25em; padding-bottom: 0.5625em; font-size: 0.8125em; color: #e15200; }
+.quoteblock .attribution br { display: none; }
+.quoteblock .attribution cite { display: block; margin-bottom: 0.625em; }
+table thead th, table tfoot th { font-weight: bold; }
+table.tableblock.grid-all { border-collapse: separate; border-spacing: 1px; -webkit-border-radius: 0; border-radius: 0; border-top: 1px solid #dddddd; border-bottom: 1px solid #dddddd; }
+table.tableblock.frame-topbot, table.tableblock.frame-none { border-left: 0; border-right: 0; }
+table.tableblock.frame-sides, table.tableblock.frame-none { border-top: 0; border-bottom: 0; }
+table.tableblock td .paragraph:last-child p, table.tableblock td > p:last-child { margin-bottom: 0; }
+th.tableblock.halign-left, td.tableblock.halign-left { text-align: left; }
+th.tableblock.halign-right, td.tableblock.halign-right { text-align: right; }
+th.tableblock.halign-center, td.tableblock.halign-center { text-align: center; }
+th.tableblock.valign-top, td.tableblock.valign-top { vertical-align: top; }
+th.tableblock.valign-bottom, td.tableblock.valign-bottom { vertical-align: bottom; }
+th.tableblock.valign-middle, td.tableblock.valign-middle { vertical-align: middle; }
+p.tableblock.header { color: white; font-weight: bold; }
+td > div.verse { white-space: pre; }
+ol { margin-left: 1.75em; }
+ul li ol { margin-left: 1.5em; }
+dl dd { margin-left: 1.125em; }
+dl dd:last-child, dl dd:last-child > :last-child { margin-bottom: 0; }
+ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .ulist, .ulist .olist, .olist .ulist { margin-bottom: 0.375em; }
+ul.unstyled, ol.unnumbered, ul.checklist, ul.none { list-style-type: none; }
+ul.unstyled, ol.unnumbered, ul.checklist { margin-left: 0.625em; }
+ul.checklist li > p:first-child > i[class^="icon-check"]:first-child, ul.checklist li > p:first-child > input[type="checkbox"]:first-child { margin-right: 0.25em; }
+ul.checklist li > p:first-child > input[type="checkbox"]:first-child { position: relative; top: 1px; }
+ul.inline { margin: 0 auto 0.375em auto; margin-left: -1.375em; margin-right: 0; padding: 0; list-style: none; overflow: hidden; }
+ul.inline > li { list-style: none; float: left; margin-left: 1.375em; display: block; }
+ul.inline > li > * { display: block; }
+.unstyled dl dt { font-weight: normal; font-style: normal; }
+ol.arabic { list-style-type: decimal; }
+ol.decimal { list-style-type: decimal-leading-zero; }
+ol.loweralpha { list-style-type: lower-alpha; }
+ol.upperalpha { list-style-type: upper-alpha; }
+ol.lowerroman { list-style-type: lower-roman; }
+ol.upperroman { list-style-type: upper-roman; }
+ol.lowergreek { list-style-type: lower-greek; }
+.hdlist > table, .colist > table { border: 0; background: none; }
+.hdlist > table > tbody > tr, .colist > table > tbody > tr { background: none; }
+td.hdlist1 { padding-right: .8em; font-weight: bold; }
+td.hdlist1, td.hdlist2 { vertical-align: top; }
+.literalblock + .colist, .listingblock + .colist { margin-top: -0.5em; }
+.colist > table tr > td:first-of-type { padding: 0 .8em; line-height: 1; }
+.colist > table tr > td:last-of-type { padding: 0.25em 0; }
+.qanda > ol > li > p > em:only-child { color: #004985; }
+.thumb, .th { line-height: 0; display: inline-block; border: solid 4px white; -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); }
+.imageblock.left, .imageblock[style*="float: left"] { margin: 0.25em 0.625em 1.25em 0; }
+.imageblock.right, .imageblock[style*="float: right"] { margin: 0.25em 0 1.25em 0.625em; }
+.imageblock > .title { margin-bottom: 0; }
+.imageblock.thumb, .imageblock.th { border-width: 6px; }
+.imageblock.thumb > .title, .imageblock.th > .title { padding: 0 0.125em; }
+.image.left, .image.right { margin-top: 0.25em; margin-bottom: 0.25em; display: inline-block; line-height: 0; }
+.image.left { margin-right: 0.625em; }
+.image.right { margin-left: 0.625em; }
+a.image { text-decoration: none; }
+span.footnote, span.footnoteref { vertical-align: super; font-size: 0.875em; }
+span.footnote a, span.footnoteref a { text-decoration: none; }
+#footnotes { padding-top: 0.75em; padding-bottom: 0.75em; margin-bottom: 0.625em; }
+#footnotes hr { width: 20%; min-width: 6.25em; margin: -.25em 0 .75em 0; border-width: 1px 0 0 0; }
+#footnotes .footnote { padding: 0 0.375em; line-height: 1.3; font-size: 0.875em; margin-left: 1.2em; text-indent: -1.2em; margin-bottom: .2em; }
+#footnotes .footnote a:first-of-type { font-weight: bold; text-decoration: none; }
+#footnotes .footnote:last-of-type { margin-bottom: 0; }
+#content #footnotes { margin-top: -0.625em; margin-bottom: 0; padding: 0.75em 0; }
+.gist .file-data > table { border: none; background: #fff; width: 100%; margin-bottom: 0; }
+.gist .file-data > table td.line-data { width: 99%; }
+div.unbreakable { page-break-inside: avoid; }
+.big { font-size: larger; }
+.small { font-size: smaller; }
+.underline { text-decoration: underline; }
+.overline { text-decoration: overline; }
+.line-through { text-decoration: line-through; }
+.aqua { color: #00bfbf; }
+.aqua-background { background-color: #00fafa; }
+.black { color: black; }
+.black-background { background-color: black; }
+.blue { color: #0000bf; }
+.blue-background { background-color: #0000fa; }
+.fuchsia { color: #bf00bf; }
+.fuchsia-background { background-color: #fa00fa; }
+.gray { color: #606060; }
+.gray-background { background-color: #7d7d7d; }
+.green { color: #006000; }
+.green-background { background-color: #007d00; }
+.lime { color: #00bf00; }
+.lime-background { background-color: #00fa00; }
+.maroon { color: #600000; }
+.maroon-background { background-color: #7d0000; }
+.navy { color: #000060; }
+.navy-background { background-color: #00007d; }
+.olive { color: #606000; }
+.olive-background { background-color: #7d7d00; }
+.purple { color: #600060; }
+.purple-background { background-color: #7d007d; }
+.red { color: #bf0000; }
+.red-background { background-color: #fa0000; }
+.silver { color: #909090; }
+.silver-background { background-color: #bcbcbc; }
+.teal { color: #006060; }
+.teal-background { background-color: #007d7d; }
+.white { color: #bfbfbf; }
+.white-background { background-color: #fafafa; }
+.yellow { color: #bfbf00; }
+.yellow-background { background-color: #fafa00; }
+span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
+.admonitionblock td.icon [class^="icon-"]:before { font-size: 2.5em; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); cursor: default; }
+.admonitionblock td.icon .icon-note:before { content: "\f05a"; color: #00579e; color: #004176; }
+.admonitionblock td.icon .icon-tip:before { content: "\f0eb"; text-shadow: 1px 1px 2px rgba(155, 155, 0, 0.8); color: #111; }
+.admonitionblock td.icon .icon-warning:before { content: "\f071"; color: #bf6900; }
+.admonitionblock td.icon .icon-caution:before { content: "\f06d"; color: #bf3400; }
+.admonitionblock td.icon .icon-important:before { content: "\f06a"; color: #bf0000; }
+.conum { display: inline-block; color: white !important; background-color: black; -webkit-border-radius: 100px; border-radius: 100px; text-align: center; width: 20px; height: 20px; font-size: 12px; font-weight: bold; line-height: 20px; font-family: Arial, sans-serif; font-style: normal; position: relative; top: -2px; letter-spacing: -1px; }
+.conum * { color: white !important; }
+.conum + b { display: none; }
+.conum:after { content: attr(data-value); }
+.conum:not([data-value]):empty { display: none; }
+body { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-size: 16px; color: #111; }
+h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { border-bottom: 1px solid #dddddd; }
+#toctitle { color: #00406F; font-weight: normal; margin-top: 1.5em; }
+.sidebarblock { border-color: #aaa; }
+code { -webkit-border-radius: 4px; border-radius: 4px; }
+p.tableblock.header { color: #6d6e71; }
+</style>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.3/styles/default.min.css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.3/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#tdd_with_javasctipt">Test-Driven Development with JavaScript</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_why_testing">Why Testing</a></li>
+<li><a href="#_testing_basics">Testing Basics</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_unit_testing">Unit Testing</a></li>
+<li><a href="#_integration_testing">Integration Testing</a></li>
+<li><a href="#_functional_testing">Functional Testing</a></li>
+<li><a href="#_load_testing">Load Testing</a></li>
+</ul>
+</li>
+<li><a href="#TDD">Test Driven Development</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_test_driven_development_with_qunit">Test-Driven Development With QUnit</a></li>
+<li><a href="#_behavior_driven_development_with_jasmine">Behavior-Driven Development With Jasmine</a></li>
+<li><a href="#_multi_browser_testing">Multi-Browser Testing</a></li>
+<li><a href="#_testing_dom">Testing DOM</a></li>
+</ul>
+</li>
+<li><a href="#_save_sick_child_with_tdd">Save Sick Child With TDD</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_the_test_driven_extjs_version_of_em_savesickchild_org_em">The Test-Driven ExtJS version of <em>SaveSickChild.org</em></a></li>
+<li><a href="#_setting_up_the_ide_for_tdd">Setting up the IDE for TDD</a></li>
+</ul>
+</li>
+<li><a href="#_summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="tdd_with_javasctipt">Test-Driven Development with JavaScript</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To shorten the development cycle of your Web application you need to start testing it on the early stages of the project. It seems obvious, but many enterprise IT organizations haven&#8217;t adopted agile testing methodologies, which costs them dearly. JavaScript is dynamically typed interpreted language, which means that there is no compiler to help in  identifying errors as it&#8217;s done in compiled languages like Java. This means that a lot more time should be allocated for testing for JavaScript Web applications. Moreover, a programmer who didn&#8217;t introduce testing techniques into his daily routine can&#8217;t be 100% sure that his code works properly.</p>
+</div>
+<div class="paragraph">
+<p>The static code analysis and code quality tools such as <a href="http://esprima.org/">Esprima</a> and <a href="http://www.jshint.com/">JSHint</a> will help in reducing the number of syntax errors and improve quality of your code.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+We&#8217;ve demonstrated how to setup <code>JSHint</code> for your JavaScript project and automate the process of checking your code for the syntax errors in <a href="#appendix_a">[appendix_a]</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To switch to a test-driven development mode, make testing a part of your development process in its early stages rather than scheduling testing after the development cycle is complete.</p>
+</div>
+<div class="paragraph">
+<p>Introduction of test-driven development may substantially improve your code quality. It is very important to receive the feedback about your code on a regular basis. That&#8217;s why tests must be automated and should run as soon as you&#8217;ve changed the code.</p>
+</div>
+<div class="paragraph">
+<p>There are many testing frameworks in JavaScript world, but we&#8217;ll give you a brief overview of two of them: <a href="http://qunitjs.com/">QUnit</a> and <a href="http://pivotal.github.com/jasmine/">Jasmine</a>. The main goal of each framework is to test small pieces of code a.k.a. <em>units</em>.</p>
+</div>
+<div class="paragraph">
+<p>We will go through basic testing techniques known as "Test-Driven Development" and "Test First". You&#8217;ll learn how to automate the testing process in multiple browsers with <a href="https://github.com/airportyh/testem">Testem Runner</a> or by running tests in so called <em>headless</em> mode with <a href="http://phantomjs.org/">PhantomJS</a>. You&#8217;ll learn how to mock and stub selected artifacts of the environment (such as <code>XMLHTTPRequiest</code> object or a timer) with <a href="http://sinonjs.org/">Sinon.js</a> and how to unit test the DOM manipulation code.</p>
+</div>
+<div class="paragraph">
+<p>The second part of this chapter is dedicated to setting up a new Save Sick Child project in the IDE with selected test frameworks.</p>
+</div>
+<div class="sect2">
+<h3 id="_why_testing">Why Testing</h3>
+<div class="paragraph">
+<p>Any software has bugs. But in interpreted languages like JavaScript you don&#8217;t have help of compilers that could have pointed you at the potential issues on early stages of development. You need to continue testing code over and over again to catch regression errors, to be able to add new features without breaking the existing ones. The code covered with tests is easy to refactor. Tests help to prove correctness of your code. A well tested code leads to better overall design of your programs.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_testing_basics">Testing Basics</h3>
+<div class="paragraph">
+<p>In this chapter we&#8217;ll discuss the following types of testing:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Unit testing</p>
+</li>
+<li>
+<p>Integration testing</p>
+</li>
+<li>
+<p>Functional testing</p>
+</li>
+<li>
+<p>Load (a.k.a. stress) testing</p>
+</li>
+</ul>
+</div>
+<div id="QA_UAT" class="sidebarblock">
+<div class="content">
+<div class="title">Quality Assurance and Acceptance Testing</div>
+<div class="paragraph">
+<p>Although, <em>Quality Assurance</em> (QA) and <em>User Acceptance Testing</em> (UAT) is far beyond the scope of this chapter you need understand the difference.</p>
+</div>
+<div class="paragraph">
+<p>Software QA (or <em>Quality Control</em> (QC)) is the process that helps identify the correctness, completeness, security compliance and the quality of the software. QA testing <em>is performed by the specialists</em> (testers, analysts). The goal of QA testing is to ensure that the application complies  with a set of the predefined behavior requirements.</p>
+</div>
+<div class="paragraph">
+<p>UAT <em>is performed by business users</em> or subject area experts. The UAT should result in the  endorsement that the tested applications/functionality/module meets the agreed upon requirements. The results of UAT gives the confidence to the end-user that the system will perform in production according to specification.</p>
+</div>
+<div class="paragraph">
+<p>During the QA process the specialist intents to perform all tests trying to break the application. This approach helps finding the errors undiscovered by developers. On the contrary, during UAT the user runs business-as-usual scenarios and makes sure that business functions are implemented in the application.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s go over the strategies, approaches, and tools that will help you in test automation.</p>
+</div>
+<div class="sect3">
+<h4 id="_unit_testing">Unit Testing</h4>
+<div class="paragraph">
+<p>The <em>unit test</em> is a piece of code that invokes a method being tested. It <em>asserts</em> some assumptions about the application logic and behavior of the  method. Typically you&#8217;ll be writing such tests using unit-testing framework of your choice. Tests should run fast, be automated with clear output. For example you can test if a function is called with particular arguments, it should return expected result.
+We will take a closer look on unit testing terminology and vocabulary in a <a href="#TDD">Test Driven Development</a> section.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_integration_testing">Integration Testing</h4>
+<div class="paragraph">
+<p>Integration testing is a phase when already tested units are combined into a module to test the interfaces between them. You may want to test the integration of your code with the code written by other developers, e.g. some third-party framework. Integration tests ensure that any abstraction layers we build over the third-party code work as expected. Both unit and integration tests are written by application developers.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_functional_testing">Functional Testing</h4>
+<div class="paragraph">
+<p>Functional testing is aimed at finding out whether the application properly implements business logic. For example, if the user clicks on a row in the grid with customers, the program should display a form view with specific details about the selected customer. In functional testing business users should define what has to be tested, unlike unit or integration testing where tests are created by software developers.</p>
+</div>
+<div class="paragraph">
+<p>Functional tests can be performed manually by a real person clicking through each and every view of the web application confirming that it operates properly or reporting discrepancies with the functional specifications.</p>
+</div>
+<div class="paragraph">
+<p>But there are tools to automate the process of functional testing of Web applications. Such tools allow to record the users' actions and replay them in the automatic mode. Below are brief descriptions of two of such tools - Selenium and CasperJS.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://docs.seleniumhq.org/">Selenium </a></p>
+<div class="paragraph">
+<p>Selenium is an advanced browser automation tool suite that has capabilities to run and record user scenarios without requiring developers to learn any scripting languages. Also Selenium has an API for integration with many programming languages like Java, C# and etc. Selenium uses the WebDriver API to talk to the browsers and receive running context information. WebDriver is becoming <a href="https://dvcs.w3.org/hg/webdriver/raw-file/default/webdriver-spec.html">the standard API for browser automation</a>. Selenium supports a wide range of <a href="http://docs.seleniumhq.org/about/platforms.jsp">browsers and platforms</a>.</p>
+</div>
+</li>
+<li>
+<p><a href="http://casperjs.org/quickstart.html">Casper.js</a></p>
+<div class="paragraph">
+<p>CasperJS is a scripting framework written in JavaScript. CasperJS allows to create interaction scenarios like defining and ordering the navigation steps, filling and submitting forms or even scrapping Web content and making Web page screenshots. CasperJS works on top of PhantomJS and SlimerJS browser, which limits the testing runtime environment to WebKit-based and Gecko-based browsers. Still it&#8217;s a very useful tool when you want to run tests in a Continuous Integration (CI)environment. You can read more about <a href="#WHAT_IS_PHANTOMJS">PhantomJS and SlimerJS</a> and <a href="#WHAT_IS_CI">CI</a> in the corresponding sidebars later in this chapter.</p>
+</div>
+</li>
+</ul>
+</div>
+<div id="WHAT_IS_PHANTOMJS" class="sidebarblock">
+<div class="content">
+<div class="title">What is PhantomJS and SlimerJS?</div>
+<div class="paragraph">
+<p>PhantomJS is a headless WebKit-based rendering engine with JavaScript API.  Think of PhantomJS as a browser that doesn&#8217;t have any graphical user interface. PhantomJS can execute HTML, CSS, and JavaScript code. Because PhantomJS is not required to render GUI, it can be used in display-less environments (e.g. CI server) to run tests. SlimerJS follows the same idea of headless browser, similar to PhantomJS, but it uses Gecko engine instead.</p>
+</div>
+<div class="paragraph">
+<p>PhantomsJS is built on top of Webkit and <a href="http://trac.webkit.org/wiki/JavaScriptCore">JavaScriptCore</a> (like Safari) and SlimerJS is built on top of Gecko and <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey">SpiderMonkey</a> (like Firefox). You can find the comprehensive list of difference between PhantonJS and SlimerJS APIs in <a href="http://docs.slimerjs.org/current/differences-with-phantomjs.html">SlimerJS&#8217;s documentation site</a>.</p>
+</div>
+<div class="paragraph">
+<p>In our case, Grunt automatically spawns the PhantomJS instance, executes the code of our tests, reads the execution results using PhantomJS API, and prints them out in the console. If you&#8217;re not familiar with Grunt tasks, please, refer to <a href="#appendix_a">[appendix_a]</a> for additional information about usage Grunt in our Save Sick Child project.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_load_testing">Load Testing</h4>
+<div class="paragraph">
+<p>Load testing is a process that can help in answering the following questions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>How many concurrent users can work with your application without bringing your server to its knees?</p>
+</li>
+<li>
+<p>Even if your server is capable of serving a thousand users, is your application performance in a compliance with the Service Level Agreement (SLA), if any?</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>It all comes down to two factors: availability and response time of your application. Ideally, these requirements should be well defined in the SLA document, which should clearly state what metrics are acceptable from the user&#8217;s perspective. For example, the SLA can include a clause stating that the initial download of your application shouldn&#8217;t take longer than 10 seconds for users with a slow connections (under 1Mbps). SLA can also state that the query to display a list of customers shouldn&#8217;t run for more than five seconds, and the application should be operational 99.9 percent of the time.</p>
+</div>
+<div class="paragraph">
+<p>To avoid surprises after going live with your new mission-critical web application, don&#8217;t forget to include in your project plan an item to create and run a set of heavy stress tests. Do this well in advance before your project goes live. You don&#8217;t need to hire a thousand of interns to play the roles of concurrent users to find out whether your application will meet the SLA.</p>
+</div>
+<div class="paragraph">
+<p>Automated load testing software allows you to emulate required number of users, set up the throttling to emulate a slower connection, and configure the ramp-up speed. For example, you can simulate a situation where the number of users logged on to your system grows at the speed of 50 users every 10 seconds. Stress testing software also allows you to pre-record the users interactions, and then you can run these scripts emulating a heavy load.</p>
+</div>
+<div class="paragraph">
+<p>Professional stress-testing software allows simulating the load close to the real-world usage patterns. You should be able to create and run mixed scripts simulating a situation in which some users are logging on to your application while others are retrieving the data and performing data modifications. Below are some tools worth considering for load testing.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://httpd.apache.org/docs/2.2/programs/ab.html">Apache Benchmark</a></p>
+<div class="paragraph">
+<p>Apache Benchmark is a simple to use command line tool. For example, with a command <code>ab -n 10 -c 10 -t 60 http://savesickchild.org:8080/ssc_extjs/</code> Apache Benchmark will open 10 concurrent connection with the server and will send 10 requests via each connection to simulate 10 visitors working with your Web application during 60 seconds. The number of concurrent connections is the actual number of concurrent users. You can find an Apache Benchmark sample report in <a href="#AB_REPORT">following snippet</a>.</p>
+</div>
+</li>
+</ul>
+</div>
+<div id="AB_REPORT" class="listingblock">
+<div class="title">A sample Apache Benchmark report</div>
+<div class="content">
+<pre class="highlight"><code class="bash language-bash">This is ApacheBench, Version 2.3 &lt;$Revision: 655654 $&gt;
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+Server Software:    GlassFish
+Server Hostname:    savesickchild.org
+Server Port:    8080
+Document Path:  /ssc_extjs/
+Document Length:    306 bytes
+Concurrency Level:  10
+Time taken for tests:   60.003 seconds
+Complete requests:  17526
+Failed requests:    0
+Total transferred:  11988468 bytes
+HTML transferred:   5363262 bytes
+Requests per second:    292086.73
+Transfer rate:  199798.72 kb/s received
+Connnection Times (ms)
+             min avg max
+Connect:     10  13  1305
+Processing:  11  14  12
+Total:       21  27  1317</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://jmeter.apache.org/">jMeter</a></p>
+<div class="paragraph">
+<p>Apache JMeter is a tool with a graphic user interface. It can be used to simulate heavy load on a server, network or an object to test its strength or to analyze overall performance under different load types. You can find more about testing web applications using JMeter in <a href="http://jmeter.apache.org/usermanual/build-web-test-plan.html">official documentation</a>.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_17.png" alt="fig 08 17">
+</div>
+<div class="title">Figure 1. JMeter test results output example</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://phantomjs.org/">PhantomJS</a></p>
+<div class="paragraph">
+<p>Please, refer the sidebar called <a href="#WHAT_IS_PHANTOMJS">What is PhantomJS</a> to make yourself familiar with this tool. The slide deck titled <a href="http://wesleyhales.com/slides/html5devconf2013/">"Browser Performance metering with PhantomJS"</a> is yet another good resource for seeing how  PhantomJS can be used for performance testing.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="TDD">Test Driven Development</h3>
+<div class="paragraph">
+<p>The methodology known as Test-Driven Development (TDD) substantially changes the way a traditional software development is done. This methodology wants you to write tests <em>even before</em> writing the application code. Instead of just using testing to verify our work <em>after it&#8217;s done</em>, TDD moves the testing into the earlier application design phase. You should use the tests to clarify your ideas about what you are about to program. Here is fundamental mantra of TDD:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Write a test and make it fail.</p>
+</li>
+<li>
+<p>Make the test pass.</p>
+</li>
+<li>
+<p>Refactor.</p>
+</li>
+<li>
+<p>Repeat.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This technique also referred as "Red-Green-Refactoring" because IDE&#8217;s and test runners use red color to indicate failed tests and green color to indicate the tests that passed.</p>
+</div>
+<div class="paragraph">
+<p>When you are about to start programming a class with some business logic, ask yourself, "How can I ensure that this function works as expected?" After you know the answer, write a test JavaScript class that calls this function <em>to assert</em> that the business logic gives the expected result.</p>
+</div>
+<div class="paragraph">
+<p>An assertion is a true-false statement that represents what a programmer assumes about program state, e.g.  <strong>customerID &gt;0</strong> is an assertion.</p>
+</div>
+<div class="paragraph">
+<p>According to <a href="#fowler"><em>Martin Fowler</em></a>, an assertion is a section of code that works only if certain conditions are true. An assertion is a conditional statement that is assumed to be always true. Failure of an assertion results in test failure.</p>
+</div>
+<div class="paragraph">
+<p>Run your test, and it will immediately fail because no application code is written yet! Only after the test is written, start programming the business logic of your application</p>
+</div>
+<div class="paragraph">
+<p>You should write a simplest possible piece of code to make the test pass. Don&#8217;t try to find a generic solution at this step. For example, if you want to test a calculator that needs to return <code>4</code> as result of <code>2+2</code> write the code what simply returns <code>4</code>. Don&#8217;t worry about the performance or optimization at this point in time. Just make the test pass. Once you made it, you can refactor your application code to make it more efficient. Now you might want to introduce a real algorithm for implementing the application logic without worrying about breaking the  contract with other components of your application.</p>
+</div>
+<div class="paragraph">
+<p>A failed unit test indicates that your code change introduced regression, which is a new bug in a previously worked software. Automated testing and well-written test cases can reduce the likelihood of a regression in your code.</p>
+</div>
+<div class="paragraph">
+<p>TDD allows to receive feedback from your code almost immediately. It&#8217;s better to find that something is broken during development rather than in the application deployed in production.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>And learn by heart The Golden Rule Of TDD:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Never write new functionality without a failing test</p>
+</div>
+</blockquote>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In addition to business logic, web applications should be tested for proper rendering of UI components, changing view states, dispatching, and handling events.</p>
+</div>
+<div class="paragraph">
+<p>With any testing framework, your tests will follow same basic pattern. First, you need to setup up the test environment. Second, you run the  production code and check that it works as it supposed to.</p>
+</div>
+<div class="paragraph">
+<p>Finally, you need to clean up after the test will run - remove everything that your program has created during setup of the environment.</p>
+</div>
+<div class="paragraph">
+<p><a id="AAAR"></a>This pattern for authoring unit tests is called <em>Arrange-Act-Assert</em> (AAA <span class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnote_1" title="View footnote.">1</a>]</span>).</p>
+</div>
+<div class="paragraph">
+<p>In the <em>Arrange</em> phase you set up the unit of work to test. For example, create a DOM element.</p>
+</div>
+<div class="paragraph">
+<p>In the <em>Act</em> phase you exercise the unit under test and capture the  resulting state. You execute your production code in unit test context.</p>
+</div>
+<div class="paragraph">
+<p>In the <em>Assert</em> phase you verify the behavior through assertions.</p>
+</div>
+<div class="paragraph">
+<p>There is one more phase: <em>Reset</em>. In this phase, if needed, you reset the environment to the initial state. For example, erase the DOM elements created in the <em>Arrange</em> phase.</p>
+</div>
+<div class="paragraph">
+<p>Later in this chapter, you&#8217;ll see how different frameworks implements <em>AAAR</em> pattern.</p>
+</div>
+<div class="paragraph">
+<p>In next sections we will dive into the testing frameworks for JavaScript. Our fist stop is QUnit.</p>
+</div>
+<div class="sect3">
+<h4 id="_test_driven_development_with_qunit">Test-Driven Development With QUnit</h4>
+<div class="paragraph">
+<p>We&#8217;ll start our journey to JavaScript testing frameworks with <a href="http://qunitjs.com/">QUnit</a>, which was originally developed by <a href="http://ejohn.org/about/">John Resig</a> as part of jQuery. QUnit now runs completely standalone and doesn&#8217;t have any jQuery dependencies. While it&#8217;s still being used by the jQuery Project itself for testing jQuery, jQuery UI and jQuery Mobile code, QUnit can be used to test any generic JavaScript code.</p>
+</div>
+<div class="sect4">
+<h5 id="_setup_grunt_with_qunit">Setup Grunt With Qunit</h5>
+<div class="paragraph">
+<p>In this section you&#8217;re going learn how to automatically run the Qunit tests using Grunt. Let&#8217;s setup our project by adding the Qunit framework and tests file. Start with downloading the latest version from <a href="http://qunitjs.com/">QUint Web site</a>. You need to get only two files - <code>qunit-*.js</code> and <code>qunit-*.css</code>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_04.png" alt="fig 08 04">
+</div>
+<div class="title">Figure 2. A download section on QUnit website</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_05.png" alt="fig 08 05">
+</div>
+<div class="title">Figure 3. QUnit framework in our project</div>
+</div>
+<div class="listingblock">
+<div class="title">Our first QUnit test</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">'use strict';
+test("my first qunit test", function () {
+    ok(2 + 2 === 4, "Passed!");
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll also need a test runner for the test setup.</p>
+</div>
+<div class="listingblock">
+<div class="title">A test runner</div>
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;QUnit Example&lt;/title&gt;
+    &lt;link rel="stylesheet" href="lib/qunit-1.11/qunit.css"&gt;
+    &lt;script src="lib/qunit-1.11/qunit.js"&gt;&lt;/script&gt;     <i class="conum" data-value="1"></i><b>(1)</b>
+    &lt;script type="text/javascript" src="../app/js/libs/jquery-1.9.0.min.js"&gt;&lt;/script&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+    &lt;script src="test/tests.js"&gt;&lt;/script&gt;               <i class="conum" data-value="3"></i><b>(3)</b>
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id="qunit"&gt;&lt;/div&gt; <i class="conum" data-value="4"></i><b>(4)</b>
+&lt;div id='qunit-fixture'&gt;
+    <i class="conum" data-value="5"></i><b>(5)</b>
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A test runner is an html file contains links to QUnit framework JavaScript file.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>In this section we continue working on the jQuery-based version of the Save Sick Child application. Hence our "production environment" depends on availability of jQuery, so we need to include jQuery in the test runner.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Test files are included too.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>QUnit fills this block with results.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Any HTML you want to be present in each test. It will be reset for each test.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To run all our tests we need to open the <code>qunit-runner.html</code> in browser.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_06.png" alt="fig 08 06">
+</div>
+<div class="title">Figure 4. A test run results in browser</div>
+</div>
+<div class="listingblock">
+<div class="title">Gruntfile with qunit runner</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">module.exports = function (grunt) {
+    "use strict";
+    grunt.initConfig({
+        qunit: {
+            all: ["test/qunit-runner.html"]
+        }
+    });
+    grunt.registerTask("test", "qunit");
+    grunt.loadNpmTasks("grunt-contrib-qunit");
+};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s briefly review QUnit API components. You can find a typical QUnit script in <a href="#QUNIT_TEST">the following listing</a>.</p>
+</div>
+<div id="QUNIT_TEST" class="listingblock">
+<div class="title">A sample QUnint test</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">(function($) {
+    module('SaveSickChild: login component test', { <i class="conum" data-value="1"></i><b>(1)</b>
+        setup: function() { <i class="conum" data-value="2"></i><b>(2)</b>
+            // test setup code goes here
+        },
+        teardown: function() {  <i class="conum" data-value="3"></i><b>(3)</b>
+            // test cleanup code goes here
+        }
+    });
+    test('jquery is here', function() {     <i class="conum" data-value="4"></i><b>(4)</b>
+        ok($, "yes, it's here");
+    });
+    test("2 add 2 equals 4", function() {
+        ok(2 + 2 === 4, "Passed!");     <i class="conum" data-value="5"></i><b>(5)</b>
+    });
+    test('2 add 2 not equals 5', function() {
+        notEqual(2 + 2, 5, "failed");       <i class="conum" data-value="6"></i><b>(6)</b>
+    });
+}(jQuery));     <i class="conum" data-value="7"></i><b>(7)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A <code>module</code> function allows to combine related tests as group.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Here we can run <em>Arrange</em> phase. A <code>setup</code> function will be called before each test.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A <code>teardown</code> function will be call after each test respectively. This is our <em>Reset</em> phase.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>You need to place code of your test in corresponding <code>test</code> function.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Typically, you need to use assertions to make sure the code being tested  gives expected results. The function <a href="http://api.qunitjs.com/ok/"><code>ok</code></a> will examine the first argument to be <code>true</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>A pair of functions <code>equal</code> and <code>notEqual</code> will check for the equivalence of the first and second arguments, which could be expressions as well.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>A code of the test is wrapped in immediate-invoked function expression (IIFE) and passes <code>jQuery</code> object as <code>$</code> variable.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can find more details about QUnit in <a href="http://api.qunitjs.com/">product  documentation</a> and <a href="http://qunitjs.com/cookbook/">QUnit Cookbook</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_behavior_driven_development_with_jasmine">Behavior-Driven Development With Jasmine</h4>
+<div class="paragraph">
+<p>The idea behind <em>behavior-driven development</em> (BDD) is to use the natural language constructs to describe what you think your code should be doing or more specifically, what your functions should be returning.</p>
+</div>
+<div class="paragraph">
+<p>Similarly to unit tests, with BDD you write short specifications that test one feature at a time. Specifications should be sentences. For example, "Calculator adds two positive numbers". Such sentences will help you to easy identify the failed test by simply reading this sentence in the resulting report. Now we&#8217;ll demonstrate this concept using Jasmine - the BDD frameworks for JavaScript. Jasmine provides a very nice way to group, execute, and report JavaScript unit tests.</p>
+</div>
+<div class="sect4">
+<h5 id="_setup_grunt_with_jasmine">Setup Grunt with Jasmine</h5>
+<div class="paragraph">
+<p>You&#8217;ve learned already how to use the Grunt tool to automate boilerplate tasks. Now let&#8217;s execute a Jasmine specification with Grunt. The next section covers Jasmine basics, but for now think of Jasmine as a piece of code that should be executed by Grunt.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s start with downloading the latest version of Jasmine from <a href="https://github.com/pivotal/jasmine/downloads">its github repository</a>. Unzip the archive. The content of unzipped folder will look similar to the screenshot <a href="#FIG-1">Jasmine Distribution</a>.</p>
+</div>
+<div id="FIG-1" class="imageblock">
+<div class="content">
+<img src="./images/fig_08_01.png" alt="Jasmine distribution">
+</div>
+<div class="title">Figure 5. Jasmine Distribution</div>
+</div>
+<div class="paragraph">
+<p>Jasmine comes with an example spec (<em>spec</em> folder) and an html test runner - SpecRunner.html. Let&#8217;s open the file SpecRunner.html in browser <a href="#FIG-2">Running Jasmine Specs in a Browser</a>.</p>
+</div>
+<div id="FIG-2" class="imageblock">
+<div class="content">
+<img src="./images/fig_08_02.png" alt="SpectRunner.html">
+</div>
+<div class="title">Figure 6. Running Jasmine Specs in a Browser</div>
+</div>
+<div class="paragraph">
+<p>The SpecRunner.html is structured similarly to QUnit html runner. You can run specifications by opening the runner file in browser.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;title&gt;Jasmine Spec Runner&lt;/title&gt;
+  &lt;link rel="shortcut icon" type="image/png" href="lib/jasmine-1.3.1/jasmine_favicon.png"&gt;
+  &lt;link rel="stylesheet" type="text/css" href="lib/jasmine-1.3.1/jasmine.css"&gt;
+  &lt;script type="text/javascript" src="lib/jasmine-1.3.1/jasmine.js"&gt;&lt;/script&gt;   <i class="conum" data-value="1"></i><b>(1)</b>
+  &lt;script type="text/javascript" src="lib/jasmine-1.3.1/jasmine-html.js"&gt;&lt;/script&gt;
+
+  <i class="conum" data-value="2"></i><b>(2)</b>
+  &lt;script type="text/javascript" src="src/Player.js"&gt;&lt;/script&gt;
+  &lt;script type="text/javascript" src="src/Song.js"&gt;&lt;/script&gt;
+
+  <i class="conum" data-value="3"></i><b>(3)</b>
+  &lt;script type="text/javascript" src="spec/SpecHelper.js"&gt;&lt;/script&gt;
+  &lt;script type="text/javascript" src="spec/PlayerSpec.js"&gt;&lt;/script&gt;
+
+  <i class="conum" data-value="4"></i><b>(4)</b>
+  &lt;script type="text/javascript"&gt;
+    (function() {
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      var htmlReporter = new jasmine.HtmlReporter();
+
+      jasmineEnv.addReporter(htmlReporter);
+
+      jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+      };
+
+      var currentWindowOnload = window.onload;
+
+      window.onload = function() {
+        if (currentWindowOnload) {
+          currentWindowOnload();
+        }
+        execJasmine();
+      };
+
+      function execJasmine() {
+        jasmineEnv.execute();
+      }
+
+    })();
+  &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Required Jasmine framework library</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Include the source files.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Include the specification code.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Initialize Jasmine and run all specifications when the page is loaded.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s update the Grunfile to run the same sample specifications with the headless browser. Copy the content of <em>src</em> folder of your Jasmine distribution into the <em>app/js</em> folder of our project, and then copy the content of the <em>spec</em> folder into the <em>test/spec</em> folder of your project. Also create a folder <em>test/lib/jasmine</em> and copy the content of Jasmine distribution <em>lib</em> folder there. <a href="#FIG-3">Jasmine Specifications in Our Project</a></p>
+</div>
+<div id="FIG-3" class="imageblock">
+<div class="content">
+<img src="./images/fig_08_03.png" alt="fig 08 03">
+</div>
+<div class="title">Figure 7. Jasmine Specifications in Our Project</div>
+</div>
+<div class="paragraph">
+<p>Now you need to edit Gruntfile.js to activate Jasmine support.</p>
+</div>
+<div class="listingblock">
+<div class="title">Gruntfile_jasmine.js with Jasmine running support</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">module.exports = function (grunt) {
+    'use strict';
+
+    grunt.initConfig({
+        jasmine: {  <i class="conum" data-value="1"></i><b>(1)</b>
+            src: ['app/js/Player.js', 'app/js/Song.js'], <i class="conum" data-value="2"></i><b>(2)</b>
+            options: {
+                specs: 'test/spec/PlayerSpec.js',   <i class="conum" data-value="3"></i><b>(3)</b>
+                helpers: 'test/spec/SpecHelper.js'  <i class="conum" data-value="4"></i><b>(4)</b>
+            }
+        }
+    });
+
+    // Alias the `test` task
+    grunt.registerTask('test', 'jasmine');
+    // loading jasmine grunt module
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
+};</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Configuring the Jasmine task</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Specifying the location of the source files</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Specifying the location of Jasmine specs</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Specifying the location of Jasmine helpers, which will be covered later in this chapter.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>To execute tests, run the command <code>grunt --gruntfile Gruntfile_jasmine.js jasmine</code>, and you should see something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="bash language-bash">Running "jasmine:src" (jasmine) task
+Testing jasmine specs via phantom
+.....
+5 specs in 0.003s.
+&gt;&gt; 0 failures
+
+Done, without errors.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example, Grunt successfully executed the tests with <a href="#WHAT_IS_PHANTOMJS">PhantomJS</a> of all five specifications defined in PlayerSpec.js.</p>
+</div>
+<div id="WHAT_IS_CI" class="sidebarblock">
+<div class="content">
+<div class="title">What is Continuous Integration?</div>
+<div class="paragraph">
+<p>Continuous Integration is a software development practice where members of a team integrate their work frequently, which results in multiple integrations per day.</p>
+</div>
+<div class="paragraph">
+<p>Introduced by Martin Fowler and Matthew Foemmel, the theory of continuous integration <span class="footnote">[<a id="_footnoteref_2" class="footnote" href="#_footnote_2" title="View footnote.">2</a>]</span> recommends creating scripts and running automated builds (including tests) of your application at least once a day.
+This allows you to identify issues in the code early.</p>
+</div>
+<div class="paragraph">
+<p>Authors of this book successfully use an open source framework called <a href="http://jenkins-ci.org/">Jenkins</a> (there are other similar CI servers) for establishing continuous build process.</p>
+</div>
+<div class="paragraph">
+<p>With Jenkins, you can have scripts that run either at a specified time interval or on each source code repository check-in of the new code. You may also force an additional build process whenever you like. The Grunt command line tool should be installed and be available on CI machine to allow the Jenkins server invoke Grunt scrips and publish test results.</p>
+</div>
+<div class="paragraph">
+<p>We use it to ensure continuous builds of the internal and open source projects.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_07.png" alt="Jenkins">
+</div>
+<div class="title">Figure 8. Jenkins CI server running at savesichild.org website and used to build the sample applications for this book.</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>In the next section you will learn how write your own specifications.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_jasmine_basics">Jasmine Basics</h5>
+<div class="paragraph">
+<p>After we&#8217;ve set up the tools for running tests, let&#8217;s start developing tests and learn the Jasmine framework constructs. Every specification file has a set of <em>suites</em> defined in the <code>describe</code> function. Suites help logically organize code of test specifications.</p>
+</div>
+<div class="listingblock">
+<div class="title">ExampleSpec.js</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">describe("My function under test should", function () {     <i class="conum" data-value="1"></i><b>(1)</b>
+    it("return on", function () {                           <i class="conum" data-value="2"></i><b>(2)</b>
+        // place specification code here
+        //
+    });
+    describe("another suite", function () {                   <i class="conum" data-value="3"></i><b>(3)</b>
+        it("spec1", function () {
+
+        });
+    });
+    it("my another spec", function () {                    <i class="conum" data-value="4"></i><b>(4)</b>
+        var truth = true;
+        expect(truth).toBeTruthy();
+    });
+    it("2+2 = 4", function () {
+        expect(2 + 2).toEqual(4);                       <i class="conum" data-value="5"></i><b>(5)</b>
+    });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The function <code>describe()</code> accepts two parameters - the name of the test suite, and the callback function. The function is a block of code that implements the suite. If for some reasons you would like to skip the suite from execution you can just use method <code>xdescribe()</code> and a whole suite will be excluded until you rename it back to <code>describe()</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The function <code>it()</code> also accepts similar parameters - the name of the test specification, and the function that implements this specification. Like in case with suites, Jasmine has a corresponding <code>xit</code> method to exclude specification from execution.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Each suite can have any number of nested suites.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Each suite can have any number of specifications.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The code checks to see if <code>2+2</code> equals <code>4</code>. We used the function <code>toEqual()</code>, which is a <em>matcher</em>. Define expectations with the function <code>expect()</code>, which takes a value, called the actual. It&#8217;s chained with a matcher function, which takes the expected value (in our case it&#8217;s 4) and checks if it satisfies the criterion defined in the matcher. Various flavors of matchers are shipped with Jasmine framework, and we&#8217;re going to review a couple the frequently used matchers functions.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Above we&#8217;ve listed only some of existing matchers. You can find the complete documentation with code examples at <a href="http://pivotal.github.io/jasmine/#section-Matchers">official Jasmine website</a> and at <a href="https://github.com/pivotal/jasmine/wiki/Matchers">wiki</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_specification_setup">Specification Setup</h5>
+<div class="paragraph">
+<p>Jasmine framework has an API to arrange your specification (see <a href="#AAAR">[AAAR]</a>). It includes two methods - <code>beforeEach()</code> and <code>afterEach()</code>, which allow you to execute some code before and after each spec respectively. It&#8217;s very useful for instantiation of the shared objects or cleaning up after the tests complete.
+If you need to fulfill your test with some common dependencies or setup the environment, just place code inside <code>beforeEach()</code> method. Such dependencies and environment are known as <em>fixture</em>.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p><strong>What is Fixture?</strong>
+Test fixture refers to the fixed state used as a baseline for running tests. The main purpose of a test fixture is to ensure that there is a well known and fixed environment in which tests are run so that results are repeatable. Sometimes a fixture also referred as <em>test context</em>.</p>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Specification setup with beforeEach</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">(function($) {
+    describe("DOM manipulation spec", function() {
+        var usernameInput;
+        var passwordInput;
+        beforeEach(function() {         <i class="conum" data-value="1"></i><b>(1)</b>
+            usernameInput = document.createElement("input");       <i class="conum" data-value="2"></i><b>(2)</b>
+            usernameInput.setAttribute("type", "text");
+            usernameInput.setAttribute("id", "username");
+            usernameInput.setAttribute("name", "username");
+            usernameInput.setAttribute("placeholder", "username");
+            usernameInput.setAttribute("autocomplete", "off");
+
+            passwordInput = document.createElement("input");
+            passwordInput.setAttribute("type", "text");
+            passwordInput.setAttribute("id", "password");
+            passwordInput.setAttribute("name", "password");
+            passwordInput.setAttribute("placeholder", "password");
+            passwordInput.setAttribute("autocomplete", "off");
+        });
+
+        afterEach(function () { <i class="conum" data-value="3"></i><b>(3)</b>
+
+        });
+
+        it("jquey should be present", function() {
+            expect($).not.toBeNull();
+        });
+        it("inputs should exist", function() {
+            expect(usernameInput.id).toBe("username");
+            expect(passwordInput.id).toBe("password");
+        });
+        it("should not allow login with empty username and password and return code equals 0", function() {
+            var result = ssc.login(usernameInput, passwordInput);   <i class="conum" data-value="4"></i><b>(4)</b>
+            expect(result).toBe(0);
+        });
+        it("should allow login with user admin and password 1234 and return code equals 1", function() {
+            usernameInput.value = "admin";      <i class="conum" data-value="5"></i><b>(5)</b>
+            passwordInput.value = "1234";
+            var result = ssc.login(usernameInput, passwordInput);
+            expect(result).toBe(1);
+        });
+    });
+})(jQuery);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This method will be called before each specification.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>In the <code>beforeEach()</code> method we create two input fields. These two inputs will be available in all specifications of this suite.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>You can place additional cleanup code inside <code>afterEach()</code> function.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>A <code>beforeEach()</code> function helps to implement <em>Don&#8217;t Repeat Yourself</em> principle in our tests. You don&#8217;t need to create the dependency elements inside each specification manually.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>You can change defaults inside each specification without worrying about  affecting other specifications. Your test environment will be reset for each specification.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_custom_matchers">Custom Matchers</h5>
+<div class="paragraph">
+<p>Jasmine framework is easily extendable, and it allows you to define your own matchers if for some reasons you&#8217;re unable to find the appropriate matchers in the Jasmine distribution. In such cases you&#8217;d need to write a custom matcher. Let&#8217;s write a matcher that check if a string contains name of the "secret agent" from the defined list of agents.</p>
+</div>
+<div class="listingblock">
+<div class="title">Custom <code>toBeSecretAgent</code> matcher</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">beforeEach(function () {
+    this.addMatchers({
+        toBeSecretAgent: function () {
+            var agentList = [
+                "James Bond",
+                "Ethan Hunt",
+                "Jason Bourne",
+                "Aaron Cross",
+                "Jack Reacher"
+            ];
+
+            var actual = this.actual;               <i class="conum" data-value="1"></i><b>(1)</b>
+            this.message = function () {            <i class="conum" data-value="2"></i><b>(2)</b>
+                return actual + " is not a secret agent";
+            };
+            return agentList.indexOf(actual) !== -1;    <i class="conum" data-value="3"></i><b>(3)</b>
+        }
+    });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>this.actual</code> contains the value used as arguments in the <code>expect</code> function.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>We can customize error message if the test fails.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This function checks if <code>agentsList</code> contains the actual value.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The invocations of this helper can look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">it("part of super agents", function () {
+    expect("James Bond").toBeSecretAgent();         <i class="conum" data-value="1"></i><b>(1)</b>
+    expect("Jason Bourne").toBeSecretAgent();
+    expect("Austin Powers").not.toBeSecretAgent();  <i class="conum" data-value="2"></i><b>(2)</b>
+    expect("Austin Powers").toBeSecretAgent();     <i class="conum" data-value="3"></i><b>(3)</b>
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Calling the custom matcher.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Custom matchers could be used together with the <code>.not</code> modifier.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This expectation will fail because <em>Austin Powers</em> is not in the list of secret agents.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following custom failure message will be displayed on the console.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="bash language-bash">/usr/local/share/npm/bin/grunt --gruntfile Gruntfile_jasmine.js jasmine
+Running "jasmine:src" (jasmine) task
+Testing jasmine specs via phantom
+...........x
+My function under test should:: part of super agents: failed
+  "Austin Powers is not a secret agent (4)"               <i class="conum" data-value="1"></i><b>(1)</b>
+1 specs in 0.115s.
+&gt;&gt; 1 failures
+Warning: Task "jasmine:src" failed. Use --force to continue.
+
+Aborted due to warnings.</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A custom failure message. Also, the failed <code>expect</code> was the fourth one (4) according to the order mentioned in spec.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_spies">Spies</h5>
+<div class="paragraph">
+<p>Test spies are objects that replace the actual functions with the code to record information about the function&#8217;s usage through the systems being tested. Spies are useful when determining a function&#8217;s success is not easily accomplished by inspecting its return value or changes to the state of objects with witch it interacts.</p>
+</div>
+<div class="paragraph">
+<p>Consider the following example of login functionality. A <code>showAuthorizedSection()</code> function will be invoked within <code>login</code> function after the user entered the correct user name and password. We need to test that the invocation of the <code>showAuthorizedSection()</code> is happening in this sequence.</p>
+</div>
+<div id="LOGIN_SNIP" class="listingblock">
+<div class="title">Production code of <code>login</code> function.</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var ssc = {};
+(function() {
+    'use strict';
+    ssc.showAuthorizedSection = function() {
+        console.log("showAuthorizedSection");
+    };
+    ssc.login = function(usernameInput, passwordInput) {
+        // username and password check logic is omitted
+        this.showAuthorizedSection();
+    };
+})();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And here is how we can test it using Jasmine&#8217;s spies.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">describe("login module", function() {
+    it("showAuthorizedSection has been called", function() {
+        spyOn(ssc, "showAuthorizedSection"); <i class="conum" data-value="1"></i><b>(1)</b>
+        ssc.login("admin", "1234"); <i class="conum" data-value="2"></i><b>(2)</b>
+        expect(ssc.showAuthorizedSection).toHaveBeenCalled(); <i class="conum" data-value="3"></i><b>(3)</b>
+    });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>spyOn</code> function will replace <code>showAuthorizedSection()</code> function with corresponded spy.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>showAuthorizedSection()</code> function will be invoked within <code>login()</code> function in case of successful login.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Assertion <code>toHaveBeenCalled()</code> would be not possible without spy.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_multi_browser_testing">Multi-Browser Testing</h4>
+<div class="paragraph">
+<p>The previous section was about executing your test and specification in a headless mode using PhantomJS, which is very useful for running tests in the CI environments. While PhantomJS uses WebKit rendering engine, there are browsers that don&#8217;t use WebKit. It&#8217;s obvious that running tests manually in each browser is tedious and not productive.
+To automate testing in all Web browsers, you can use Testem Runner. In this section you&#8217;ll learn how to install and configure <code>Testem</code> to run Jasmine tests.</p>
+</div>
+<div class="sect4">
+<h5 id="_installation">Installation</h5>
+<div class="paragraph">
+<p>Testem uses Node.js APIs and can be installed with NPM:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="bash language-bash">npm install testem -g</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_testem_configuration_file">Testem Configuration file</h5>
+<div class="paragraph">
+<p>Testem runner will just pick any of JavaScript in your project directory. If testem can identify any tests among that <em>.js</em> files it will run it.
+But Testem tasks can be customized using a configuration file.</p>
+</div>
+<div class="paragraph">
+<p>You can configure Testem to specify which files should be included in testing. Testem starts with trying to find the configuration file <em>testem.json</em> in the project directory. A sample <code>testem.json</code> is shown in <a href="#TESTEM_JSON">following listing</a>.</p>
+</div>
+<div id="TESTEM_JSON" class="listingblock">
+<div class="title">A Testem Configuration File</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">{
+    "framework": "jasmine",         <i class="conum" data-value="1"></i><b>(1)</b>
+    "src_files": [                 <i class="conum" data-value="2"></i><b>(2)</b>
+        "ext/ext-all.js",
+        "test.js"
+    ]
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>framework</code> directive is used to specify the test framework. Testem supports QUnit, Jasmine and many more frameworks. You can find full list of supported frameworks on testem <a href="https://github.com/airportyh/testem#features">github page</a>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The list of test and production code source files.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_running_tests">Running Tests</h5>
+<div class="paragraph">
+<p>Testem supports two running modes: test-driven development mode (<em>tdd-mode</em>)  and continuous integration (<em>ci-mode</em>). In tdd-mode, testem starts the  development server.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_13.png" alt="fig 08 13">
+</div>
+<div class="title">Figure 9. Testem tdd-mode.</div>
+</div>
+<div class="paragraph">
+<p>In tdd-mode, Testem doesn&#8217;t spawn any browser automatically. On the contrary, you&#8217;d need to open this url in the browser you want run test against to connect it to Testem server. From this point on, Testem will execute tests in all connected browsers.  On the next <a href="#TESTEM_MULTI">screeshot</a> you can see we added different browsers including mobile version of Safari (running on iOS simulator).</p>
+</div>
+<div id="TESTEM_MULTI" class="imageblock">
+<div class="content">
+<img src="./images/fig_08_14.png" alt="fig 08 14">
+</div>
+<div class="title">Figure 10. Testem is running the tests on the multiple browsers.</div>
+</div>
+<div class="paragraph">
+<p>Because the Testem server itself is an HTTP server, you can connect remote browsers to it as well. For example, the <a href="#TESTEM_IE">following screenshot</a> shows Internet Explorer 10 running under Windows 7 virtual machine connected to the testem server.</p>
+</div>
+<div id="TESTEM_IE" class="imageblock">
+<div class="content">
+<img src="./images/fig_08_16.png" alt="fig 08 16">
+</div>
+<div class="title">Figure 11. Using testem to test code on remote IE 10</div>
+</div>
+<div class="paragraph">
+<p>Running the tests with testem runner can be combined with previously introduced tool. The <a href="#TESTEM_AND_GRUNT">next screenshot</a> shows that testem runs tests on the real browsers and and grunt runs tests on the headless PhantomJS.</p>
+</div>
+<div id="TESTEM_AND_GRUNT" class="imageblock">
+<div class="content">
+<img src="./images/fig_08_15.png" alt="fig 08 15">
+</div>
+<div class="title">Figure 12. Using testem and <code>grunt watch</code> side-by-side</div>
+</div>
+<div class="paragraph">
+<p>Testem supports live reloading mode. This means that Testem will watch file system for changes and will execute tests in all connected browsers automatically. You can force to test run by switching to console and hitting the <em>Enter</em> key.</p>
+</div>
+<div class="paragraph">
+<p>In CI mode testem will examine system for all of the available browsers in your system and will execute tests on it. You can get list of the browsers that testem can use to run tests with the <code>testem launchers</code> command. <a href="#TESTEM_L">Here is sample output</a> after running this command.</p>
+</div>
+<div id="TESTEM_L" class="listingblock">
+<div class="content">
+<pre># testem launchers
+Have 5 launchers available; auto-launch info displayed on the right.
+
+Launcher      Type          CI  Dev
+------------  ------------  --  ---
+Chrome        browser       ✔
+Firefox       browser       ✔
+Safari        browser       ✔
+Opera         browser       ✔
+PhantomJS     browser       ✔</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you can run our test simultaneously in all browsers installed in  your computer - Google Chrome, Safari, Firefox, Opera and PhantomJS - with one command:</p>
+</div>
+<div class="paragraph">
+<p><code>testem ci</code></p>
+</div>
+<div class="listingblock">
+<div class="title">An output of <code>testem ci</code> command</div>
+<div class="content">
+<pre class="highlight"><code class="bash language-bash"># Launching Chrome      <i class="conum" data-value="1"></i><b>(1)</b>
+#
+
+# Launching Firefox     <i class="conum" data-value="2"></i><b>(2)</b>
+# ....
+TAP version 13
+ok 1 - Firefox Basic Assumptions:  Ext namespace should be available loaded.
+ok 2 - Firefox Basic Assumptions:  ExtJS 4.2 should be loaded.
+ok 3 - Firefox Basic Assumptions:  SSC code should be loaded.
+ok 4 - Firefox Basic Assumptions:  something truthy.
+
+# Launching Safari      <i class="conum" data-value="3"></i><b>(3)</b>
+#
+
+# Launching Opera       <i class="conum" data-value="4"></i><b>(4)</b>
+# ....
+ok 5 - Opera Basic Assumptions:  Ext namespace should be available loaded.
+ok 6 - Opera Basic Assumptions:  ExtJS 4.2 should be loaded.
+ok 7 - Opera Basic Assumptions:  SSC code should be loaded.
+ok 8 - Opera Basic Assumptions:  something truthy.
+
+# Launching PhantomJS       <i class="conum" data-value="5"></i><b>(5)</b>
+#
+
+1..8
+# tests 8
+# pass  8
+
+# ok
+....</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The tests are run on Chrome&#8230;</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>&#8230; Firefox</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>&#8230; Safari</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>&#8230; Opera</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>&#8230; and on headless WebKit - PhantomJS</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Testem uses <a href="http://en.wikipedia.org/wiki/Test_Anything_Protocol">TAP</a> format to report test results.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_testing_dom">Testing DOM</h4>
+<div class="paragraph">
+<p>Document Object Model is a standard browser API that allows a developer to access and manipulate page elements. Pretty often your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing DOM is the crucial part of testing your client side JavaScript.
+By design, the DOM standard defines a browser-agnostic API. But in the real world, if you want to make sure that your code works in the particular browser you need to run the test inside this browser.</p>
+</div>
+<div class="paragraph">
+<p>Earlier in this chapter we&#8217;ve introduced the Jasmine method <code>beforeEach()</code>, which is the right place for setting all required DOM elements and making them available in the specifications.</p>
+</div>
+<div id="FIX-1" class="listingblock">
+<div class="title">Using jQuery APIs to create the required DOM elements before run the spec</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">describe("spec", function() {
+    var usernameInput;
+    beforeEach(function() { <i class="conum" data-value="1"></i><b>(1)</b>
+        usernameInput = $(document.createElement("input")).attr({ <i class="conum" data-value="2"></i><b>(2)</b>
+            type: 'text',
+            id: 'username',
+            name: 'username'
+        })[0];
+    });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Inside the <code>beforeEach()</code> method we&#8217;re using the API to manipulate the DOM programatically. Also, if you&#8217;re using an HTML test runner you can add the fixture using HTML tags. But we don&#8217;t recommend this approach because pretty soon you will find that the test runner will become unmaintainable and clogged with tons of fixture HTML code.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Create an <code>&lt;input&gt;</code> element using jQuery APIs, which will turn into the following HTML:</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;input type=​"text" id=​"password" name=​"password" placeholder=​"password" autocomplete=​"off"&gt;​</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The jQuery selectors API is more convenient for working with DOM than a standard JavaScript DOM API. But in the future examples we will use the <a href="https://github.com/searls/jasmine-fixture">jasmine-fixture</a> library for easier setup of the DOM fixture. Jasmine-fixture uses similar to jQuery selectors syntax for injecting HTML fixtures. With this library you will significantly decrease the amount of repetitive code while creating the fixtures.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s see how the example from <a href="#FIX-1">previous code snippet</a> looks like with the jasmine-fixture library.</p>
+</div>
+<div class="listingblock">
+<div class="title">Using jasmine-fixture to setup the DOM before spec run</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">describe("spec", function() {
+    var usernameInput;
+    beforeEach(function() {
+        usernameInput = affix('input[id="username"][type="text"][name="username]')[0]; <i class="conum" data-value="1"></i><b>(1)</b>
+    });
+
+    it("should not allow login with empty username and password and return code equals 0", function() {
+        var result = ssc.login(usernameInput, passwordInput); <i class="conum" data-value="2"></i><b>(2)</b>
+        expect(result).toBe(0);
+    });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Using the <code>affix()</code> function provided by the <em>jasmine-fixture</em> library and expressiveness of CSS selectors we can easily setup required DOM elements. More examples of possible selectors could be found at the <a href="https://github.com/searls/jasmine-fixture#more-examples">documentation page</a> of jasmine-fixture.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Now when all requirements for our production code (<code>login()</code> function) are satisfied we can run it in the context of a test and assert the results.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>As you can see, testing of the DOM manipulation code is much like any other type of unit testing. You need to prepare a fixture (a.k.a. the testing context), run the production code and assert the results.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_save_sick_child_with_tdd">Save Sick Child With TDD</h3>
+<div class="sect3">
+<h4 id="_the_test_driven_extjs_version_of_em_savesickchild_org_em">The Test-Driven ExtJS version of <em>SaveSickChild.org</em></h4>
+<div class="paragraph">
+<p>We assume that you&#8217;ve read the materials from Chapter 6, and in this section you&#8217;ll apply your newly acquired Ext JS skills. As a reminder, Ext JS framework encourages using MVC architecture. The separation of responsibilities between Views, Models and Controllers makes an ExtJS application a perfect candidate for unit testing. In this section you&#8217;ll learn how to test the Ext JS version of the Save Sick Child application from Chapter 6.</p>
+</div>
+<div class="sect4">
+<h5 id="_harnessing_extjs_application">Harnessing ExtJS application</h5>
+<div class="paragraph">
+<p>Let&#8217;s create a skeleton application that can provide for our classes under the test familiar environment.</p>
+</div>
+<div class="listingblock">
+<div class="title">A HTML-runner for Jasmine and ExtJS application</div>
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title id="page-title"&gt;ExtJS Jasmine Tester&lt;/title&gt;
+    &lt;link rel="stylesheet" type="text/css" href="test/lib/jasmine-1.3.1/jasmine.css"/&gt;
+    &lt;script type="text/javascript" src=ext/ext-all.js&gt;&lt;/script&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+
+    &lt;script type="text/javascript" src="test/lib/jasmine-1.3.1/jasmine.js"&gt;&lt;/script&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+    &lt;script type="text/javascript" src="test/lib/jasmine-1.3.1/jasmine-html.js"&gt;&lt;/script&gt;
+
+    &lt;script type="text/javascript" src="test.js"&gt;&lt;/script&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Adding the Jasmine framework dependencies.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Adding ExtJS framework dependencies.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This is our skeleton ExtJS application that will setup "friendly" environment for components under the test. You can see content of test.js in the <a href="#SKELETON_EXTJS_APP">following listing</a>.</td>
+</tr>
+</table>
+</div>
+<div id="SKELETON_EXTJS_APP" class="listingblock">
+<div class="title">A ExtJS testing endpoint</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.Loader.setConfig({
+    disableCaching: false,
+    enabled: true,
+    paths: {
+        Test:   'test',       <i class="conum" data-value="1"></i><b>(1)</b>
+        SSC:    'app'          <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+});
+
+var application = null;
+
+Ext.onReady(function() {
+    application = Ext.create('Ext.app.Application', {
+        name: 'SSC',        <i class="conum" data-value="3"></i><b>(3)</b>
+        requires: [
+            'Test.spec.AllSpecs'        <i class="conum" data-value="4"></i><b>(4)</b>
+        ],
+        controllers: [
+            'Donate'        <i class="conum" data-value="5"></i><b>(5)</b>
+        ],
+        launch: function() {
+            Ext.create('Test.spec.AllSpecs');
+
+            jasmine.getEnv().addReporter(new jasmine.TrivialReporter());        <i class="conum" data-value="6"></i><b>(6)</b>
+            jasmine.getEnv().execute();
+        }
+    });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Ext JS loader needs to know the location of the testing classes&#8230;</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>&#8230; and about location of production code.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Create a skeleton application in the namespace of the production code to provide the execution environment.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>AllSpec</code> class will be requesting loading of the rest of the specs. We will show code of <code>AllSpec</code> class in <a href="#ALL_SPEC">next listing</a></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The skeleton application will test the controllers from the production application code</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>This code initializes Jasmine environment and reporters.</td>
+</tr>
+</table>
+</div>
+<div id="ALL_SPEC" class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('Test.spec.AllSpecs', {
+    requires: [         <i class="conum" data-value="1"></i><b>(1)</b>
+        'Test.spec.BasicAssumptions'
+        /*, 'Test.spec.ModelAssumptions' */
+    ]
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>requires</code> property includes an array of Jasmine suites. All further tests will be added to this array. Ext JS framework will be responsible for loading and instantiation all test classes.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here is how our typical test suite will be look like.</p>
+</div>
+<div class="listingblock">
+<div class="title">A BasicAssumptions class</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('Test.spec.BasicAssumptions', {}, function() {   <i class="conum" data-value="1"></i><b>(1)</b>
+    describe("Basic Assumptions: ", function() {            <i class="conum" data-value="2"></i><b>(2)</b>
+        it("Ext namespace should be available loaded", function() {
+            expect(Ext).toBeDefined();
+        });
+        it("SSC code should be loaded", function() {
+            expect(SSC).toBeDefined();
+        });
+    });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Wrap the Jasmine suite into an Ext JS class.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The rest of the code is very similar to the Jasmine code sample shown earlier in this chapter.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After setting up the testing harness for SaveSickChild application we will suggest testing strategy for ExtJS applications. Let&#8217;s start with testing the models and controllers followed by testing the views.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_testing_the_models">Testing The Models</h5>
+<div class="paragraph">
+<p><em>SaveSickChild.org</em> home page displays the information about fund raising campaigns using chart and table views backed by collection of <code>Campaign</code> models. A <code>Campaign</code> model should have three properties: <code>title</code>, <code>description</code>, and <code>location</code>. The <code>title</code> property of the model should have a default value - <code>Default Campaign Title</code>. The <code>location</code> property of the model is required field.</p>
+</div>
+<div class="paragraph">
+<p>In a spirit of TDD, let&#8217;s write the <a href="#CAMPMOD_SPEC">specification</a> what will meet the requirements described above.</p>
+</div>
+<div id="CAMPMOD_SPEC" class="listingblock">
+<div class="title">CampaignModelAssumptions specification</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('Test.spec.CampaignModelAssumptions', {}, function() {
+    'use strict';
+    beforeEach(function() {
+
+    });
+
+    afterEach(function() {
+        Ext.data.Model.cache = {}; <i class="conum" data-value="1"></i><b>(1)</b>
+    });
+
+    describe('SSC.model.Campaign model', function() {
+        it('exists', function() { <i class="conum" data-value="2"></i><b>(2)</b>
+            var model = Ext.create('SSC.model.Campaign', {});
+            expect(model.$className).toEqual('SSC.model.Campaign');
+        });
+        it('has properties', function() { <i class="conum" data-value="3"></i><b>(3)</b>
+            var model = Ext.create('SSC.model.Campaign', {
+                title: 'Donors meeting',
+                description: 'Donors meeting agenda',
+                location: 'New York City'
+            });
+            expect(model.get('title')).toEqual('Donors meeting');
+            expect(model.get('description')).toEqual('Donors meeting agenda');
+            expect(model.get('location')).toEqual('New York City');
+        });
+        it('property title has default values', function() { <i class="conum" data-value="4"></i><b>(4)</b>
+            var model = Ext.create('SSC.model.Campaign');
+            expect(model.get('title')).toEqual('Default Campaign Title');
+        });
+        it('requires campaign location', function() { <i class="conum" data-value="5"></i><b>(5)</b>
+            var model = Ext.create('SSC.model.Campaign');
+            var validationResult = model.validate();
+            expect(validationResult.isValid()).toBeFalsy();
+        });
+    });
+
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>By default, <code>Ext.data.Model</code> caches every model created by the application in a global in-memory array. We need to clean up the ExtJS model cache after each test run.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Instantiate the <code>Campaign</code> model class to check that it exists.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Next we need to check if model has all required properties.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The property <code>title</code> has a default value.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Validation will fail on the empty <code>location</code> property.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.model.Campaign', {
+    extend: 'Ext.data.Model',
+    fields: [
+        {
+            name: 'title',
+            type: 'string',
+            defaultValue: 'Default Campaign Title'
+        },
+        {
+            name: 'description',
+            type: 'string'
+        },
+        {
+            name: 'location',
+            type: 'string'
+        }
+    ],
+    validations: [
+        {
+            field: 'location',
+            type: 'presence'
+        }
+    ]
+});</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="CONTROLLER_TEST">Testing The Controllers</h5>
+<div class="paragraph">
+<p>Controllers in ExtJS are classes like any others and should be tested the same way. In the next example, let&#8217;s test <em>Donate Now</em> functionality. When the user clicks <em>Donate Now</em> button of the <code>Donate</code> panel controller&#8217;s code should validate the user input and submit the data to the server. Since we are just  testing controller&#8217;s behavior, we&#8217;re not going to submit the actual data. We&#8217;ll use Jasmine spies instead.</p>
+</div>
+<div class="listingblock">
+<div class="title">Donate controller specification</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define("Test.spec.DonateControllerSpec", {}, function () {
+    describe("Donate controller", function () {
+        beforeEach(function () {
+            // controller's setup code is omitted
+        });
+        it('should exists', function () {       <i class="conum" data-value="1"></i><b>(1)</b>
+            var controller = Ext.create('SSC.controller.Donate');
+            expect(controller.$className).toEqual('SSC.controller.Donate');
+        });
+        describe('donateNow button', function () {
+            it('calls donate on DonorInfo if form is valid', function () {
+                var donorInfo = Ext.create('SSC.model.DonorInfo', {});
+                var donateForm = Ext.create('SSC.view.DonateForm', {});
+                var controller = Ext.create('SSC.controller.Donate');
+                spyOn(donorInfo, 'donate');     <i class="conum" data-value="2"></i><b>(2)</b>
+                spyOn(controller, 'getDonatePanel').andCallFake(function () {   <i class="conum" data-value="3"></i><b>(3)</b>
+                    donateForm.down = function () {
+                        return {
+                            isValid: function () {
+                                return true;
+                            },
+                            getValues: function () {
+                                return {};
+                            }
+                        };
+                    };
+                    return donateForm;
+                });
+                spyOn(controller, 'newDonorInfo').andCallFake(function () { <i class="conum" data-value="4"></i><b>(4)</b>
+                    return donorInfo;
+                });
+                controller.submitDonateForm();
+                expect(donorInfo.donate).toHaveBeenCalled();    <i class="conum" data-value="5"></i><b>(5)</b>
+            });
+        });
+    });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>First, you need to test if controller&#8217;s class is available and can be instantiated.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>With the help of Jasmine&#8217;s <code>spyOn()</code> function substitute the <code>DonorInfo</code> model&#8217;s <code>donate()</code> function.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>We&#8217;re not interested in the view&#8217;s interaction -  only the contract should be tested. At this point, some methods can be substituted with the fake implementation to let the test pass. In this case, the specification tests the situation when form&#8217;s valid.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Next you need to inject emulated controller dependencies. The function <code>donate()</code> was replaced by the spy.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Finally, you can assert if the function was called by the controller.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The function under the test looks as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.controller.Donate', {
+    extend: 'Ext.app.Controller',
+    refs: [{
+            ref: 'donatePanel',
+            selector: '[cls=donate-panel]'
+        }
+    ],
+    init: function() {
+        'use strict';
+        this.control({
+            'button[action=donate]': {
+                click: this.submitDonateForm
+            }
+        });
+    },
+    newDonorInfo: function() {          <i class="conum" data-value="1"></i><b>(1)</b>
+        return Ext.create('SSC.model.DonorInfo', {});
+    },
+    submitDonateForm: function() {
+        var form = this.getDonatePanel().down('form');
+        if (form.isValid()) {       <i class="conum" data-value="2"></i><b>(2)</b>
+            var donorInfo = this.newDonorInfo();
+            Ext.iterate(form.getValues(), function(key, value) {  <i class="conum" data-value="3"></i><b>(3)</b>
+                donorInfo.set(key, value);
+            }, this);
+            donorInfo.donate();   <i class="conum" data-value="4"></i><b>(4)</b>
+        }
+    }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The factory method for creating a new instance of the <code>SSC.model.DonorInfo</code> class.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If the form is valid, read data from the form fields&#8230;</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>&#8230; and populate properties of corresponding object.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><code>DonorInfo</code> can be submitted by calling the <code>donate()</code> method.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_testing_the_views">Testing The Views</h5>
+<div class="paragraph">
+<p>UI Tests can be divided into two constituent parts: interaction tests and component tests.Interactions tests simulate real-world scenarios of application usage as if a user is using the application. It&#8217;s better to delegate the interaction tests to the functional testing tools like Selenium or CasperJS.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>There is another UI testing tool worth to mention especially, in the context of testing ExtJS applications - <a href="http://bryntum.com/products/siesta/">Siesta</a>. Siesta allows to perform testing of the DOM and simulate user interactions. Siesta written in JavaScript and uses Siesta for unit and UI testing. There are two editions of Siesta - lite and professional.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Component Tests isolate independent and reusable pieces of your application to verify their display, behavior and contract with other components (see <a href="#CONTROLLER_TEST">testing of the controllers</a>). Let&#8217;s see how we can do that. Consider <a href="#EXT_VIEW_TEST">following example</a></p>
+</div>
+<div id="EXT_VIEW_TEST" class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('Test.spec.ViewsAssumptions', {}, function () {
+    function prepareDOM(obj) {      <i class="conum" data-value="1"></i><b>(1)</b>
+        Ext.DomHelper.append(Ext.getBody(), obj);
+    }
+    describe('DonateForm ', function () {
+        var donateForm = null;  <i class="conum" data-value="2"></i><b>(2)</b>
+        beforeEach(function () {
+            prepareDOM({tag: 'div', id: 'test-donate'}); <i class="conum" data-value="3"></i><b>(3)</b>
+            donateForm = Ext.create('SSC.view.DonateForm', {    <i class="conum" data-value="4"></i><b>(4)</b>
+                renderTo: 'test-donate'
+            });
+        });
+        afterEach(function () {
+            donateForm.destroy();   <i class="conum" data-value="5"></i><b>(5)</b>
+            donateForm = null;
+        });
+        it('should have donateform xtype', function () {
+            expect(donateForm.isXType('donateform')).toEqual(true); <i class="conum" data-value="6"></i><b>(6)</b>
+        });
+    });
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A helper function for fixture DOM elements creation.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>A reusable scoped variable.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Create fixture <code>test</code> div.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Create a fresh form for every test to avoid test pollution.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Destroy the form after every test so we don&#8217;t pollute the environment.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>In this test, you need to make sure that the <code>DonateForm</code> component has <code>donateform</code> xtype.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_setting_up_the_ide_for_tdd">Setting up the IDE for TDD</h4>
+<div class="paragraph">
+<p>In this section we will setup WebStorm to use the described above tools inside this IDE. We will show how to integrate Grunt tool with WebStrom to run grunt tasks from there.</p>
+</div>
+<div class="sect4">
+<h5 id="_integrate_the_grunt_tool_with_webstorm">Integrate the Grunt Tool with WebStorm</h5>
+<div class="paragraph">
+<p>Let&#8217;s start with the Grunt setup. Currently, there is no native support of the Grunt tool in WebStorm IDE. Since Grunt is a command line tool, you can use a general launching feature of the WebStorm IDE and configure it as an <em>External Tool</em>. Open the WebStorm preferences and navigate to <em>External Tools</em> section to get access to the external tools configuration as in <a href="#FIG_SO_AND_SO">[FIG_SO_AND_SO]</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_08.png" alt="fig 08 08">
+</div>
+<div class="title">Figure 13. External Tools configuration window in WebStorm</div>
+</div>
+<div class="paragraph">
+<p>Click the <code>+</code> button to create new External Tool configuration.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_09.png" alt="fig 08 09">
+</div>
+<div class="title">Figure 14. External Tool configuration</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>You need to specify the full path to the application executable.</p>
+</li>
+<li>
+<p>Some tools require command line parameters. In this example, we explicitly specify the task runner configuration file (with the <code>--gruntifle</code> command line option) and the task to be executed.</p>
+</li>
+<li>
+<p>Also you need to specify the <em>Working Directory</em> to run the Grunt tool. In our case, grunt configuration file is located in the root of our project. WebStorm allows to use macros to avoid hard-coded paths. Most likely, you don&#8217;t want to setup external tools for each new project, just create a universal setup. In our example we use the <code>$ProjectFileDir$</code> macros will be resolved as current WebStorm project folder root.</p>
+</li>
+<li>
+<p>WebStorm allows you to organize related tasks into logical groups.</p>
+</li>
+<li>
+<p>You can configure how to access the external tool launcher.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>When all of the above steps are complete you can find the launcher under <em>Tools</em> menu as well under Main menu Editor menu, Project views and etc.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_11.png" alt="fig 08 11">
+</div>
+<div class="title">Figure 15. Grunt launcher available under <em>Tools/grunt</em> menu</div>
+</div>
+<div class="paragraph">
+<p>Unit tests are really important as a mean to get a quick feedback from your code. You can work more efficient if you manage to minimize context switching during your coding flow. Also, you don&#8217;t want to waste time digging through the menu items of your IDE, so assigning a keyboard shortcut for launching external tool is a good idea.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s assign a keyboard shortcut for our newly configured external tool launcher. Go to the <em>Keymap</em> section in WebStorm Preferences. Use the filter to find our created launcher <code>jasmine: grunt test</code>. Specify either the Keyboard of the Mouse shortcut by double clicking on the appropriate list item.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_10.png" alt="fig 08 10">
+</div>
+<div class="title">Figure 16. Setup keyboard shortcut for grunt launcher</div>
+</div>
+<div class="paragraph">
+<p>By pressing a combination of keys specified in the previous screen, you will be able to launch the grunt with Jasmine tests with one click of a button(s). WebStorm will redirect all the output from the grunt tool into its  Run window.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/fig_08_12.png" alt="fig 08 12">
+</div>
+<div class="title">Figure 17. Grunt output in WebStorm</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_summary">Summary</h3>
+<div class="paragraph">
+<p>Testing is one of the most important processes of software development. Well organized testing helps keeping the code in a good and working state. It&#8217;s especially important in interpreted languages like JavaSctipt where there is no compiler to provide a helping hand to find lots of errors on very early stages.</p>
+</div>
+<div class="paragraph">
+<p>In this situation, static code analysis tools, like JSHint, could become very handy in helping with identifying typos and enforcing best practices accepted by the JavaScript community.</p>
+</div>
+<div class="paragraph">
+<p>In enterprise projects developed with compiled languages people often debate if test-driven development is really beneficial. With JavaScript it&#8217;s non-debatable unless you have unlimited time and budget and are ready to live with unmaintainable JavaScript.</p>
+</div>
+<div class="paragraph">
+<p>The enterprises that have adopted test-driven development (as well as behavior-driven development) routines make the application development process safer by including test scripts in the continuous integration build process.</p>
+</div>
+<div class="paragraph">
+<p>Automating unit tests reduces the number of bugs and decreases the amount of time developers need to spend manually testing their code. If automatically launched test scripts (unit, integration, functional, and load testing) don&#8217;t reveal any issues, you can rest assured that the latest code changes did not break the application logic, and that the application performs according to SLA.</p>
+</div>
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="fowler"></a>[fowler] Martin Fowler. <em>Refactoring. Improving the Design of Existing Code</em> 2002 p.212</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnote_1">
+<a href="#_footnoteref_1">1</a>.  <a href="http://integralpath.blogs.com/thinkingoutloud/2005/09/principles_of_t.html">Principles for Test-Driven Development</a> 
+</div>
+<div class="footnote" id="_footnote_2">
+<a href="#_footnoteref_2">2</a>. <a href="http://martinfowler.com/articles/continuousIntegration.html">Continuous Integration by Martin Fowler</a>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2013-09-26 03:21:46 PDT
+</div>
+</div>
+</body>
+</html>

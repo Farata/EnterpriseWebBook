@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="Asciidoctor 0.1.4">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upgrading HTTP to WebSocket</title>
+<style>
+@import url(http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css);
+@import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic);
+/* normalize.css v2.1.1 | MIT License | git.io/normalize */
+/* ========================================================================== HTML5 display definitions ========================================================================== */
+/** Correct `block` display not defined in IE 8/9. */
+article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary { display: block; }
+/** Correct `inline-block` display not defined in IE 8/9. */
+audio, canvas, video { display: inline-block; }
+/** Prevent modern browsers from displaying `audio` without controls. Remove excess height in iOS 5 devices. */
+audio:not([controls]) { display: none; height: 0; }
+/** Address styling not present in IE 8/9. */
+[hidden] { display: none; }
+/* ========================================================================== Base ========================================================================== */
+/** 1. Prevent system color scheme's background color being used in Firefox, IE, and Opera. 2. Prevent system color scheme's text color being used in Firefox, IE, and Opera. 3. Set default font family to sans-serif. 4. Prevent iOS text size adjust after orientation change, without disabling user zoom. */
+html { background: #fff; /* 1 */ color: #000; /* 2 */ font-family: sans-serif; /* 3 */ -ms-text-size-adjust: 100%; /* 4 */ -webkit-text-size-adjust: 100%; /* 4 */ }
+/** Remove default margin. */
+body { margin: 0; }
+/* ========================================================================== Links ========================================================================== */
+/** Address `outline` inconsistency between Chrome and other browsers. */
+a:focus { outline: thin dotted; }
+/** Improve readability when focused and also mouse hovered in all browsers. */
+a:active, a:hover { outline: 0; }
+/* ========================================================================== Typography ========================================================================== */
+/** Address variable `h1` font-size and margin within `section` and `article` contexts in Firefox 4+, Safari 5, and Chrome. */
+h1 { font-size: 2em; margin: 0.67em 0; }
+/** Address styling not present in IE 8/9, Safari 5, and Chrome. */
+abbr[title] { border-bottom: 1px dotted; }
+/** Address style set to `bolder` in Firefox 4+, Safari 5, and Chrome. */
+b, strong { font-weight: bold; }
+/** Address styling not present in Safari 5 and Chrome. */
+dfn { font-style: italic; }
+/** Address differences between Firefox and other browsers. */
+hr { -moz-box-sizing: content-box; box-sizing: content-box; height: 0; }
+/** Address styling not present in IE 8/9. */
+mark { background: #ff0; color: #000; }
+/** Correct font family set oddly in Safari 5 and Chrome. */
+code, kbd, pre, samp { font-family: monospace, serif; font-size: 1em; }
+/** Improve readability of pre-formatted text in all browsers. */
+pre { white-space: pre-wrap; }
+/** Set consistent quote types. */
+q { quotes: "\201C" "\201D" "\2018" "\2019"; }
+/** Address inconsistent and variable font size in all browsers. */
+small { font-size: 80%; }
+/** Prevent `sub` and `sup` affecting `line-height` in all browsers. */
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+/* ========================================================================== Embedded content ========================================================================== */
+/** Remove border when inside `a` element in IE 8/9. */
+img { border: 0; }
+/** Correct overflow displayed oddly in IE 9. */
+svg:not(:root) { overflow: hidden; }
+/* ========================================================================== Figures ========================================================================== */
+/** Address margin not present in IE 8/9 and Safari 5. */
+figure { margin: 0; }
+/* ========================================================================== Forms ========================================================================== */
+/** Define consistent border, margin, and padding. */
+fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+/** 1. Correct `color` not being inherited in IE 8/9. 2. Remove padding so people aren't caught out if they zero out fieldsets. */
+legend { border: 0; /* 1 */ padding: 0; /* 2 */ }
+/** 1. Correct font family not being inherited in all browsers. 2. Correct font size not being inherited in all browsers. 3. Address margins set differently in Firefox 4+, Safari 5, and Chrome. */
+button, input, select, textarea { font-family: inherit; /* 1 */ font-size: 100%; /* 2 */ margin: 0; /* 3 */ }
+/** Address Firefox 4+ setting `line-height` on `input` using `!important` in the UA stylesheet. */
+button, input { line-height: normal; }
+/** Address inconsistent `text-transform` inheritance for `button` and `select`. All other form control elements do not inherit `text-transform` values. Correct `button` style inheritance in Chrome, Safari 5+, and IE 8+. Correct `select` style inheritance in Firefox 4+ and Opera. */
+button, select { text-transform: none; }
+/** 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio` and `video` controls. 2. Correct inability to style clickable `input` types in iOS. 3. Improve usability and consistency of cursor style between image-type `input` and others. */
+button, html input[type="button"], input[type="reset"], input[type="submit"] { -webkit-appearance: button; /* 2 */ cursor: pointer; /* 3 */ }
+/** Re-set default cursor for disabled elements. */
+button[disabled], html input[disabled] { cursor: default; }
+/** 1. Address box sizing set to `content-box` in IE 8/9. 2. Remove excess padding in IE 8/9. */
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; /* 1 */ padding: 0; /* 2 */ }
+/** 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome. 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome (include `-moz` to future-proof). */
+input[type="search"] { -webkit-appearance: textfield; /* 1 */ -moz-box-sizing: content-box; -webkit-box-sizing: content-box; /* 2 */ box-sizing: content-box; }
+/** Remove inner padding and search cancel button in Safari 5 and Chrome on OS X. */
+input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
+/** Remove inner padding and border in Firefox 4+. */
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+/** 1. Remove default vertical scrollbar in IE 8/9. 2. Improve readability and alignment in all browsers. */
+textarea { overflow: auto; /* 1 */ vertical-align: top; /* 2 */ }
+/* ========================================================================== Tables ========================================================================== */
+/** Remove most spacing between table cells. */
+table { border-collapse: collapse; border-spacing: 0; }
+*, *:before, *:after { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+html, body { font-size: 100%; }
+body { background: white; color: #222222; padding: 0; margin: 0; font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif; font-weight: normal; font-style: normal; line-height: 1; position: relative; cursor: auto; }
+a:hover { cursor: pointer; }
+a:focus { outline: none; }
+img, object, embed { max-width: 100%; height: auto; }
+object, embed { height: 100%; }
+img { -ms-interpolation-mode: bicubic; }
+#map_canvas img, #map_canvas embed, #map_canvas object, .map_canvas img, .map_canvas embed, .map_canvas object { max-width: none !important; }
+.left { float: left !important; }
+.right { float: right !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+.text-center { text-align: center !important; }
+.text-justify { text-align: justify !important; }
+.hide { display: none; }
+.antialiased, body { -webkit-font-smoothing: antialiased; }
+img { display: inline-block; vertical-align: middle; }
+textarea { height: auto; min-height: 50px; }
+select { width: 100%; }
+/* Grid HTML Classes */
+.row { width: 100%; margin-left: auto; margin-right: auto; margin-top: 0; margin-bottom: 0; max-width: 62.5em; *zoom: 1; }
+.row:before, .row:after { content: " "; display: table; }
+.row:after { clear: both; }
+.row.collapse .column, .row.collapse .columns { position: relative; padding-left: 0; padding-right: 0; float: left; }
+.row .row { width: auto; margin-left: -0.9375em; margin-right: -0.9375em; margin-top: 0; margin-bottom: 0; max-width: none; *zoom: 1; }
+.row .row:before, .row .row:after { content: " "; display: table; }
+.row .row:after { clear: both; }
+.row .row.collapse { width: auto; margin: 0; max-width: none; *zoom: 1; }
+.row .row.collapse:before, .row .row.collapse:after { content: " "; display: table; }
+.row .row.collapse:after { clear: both; }
+.column, .columns { position: relative; padding-left: 0.9375em; padding-right: 0.9375em; width: 100%; float: left; }
+@media only screen { .column, .columns { position: relative; padding-left: 0.9375em; padding-right: 0.9375em; float: left; }
+  .small-1 { position: relative; width: 8.33333%; }
+  .small-2 { position: relative; width: 16.66667%; }
+  .small-3 { position: relative; width: 25%; }
+  .small-4 { position: relative; width: 33.33333%; }
+  .small-5 { position: relative; width: 41.66667%; }
+  .small-6 { position: relative; width: 50%; }
+  .small-7 { position: relative; width: 58.33333%; }
+  .small-8 { position: relative; width: 66.66667%; }
+  .small-9 { position: relative; width: 75%; }
+  .small-10 { position: relative; width: 83.33333%; }
+  .small-11 { position: relative; width: 91.66667%; }
+  .small-12 { position: relative; width: 100%; }
+  .small-offset-0 { position: relative; margin-left: 0%; }
+  .small-offset-1 { position: relative; margin-left: 8.33333%; }
+  .small-offset-2 { position: relative; margin-left: 16.66667%; }
+  .small-offset-3 { position: relative; margin-left: 25%; }
+  .small-offset-4 { position: relative; margin-left: 33.33333%; }
+  .small-offset-5 { position: relative; margin-left: 41.66667%; }
+  .small-offset-6 { position: relative; margin-left: 50%; }
+  .small-offset-7 { position: relative; margin-left: 58.33333%; }
+  .small-offset-8 { position: relative; margin-left: 66.66667%; }
+  .small-offset-9 { position: relative; margin-left: 75%; }
+  .small-offset-10 { position: relative; margin-left: 83.33333%; }
+  [class*="column"] + [class*="column"]:last-child { float: right; }
+  [class*="column"] + [class*="column"].end { float: left; }
+  .column.small-centered, .columns.small-centered { position: relative; margin-left: auto; margin-right: auto; float: none !important; } }
+/* Styles for screens that are atleast 768px; */
+@media only screen and (min-width: 768px) { .large-1 { position: relative; width: 8.33333%; }
+  .large-2 { position: relative; width: 16.66667%; }
+  .large-3 { position: relative; width: 25%; }
+  .large-4 { position: relative; width: 33.33333%; }
+  .large-5 { position: relative; width: 41.66667%; }
+  .large-6 { position: relative; width: 50%; }
+  .large-7 { position: relative; width: 58.33333%; }
+  .large-8 { position: relative; width: 66.66667%; }
+  .large-9 { position: relative; width: 75%; }
+  .large-10 { position: relative; width: 83.33333%; }
+  .large-11 { position: relative; width: 91.66667%; }
+  .large-12 { position: relative; width: 100%; }
+  .row .large-offset-0 { position: relative; margin-left: 0%; }
+  .row .large-offset-1 { position: relative; margin-left: 8.33333%; }
+  .row .large-offset-2 { position: relative; margin-left: 16.66667%; }
+  .row .large-offset-3 { position: relative; margin-left: 25%; }
+  .row .large-offset-4 { position: relative; margin-left: 33.33333%; }
+  .row .large-offset-5 { position: relative; margin-left: 41.66667%; }
+  .row .large-offset-6 { position: relative; margin-left: 50%; }
+  .row .large-offset-7 { position: relative; margin-left: 58.33333%; }
+  .row .large-offset-8 { position: relative; margin-left: 66.66667%; }
+  .row .large-offset-9 { position: relative; margin-left: 75%; }
+  .row .large-offset-10 { position: relative; margin-left: 83.33333%; }
+  .row .large-offset-11 { position: relative; margin-left: 91.66667%; }
+  .push-1 { position: relative; left: 8.33333%; right: auto; }
+  .pull-1 { position: relative; right: 8.33333%; left: auto; }
+  .push-2 { position: relative; left: 16.66667%; right: auto; }
+  .pull-2 { position: relative; right: 16.66667%; left: auto; }
+  .push-3 { position: relative; left: 25%; right: auto; }
+  .pull-3 { position: relative; right: 25%; left: auto; }
+  .push-4 { position: relative; left: 33.33333%; right: auto; }
+  .pull-4 { position: relative; right: 33.33333%; left: auto; }
+  .push-5 { position: relative; left: 41.66667%; right: auto; }
+  .pull-5 { position: relative; right: 41.66667%; left: auto; }
+  .push-6 { position: relative; left: 50%; right: auto; }
+  .pull-6 { position: relative; right: 50%; left: auto; }
+  .push-7 { position: relative; left: 58.33333%; right: auto; }
+  .pull-7 { position: relative; right: 58.33333%; left: auto; }
+  .push-8 { position: relative; left: 66.66667%; right: auto; }
+  .pull-8 { position: relative; right: 66.66667%; left: auto; }
+  .push-9 { position: relative; left: 75%; right: auto; }
+  .pull-9 { position: relative; right: 75%; left: auto; }
+  .push-10 { position: relative; left: 83.33333%; right: auto; }
+  .pull-10 { position: relative; right: 83.33333%; left: auto; }
+  .push-11 { position: relative; left: 91.66667%; right: auto; }
+  .pull-11 { position: relative; right: 91.66667%; left: auto; }
+  .column.large-centered, .columns.large-centered { position: relative; margin-left: auto; margin-right: auto; float: none !important; }
+  .column.large-uncentered, .columns.large-uncentered { margin-left: 0; margin-right: 0; float: left !important; }
+  .column.large-uncentered.opposite, .columns.large-uncentered.opposite { float: right !important; } }
+/* Image Thumbnails */
+.th { line-height: 0; display: inline-block; border: solid 4px white; -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); -webkit-transition: all 200ms ease-out; -moz-transition: all 200ms ease-out; transition: all 200ms ease-out; }
+.th:hover, .th:focus { -webkit-box-shadow: 0 0 6px 1px rgba(43, 166, 203, 0.5); box-shadow: 0 0 6px 1px rgba(43, 166, 203, 0.5); }
+.th.radius { -webkit-border-radius: 3px; border-radius: 3px; }
+a.th { display: inline-block; }
+button, .button { border-style: solid; border-width: 1px; cursor: pointer; font-family: inherit; font-weight: bold; line-height: 1; margin: 0 0 1.25em; position: relative; text-decoration: none; text-align: center; display: inline-block; padding-top: 0.75em; padding-right: 1.5em; padding-bottom: 0.8125em; padding-left: 1.5em; font-size: 1em; background-color: #2ba6cb; border-color: #2284a1; color: white; }
+button:hover, button:focus, .button:hover, .button:focus { background-color: #2284a1; }
+button:hover, button:focus, .button:hover, .button:focus { color: white; }
+button.secondary, .button.secondary { background-color: #e9e9e9; border-color: #d0d0d0; color: #333333; }
+button.secondary:hover, button.secondary:focus, .button.secondary:hover, .button.secondary:focus { background-color: #d0d0d0; }
+button.secondary:hover, button.secondary:focus, .button.secondary:hover, .button.secondary:focus { color: #333333; }
+button.success, .button.success { background-color: #5da423; border-color: #457a1a; color: white; }
+button.success:hover, button.success:focus, .button.success:hover, .button.success:focus { background-color: #457a1a; }
+button.success:hover, button.success:focus, .button.success:hover, .button.success:focus { color: white; }
+button.alert, .button.alert { background-color: #c60f13; border-color: #970b0e; color: white; }
+button.alert:hover, button.alert:focus, .button.alert:hover, .button.alert:focus { background-color: #970b0e; }
+button.alert:hover, button.alert:focus, .button.alert:hover, .button.alert:focus { color: white; }
+button.large, .button.large { padding-top: 1em; padding-right: 2em; padding-bottom: 1.0625em; padding-left: 2em; font-size: 1.25em; }
+button.small, .button.small { padding-top: 0.5625em; padding-right: 1.125em; padding-bottom: 0.625em; padding-left: 1.125em; font-size: 0.8125em; }
+button.tiny, .button.tiny { padding-top: 0.4375em; padding-right: 0.875em; padding-bottom: 0.5em; padding-left: 0.875em; font-size: 0.6875em; }
+button.expand, .button.expand { padding-right: 0px; padding-left: 0px; width: 100%; }
+button.left-align, .button.left-align { text-align: left; text-indent: 0.75em; }
+button.right-align, .button.right-align { text-align: right; padding-right: 0.75em; }
+button.disabled, button[disabled], .button.disabled, .button[disabled] { background-color: #2ba6cb; border-color: #2284a1; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { background-color: #2284a1; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { color: white; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { background-color: #2ba6cb; }
+button.disabled.secondary, button[disabled].secondary, .button.disabled.secondary, .button[disabled].secondary { background-color: #e9e9e9; border-color: #d0d0d0; color: #333333; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { background-color: #d0d0d0; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { color: #333333; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { background-color: #e9e9e9; }
+button.disabled.success, button[disabled].success, .button.disabled.success, .button[disabled].success { background-color: #5da423; border-color: #457a1a; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { background-color: #457a1a; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { color: white; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { background-color: #5da423; }
+button.disabled.alert, button[disabled].alert, .button.disabled.alert, .button[disabled].alert { background-color: #c60f13; border-color: #970b0e; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { background-color: #970b0e; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { color: white; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { background-color: #c60f13; }
+button, .button { padding-top: 0.8125em; padding-bottom: 0.75em; -webkit-appearance: none; }
+button.tiny, .button.tiny { padding-top: 0.5em; padding-bottom: 0.4375em; -webkit-appearance: none; }
+button.small, .button.small { padding-top: 0.625em; padding-bottom: 0.5625em; -webkit-appearance: none; }
+button.large, .button.large { padding-top: 1.03125em; padding-bottom: 1.03125em; -webkit-appearance: none; }
+@media only screen { button, .button { -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; -webkit-transition: background-color 300ms ease-out; -moz-transition: background-color 300ms ease-out; transition: background-color 300ms ease-out; }
+  button:active, .button:active { -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) inset; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) inset; }
+  button.radius, .button.radius { -webkit-border-radius: 3px; border-radius: 3px; }
+  button.round, .button.round { -webkit-border-radius: 1000px; border-radius: 1000px; } }
+@media only screen and (min-width: 768px) { button, .button { display: inline-block; } }
+p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type p { font-size: 1.21875em; line-height: 1.6; }
+.subheader, #content #toctitle, .admonitionblock td.content > .title, .exampleblock > .title, .imageblock > .title, .videoblock > .title, .listingblock > .title, .literalblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, .sidebarblock > .title, .tableblock > .title, .verseblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title, .tableblock > caption { line-height: 1.4; color: #003b6b; font-weight: 300; margin-top: 0.2em; margin-bottom: 0.5em; }
+/* Typography resets */
+div, dl, dt, dd, ul, ol, li, h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6, pre, form, p, blockquote, th, td { margin: 0; padding: 0; direction: ltr; }
+/* Default Link Styles */
+a { color: #00579e; text-decoration: none; line-height: inherit; }
+a:hover, a:focus { color: #333333; }
+a img { border: none; }
+/* Default paragraph styles */
+p { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-weight: normal; font-size: 1em; line-height: 1.6; margin-bottom: 0.75em; text-rendering: optimizeLegibility; }
+p aside { font-size: 0.875em; line-height: 1.35; font-style: italic; }
+/* Default header styles */
+h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-weight: normal; font-style: normal; color: #7b2d00; text-rendering: optimizeLegibility; margin-top: 0.5em; margin-bottom: 0.5em; line-height: 1.2125em; }
+h1 small, h2 small, h3 small, #toctitle small, .sidebarblock > .content > .title small, h4 small, h5 small, h6 small { font-size: 60%; color: #ff6b15; line-height: 0; }
+h1 { font-size: 2.125em; }
+h2 { font-size: 1.6875em; }
+h3, #toctitle, .sidebarblock > .content > .title { font-size: 1.375em; }
+h4 { font-size: 1.125em; }
+h5 { font-size: 1.125em; }
+h6 { font-size: 1em; }
+hr { border: solid #dddddd; border-width: 1px 0 0; clear: both; margin: 1.25em 0 1.1875em; height: 0; }
+/* Helpful Typography Defaults */
+em, i { font-style: italic; line-height: inherit; }
+strong, b { font-weight: bold; line-height: inherit; }
+small { font-size: 60%; line-height: inherit; }
+code { font-family: Consolas, "Liberation Mono", Courier, monospace; font-weight: bold; color: #003426; }
+/* Lists */
+ul, ol, dl { font-size: 1em; line-height: 1.6; margin-bottom: 0.75em; list-style-position: outside; font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; }
+ul, ol { margin-left: 1.5em; }
+/* Unordered Lists */
+ul li ul, ul li ol { margin-left: 1.25em; margin-bottom: 0; font-size: 1em; /* Override nested font-size change */ }
+ul.square li ul, ul.circle li ul, ul.disc li ul { list-style: inherit; }
+ul.square { list-style-type: square; }
+ul.circle { list-style-type: circle; }
+ul.disc { list-style-type: disc; }
+ul.no-bullet { list-style: none; }
+/* Ordered Lists */
+ol li ul, ol li ol { margin-left: 1.25em; margin-bottom: 0; }
+/* Definition Lists */
+dl dt { margin-bottom: 0.3em; font-weight: bold; }
+dl dd { margin-bottom: 0.75em; }
+/* Abbreviations */
+abbr, acronym { text-transform: uppercase; font-size: 90%; color: black; border-bottom: 1px dotted #dddddd; cursor: help; }
+abbr { text-transform: none; }
+/* Blockquotes */
+blockquote { margin: 0 0 0.75em; padding: 0.5625em 1.25em 0 1.1875em; border-left: 1px solid #dddddd; }
+blockquote cite { display: block; font-size: 0.8125em; color: #e15200; }
+blockquote cite:before { content: "\2014 \0020"; }
+blockquote cite a, blockquote cite a:visited { color: #e15200; }
+blockquote, blockquote p { line-height: 1.6; color: #333333; }
+/* Microformats */
+.vcard { display: inline-block; margin: 0 0 1.25em 0; border: 1px solid #dddddd; padding: 0.625em 0.75em; }
+.vcard li { margin: 0; display: block; }
+.vcard .fn { font-weight: bold; font-size: 0.9375em; }
+.vevent .summary { font-weight: bold; }
+.vevent abbr { cursor: auto; text-decoration: none; font-weight: bold; border: none; padding: 0 0.0625em; }
+@media only screen and (min-width: 768px) { h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { line-height: 1.4; }
+  h1 { font-size: 2.75em; }
+  h2 { font-size: 2.3125em; }
+  h3, #toctitle, .sidebarblock > .content > .title { font-size: 1.6875em; }
+  h4 { font-size: 1.4375em; } }
+/* Print styles.  Inlined to avoid required HTTP connection: www.phpied.com/delay-loading-your-print-css/ Credit to Paul Irish and HTML5 Boilerplate (html5boilerplate.com)
+*/
+.print-only { display: none !important; }
+@media print { * { background: transparent !important; color: #000 !important; /* Black prints faster: h5bp.com/s */ box-shadow: none !important; text-shadow: none !important; }
+  a, a:visited { text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; /* h5bp.com/t */ }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page { margin: 0.5cm; }
+  p, h2, h3, #toctitle, .sidebarblock > .content > .title { orphans: 3; widows: 3; }
+  h2, h3, #toctitle, .sidebarblock > .content > .title { page-break-after: avoid; }
+  .hide-on-print { display: none !important; }
+  .print-only { display: block !important; }
+  .hide-for-print { display: none !important; }
+  .show-for-print { display: inherit !important; } }
+/* Tables */
+table { background: white; margin-bottom: 1.25em; border: solid 1px #d8d8ce; }
+table thead, table tfoot { background: -webkit-linear-gradient(top, #add386, #90b66a); font-weight: bold; }
+table thead tr th, table thead tr td, table tfoot tr th, table tfoot tr td { padding: 0.5em 0.625em 0.625em; font-size: inherit; color: white; text-align: left; }
+table tr th, table tr td { padding: 0.5625em 0.625em; font-size: inherit; color: #6d6e71; }
+table tr.even, table tr.alt, table tr:nth-of-type(even) { background: #edf2f2; }
+table thead tr th, table tfoot tr th, table tbody tr td, table tr td, table tfoot tr td { display: table-cell; line-height: 1.4; }
+a:hover, a:focus { text-decoration: underline; }
+.clearfix:before, .clearfix:after, .float-group:before, .float-group:after { content: " "; display: table; }
+.clearfix:after, .float-group:after { clear: both; }
+*:not(pre) > code { font-size: inherit; padding: 3px 2px 1px 2px; white-space: nowrap; background-color: #eeeeee; border: 1px solid #dddddd; -webkit-border-radius: 0; border-radius: 0; text-shadow: none; }
+pre, pre > code { line-height: 1.6; color: black; font-family: Consolas, "Liberation Mono", Courier, monospace; font-weight: normal; }
+kbd.keyseq { color: #333333; }
+kbd:not(.keyseq) { display: inline-block; color: black; font-size: 0.75em; line-height: 1.4; background-color: #F7F7F7; border: 1px solid #ccc; -webkit-border-radius: 3px; border-radius: 3px; -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset; margin: -0.15em 0.15em 0 0.15em; padding: 0.2em 0.6em 0.2em 0.5em; vertical-align: middle; white-space: nowrap; }
+kbd kbd:first-child { margin-left: 0; }
+kbd kbd:last-child { margin-right: 0; }
+.menuseq, .menu { color: black; }
+#header, #content, #footnotes, #footer { width: 100%; margin-left: auto; margin-right: auto; margin-top: 0; margin-bottom: 0; max-width: 62.5em; *zoom: 1; position: relative; padding-left: 1.5em; padding-right: 1.5em; }
+#header:before, #header:after, #content:before, #content:after, #footnotes:before, #footnotes:after, #footer:before, #footer:after { content: " "; display: table; }
+#header:after, #content:after, #footnotes:after, #footer:after { clear: both; }
+#header { margin-bottom: 2.5em; }
+#header > h1 { color: #7b2d00; font-weight: normal; border-bottom: 1px solid #dddddd; margin-bottom: -28px; padding-bottom: 32px; }
+#header span { color: #333333; }
+#header #revnumber { text-transform: capitalize; }
+#header br { display: none; }
+#header br + span { padding-left: 3px; }
+#header br + span:before { content: "\2013 \0020"; }
+#header br + span.author { padding-left: 0; }
+#header br + span.author:before { content: ", "; }
+#toc { border-bottom: 1px solid #dddddd; padding-bottom: 1.25em; }
+#toc > ul { margin-left: 0.25em; }
+#toc ul.sectlevel0 > li > a { font-style: italic; }
+#toc ul.sectlevel0 ul.sectlevel1 { margin-left: 0; margin-top: 0.5em; margin-bottom: 0.5em; }
+#toc ul { list-style-type: none; }
+#toctitle { color: #003b6b; }
+@media only screen and (min-width: 1280px) { body.toc2 { padding-left: 20em; }
+  #toc.toc2 { position: fixed; width: 20em; left: 0; top: 0; border-right: 1px solid #dddddd; border-bottom: 0; z-index: 1000; padding: 1em; height: 100%; overflow: auto; }
+  #toc.toc2 #toctitle { margin-top: 0; }
+  #toc.toc2 > ul { font-size: .95em; }
+  #toc.toc2 ul ul { margin-left: 0; padding-left: 1.25em; }
+  #toc.toc2 ul.sectlevel0 ul.sectlevel1 { padding-left: 0; margin-top: 0.5em; margin-bottom: 0.5em; }
+  body.toc2.toc-right { padding-left: 0; padding-right: 20em; }
+  body.toc2.toc-right #toc.toc2 { border-right: 0; border-left: 1px solid #dddddd; left: auto; right: 0; } }
+#content #toc { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; border-width: 0; -webkit-border-radius: 0; border-radius: 0; }
+#content #toc > :first-child { margin-top: 0; }
+#content #toc > :last-child { margin-bottom: 0; }
+#content #toc a { text-decoration: none; }
+#content #toctitle { font-weight: bold; font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-size: 1em; padding-left: 0.125em; }
+#footer { max-width: 100%; background-color: none; padding: 1.25em; }
+#footer-text { color: black; line-height: 1.44; }
+.sect1 { padding-bottom: 1.25em; }
+.sect1 + .sect1 { border-top: 1px solid #dddddd; }
+#content h1 > a.anchor, h2 > a.anchor, h3 > a.anchor, #toctitle > a.anchor, .sidebarblock > .content > .title > a.anchor, h4 > a.anchor, h5 > a.anchor, h6 > a.anchor { position: absolute; width: 1em; margin-left: -1em; display: block; text-decoration: none; visibility: hidden; text-align: center; font-weight: normal; }
+#content h1 > a.anchor:before, h2 > a.anchor:before, h3 > a.anchor:before, #toctitle > a.anchor:before, .sidebarblock > .content > .title > a.anchor:before, h4 > a.anchor:before, h5 > a.anchor:before, h6 > a.anchor:before { content: '\00A7'; font-size: .85em; vertical-align: text-top; display: block; margin-top: 0.05em; }
+#content h1:hover > a.anchor, #content h1 > a.anchor:hover, h2:hover > a.anchor, h2 > a.anchor:hover, h3:hover > a.anchor, #toctitle:hover > a.anchor, .sidebarblock > .content > .title:hover > a.anchor, h3 > a.anchor:hover, #toctitle > a.anchor:hover, .sidebarblock > .content > .title > a.anchor:hover, h4:hover > a.anchor, h4 > a.anchor:hover, h5:hover > a.anchor, h5 > a.anchor:hover, h6:hover > a.anchor, h6 > a.anchor:hover { visibility: visible; }
+#content h1 > a.link, h2 > a.link, h3 > a.link, #toctitle > a.link, .sidebarblock > .content > .title > a.link, h4 > a.link, h5 > a.link, h6 > a.link { color: #7b2d00; text-decoration: none; }
+#content h1 > a.link:hover, h2 > a.link:hover, h3 > a.link:hover, #toctitle > a.link:hover, .sidebarblock > .content > .title > a.link:hover, h4 > a.link:hover, h5 > a.link:hover, h6 > a.link:hover { color: #622400; }
+.imageblock, .literalblock, .listingblock, .verseblock, .videoblock { margin-bottom: 1.25em; }
+.admonitionblock td.content > .title, .exampleblock > .title, .imageblock > .title, .videoblock > .title, .listingblock > .title, .literalblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, .sidebarblock > .title, .tableblock > .title, .verseblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title { text-align: left; font-weight: bold; }
+.tableblock > caption { text-align: left; font-weight: bold; white-space: nowrap; overflow: visible; max-width: 0; }
+table.tableblock #preamble > .sectionbody > .paragraph:first-of-type p { font-size: inherit; }
+.admonitionblock > table { border: 0; background: none; width: 100%; }
+.admonitionblock > table td.icon { text-align: center; width: 80px; }
+.admonitionblock > table td.icon img { max-width: none; }
+.admonitionblock > table td.icon .title { font-weight: bold; text-transform: uppercase; }
+.admonitionblock > table td.content { padding-left: 1.125em; padding-right: 1.25em; border-left: 1px solid #dddddd; color: #333333; }
+.admonitionblock > table td.content > :last-child > :last-child { margin-bottom: 0; }
+.exampleblock > .content { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; -webkit-border-radius: 0; border-radius: 0; }
+.exampleblock > .content > :first-child { margin-top: 0; }
+.exampleblock > .content > :last-child { margin-bottom: 0; }
+.exampleblock > .content h1, .exampleblock > .content h2, .exampleblock > .content h3, .exampleblock > .content #toctitle, .sidebarblock.exampleblock > .content > .title, .exampleblock > .content h4, .exampleblock > .content h5, .exampleblock > .content h6, .exampleblock > .content p { color: #333333; }
+.exampleblock > .content h1, .exampleblock > .content h2, .exampleblock > .content h3, .exampleblock > .content #toctitle, .sidebarblock.exampleblock > .content > .title, .exampleblock > .content h4, .exampleblock > .content h5, .exampleblock > .content h6 { line-height: 1; margin-bottom: 0.625em; }
+.exampleblock > .content h1.subheader, .exampleblock > .content h2.subheader, .exampleblock > .content h3.subheader, .exampleblock > .content .subheader#toctitle, .sidebarblock.exampleblock > .content > .subheader.title, .exampleblock > .content h4.subheader, .exampleblock > .content h5.subheader, .exampleblock > .content h6.subheader { line-height: 1.4; }
+.exampleblock.result > .content { -webkit-box-shadow: 0 1px 8px #aaaaaa; box-shadow: 0 1px 8px #aaaaaa; }
+.sidebarblock { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; -webkit-border-radius: 0; border-radius: 0; }
+.sidebarblock > :first-child { margin-top: 0; }
+.sidebarblock > :last-child { margin-bottom: 0; }
+.sidebarblock h1, .sidebarblock h2, .sidebarblock h3, .sidebarblock #toctitle, .sidebarblock > .content > .title, .sidebarblock h4, .sidebarblock h5, .sidebarblock h6, .sidebarblock p { color: #333333; }
+.sidebarblock h1, .sidebarblock h2, .sidebarblock h3, .sidebarblock #toctitle, .sidebarblock > .content > .title, .sidebarblock h4, .sidebarblock h5, .sidebarblock h6 { line-height: 1; margin-bottom: 0.625em; }
+.sidebarblock h1.subheader, .sidebarblock h2.subheader, .sidebarblock h3.subheader, .sidebarblock .subheader#toctitle, .sidebarblock > .content > .subheader.title, .sidebarblock h4.subheader, .sidebarblock h5.subheader, .sidebarblock h6.subheader { line-height: 1.4; }
+.sidebarblock > .content > .title { color: #003b6b; margin-top: 0; line-height: 1.6; }
+.exampleblock > .content > :last-child > :last-child, .exampleblock > .content .olist > ol > li:last-child > :last-child, .exampleblock > .content .ulist > ul > li:last-child > :last-child, .exampleblock > .content .qlist > ol > li:last-child > :last-child, .sidebarblock > .content > :last-child > :last-child, .sidebarblock > .content .olist > ol > li:last-child > :last-child, .sidebarblock > .content .ulist > ul > li:last-child > :last-child, .sidebarblock > .content .qlist > ol > li:last-child > :last-child { margin-bottom: 0; }
+.literalblock > .content pre, .listingblock > .content pre { background: #eeeeee; border-width: 1px; border-style: dashed; border-color: #666666; -webkit-border-radius: 0; border-radius: 0; padding: 1.25em 1.5625em 1.125em 1.5625em; word-wrap: break-word; }
+.literalblock > .content pre.nowrap, .listingblock > .content pre.nowrap { overflow-x: auto; white-space: pre; word-wrap: normal; }
+.literalblock > .content pre > code, .listingblock > .content pre > code { display: block; }
+@media only screen { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.72em; } }
+@media only screen and (min-width: 768px) { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.81em; } }
+@media only screen and (min-width: 1280px) { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.9em; } }
+.listingblock > .content { position: relative; }
+.listingblock:hover code[class*=" language-"]:before { text-transform: uppercase; font-size: 0.9em; color: #999; position: absolute; top: 0.375em; right: 0.375em; }
+.listingblock:hover code.asciidoc:before { content: "asciidoc"; }
+.listingblock:hover code.clojure:before { content: "clojure"; }
+.listingblock:hover code.css:before { content: "css"; }
+.listingblock:hover code.groovy:before { content: "groovy"; }
+.listingblock:hover code.html:before { content: "html"; }
+.listingblock:hover code.java:before { content: "java"; }
+.listingblock:hover code.javascript:before { content: "javascript"; }
+.listingblock:hover code.python:before { content: "python"; }
+.listingblock:hover code.ruby:before { content: "ruby"; }
+.listingblock:hover code.scss:before { content: "scss"; }
+.listingblock:hover code.xml:before { content: "xml"; }
+.listingblock:hover code.yaml:before { content: "yaml"; }
+.listingblock.terminal pre .command:before { content: attr(data-prompt); padding-right: 0.5em; color: #999; }
+.listingblock.terminal pre .command:not([data-prompt]):before { content: '$'; }
+table.pyhltable { border: 0; margin-bottom: 0; }
+table.pyhltable td { vertical-align: top; padding-top: 0; padding-bottom: 0; }
+table.pyhltable td.code { padding-left: .75em; padding-right: 0; }
+.highlight.pygments .lineno, table.pyhltable td:not(.code) { color: #999; padding-left: 0; padding-right: .5em; border-right: 1px solid #dddddd; }
+.highlight.pygments .lineno { display: inline-block; margin-right: .25em; }
+table.pyhltable .linenodiv { background-color: transparent !important; padding-right: 0 !important; }
+.quoteblock { margin: 0 0 0.75em; padding: 0.5625em 1.25em 0 1.1875em; border-left: 1px solid #dddddd; }
+.quoteblock blockquote { margin: 0 0 0.75em 0; padding: 0 0 0.5625em 0; border: 0; }
+.quoteblock blockquote > .paragraph:last-child p { margin-bottom: 0; }
+.quoteblock .attribution { margin-top: -.25em; padding-bottom: 0.5625em; font-size: 0.8125em; color: #e15200; }
+.quoteblock .attribution br { display: none; }
+.quoteblock .attribution cite { display: block; margin-bottom: 0.625em; }
+table thead th, table tfoot th { font-weight: bold; }
+table.tableblock.grid-all { border-collapse: separate; border-spacing: 1px; -webkit-border-radius: 0; border-radius: 0; border-top: 1px solid #dddddd; border-bottom: 1px solid #dddddd; }
+table.tableblock.frame-topbot, table.tableblock.frame-none { border-left: 0; border-right: 0; }
+table.tableblock.frame-sides, table.tableblock.frame-none { border-top: 0; border-bottom: 0; }
+table.tableblock td .paragraph:last-child p, table.tableblock td > p:last-child { margin-bottom: 0; }
+th.tableblock.halign-left, td.tableblock.halign-left { text-align: left; }
+th.tableblock.halign-right, td.tableblock.halign-right { text-align: right; }
+th.tableblock.halign-center, td.tableblock.halign-center { text-align: center; }
+th.tableblock.valign-top, td.tableblock.valign-top { vertical-align: top; }
+th.tableblock.valign-bottom, td.tableblock.valign-bottom { vertical-align: bottom; }
+th.tableblock.valign-middle, td.tableblock.valign-middle { vertical-align: middle; }
+p.tableblock.header { color: white; font-weight: bold; }
+td > div.verse { white-space: pre; }
+ol { margin-left: 1.75em; }
+ul li ol { margin-left: 1.5em; }
+dl dd { margin-left: 1.125em; }
+dl dd:last-child, dl dd:last-child > :last-child { margin-bottom: 0; }
+ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .ulist, .ulist .olist, .olist .ulist { margin-bottom: 0.375em; }
+ul.unstyled, ol.unnumbered, ul.checklist, ul.none { list-style-type: none; }
+ul.unstyled, ol.unnumbered, ul.checklist { margin-left: 0.625em; }
+ul.checklist li > p:first-child > i[class^="icon-check"]:first-child, ul.checklist li > p:first-child > input[type="checkbox"]:first-child { margin-right: 0.25em; }
+ul.checklist li > p:first-child > input[type="checkbox"]:first-child { position: relative; top: 1px; }
+ul.inline { margin: 0 auto 0.375em auto; margin-left: -1.375em; margin-right: 0; padding: 0; list-style: none; overflow: hidden; }
+ul.inline > li { list-style: none; float: left; margin-left: 1.375em; display: block; }
+ul.inline > li > * { display: block; }
+.unstyled dl dt { font-weight: normal; font-style: normal; }
+ol.arabic { list-style-type: decimal; }
+ol.decimal { list-style-type: decimal-leading-zero; }
+ol.loweralpha { list-style-type: lower-alpha; }
+ol.upperalpha { list-style-type: upper-alpha; }
+ol.lowerroman { list-style-type: lower-roman; }
+ol.upperroman { list-style-type: upper-roman; }
+ol.lowergreek { list-style-type: lower-greek; }
+.hdlist > table, .colist > table { border: 0; background: none; }
+.hdlist > table > tbody > tr, .colist > table > tbody > tr { background: none; }
+td.hdlist1 { padding-right: .8em; font-weight: bold; }
+td.hdlist1, td.hdlist2 { vertical-align: top; }
+.literalblock + .colist, .listingblock + .colist { margin-top: -0.5em; }
+.colist > table tr > td:first-of-type { padding: 0 .8em; line-height: 1; }
+.colist > table tr > td:last-of-type { padding: 0.25em 0; }
+.qanda > ol > li > p > em:only-child { color: #004985; }
+.thumb, .th { line-height: 0; display: inline-block; border: solid 4px white; -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); }
+.imageblock.left, .imageblock[style*="float: left"] { margin: 0.25em 0.625em 1.25em 0; }
+.imageblock.right, .imageblock[style*="float: right"] { margin: 0.25em 0 1.25em 0.625em; }
+.imageblock > .title { margin-bottom: 0; }
+.imageblock.thumb, .imageblock.th { border-width: 6px; }
+.imageblock.thumb > .title, .imageblock.th > .title { padding: 0 0.125em; }
+.image.left, .image.right { margin-top: 0.25em; margin-bottom: 0.25em; display: inline-block; line-height: 0; }
+.image.left { margin-right: 0.625em; }
+.image.right { margin-left: 0.625em; }
+a.image { text-decoration: none; }
+span.footnote, span.footnoteref { vertical-align: super; font-size: 0.875em; }
+span.footnote a, span.footnoteref a { text-decoration: none; }
+#footnotes { padding-top: 0.75em; padding-bottom: 0.75em; margin-bottom: 0.625em; }
+#footnotes hr { width: 20%; min-width: 6.25em; margin: -.25em 0 .75em 0; border-width: 1px 0 0 0; }
+#footnotes .footnote { padding: 0 0.375em; line-height: 1.3; font-size: 0.875em; margin-left: 1.2em; text-indent: -1.2em; margin-bottom: .2em; }
+#footnotes .footnote a:first-of-type { font-weight: bold; text-decoration: none; }
+#footnotes .footnote:last-of-type { margin-bottom: 0; }
+#content #footnotes { margin-top: -0.625em; margin-bottom: 0; padding: 0.75em 0; }
+.gist .file-data > table { border: none; background: #fff; width: 100%; margin-bottom: 0; }
+.gist .file-data > table td.line-data { width: 99%; }
+div.unbreakable { page-break-inside: avoid; }
+.big { font-size: larger; }
+.small { font-size: smaller; }
+.underline { text-decoration: underline; }
+.overline { text-decoration: overline; }
+.line-through { text-decoration: line-through; }
+.aqua { color: #00bfbf; }
+.aqua-background { background-color: #00fafa; }
+.black { color: black; }
+.black-background { background-color: black; }
+.blue { color: #0000bf; }
+.blue-background { background-color: #0000fa; }
+.fuchsia { color: #bf00bf; }
+.fuchsia-background { background-color: #fa00fa; }
+.gray { color: #606060; }
+.gray-background { background-color: #7d7d7d; }
+.green { color: #006000; }
+.green-background { background-color: #007d00; }
+.lime { color: #00bf00; }
+.lime-background { background-color: #00fa00; }
+.maroon { color: #600000; }
+.maroon-background { background-color: #7d0000; }
+.navy { color: #000060; }
+.navy-background { background-color: #00007d; }
+.olive { color: #606000; }
+.olive-background { background-color: #7d7d00; }
+.purple { color: #600060; }
+.purple-background { background-color: #7d007d; }
+.red { color: #bf0000; }
+.red-background { background-color: #fa0000; }
+.silver { color: #909090; }
+.silver-background { background-color: #bcbcbc; }
+.teal { color: #006060; }
+.teal-background { background-color: #007d7d; }
+.white { color: #bfbfbf; }
+.white-background { background-color: #fafafa; }
+.yellow { color: #bfbf00; }
+.yellow-background { background-color: #fafa00; }
+span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
+.admonitionblock td.icon [class^="icon-"]:before { font-size: 2.5em; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); cursor: default; }
+.admonitionblock td.icon .icon-note:before { content: "\f05a"; color: #00579e; color: #004176; }
+.admonitionblock td.icon .icon-tip:before { content: "\f0eb"; text-shadow: 1px 1px 2px rgba(155, 155, 0, 0.8); color: #111; }
+.admonitionblock td.icon .icon-warning:before { content: "\f071"; color: #bf6900; }
+.admonitionblock td.icon .icon-caution:before { content: "\f06d"; color: #bf3400; }
+.admonitionblock td.icon .icon-important:before { content: "\f06a"; color: #bf0000; }
+.conum { display: inline-block; color: white !important; background-color: black; -webkit-border-radius: 100px; border-radius: 100px; text-align: center; width: 20px; height: 20px; font-size: 12px; font-weight: bold; line-height: 20px; font-family: Arial, sans-serif; font-style: normal; position: relative; top: -2px; letter-spacing: -1px; }
+.conum * { color: white !important; }
+.conum + b { display: none; }
+.conum:after { content: attr(data-value); }
+.conum:not([data-value]):empty { display: none; }
+body { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-size: 16px; color: #111; }
+h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { border-bottom: 1px solid #dddddd; }
+#toctitle { color: #00406F; font-weight: normal; margin-top: 1.5em; }
+.sidebarblock { border-color: #aaa; }
+code { -webkit-border-radius: 4px; border-radius: 4px; }
+p.tableblock.header { color: #6d6e71; }
+</style>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.3/styles/default.min.css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.3/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_upgrading_http_to_websocket">Upgrading HTTP to WebSocket</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_near_real_time_applications_with_http">Near Real Time Applications With HTTP</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_polling">Polling</a></li>
+<li><a href="#_long_polling">Long Polling</a></li>
+<li><a href="#_http_streaming">HTTP Streaming</a></li>
+</ul>
+</li>
+<li><a href="#_server_sent_events">Server-Sent Events</a></li>
+<li><a href="#_introducing_websocket_api">Introducing WebSocket API</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_websocket_interface">WebSocket Interface</a></li>
+</ul>
+</li>
+<li><a href="#_websocket_frameworks">WebSocket Frameworks</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_the_portal">The Portal</a></li>
+<li><a href="#_atmosphere">Atmosphere</a></li>
+</ul>
+</li>
+<li><a href="#_when_use_websocket">When Use WebSocket</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_csv">CSV</a></li>
+<li><a href="#_xml">XML</a></li>
+<li><a href="#_json">JSON</a></li>
+<li><a href="#_google_protocol_buffers">Google Protocol Buffers</a></li>
+</ul>
+</li>
+<li><a href="#_websockets_and_proxies">WebSockets and Proxies</a></li>
+<li><a href="#_adding_an_auction_to_save_sick_child">Adding an Auction to Save Sick Child</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_monitor_the_websocket_traffic_with_chrome_developers_tools">Monitor the WebSocket traffic with Chrome Developers Tools</a></li>
+<li><a href="#_sniffing_websocket_frames_with_wireshark">Sniffing WebSocket frames with Wireshark</a></li>
+<li><a href="#Auction_Messages_Specification">Save Sick Child Auction Protocol</a></li>
+</ul>
+</li>
+<li><a href="#_summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_upgrading_http_to_websocket">Upgrading HTTP to WebSocket</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This chapter is about upgrading from the HTTP protocol to a more responsive HTML5 WebSocket. It starts with a brief overview of the existing legacy Web networking, and then you&#8217;ll learn why and how to use HTML5&#8217;s Server-Sent Events (SSE) and WebSockets.</p>
+</div>
+<div class="paragraph">
+<p>The new version of our Save Sick Child application will include the online auction utilizing WebSocket, and you&#8217;ll see an example of using Server-Sent Events for broadcasting the up-to-the-minute donation information. The goal is to let you see the advantages of changing the way of client-server communications on the Web. You&#8217;ll clearly see the advantages of WebSocket over a regular HTTP by monitoring the network traffic with such tools as Wireshark and Google Chrome Developer Tools.</p>
+</div>
+<div class="paragraph">
+<p>All the server-side functionality supporting this chapter is written in Java, using Java API for WebSocket <a href="http://java.net/projects/tyrus">reference implementation</a>, which will be the part of upcoming Java EE 7 specification. We are using the <a href="http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/">latest available build of the Glassfish Application Server</a>. If you don&#8217;t know Java, just treat this server-side setup as a service that supports WebSocket protocol. For Java developers interested in diving into the server-side, we&#8217;ll provide the source code and brief comments as a part of the code samples that come with this book.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;ll show and compare the server-side data push done with Server-Sent Events and WebSocket. Also you&#8217;ll see a brief overview of popular existing frameworks that can streamline your WebSocket application development.</p>
+</div>
+<div class="sect2">
+<h3 id="_near_real_time_applications_with_http">Near Real Time Applications With HTTP</h3>
+<div class="paragraph">
+<p>The HTTP protocol is the lingua franca of today&#8217;s Web  applications, where client-server communications are based on the request-response paradigm. On the low level, Web browsers establish a TCP/IP connection for each HTTP session. Currently there are 3 basic options that developers use for the browser-server communication: polling, long polling, and streaming. These options are hacks on the top of a half-duplex (a one way street) HTTP protocol to simulate real-time behavior. By <em>real-time</em> we mean the ability to react to some event as it happens. Lets discuss each of them.</p>
+</div>
+<div class="sect3">
+<h4 id="_polling">Polling</h4>
+<div class="paragraph">
+<p>With <em>polling</em>, your client code sends requests to the server after based on some pre-configured interval (e.g. using JavaScript <code>setInterval()</code> function). Some of the server&#8217;s responses will be empty, if the requested data is not ready yet as illustrated in <a href="#FIG9-1">Polling</a>. For example, if you&#8217;re running an online auctions and sends the request to see the updated bids, you won&#8217;t receive any data back unless someone placed a new bid. Visualize a child seating on back seat of your car and asking every minute, "Have we arrived yet?" . And you&#8217;re politely replying, "Not just yet" - this is similar to an empty server response. There is no valuable payload for this kid, but she&#8217;s still receiving some "metadata". HTTP polling may result in receiving verbose HTTP response headers bearing no data load, let alone destructing the driver (think the server) from performing other responsibilities.</p>
+</div>
+<div id="FIG9-1" class="paragraph">
+<div class="title">Polling</div>
+<p><span class="image"><img src="./images/fig_09_01.png" alt="image"></span></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_long_polling">Long Polling</h4>
+<div class="paragraph">
+<p><em>Long polling</em> (see <a href="#FIG9-2">Long Polling</a> ) starts similarly to polling: the client sends the HTTP request to the server. But in this case instead of sending an empty response back, the server waits till the data for the client becomes available. If the requested information is not available within the specified time interval, the server sends an empty response to the client, closes, and re-establishes the connection.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;ll give you one more analogy to compare polling and long polling. Imagine a party at the top floor of a building equipped with a smart elevator that goes up every minute and opens the door just in case if one of the guests wants to go down to smoke a cigarette. If no one enters the elevator, it goes to the ground level and in 60 seconds goes up again. This is the polling scenario. But if this elevator would go up, and waited till someone would actually decide to go down, then we could call it a long polling mode.</p>
+</div>
+<div class="paragraph">
+<p>From the HTTP specification perspective this hack is legit: the long polling mode may seem as if we deal with the slow-responding server. That is why this technique also referred as <em>Hanging GET</em>. If you see an online auction that automatically modifies the prices as people bid on items it looks as if the server pushes the data to you. But the chances are, this functionality was implemented using long polling, which is not a real server-side data push, but its emulation.</p>
+</div>
+<div id="FIG9-2" class="paragraph">
+<div class="title">Long Polling</div>
+<p><span class="image"><img src="./images/fig_09_02.png" alt="image"></span></p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_streaming">HTTP Streaming</h4>
+<div class="paragraph">
+<p>The client sends the request for data. As soon as the server gets the data ready, it starts streaming (adding more and more data to the response object) without closing the connections. The server pushes the data to the client pretending that the response never ends <a href="#FIG9-3">HTTP Streaming</a>. For example, requesting a video from Youtube.com results in streaming data (frame after frame) without closing the HTTP connection.</p>
+</div>
+<div id="FIG9-3" class="paragraph">
+<div class="title">HTTP Streaming</div>
+<p><span class="image"><img src="./images/fig_09_03.png" alt="image"></span></p>
+</div>
+<div class="paragraph">
+<p>Polling and streaming can be used as a fall-back for legacy browsers that don&#8217;t support the HTML5 APIs <em>Server-Sent Events</em> and <em>WebSocket</em>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_server_sent_events">Server-Sent Events</h3>
+<div class="paragraph">
+<p>Before diving into the WebSocket protocol lets get familiar with the standardized way of implementing  <a href="http://dev.w3.org/html5/eventsource/">Server-Sent Events</a>. W3C has published an API for Web browsers to allow them to subscribe to the events sent by the server. All modern browsers support the <code>EventSource</code> object, which can handle events arriving in the form of DOM events. This is not a reqiest-response paradigm, but rather a unidirectional data push - from server to browser. The following code snippet shows how a Web browser can subscribe and listen to server-sent events.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var myEventSource = (function(){
+    'use strict';
+    var eventSource;
+    if ( !! window.EventSource) {
+        eventSource = new EventSource('http://localhost:8080/donate_web/api/donations/events'); <i class="conum" data-value="1"></i><b>(1)</b>
+    } else {
+        // notify use that her browser doesn't support SSE
+    }
+
+    eventSource.addEventListener('open', function(e) { <i class="conum" data-value="2"></i><b>(2)</b>
+        // Connection was opened.
+    }, false);
+
+    eventSource.addEventListener('create', function(e) { <i class="conum" data-value="3"></i><b>(3)</b>
+        // do something with data
+    }, false);
+
+    eventSource.addEventListener('update', function(e) { <i class="conum" data-value="4"></i><b>(4)</b>
+        // do something with data
+    }, false);
+
+    eventSource.addEventListener('error', function(e) {
+        if (e.readyState === EventSource.CLOSED) {
+            // Connection was closed.
+        }
+    }, false);
+
+    return eventSource;
+})();</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Create a new <code>EventSource</code> object. At this point the browser will send the <code>GET</code> request to the specified server-side endpoint to register itself on the server.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Add handlers for the <code>open</code> and <code>error</code> events.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Handle messages in <code>create</code> events by processing of the <code>e.data</code> content.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Handle messages in <code>update</code> events by processing of the <code>e.data</code> content.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The above samples create listeners to subscribe specifically <code>create</code> and <code>update</code> events, but if you&#8217;d like to subscribe to any events, you could have used the following syntax:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">source.onmessage(function(e){
+    // process the content of e.data here
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>SSE is a good technique for the use cases when the client doesn&#8217;t need to send the data to the server. In the above example the server sends two types of custom events <code>create</code> and <code>update</code> to notify subscribed clients about updated donation data so the active clients can monitor the fund-raising process. You can create as many custom events as needed by the application.</p>
+</div>
+<div class="paragraph">
+<p>The server sends events as text messages that start with <code>data:</code> and end with a pair of new line characters, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">'data: {"price": "123.45"}/n/n`</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>SSE is still HTTP-based, and it requires server&#8217;s support of the combination of HTTP 1.1 keep-alive connections and the <code>text/event-stream</code> content type in HTTP response. The overhead is minimal - instead of hundreds of bytes in request and response headers, the server sends only the responses when the data has changed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_introducing_websocket_api">Introducing WebSocket API</h3>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Reducing kilobytes of data to 2 bytes is more than "a little more byte efficient", and reducing latency from 150ms (TCP round trip to set up the connection plus a packet for the message) to 50ms (just the packet for the message) is far more than marginal. In fact, these two factors alone are enough to make WebSocket seriously interesting to Google.</p>
+</div>
+<div class="paragraph">
+<p>source: <a href="http://ietf.org/mail-archive/web/hybi/current/msg00784.html">http://ietf.org/mail-archive/web/hybi/current/msg00784.html</a></p>
+</div>
+</blockquote>
+<div class="attribution">
+<cite>Ian Hickson</cite><br>
+&#8212; HTML spec editor at Google
+</div>
+</div>
+<div class="paragraph">
+<p>WebSocket is a bi-directional full-duplex socket-based protocol. According to <a href="http://tools.ietf.org/html/rfc6455">RFC 6455</a>  - the Internet Engineering Task Force (IETF) standard document - the goal of WebSocket technology is to provide a mechanism for Web applications that need two-way communications with servers. This technology doesn&#8217;t rely on HTTP hacks or on opening multiple connections using <code>XMLHttpRequest</code> or <code>&lt;iframe&gt;</code> and long polling. The idea behind WebSocket is not overly complicated:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Establish a socket connection between the client and the server using HTTP for the initial handshake.</p>
+</li>
+<li>
+<p>Switch the communication protocol from HTTP to a socket-based protocol.</p>
+</li>
+<li>
+<p>Send messages in both directions simultaneously (a.k.a. full duplex mode).</p>
+</li>
+<li>
+<p>Send messages independently. This is not a request-response model as both the server and the client can initiate the data transmission which enables the real server-side push.</p>
+</li>
+<li>
+<p>Both the server and the client can initiate disconnects too.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You will get a better understanding of each of these statements after reading the section WebSocket API later in this chapter.</p>
+</div>
+<div class="paragraph">
+<p>The WebSocket protocol defines two new <a href="http://en.wikipedia.org/wiki/URI_scheme">URI schemes</a> <code>ws</code> and <code>wss</code> for unencrypted and encrypted connections respectively. The <code>ws</code> (WebSocket) URI scheme is similar to HTTP URI scheme and identifies that a WebSocket connection will be established using TCP/IP protocol without encryption. The`wss` (WebSocket Secure) URI scheme identifies that the traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides such benefits over TCP connection as data confidentiality, integrity, and the endpoint authentication. Apart from the scheme name, WebSocket URI schemes use generic URI syntax.</p>
+</div>
+<div class="sect3">
+<h4 id="_websocket_interface">WebSocket Interface</h4>
+<div class="paragraph">
+<p>The W3C expert group uses <a href="http://en.wikipedia.org/wiki/Interface_description_language">Interface Description Language</a> to describe what the WebSocket interface should look like. This is how it was defined:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="java language-java">[Constructor(DOMString url, optional (DOMString or DOMString[]) protocols)] <i class="conum" data-value="1"></i><b>(1)</b>
+interface WebSocket : EventTarget {
+  readonly attribute DOMString url;
+
+  const unsigned short CONNECTING = 0;          <i class="conum" data-value="2"></i><b>(2)</b>
+  const unsigned short OPEN = 1;
+  const unsigned short CLOSING = 2;
+  const unsigned short CLOSED = 3;
+  readonly attribute unsigned short readyState;
+  readonly attribute unsigned long bufferedAmount;
+
+  // networking
+  [TreatNonCallableAsNull] attribute Function? onopen;      <i class="conum" data-value="3"></i><b>(3)</b>
+  [TreatNonCallableAsNull] attribute Function? onerror;
+  [TreatNonCallableAsNull] attribute Function? onclose;
+  readonly attribute DOMString extensions;
+  readonly attribute DOMString protocol;                    <i class="conum" data-value="4"></i><b>(4)</b>
+  void close([Clamp] optional unsigned short code, optional DOMString reason);
+
+  // messaging
+  [TreatNonCallableAsNull] attribute Function? onmessage;
+           attribute DOMString binaryType;
+  void send(DOMString data);            <i class="conum" data-value="5"></i><b>(5)</b>
+  void send(ArrayBufferView data);
+  void send(Blob data);
+};</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The constructor requires an endpoint URI and optional sub-protocols names. A sub-protocol is an application-level protocol layered over the WebSocket Protocol. The client-side application can explicitly indicate which sub-protocols are acceptable for the conversation between the client and server. That string will be send to the server with the initial handshake as <code>Sec-WebSocket-Protocol</code> <code>GET</code> request header field. If the server supports one of the requested protocols it selects at most one of acceptable protocols and echoes that value in the same header parameter <code>Sec-WebSocket-Protocol</code> in the handshake&#8217;s response. Thereby the server indicates that it has selected that protocol. It could be a custom protocol or one of standard application level protocols (see <a href="#Auction_Messages_Specification">Save Sick Child Auction Protocol</a>). For example, it&#8217;s possible to transfer the SOAP or XMPP messages over the WebSocket connection. We&#8217;ll discuss the handshake in the <a href="#HANDSHAKE">WebSocket Handshake</a> section.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>At any given time the WebSocket can be in one of four states.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>These are the callback functions of WebSocket object that will be invoked by the browser once the appropriate network event is dispatched.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>This property contains the name of the sub-protocol used for the conversation. After the successful handshake this property populated by the browser with value from servers response parameter <code>Sec-WebSocket-Protocol</code> as described in &lt;1&gt;.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The WebSocket object can send text or binary data to the server using on of the overloaded <code>send()</code> methods.</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_the_client_side_api">The Client-Side API</h5>
+<div class="paragraph">
+<p>After introducing the WebSocket interface lets see the code example illustrating how the client&#8217;s JavaScript can use it.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var ws;
+(function(ws) {
+    "use strict";
+    if (window.WebSocket) {    <i class="conum" data-value="1"></i><b>(1)</b>
+        console.log("WebSocket object is supported in your browser");
+        ws = new WebSocket("ws://www.websocket.org/echo"); <i class="conum" data-value="2"></i><b>(2)</b>
+        ws.onopen = function() {
+            console.log("onopen");
+        };  <i class="conum" data-value="3"></i><b>(3)</b>
+        ws.onmessage = function(e) {
+            console.log("echo from server : " + e.data); <i class="conum" data-value="4"></i><b>(4)</b>
+        };
+
+        ws.onclose = function() { <i class="conum" data-value="5"></i><b>(5)</b>
+            console.log("onclose");
+        };
+        ws.onerror = function() {
+            console.log("onerror");  <i class="conum" data-value="6"></i><b>(6)</b>
+        };
+
+    } else {
+        console.log("WebSocket object is not supported in your browser");
+    }
+})(ws);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Not all Web browsers support WebSocket natively as of yet. Check if the <code>WebSocket</code> object is supported by the user&#8217;s browser.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Instantiate the new <code>WebSocket</code> object with passing an endpoint URI as constructor parameter.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Set the event handlers for <code>open</code>, <code>message</code>, <code>close</code> events.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>MessageEvent</code> is dispatched  when the data is received from the server. This message will be delivered to the function assigned to the WebSocket object&#8217;s <code>onmessage</code> property. The <code>e.data</code> property of the message event will contain the received message.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Handle closing connection (more details in <a href="#CLOSING">Closing The Connection</a> section).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Handle errors.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="HANDSHAKE">WebSocket Handshake</h5>
+<div class="paragraph">
+<p>Any network communications that use WebSocket protocol start with an opening handshake. The handshake upgrades the connection from HTTP to the WebSocket protocol. It&#8217;s an upgrade to a message-based communications. We will discuss messages (a.k.a. frames) later in this chapter. Why upgrade from HTTP instead of starting with the TCP as a protocol in the first place? The reason is that the WebSocket operates on the same ports (80 and 443) as HTTP and HTTPS do. It&#8217;s an important advantage that the browser&#8217;s requests are routed through the same ports because arbitrary socket connections may not be allowed by the enterprise firewalls for security reasons. Also, many corporate networks only allow certain outgoing ports. And HTTP/HTTPS ports are usually included in so called <em>white lists</em>.</p>
+</div>
+<div class="paragraph">
+<p>The protocol upgrade is initiated by the client request, which also transmits a special key with the upgrade request. The server processes this request and sends back a confirmation for the upgrade. This ensures that a WebSocket connection can be established only with an endpoint that support WebSocket. Here is what the handshake can look like in the client&#8217;s request:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>
+    GET HTTP/1.1
+    Upgrade: websocket
+    Connection: Upgrade
+    Host: echo.websocket.org
+    Origin: http://www.websocket.org
+    Sec-WebSocket-Key: i9ri`AfOgSsKwUlmLjIkGA==
+    Sec-WebSocket-Version: 13
+    Sec-WebSocket-Protocol: chat
+</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This client sends the <code>GET</code> request for the protocol upgrade. The <code>Sec-WebSocket-Key</code> is just a set of random bytes. The server takes these bytes and appends to this key a special Global Unique Identifier (GUID) string <code>258EAFA5-E914-47DA-95CA-C5AB0DC85B11</code>, then it creates the Secure Hash Algorithm <code>SHA1</code> hash from it performs the <em>base64</em> encoding. The resulting string of bytes needs to be used by both the server and the client, and this string won&#8217;t be used by the network endpoints that do not understand the WebSocket protocol. Then this value would be copied in the <code>Sec-WebSocket-Accept</code> header field. The server computes the value and sends the response back confirming the protocol upgrade.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>
+    HTTP/1.1 101 Web Socket Protocol Handshake
+    Upgrade: WebSocket
+    Connection: Upgrade
+    Sec-WebSocket-Accept: Qz9Mp4/YtIjPccdpbvFEm17G8bs=
+    Sec-WebSocket-Protocol: chat
+    Access-Control-Allow-Origin: http://www.websocket.org
+</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The WebSocket protocol uses the <code>400 Bad Request</code> HTTP error code to signal the unsuccessful upgrade. The handshake can also include a sub-protocol request and the WebSocket version information but you can&#8217;t include arbitrary other headers. We can&#8217;t transmit the authorization information. There are two ways around this. You can either transmit the authorization information as the first request (e.g. unique <code>clientId</code> can be passed as part of the HTTP request header or HTML wrapper) or put it into the URL as a query parameter during the initial handshake. Consider the following example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var clientId = "Mary1989";                                   <i class="conum" data-value="1"></i><b>(1)</b>
+ws = new WebSocket("ws://www.websocket.org/echo/"+clientID); <i class="conum" data-value="2"></i><b>(2)</b>
+</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The client the <code>clientId</code> value (can be obtained from some LDAP server).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The client connects to the WebSocket endpoint with an extra URI parameter which will be stored on server for future interactions.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Because WebSocket protocol creates a bi-directional (socket-to-socket) connection, the server has access to the conversation session associated with such a connection. This session can be associated with clientId and be stored on server.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+A client can have as any WebSocket connections with the server as needed.  But servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections or disconnect resource-hogging connections in case of high data load.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="FRAMES">The WebSocket Frame Anatomy</h5>
+<div class="paragraph">
+<p>The WebSocket handshake is the first step to switching to the message framing protocol, which will be layered over TCP. In this section we&#8217;re going to explore how the WebSocket data transfer works. The WebSocket is not a stream based protocol like TCP - it&#8217;s message based. The difference is that with TCP a program sends stream of bytes, which has to have a specific indication that the data transfer ends.
+The WebSocket specification makes it easier because it puts a frame around every chunk of data, and the size of the frame is known. JavaScript can easily handle these frames on the client because each frame arrives packaged in the event object. But the server side has to work a little harder as it needs to wrap each piece of data into a frame before sending it to the client. A frame can look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>
++-+-+-+-+-------+-+-------------+-------------------------------+
+0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-------+-+-------------+-------------------------------+
+|F|R|R|R| opcode|M| Payload len |    Extended payload length    |
+|I|S|S|S|  (4)  |A|     (7)     |             (16/64)           |
+|N|V|V|V|       |S|             |   (if payload len==126/127)   |
+| |1|2|3|       |K|             |                               |
++-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +
+|     Extended payload length continued, if payload len == 127  |
++ - - - - - - - - - - - - - - - +-------------------------------+
+|                               |Masking-key, if MASK set to 1  |
++-------------------------------+-------------------------------+
+| Masking-key (continued)       |          Payload Data         |
++-------------------------------- - - - - - - - - - - - - - - - +
+:                     Payload Data continued ...                :
++ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
+|                     Payload Data continued ...                |
++---------------------------------------------------------------+
+</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>FIN</code> (1 bit)</p>
+<div class="paragraph">
+<p>This bit indicates if this frame is the final in the message payload. If a message has under 127 bytes it fits into a single frame and this bit will always be set.</p>
+</div>
+</li>
+<li>
+<p><code>RSV1</code>, <code>RSV2</code>, <code>RSV3</code> (1 bit each)</p>
+<div class="paragraph">
+<p>These bits are reserved for future protocol changes and improvements. They must contain zeros as they are not being used at this time.</p>
+</div>
+</li>
+<li>
+<p><code>opcode</code> (4 bits)</p>
+<div class="paragraph">
+<p>The frame type is defined using opcode. Here are the most used opcodes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>0x00</code> This frame continues the payload.</p>
+</li>
+<li>
+<p><code>0x01</code> This frame includes UTF-8 text data.</p>
+</li>
+<li>
+<p><code>0x02</code> This frame includes the binary data.</p>
+</li>
+<li>
+<p><code>0x08</code> This frame terminates the connection.</p>
+</li>
+<li>
+<p><code>0x09</code> This frame is a Ping.</p>
+</li>
+<li>
+<p><code>0x10</code> This frame is a Pong.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>mask</code> (1 bit)</p>
+<div class="paragraph">
+<p>This indicates if the frame is masked.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+The client must mask all the frames being sent to the server. The server must close the connection upon receiving a frame that is not masked. The server must not mask any frames that it sends to the client.  The client must close a connection if it detects a masked frame. In that case of such error, client or server can send <code>Close</code> frame with 1002 status code - protocol error. All these actions are done automatically by Web browsers and Web server that implements <a href="http://tools.ietf.org/html/rfc6455">WebSocket specification</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</li>
+<li>
+<p><code>payload_len</code> (7 bits, 7+16 bits, or 7+64 bits)</p>
+<div class="paragraph">
+<p>The length of the payload. WebSocket frames come in the following length brackets:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>0-125 indicate the length of the payload.</p>
+</li>
+<li>
+<p>126 means that the following two bytes indicate the length.</p>
+</li>
+<li>
+<p>127 means the next 8 bytes indicate the length.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>masking-key</code> (32 bits)</p>
+<div class="paragraph">
+<p>This key is used to <em>XOR</em> the payload with.</p>
+</div>
+</li>
+<li>
+<p><code>payload data</code></p>
+<div class="paragraph">
+<p>This indicates the actual data. The length of block is defined in the <code>payload_len</code> field.</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_the_heartbeats">The Heartbeats</h5>
+<div class="paragraph">
+<p>Properly design distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so called <em>heartbeats</em> - a small messages that simply ask the other party, "Are you there?". For example, proxy servers and content-filtering hardware can terminate idle connections or the server could simply go down. If a client doesn&#8217;t send any requests, say for 20 seconds, but the server went down, the client will know about it only when it does the next <code>send()</code>. Heartbeats will keep the connection alive to ensure that it won&#8217;t look idling. In the WebSocket jargon heartbeats are implemented with <em>ping and pong</em> . The browser sends the <em>ping</em> opcode <code>0x9</code> at any time to ask the other side to <em>pong</em> back (the opcode <code>0xA</code>).</p>
+</div>
+<div class="paragraph">
+<p>The Web browser can ping the server when required, but a pong may be sent at server&#8217;s discretion. If the  endpoint receives a ping frame before responding the the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (can be up to 125 bytes) and pong must have identical data in its message body.</p>
+</div>
+<div class="paragraph">
+<p>There is no JavaScript API to send pings or receive pong <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames">frames</a>. Pings and pongs may or may not be supported by the user&#8217;s browser. <a href="http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104">There is also no API</a> to enable, configure or detect whether the browser supports pings and pongs.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_data_frames">Data Frames</h5>
+<div class="paragraph">
+<p>Since the WebSocket protocol allows the data to be fragmented into multiple frames, the first frame that transmits the data will be prepended with one of the following opcodes indicating the type of data being transmitted:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The opcode <code>0x01</code> indicates the UTF-8 encoded text data.</p>
+</li>
+<li>
+<p>The opcode <code>0x02</code> indicates the binary data.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>When your application transmits JSON over the wire the opcode is set to be <code>0x01</code>. When your code emits binary data it will be represented in a browser specific <code>Blob</code> object or an <code>ArrayBuffer</code> object and sent wrapped into a frame with the opcode <code>0x02</code>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+You must choose the type for the incoming binary data on the client using <code>webSocket.binaryType = "blob"</code> or <code>webSocket.binaryType = "arraybuffer"</code> before reading the data. It&#8217;s a good idea to check the type of the incoming data because the opcodes are not exposed to the client.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">webSocket.onmessage = function(messageEvent) {
+    if (typeof messageEvent.data === "string"){
+        console.log("received text data from the server: " + messageEvent.data);
+    } else if (messageEvent.data instanceof Blob){
+        console.log("Blob data received")
+    }
+};</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="CLOSING">Closing The Connection</h5>
+<div class="paragraph">
+<p>The connection is terminated by sending the frame with the close opcode <code>0x08</code>.</p>
+</div>
+<div class="paragraph">
+<p>There is the pattern to exchange close opcodes first and then let the server to shut down. The client is supposed to give the server some time to close the connection before attempting to do that on its own. The close event can also signal why it has terminated the connection.</p>
+</div>
+<div class="paragraph">
+<p>A <code>CloseEvent</code> is sent to clients using WebSocket when the connection is closed. This is delivered to the listener indicated by the WebSocket object&#8217;s <code>onclose</code> handler. <code>CloseEvent</code> has 3 properties - <code>code, reason, wasClean</code>.</p>
+</div>
+<table class="tableblock frame-all grid-all" style="width:100%; ">
+<colgroup>
+<col style="width:50%;">
+<col style="width:50%;"> 
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This property represents the close code provided by the server.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">reason</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A string indicating the reason of why the server closed the connection.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">wasClean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The property indicates if the connection was cleanly closed.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">webSocket.onclose = function(closeEvent) {
+    console.log("reason " + closeEvent.reason + "code " + closeEvent.code);
+};</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_websocket_frameworks">WebSocket Frameworks</h3>
+<div class="paragraph">
+<p>Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on you own. For example, if the client&#8217;s browser doesn&#8217;t support WebSocket natively, you need to make sure that your code falls back to the legacy HTTP protocol. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. We&#8217;ve included brief reviews of two frameworks that can streamline your Web application development with WebSocket.</p>
+</div>
+<div class="paragraph">
+<p>The frameworks mentioned below try to utilize the best supported transport by the current Web browser and server while sparing the developer from knowing internals of the used mechanism. The developer can concentrate on programming the application logic making calls to frameworks API when the data transfer is needed. The rest will be done by framework.</p>
+</div>
+<div class="sect3">
+<h4 id="_the_portal">The Portal</h4>
+<div class="paragraph">
+<p>The <a href="https://github.com/flowersinthesand/portal">Portal</a> is a server agnostic JavaScript library. It aims to utilize a WebSocket protocol and provides a unified API for various transports (long polling, HTTP streaming, WebSocket). Currently, once you&#8217;ve decided to use WebSocket API for your next project, you need to remember about those users who still use old browsers like Internet Explorer 9 or older, which don&#8217;t natively support WebSockets. In this case, your application should gracefully fall back to the best available networking alternative. Manually writing code to support all possible browsers and versions requires lots of time especially for testing and maintaining the code for different platforms. The <code>Portal</code> library could help as illustrated in the following brief code sample.</p>
+</div>
+<div class="listingblock">
+<div class="title">Simple asynchronous web application client with Portal</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">portal.defaults.transports = ["ws", "sse", "stream", "longpoll"];    <i class="conum" data-value="1"></i><b>(1)</b>
+
+portal.open("child-auction/auction").on({       <i class="conum" data-value="2"></i><b>(2)</b>
+    connecting: function() {
+        console.log("The connection has been tried by '" + this.data("transport") + "'");
+    },
+    open: function() {                          <i class="conum" data-value="3"></i><b>(3)</b>
+        console.log("The connection has been opened");
+    },
+    close: function(reason) {
+        console.log("The connection has been closed due to '" + reason + "'");
+    },
+    message: function(data) {
+        handleIncommingData(data);
+    },
+    waiting: function(delay, attempts) {
+        console.log("The socket will try to reconnect after " + delay + " ms");
+        console.log("The total number of reconnection attempts is " + attempts);
+    }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The Portal framework supports different transports and can fall back from WebSocket connection to streaming or long polling. The server also has to support some fall-back strategy, but no additional code required on the client side.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Connecting to the WebSocket endpoint.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The Portal API is event-based similarly to W3C WebSocket API.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The Portal framework generalizes the client-side programming. With defining an array of transports, you don&#8217;t have to worry about how to handle message sent by server with different transport.
+The Portal doesn&#8217;t depend on any JavaScript library.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_atmosphere">Atmosphere</h4>
+<div class="paragraph">
+<p>A Web application that has to be deployed on several different servers (e.g. WebSphere, JBoss, WebLogic)
+may need to support different WebSocket APIs. At the time of this writing, there is a plethora of different implementations of the server-side libraries supporting WebSockets, and each of them uses their own proprietary APIs. The upcoming Java EE 7 specification intends to change the situation. But Atmosphere is a framework that allows you to write portable Web applications today.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/Atmosphere/atmosphere">Atmosphere</a> is a <strong>portable</strong> WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. The Atmosphere transparently supports WebSocket, Server Side Events, long-polling, HTTP streaming, and JSONP.</p>
+</div>
+<div class="paragraph">
+<p>The client side component <a href="https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API">Atmosphere.js</a> uses The Portal framework internally and simplifies the development of Web applications that require a fall back from the WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and makes your application portable among them. Treat Atmosphere as a compatibility layer that allows to select best available on server transport for all major Java application servers.</p>
+</div>
+<div class="paragraph">
+<p>The Atmosphere framework supports wide range of Java based server-side technologies via a set of <a href="https://github.com/Atmosphere/atmosphere/wiki/Atmosphere-PlugIns-and-Extensions">extensions and plugins</a>. The Atmosphere <a href="https://github.com/Atmosphere/atmosphere-jsr356">supports</a> upcoming Java API for WebSocket, so you can have best of two worlds - the standard API and application portability.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+WebSockets can be used not only in for the Web, but in any applications that use networking. If you&#8217;re developing native iOS or OSX applications check <a href="https://github.com/square/SocketRocket">the SocketRocket</a> library developed by <a href="http://corner.squareup.com/">Square Engineering Team</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Square uses SocketRocket in their mobile payments application. If you&#8217;re developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices check <a href="https://github.com/AsyncHttpClient/async-http-client">the AsyncHttpClient</a> framework.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_when_use_websocket">When Use WebSocket</h3>
+<div class="paragraph">
+<p>Since WebSocket protocol has literally no overhead it should be considered for the following types of applications:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Live trading/auctions/sports notifications</p>
+</li>
+<li>
+<p>Controlling medical equipment over the web</p>
+</li>
+<li>
+<p>Chat applications</p>
+</li>
+<li>
+<p>Multi-player online games</p>
+</li>
+<li>
+<p>Real-time updates in social streams</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For the next version of Save Sick Child application we&#8217;re going to use WebSocket to implement an online auction communication layer. The goal is to let individuals and businesses purchase hand-made crafts and arts made by children. All proceeds will go to help sick children.</p>
+</div>
+<div class="paragraph">
+<p>Having said that WebSocket protocol is a great solution, it has the downside too: the WebSocket specification defines only the protocol for transporting frames, but it doesn&#8217;t include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let&#8217;s discuss our options from protocol modeling perspective.</p>
+</div>
+<div class="paragraph">
+<p>Selecting a message format for your application&#8217;s data communications is important. The most common text formats are CSV, XML, and JSON. They are easy to generate, parse, and are widely supported by many frameworks in the most development platforms. While XML and JSON allow you to represent the data in a hierarchical and easily readable by humans form, they create a lot of overhead by wrapping up each data element into additional text identifiers. Sending such additional textual information requires extra bandwidth and may need additional string-to-type conversion on both the client and server&#8217;s application code. The binary format is an alternative way of sending data. Let&#8217;s discuss the pros and cons of these message formats.</p>
+</div>
+<div class="sect3">
+<h4 id="_csv">CSV</h4>
+<div class="paragraph">
+<p>CSV stands for Comma Separated Values although the delimiter can be any character, not only the comma. This depends on the parser design and implementation. Another popular type of delimiter is <code>|</code> - "pipe" .</p>
+</div>
+<div class="paragraph">
+<p>Pros:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>This format is very compact. The overhead of the separator symbol is minimal.</p>
+</li>
+<li>
+<p>It&#8217;s simple to create and parse. The CSV message can be turned into array of values by using the standard JavaScript <code>String.split()</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Cons:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It&#8217;s not suitable for storing complex data structures and hierarchies. In case of an auction application, we need transfer to client auction items' attributes for each auction. In this case we can&#8217;t simply use <code>String.split()</code> and have to design and implement more complex parser.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_xml">XML</h4>
+<div class="paragraph">
+<p>XML stands for Extensible Markup Language, and it nicely represents any hierarchal data structures.</p>
+</div>
+<div class="paragraph">
+<p>Pros:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It&#8217;s a human-readable format.</p>
+</li>
+<li>
+<p>Most browsers have build-in XML readers and parsers.</p>
+</li>
+<li>
+<p>XML data can be validated against XSD or DTD schema.</p>
+<div class="paragraph">
+<p>XML schema is very useful language feature as it defines the structure, content and semantic of XML document. Because of its human-readability the XML schema can be used used by people who are not software developers and can be applied for integrating systems written in different programming languages.</p>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Cons:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>XML is very verbose. To send a name of a customer you&#8217;d need something like this: <code>&lt;cust_name&gt;Mary&lt;/cust_name&gt;</code></p>
+</li>
+<li>
+<p>The XML validation on the client is a complex task. As for now, there is no platform independent solutions or the API to perform validation programmatically based on XSD or DTD.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The book  <em>XML in a Nutshell, 3rd Edition</em> by Elliotte Rusty Harold and W. Scott Means is a well-written book describing the full spectrum of XML features and tools.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_json">JSON</h4>
+<div class="paragraph">
+<p>As explained in Chapter 4, JSON stands for JavaScript Object Notation, and it&#8217;s a way of representing structured data, which can be encoded and decoded by all Web browsers. JSON is widely accepted by the Web community as a popular way of the data serialization.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_google_protocol_buffers">Google Protocol Buffers</h4>
+<div class="paragraph">
+<p>Google Protocol Buffers is a language and platform-neutral extensible mechanism for structured data serialization. Once defined how you want your data to be structured, you can use special generated source code to easily write and read your structured data to and from a variety of data streams.</p>
+</div>
+<div class="paragraph">
+<p>A developer needs to specify how the serializable information has to be structured by defining the protocol buffer message types in the <code>.proto</code> files. Each protocol buffer message is a small logical record of information, containing a series of the name/value pairs. This protocol buffer message file is language agnostic. The <code>protoc</code> utility compiles <code>proto</code> files and produces language specific artifacts, e.g. <code>.java</code>, <code>.js</code>, etc files.</p>
+</div>
+<div class="paragraph">
+<p>For example, you can create a protocol buffer <code>proto</code> file for our Save Sick Child to represent the information about donors.</p>
+</div>
+<div class="listingblock">
+<div class="title">Protocol Buffer for Donation message ( <code>donation.proto</code> )</div>
+<div class="content">
+<pre class="highlight"><code class="java language-java">package savesickchild;                                      <i class="conum" data-value="1"></i><b>(1)</b>
+
+option java_package = "org.savesickchild.web.donation";     <i class="conum" data-value="2"></i><b>(2)</b>
+
+message Donor{                                              <i class="conum" data-value="3"></i><b>(3)</b>
+    required string fullname = 1;
+    required string email = 2;                              <i class="conum" data-value="4"></i><b>(4)</b>
+    required string address = 3;
+    required string city = 4;
+    required string state = 5;
+    required int32 zip = 6;
+    required string country = 7;
+
+    message Donation{                                       <i class="conum" data-value="5"></i><b>(5)</b>
+        required Donor donor = 1;                           <i class="conum" data-value="6"></i><b>(6)</b>
+        required double amount = 2;
+        optional bool receipt_needed = 3;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The protobuf supports packages to prevent naming conflicts among messages from different projects.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Here we&#8217;re using Java specific protobuf option to define in what package the generated code will reside.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Start defining our custom message with the <code>message</code> keyword.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Each message field can be <code>required</code>, <code>optional</code> or <code>repeated</code>. The <code>required</code> and <code>optional</code> modifiers are self explanatory. During serialization-deserization process the protobuf framework will check the message for existence of fields, and if a required property is missing it will throw a runtime exception. The <code>repeated</code> modifier is used to create dynamically sized arrays.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The protobuf supports nested messages.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>There are many standard field types available in protobuf:  <code>string</code>, <code>int32</code>, <code>float</code>, <code>double</code>, and <code>bool</code>. You can also define a custom type and use it as a field type.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After creating the <code>donation.proto</code> file, you can use <code>protoc</code> compiler to generate Java classes according to this file&#8217;s definitions.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="shell language-shell">protoc -I=. --java_out=src donation.proto           <i class="conum" data-value="1"></i><b>(1)</b>
+
+.
+├── donation.proto
+└── src
+    └── org
+        └── savesickchild
+            └── web
+                └── donation
+                    └── Donation.java               <i class="conum" data-value="2"></i><b>(2)</b>
+</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The Java code will be generated in <code>src</code> directory.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>All required code for serialization-deserilization of <code>Donation</code> message will be included in <code>Donation.java</code>. We&#8217;re not going to publish the generated code here, but you can generate this code by yourself from the provided above message declaration.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Check the availability of the protobuf compiler for your preferred language at the <a href="http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns">protobuf wiki page</a>. To make yourself familiar with protobuf technology check <a href="https://developers.google.com/protocol-buffers/docs/overview">documentation</a> and <a href="https://developers.google.com/protocol-buffers/docs/tutorials">tutorials</a>. Here some protobuf pros and cons:</p>
+</div>
+<div class="paragraph">
+<p>Pros:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The message is encoded into a compact and optimized binary format. You can find the details of the encoding format at <a href="https://developers.google.com/protocol-buffers/docs/encoding">Protocol Buffers documentation website</a>.</p>
+</li>
+<li>
+<p>Google supports Protocol Buffers for a wide range of programming languages (Java, C++, Python). The   <a href="http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns">developer&#8217;s community</a> supports it too.</p>
+</li>
+<li>
+<p>The use of Protocol Buffers is well documented.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Cons:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The binary format is not human readable.</p>
+</li>
+<li>
+<p>Although Protobuf is compact, especially when a lot of numeric values are transferred <a href="https://developers.google.com/protocol-buffers/docs/encoding">by an encoding algorithm</a>, the JSON is natively supported by the JavaScript and doesn&#8217;t require any additional parser implementation.</p>
+</li>
+<li>
+<p>Protobuf requires the Web browser to support the binary format, but not all of them do it just yet. You can find which browser support raw binary data at <a href="http://caniuse.com/#search=binary">http://caniuse.com/#search=binary</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_websockets_and_proxies">WebSockets and Proxies</h3>
+<div class="paragraph">
+<p>The WebSocket protocol itself is unaware of intermediaries such as proxy servers, firewalls, content filters. The proxy servers are commonly used for content caching, security and enterprise content filtering.</p>
+</div>
+<div class="paragraph">
+<p>HTTP always supported protocol upgrades, but many proxy servers seem to have ignored that part of the specification. Until the WebSocket came around the <code>Upgrade</code> attribute was not used. The problem with Web applications that use long-lived connection like WebSocket is that the proxy servers may choose to close streaming or idle WebSocket connections, because they appear to be trying to connect to the unresponsive HTTP server. Additionally, proxy servers may buffer unencrypted HTTP responses assuming that the browser needs to receive the HTTP response in its entirety.</p>
+</div>
+<div class="paragraph">
+<p>If you want to get more details on how a WebSocket-enabled application has to deal with proxies there is comprehensive research paper by Google&#8217;s Peter Lubbers <a href="http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/">WebSocket and proxy servers</a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The author of this book use <a href="http://nginx.com/">NGINX</a>, a hugely popular load balancer and proxy server to serve static resources (e.g. images and text files), balance the load between Java servers, and for SSL offloading (turning Web browser&#8217;s HTTPS requests into HTTP). NGINX uses a very small number threads to support thousands concurrent users as opposed to traditional Web servers that use one worker thread per connection. Recently NGINX started supporting WebSockets protocol.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_adding_an_auction_to_save_sick_child">Adding an Auction to Save Sick Child</h3>
+<div class="paragraph">
+<p>We gave you just enough of a theory to whet your appetite to start implementing WebSocket in our Save Sick Child application. The goal is to create an auction where people can bid and purchase various goods so the proceeds would go to sick children. Auctions require real-time communications - everyone interested in the particular auction item must be immediately notified if she was overbid or won. So we&#8217;ll use WebSocket as a means for bidding and notifications of the changes in the auction.</p>
+</div>
+<div class="paragraph">
+<p>To start the auction, the user has to select the <em>Auction</em> option under the menu <em>Way To Give</em> (see <a href="#FIG9-9">Initially only two modules are loaded</a>). We realize that only a small number of users will decide to participate in the auction, which from the architectural point of view means that the code supporting the auction should be loaded <em>on demand</em> only if the user chooses to visit the auction. This why we need to write this code as a loadable module, and the reader will get a practical example of how a Web application can be modularized.</p>
+</div>
+<div class="paragraph">
+<p>In this chapter we continue to use RequireJS (see Chapter 7) as a framework for modularization. Using RequireJS, we&#8217;re going to lazy load some modules if and only if they get requested by the user.</p>
+</div>
+<div class="paragraph">
+<p>This book is about development of the user interface and client side of the Web applications hence we&#8217;re not going to cover all the details of server side implementation, but will make our server side code available for download. We&#8217;ll keep our server up and running so you can test the UI by visiting <a href="http://savesickchild.org:8080/project-16-websocket-auction/">http://savesickchild.org:8080/project-16-websocket-auction/</a>, but our main goal in this section is to show you how you can exchange the auction data with the server and process them on the client side using WebSocket. We&#8217;ll use the Java application server GlassFish 4, which is a reference implementation of the latest Java EE 7 specification.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Authors of this book are Java developers and we have recorded a screencast (see the readme.asciidoc  at <a href="https://github.com/Farata/EnterpriseWebBook">https://github.com/Farata/EnterpriseWebBook</a> for the URL) highlighting WebSocket server API. If you are not a Java developer, you may want to learn on your own which WebSocket servers exist for your favorite programming language or platform.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In Chapter 7 you had a chance to see how a Web application can be sliced (see Aptana&#8217;s project-15-dynamic-modules) into several modules using Require.js framework.  We&#8217;ll take this project as a base and will create a new one: project-16-websocket-auction adding to it the new modules supporting the auction.</p>
+</div>
+<div class="listingblock">
+<div class="title">Way To Give module (<code>js/modules/way-to-give.js</code>)</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">define([], function() {
+    var WayToGive;
+    console.log("way-to-give module is loaded");
+    WayToGive = function() {
+        return {
+            render: function() {                                <i class="conum" data-value="1"></i><b>(1)</b>
+                // rendering code is omitted
+                console.log("way-to-give module is rendered");
+                rendered = true;
+                return
+            },
+            startAuction: function(){                           <i class="conum" data-value="2"></i><b>(2)</b>
+
+            },
+            rendered: false                                     <i class="conum" data-value="3"></i><b>(3)</b>
+        };
+    };
+    return WayToGive;
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This function will lazy load the auction application content and render it to the top main section of the Web page.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The function <code>startAuction()</code> will start the auction.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The module stores the rendering state in the property <code>rendered</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Once the application starts, the require.js loads only essential modules - login and donation <a href="#FIG9-9">Initially only two modules are loaded</a>.</p>
+</div>
+<div id="FIG9-9" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_09.png" alt="fig 09 09">
+</div>
+<div class="title">Figure 1. Initially only two modules are loaded</div>
+</div>
+<div class="paragraph">
+<p>In Google Chrome Developer Tools console you can see that login and donation modules are reporting about successful loading. <a href="#FIG9-10">Two modules are loaded during the Save Sick Child application startup</a> confirms that these modules perform fine - clicking on the button Donate reveals the form and clicking on the Login button makes the id/password fields visible.</p>
+</div>
+<div id="FIG9-10" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_10.png" alt="fig 09 10">
+</div>
+<div class="title">Figure 2. Two modules are loaded during the Save Sick Child application startup</div>
+</div>
+<div class="paragraph">
+<p>Now click the Way To Give menu item and keep an eye on the Developer Tools console <a href="#FIG9-11">The auction controls are loaded and rendered</a>. You will see the way-to-give module reporting about its loading and rendering.</p>
+</div>
+<div id="FIG9-11" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_11.png" alt="fig 09 11">
+</div>
+<div class="title">Figure 3. The auction controls are loaded and rendered</div>
+</div>
+<div class="paragraph">
+<p>Once the user clicks the menu Way to Give the framework require.js has to load code of the WebSocket-based auction module. Here is the code snippet from the JavaScript file <code>app.js</code> - the entry point of our Save Sick Child application. This is how it loads the module <em>on demand</em> (see Chapter 7 for the Require.js refresher).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">require([], function() { <i class="conum" data-value="1"></i><b>(1)</b>
+  'use strict';
+  return (function() {
+    var lazyLoadingEventHandlerFactory, wayToGiveHandleClick, wayToGiveModule, way_to_give;
+    way_to_give = document.getElementById('way-to-give');
+
+    wayToGiveModule = null; <i class="conum" data-value="2"></i><b>(2)</b>
+
+    lazyLoadingEventHandlerFactory = function(module, modulePath) {
+      var clickEventHandler;
+      clickEventHandler = function(event) {
+        console.log(event.target);
+        if (module === 'loading') { <i class="conum" data-value="3"></i><b>(3)</b>
+          return;
+        }
+        if (module !== null) {
+          return module.startAuction(); <i class="conum" data-value="4"></i><b>(4)</b>
+        } else {
+          module = 'loading'; <i class="conum" data-value="5"></i><b>(5)</b>
+          return require([modulePath], function(ModuleObject) { <i class="conum" data-value="6"></i><b>(6)</b>
+            module = new ModuleObject();
+            return module.render(); <i class="conum" data-value="7"></i><b>(7)</b>
+          });
+        }
+      };
+      return clickEventHandler;
+    };
+    wayToGiveHandleClick = lazyLoadingEventHandlerFactory(wayToGiveModule, 'modules/way-to-give');
+
+    way_to_give.addEventListener('click', wayToGiveHandleClick, false); <i class="conum" data-value="8"></i><b>(8)</b>
+  })();
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This anonymous function will be lazy-loaded only if the user clicks on Way To Give menu.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The variable <code>wayToGiveModule</code> will have a value of <code>null</code> until loaded.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>If the user keeps clicking on the menu while the <code>way-to-give</code> module is still being loaded, simply ignore these clicks.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>If the module has been loaded and UI has been rendered start Auction application.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Set an intermediary value to the <code>way-to-give</code> module so that subsequent requests don&#8217;t try to launch the module more than once.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Load module asynchronously and instantiate it.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Render UI component to the screen for first time.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Register the click event listener for the Way To Give menu.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After the UI elements have rendered the client can connect to the WebSocket server and request the list of all available auction items.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript"> if(window.WebSocket) {
+   webSocket = new WebSocket("ws://savesickchild.org:8080/project-16-websocket-auction//child-auction/auction");
+   webSocket.onopen = function() {
+     console.log("connection open...");         <i class="conum" data-value="1"></i><b>(1)</b>
+     getAuctionsList();
+   };
+   webSocket.onclose = function(closeEvent) {
+      // notify user that connection was closed
+     console.log("close code " + closeEvent.code);
+   };
+   webSocket.onmessage = function(messageEvent) {
+     console.log("data from server: " + messageEvent.data);
+     if(typeof messageEvent.data === "string") {
+       handleMessage(messageEvent.data);
+     }
+   };
+   return webSocket.onerror = function() {
+    // notify user about connection error
+     console.log("websocket error");
+   };
+ }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>After establishing the connection the code requests the list of available auctions. We&#8217;ll see details of <code>getAuctionsList()</code> method in next snipped.</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var getAuctionsList = function() {
+        var auctionListMessage = new AuctionMessage("AUCTIONS_LIST", 'gime', "-1"); <i class="conum" data-value="1"></i><b>(1)</b>
+        if(webSocket.readyState === 1) {        <i class="conum" data-value="2"></i><b>(2)</b>
+            webSocket.send(auctionMessage.toJson());
+        } else {
+            return console.log("offline");
+        }
+    };</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Forming the request message. The details of the message format could be found in <a href="#Auction_Messages_Specification">Save Sick Child Auction Protocol</a> section.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Checking the WebSocket object state. If WebSocket is open (<code>readyState===1</code>) the application can send a message. If not, this code just simply logs the "offline" mesage on the console. In the real world you should always display this message on the user&#8217;s UI. Also, if your users work on unstable networks such as cellular or 3G you definitely don&#8217;t want to lose any bits of data. It&#8217;s a good idea to use the local storage API (see Chapter 1) to persist the data locally until the application gets back online and resubmit the data.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The user can select the auction lot from the combo box and see its images. <a href="#FIG9-12">The console logs incoming message contains list of auction items.</a> shows what&#8217;s displayed on the console, while <a href="#FIG9-13">Using Network feature of Dev Tools we can monitor WebSocket frames.</a> and <a href="#FIG9-14">[FIG9-14]</a> show the content of the Network tab for both images.</p>
+</div>
+<div id="FIG9-12" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_12.png" alt="fig 09 12">
+</div>
+<div class="title">Figure 4. The console logs incoming message contains list of auction items.</div>
+</div>
+<div id="FIG9-13" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_13.png" alt="fig 09 13">
+</div>
+<div class="title">Figure 5. Using Network feature of Dev Tools we can monitor WebSocket frames.</div>
+</div>
+<div id="FIG9-14" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_14.png" alt="fig 09 14">
+</div>
+</div>
+<div class="sect3">
+<h4 id="_monitor_the_websocket_traffic_with_chrome_developers_tools">Monitor the WebSocket traffic with Chrome Developers Tools</h4>
+<div class="paragraph">
+<p>Let&#8217;s review the practical use of the theory described in the <a href="#HANDSHAKE">WebSocket Handshake</a> section earlier.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <a href="#FIG9-4">Initial WebSocket handshake in Chrome DevTools</a>. This can be viewed in the Network tab after selecting the path of the <code>WebSocket</code> endpoint on the left panel.</p>
+</div>
+<div id="FIG9-4" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_04.png" alt="fig 09 04">
+</div>
+<div class="title">Figure 6. Initial WebSocket handshake in Chrome DevTools</div>
+</div>
+<div class="paragraph">
+<p>You can also click on <code>WebSocket</code> at the bottom-right to show only the <code>WebSocket</code> endpoints. Click on <code>Frames</code> in the right panel to view the actual frames being exchanged between the client and server. <a href="#FIG9-5">Monitoring WebSocket frames in Chrome Developer Tools</a>. The white colored rows represent incoming data, and the green (or gray on paper) rows - outgoing.</p>
+</div>
+<div id="FIG9-5" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_05.png" alt="fig 09 05">
+</div>
+<div class="title">Figure 7. Monitoring WebSocket frames in Chrome Developer Tools</div>
+</div>
+<div class="paragraph">
+<p>For more gore details you can navigate your Google Chrome to the secret URL - <code>chrome://net-internals</code>, which is a very useful URL showing a lot of additional information (see <a href="#FIG9-6">Details of initial handshake in Chrome Net Internals</a> and <a href="#FIG9-7">Details of the socket connection</a> ). You can find documentation about net-internal in <a href="http://www.chromium.org/developers/design-documents/network-stack/view-net-internals">Chromium Design Documents</a></p>
+</div>
+<div id="FIG9-6" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_06.png" alt="fig 09 06">
+</div>
+<div class="title">Figure 8. Details of initial handshake in Chrome Net Internals</div>
+</div>
+<div id="FIG9-7" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_07.png" alt="fig 09 07">
+</div>
+<div class="title">Figure 9. Details of the socket connection</div>
+</div>
+<div class="paragraph">
+<p>Google Developer Tools show just the length of the data. But <code>chrome://net-internals</code> shows the actual size of the WebSocket frame too. <a href="#FIG9-8">Dev tools and net-internals side by side</a> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of the frame is slightly different from the size of the payload. There are few more bytes for the frame header. Moreover, all outgoing messages will be masked by the browser (see the note in the <a href="#FRAMES">The WebSocket Frame Anatomy</a> section). This frame&#8217;s mask is going to be transferred to the server as a part of the frame itself, which creates additional 32 bits (4 bytes) overhead.</p>
+</div>
+<div id="FIG9-8" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_08.png" alt="fig 09 08">
+</div>
+<div class="title">Figure 10. Dev tools and net-internals side by side</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_sniffing_websocket_frames_with_wireshark">Sniffing WebSocket frames with Wireshark</h4>
+<div class="paragraph">
+<p>Wireshark is a powerful and comprehensive monitoring tool for analyzing the network traffic.You can download it from <a href="http://www.wireshark.org">their web site</a>. To start capturing the WebSocket traffic traffic on <em>localhost</em>  select the <code>loopback</code> network interface from the left panel and click "Start" (see <a href="#FIG9-15">Wireshark application main view</a>).</p>
+</div>
+<div id="FIG9-15" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_15.png" alt="fig 09 15">
+</div>
+<div class="title">Figure 11. Wireshark application main view</div>
+</div>
+<div class="paragraph">
+<p>Wireshark captures all network activity. Set up the filter to see only the data you are interested in. We want to capture HTTP and TCP traffic on the port <code>8080</code> because our WebSocket server (Oracle&#8217;s GlassFish) runs on this port <a href="#FIG9-16">Filter setup</a>. Enter <code>http &amp;&amp; (tcp.dstport==8080)</code> in the filter text box and click Apply.</p>
+</div>
+<div id="FIG9-16" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_16.png" alt="fig 09 16">
+</div>
+<div class="title">Figure 12. Filter setup</div>
+</div>
+<div class="paragraph">
+<p>Now the Wireshark is ready to sniff at the traffic of our application. You can start the auction session and place bids. After you&#8217;re done with the auction you can return to the Wireshark window and analyze what we got. You can see the initial handshake (<code>GET</code> request on <a href="#FIG9-17">The <code>GET</code> request for protocol upgrade</a> and the <code>Upgrade</code> response on <a href="#FIG9-18">The <code>GET</code> response with protocol upgrade</a>).</p>
+</div>
+<div id="FIG9-17" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_17.png" alt="fig 09 17">
+</div>
+<div class="title">Figure 13. The <code>GET</code> request for protocol upgrade</div>
+</div>
+<div id="FIG9-18" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_18.png" alt="fig 09 18">
+</div>
+<div class="title">Figure 14. The <code>GET</code> response with protocol upgrade</div>
+</div>
+<div class="paragraph">
+<p>After the successful connection upgrade, Wireshark captured the <code>http-alt</code> stream (this is how it reports the Websocket&#8217;s traffic) on the 8080 port. Right click on this row and select <code>Follow TCP Stream</code> <a href="#FIG9-19">The <code>GET</code> response with protocol upgrade</a>.</p>
+</div>
+<div id="FIG9-19" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_19.png" alt="fig 09 19">
+</div>
+<div class="title">Figure 15. The <code>GET</code> response with protocol upgrade</div>
+</div>
+<div class="paragraph">
+<p>On the next screen you can see the details of WebSocket frame <a href="#FIG9-20">WebSocket frame</a>. We took this screenshot right after the auction application started. You can see here the data with the list of available auctions. The outgoing data is marked with <em>red</em> color and the incoming data is shown in <em>blue</em>.</p>
+</div>
+<div id="FIG9-20" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_20.png" alt="fig 09 20">
+</div>
+<div class="title">Figure 16. WebSocket frame</div>
+</div>
+<div class="paragraph">
+<p>The screenshot <a href="#FIG9-21">Entire auction conversation</a> was taken  after the auction has been closed. You can see here the entire data that were sent over the WebSocket connection.</p>
+</div>
+<div id="FIG9-21" class="imageblock">
+<div class="content">
+<img src="./images/fig_09_21.png" alt="fig 09 21">
+</div>
+<div class="title">Figure 17. Entire auction conversation</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="Auction_Messages_Specification">Save Sick Child Auction Protocol</h4>
+<div class="paragraph">
+<p>Since WebSocket is just a transport protocol, we need to come up with the application-level protocol of how the auction messages should be formatted in the client-server interaction. This is how we decided to do it:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The client&#8217;s code connects to the WebSocket endpoint on the server.</p>
+</li>
+<li>
+<p>The client&#8217;s code sends the <code>AUCTION_LIST</code> message to retrieve the list of currently running auctions.</p>
+<div class="listingblock">
+<div class="title">The AUCTION_LIST Request</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">{
+    "type": "AUCTIONS_LIST", <i class="conum" data-value="1"></i><b>(1)</b>
+    "data": "empty",        <i class="conum" data-value="2"></i><b>(2)</b>
+    "auctionId": "-1"       <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The type of the message is <code>AUCTION_LIST</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This message doesn&#8217;t send any data</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This message doesn&#8217;t request for any specific auction id,  so we just send <code>-1</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s review the JSON object that will be arriving from the server as the auction&#8217;s response.</p>
+</div>
+<div class="listingblock">
+<div class="title">Response with auction list data</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">{
+    "type": "AUCTIONS_LIST",    <i class="conum" data-value="1"></i><b>(1)</b>
+    "data": [                   <i class="conum" data-value="2"></i><b>(2)</b>
+        {
+            "auctionState": "AUCTION_NOT_RUNNING",
+            "item": {           <i class="conum" data-value="3"></i><b>(3)</b>
+                "name": "Painting",
+                "description": "Fancy",
+                "startingPrice": 1000.0,
+                "auctionStartTime": 6000,
+                "bidTimeoutS": 30
+            },
+            "bestBid": 1000.0,
+            "participantList": [],
+            "auctionId": "first" <i class="conum" data-value="4"></i><b>(4)</b>
+        },
+        {
+            "auctionState": "AUCTION_RUNNING",
+            "item": {
+                "name": "Handmade hat",
+                "description": "Awesome",
+                "startingPrice": 2000.0,
+                "auctionStartTime": 6000,
+                "bidTimeoutS": 30
+            },
+            "bestBid": 2000.0,
+            "participantList": [],
+            "auctionId": "second"
+        }
+    ],
+    "auctionId": "0"
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The message type is <code>AUCTION_LIST</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>data</code> property of the response object contains the list of all running auctions. An auction can be in one of three states: <em>not running</em>, <em>running</em>, or <em>finished</em>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>item</code> property of the response object is a nested object that represents the auction item.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>auctionId</code> property contains a unique identifier of the selected auction.</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>The user picks the auction from the list, enters a desired nick name, and joins to the auction. The client-side application sends the following <code>login</code> message.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">{
+    "type": "LOGIN", <i class="conum" data-value="1"></i><b>(1)</b>
+    "data": "gamussa", <i class="conum" data-value="2"></i><b>(2)</b>
+    "auctionId": "second" <i class="conum" data-value="3"></i><b>(3)</b>
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The message type is <code>LOGIN</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>data</code> property of the request contains the user&#8217;s nickname.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The <code>auctionId</code> property helps the server-side code to route the message to the correct auction.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+As soon as the handshake completes successfully, the server side code that implements <code>WebSocket</code> protocol exposes the WebSocket <code>Session</code> object.  The <code>Session</code> object encapsulates the conversation between the WebSocket endpoint (server - side) and remote endpoint (browser). Check the documentation for your server side framework for details about how it handles and exposes the remote endpoints in API.
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Each time when the user enters the bid price the client&#8217;s code sends following <code>bid</code> message:</p>
+<div class="listingblock">
+<div class="title">Bit message</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">{
+    "type": "BID",
+    "data": "1100.0",
+    "auctionId": "second"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Above is the outgoing message. When user clicks on the "Bid!" button the value from the Bid text box is wrapped into the  <code>BID</code> message. On the server, when the new higher <code>BID</code> message arrives, the message <code>PRICE_UPDATE</code> has to be broadcast to all active clients.</p>
+</div>
+</li>
+<li>
+<p>The <code>PRICE_UPDATE</code> message</p>
+<div class="listingblock">
+<div class="title">The PRICE_UPDATE Message</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">{
+    "type": "PRICE_UPDATE", <i class="conum" data-value="1"></i><b>(1)</b>
+    "data": "1300.0", <i class="conum" data-value="2"></i><b>(2)</b>
+    "auctionId": "second"
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>If some auction participant outbids others, the rest of the participants will receive an update.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Such an update will contain the current highest bid.</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>The <code>RESULT</code> message</p>
+<div class="listingblock">
+<div class="title">The RESULT Message</div>
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">{
+    "type": "RESULT",
+    "data": "Congrats! You\u0027ve won Painting for $1300.0",
+    "auctionId": "first"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After the auction ends, the server broadcasts the message with the final auction results. If the wining user is online and connected to the auction server, she&#8217;ll receive the message with congratulations.  Other participants will get the "Sorry, you didn&#8217;t win" notification.</p>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This is pretty much it. The amount of code to implement the client&#8217;s side of the auction is minimal. After the connection and upgrade are done, most of the processing is done in the message handler of the WebSocket object&#8217;s <code>onmessage</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_summary">Summary</h3>
+<div class="paragraph">
+<p>After reading this chapter you should see the benefits of using WebSocket protocol in Web applications. In many cases WebSocket is an ultimate means for improving the application performance by reducing the network latency and removing the HTTP-headers overhead. You&#8217;ve learned how to integrate the WebSocket-based functionality into the existing HTTP-based application Save Sick Child. There is no need to make the entire communication of the Web application over WebSocket. Use this powerful protocol when it&#8217;s clearly improves the performance and responsiveness of your application.</p>
+</div>
+<div class="paragraph">
+<p>As a side benefit, you&#8217;ve learned how to use the network monitoring capabilities of Google Chrome Developer Tools and Wireshark application by sniffing the WebSocket traffic. You can&#8217;t underestimate the importance of monitoring tools, which are the best friends of Web developers.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2013-08-23 15:40:51 PDT
+</div>
+</div>
+</body>
+</html>
