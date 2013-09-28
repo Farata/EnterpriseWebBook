@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="generator" content="Asciidoctor 0.1.4">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Introduction</title>
+<title>Introduction to Web Application Security</title>
 <style>
 @import url(http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css);
 @import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic);
@@ -570,12 +570,27 @@ p.tableblock.header { color: #6d6e71; }
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_introduction">Introduction</a></li>
+<li><a href="#_introduction_to_web_application_security">Introduction to Web Application Security</a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#book_start">What&#8217;s an Enterprise Web Application?</a></li>
-<li><a href="#_from_dhtml_to_html5">From DHTML to HTML5</a></li>
-<li><a href="#_should_we_develop_in_html5_if_its_standard_is_not_finalized_yet">Should we develop in HTML5 if its standard is not finalized yet?</a></li>
+<li><a href="#_http_vs_https">HTTP vs HTTPS</a></li>
+<li><a href="#_authentication_and_passwords">Authentication and Passwords</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_basic_and_digest_authentication">Basic and Digest Authentication</a></li>
+<li><a href="#_single_sign_on_and_social_networks_logins">Single Sign-on and Social Networks Logins</a></li>
+</ul>
+</li>
+<li><a href="#_authorization">Authorization</a></li>
+<li><a href="#_what_s_oauth">What&#8217;s OAuth</a></li>
+<li><a href="#_top_security_risks">Top Security Risks</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_injection">Injection</a></li>
+<li><a href="#_cross_site_scripting">Cross-Site Scripting</a></li>
+</ul>
+</li>
+<li><a href="#_some_application_security_considerations">Some Application Security Considerations</a></li>
 <li><a href="#_summary">Summary</a></li>
 </ul>
 </li>
@@ -584,62 +599,21 @@ p.tableblock.header { color: #6d6e71; }
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_introduction">Introduction</h2>
+<h2 id="_introduction_to_web_application_security">Introduction to Web Application Security</h2>
 <div class="sectionbody">
-<div class="sect2 row">
-<h3 id="book_start">What&#8217;s an Enterprise Web Application?</h3>
 <div class="paragraph">
-<p>This book has the word Enterprise in its title, which needs to be explained, and we&#8217;ll do it by examples. Creating a Web application that will process orders is not the same as creating a Web site to publish
-blogs. Enterprise applications include company-specific workflows, and usually they need to be integrated with number of internal systems, data sources and processes.</p>
+<p>Every newly deployed Web application creates a new security hole in accessing of your organization&#8217;s data. The hackers get access to the data that are supposedly hidden behind the firewalls by entering through the ports used by Web application. There is no way to guarantee that your Web application is 100% secure. If it was never attacked by hackers this means that it&#8217;s too small, has almost no users, and is of no interest to them.</p>
 </div>
 <div class="paragraph">
-<p>Google Doc is not an enterprise Web application. But Google appliance integrating search operating on company documents, databases, processes, tickets, and providing collaboration is - it integrates
-consumer-workforce front office with what the company does (back office).</p>
+<p>This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won&#8217;t have any revelations for security professionals. But software developers should have at least a broad understanding of what makes a Web application more or less secure and which threats Web applications face - this is what this chapter is about. But to implement any of the security mechanisms mentioned here you&#8217;ll need to do additional research.</p>
+</div>
+<div class="sect2">
+<h3 id="_http_vs_https">HTTP vs HTTPS</h3>
+<div class="paragraph">
+<p>Imagine a popular night club with a tall fence and two entry doors. People are waiting in lines to get in. The door number 80 is no guarded in any way - a college student checks the tickets and let people in. The other door has the number 443 on it, and it&#8217;s protected by an armed bully letting qualified people in. The chances of unwanted people getting into the club through the door 443 are pretty slim (unless the bully is corrupted), which is not the case with door 80 - once in a while people that have no right to be there get inside.</p>
 </div>
 <div class="paragraph">
-<p>Google Maps is not an enterprise application. But Google Maps integrated with the company site used by insurance agents to plan daily route, scheduling, doing address verification and geo-coding is.</p>
-</div>
-<div class="paragraph">
-<p>Just using a Web application in some business doesn&#8217;t make it an enterprise Web application. If you take Gmail as is, it won&#8217;t be an enterprise application until you integrate it into another process of your business.</p>
-</div>
-<div class="paragraph">
-<p>Is an online game an enterprise application? It depends on the game. A multi-player online roulette game hooked up to a payment system, and maintaining users' accounts is an enterprise Web application. But
-playing Sudoku online doesn&#8217;t feel too enterprisey.</p>
-</div>
-<div class="paragraph">
-<p>How about a dating Web site? If the site just offers an ability to display singles - it&#8217;s just a publishing site as there is not much of a business there. Can you turn a dating Web site into an enterprise
-application? It&#8217;s possible.</p>
-</div>
-<div class="paragraph">
-<p>Some people will argue that an enterprise application must supports multiple users, high data load, be scalable, have business and persistence layers, offer professional support et al. We don&#8217;t believe
-that a Web application should do all this to qualify for the adjective <em>enterprise</em>.</p>
-</div>
-<div class="paragraph">
-<p>Let&#8217;s create a simple definition of an enterprise Web application:</p>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>"An enterprise Web application is the one that helps an organization running its business online"</p>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>In this book we are going to build a Save the Child Web application that will allow people to register, donate, find local kids that need help, match donors and recipients, upload images, videos and display
-statistics. Would these feature make Save the Child an enterprise Web application? Yes, our non-for-profit organization that collects donations for ill kids is our enterprise.</p>
-</div>
-<div class="paragraph">
-<p>During the last decade the authors of this book worked on many enterprise Web applications using variety of programming languages and frameworks: HTML, JavaScript, Java, and Flex to name a few. Apache Flex
-and Java produce compiled code that runs in a well known and predictable virtual machine (JVM and Flash Player respectively).</p>
-</div>
-<div class="paragraph">
-<p>This book is about developing software using what&#8217;s known as HTML5 stack. But only the first chapter of this book will offer you an overview of the selected HTML5 tags and APIs. The second chapter is an
-advanced introduction to JavaScript. The rest of the chapters are about designing, re-designing, developing, and re-developing a sample Web site Save Sick Child. You&#8217;ll be learning whatever is required for building this Web application on the go.</p>
-</div>
-<div class="paragraph">
-<p>You&#8217;ll be using dynamic HTML (DHTML), which is HTML5, JavaScript, and Cascading Style
-Sheets (CSS). We&#8217;ll add to the mix the XMLHttpRequest object that lives in a Web browser and communicates with the server without the need to refresh the entire Web page (a.k.a. AJAX). JSON will be our data format
-of choice for data exchange between the Web browser and the server.</p>
+<p>On a similar note, your organization created <em>network security</em> with a firewall (the fence) with only two ports (the doors) opened: 80 for HTTP requests and 443 for HTTPS. One door&#8217;s not secure, the other one is.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -648,136 +622,414 @@ of choice for data exchange between the Web browser and the server.</p>
 <i class="icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-It&#8217;s not possible to provide the detailed coverage of all programming languages, frameworks and tools used in this rather short book. You&#8217;ll need to do some additional reading with more in-depth coverage of certain topics. This book is for practitioner who need to learn while developing a project.
+Don&#8217;t assume that your Web application is secure if it&#8217;s deployed behind the firewall. As long as there are opened ports that allow external users accessing your Web application, you need to invest into the <em>application security</em> too.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The letter "s" in https means <em>secure</em>. Technically, https creates a secure channel over insecure Internet connection. In the past, only the Web pages that dealt with logins, payments or obviously sensitive data would use URL&#8217;s starting with https. Today, more and more Web pages use https and rightly so, because it forces Web browsers to use Secure Socket Layer (SSL) or its successor Transport Layer Security (TSL) protocol for encrypting all the data (including request and response headers) that travel between the connected Internet resources. The O&#8217;Reilly book "High Performance Browser Networking" contains <a href="http://chimera.labs.oreilly.com/books/1230000000545/ch04.html">a chapter</a> with detailed coverage of the TSL protocol.</p>
+</div>
+<div class="paragraph">
+<p>The organization that runs a Web server creates the  public key certificate that has to be signed by a trusted certificate authority (otherwise browsers will display invalid certificate warnings). The authority certifies that the holder of the certificate is a valid operator of the Web server.  SSL/TSL layers authenticate the servers using these certificates to ensure that the browser&#8217;s request is being processed by the proper server and not by some hacker&#8217;s site.</p>
+</div>
+<div class="paragraph">
+<p>When the client connects to the server via https, they select the cipher (an encryption-decryption algorithm) they both support.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The annual <a href="http://www.blackhat.com/">Black Hat</a> computer security conference is dedicated to the information security. This conference is attended by both hackers and security professionals.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If https is clearly more secure than http, why not every Web site uses only https communications? Since https encrypts all the messages that travel between the client&#8217;s browser and the server, such communications are a slower comparing to http-based. But this little slowness won&#8217;t be noticeable in  most Web applications, while the benefits of using https are huge.</p>
+</div>
+<div class="paragraph">
+<p>When entering any sensitive or private information in someone&#8217;s Web application always pay attention to the URL to make sure that it uses https protocol.</p>
+</div>
+<div class="paragraph">
+<p>As a Web developer, you should always use the https protocol to prevent an attacker from stealing the user&#8217;s session id. There are rumors that National Security Agency has broken SSL encryption algorithm, but this is not the reason for your application not using https.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_authentication_and_passwords">Authentication and Passwords</h3>
+<div class="paragraph">
+<p><em>Authentication</em> is an ability to confirm that the user is who he claims to be. The fact the the user has provided a valid id/password combination proves that he is known to the Web application. That&#8217;s all.</p>
+</div>
+<div class="paragraph">
+<p>Specifying the correct user id/password combination may not be enough for some of the Web application. Banks often ask for additional information like what&#8217;s your pet&#8217;s name or a favorite movie.</p>
+</div>
+<div class="paragraph">
+<p>If you ever worked for a large corporation, you know that they often use the RSA Secure ID (a.k.a. RSA hard token), which is a device with random-generated combination of digits. This combination changes every minute or so and has to be entered as a part of the authentication process. Beside physical devices there are programs (soft tokens) that perform user authentication in a similar way.</p>
+</div>
+<div class="paragraph">
+<p>To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who successfully passed a special background check are entered into the system used in the passport control checkpoints. On the borders the applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the <em>authenticated</em> person can pass the border without waiting in long lines.</p>
+</div>
+<div class="paragraph">
+<p>Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user&#8217;s computer are very inexpensive. In some of the Manhattan&#8217;s apartment buildings you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to <a href="mailto:bws-request@nist.gov">bws-request@nist.gov</a> with <em>subscribe</em> as the subject.</p>
+</div>
+<div class="sect3">
+<h4 id="_basic_and_digest_authentication">Basic and Digest Authentication</h4>
+<div class="paragraph">
+<p>HTTP protocol defines two types of authentication: <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic</a> and <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">Digest</a>. All modern web browsers support them, but basic authentication uses base64 encoding and no encryption, which means it should be used only with https protocol.</p>
+</div>
+<div class="paragraph">
+<p>If a Web server administrator configures certain resources to require basic user authentication  when a Web browser requests such protected resource, the server sends the HTTP response containing HTTP status code 401 - <em>Unauthorized</em> and <em>WWW-Authenticate: Basic</em>. The browser pops up the login dialog box. The user enters the ID/password, which are turned into an encoded <em>userID:password</em> string and sent to the server as a part of HTTP header. Basic authentication provides no confidentiality because it doesn&#8217;t encrypt the transmitted credentials. Cookies are not used here.</p>
+</div>
+<div class="paragraph">
+<p>With the digest authentication, the server also responds with 401 with <em>WWW-Authenticate: Digest</em> plus additional data so the Web browser can apply a  hash function to the password. Then the browser sends encrypted password to the server. Digest authentication is more secure than the basic one, but it&#8217;s still less secure than authentication that uses public keys or Kerberos authentication protocol.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_single_sign_on_and_social_networks_logins">Single Sign-on and Social Networks Logins</h4>
+<div class="paragraph">
+<p>Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement a single sign-on (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, if the user signs out from one of these applications, terminates his access to all of them.</p>
+</div>
+<div class="paragraph">
+<p>Typically, user&#8217;s credentials are verified by making a call to a corporate LDAP server, and then a single sign-on software (e.g. Oracle Enterprise Single Sign-On, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO) enters the  application passwords automatically. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).</p>
+</div>
+<div class="paragraph">
+<p>In the consumer-oriented Internet space single (or reduced) sign-on solutions become more and more popular. For example, some Web applications allow reusing your Twitter or Facebook credentials (provided that you&#8217;ve logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegate authentication procedures to Facebook, Twitter and other authorization services.</p>
+</div>
+<div class="paragraph">
+<p>Back in 2010, Facebook has introduced their <a href="https://www.facebook.com/pages/Single-sign-on/108568432501463#">SSO solution</a> that helps millions of people log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking the user to enter credentials, your application can show the button "Login with FaceBook".</p>
+</div>
+<div class="paragraph">
+<p>FaceBook has published JavaScript API that allows implementing FaceBook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit online documentation on <a href="https://developers.facebook.com/docs/facebook-login/">FaceBook Login API</a>.</p>
+</div>
+<div class="paragraph">
+<p>If you prefer your application to have the button "Login with Twitter", refer to the Sign in with Twitter API <a href="https://dev.twitter.com/docs/auth/sign-twitter">documentation</a>.</p>
+</div>
+<div class="paragraph">
+<p>LinkedIn is a popular social network for professionals. It also offers API to create the button "Sign in with LinkedIn". For details visit LinkedIn <a href="http://developer.linkedin.com/javascript">online documentation</a> for developers.</p>
+</div>
+<div class="paragraph">
+<p>Google also offers the authentication API. Details about their client library for JavaScript are published <a href="https://developers.google.com/api-client-library/javascript/features/authentication">online</a>. For implementing SSO with Google, visit  <a href="https://developers.google.com/commerce/wallet/online/sso">this Web page</a>.</p>
+</div>
+<div class="paragraph">
+<p>It might sound obvious, but we&#8217;ll still remind you  that the Web client should never send passwords in clear text. Use <a href="http://en.wikipedia.org/wiki/Secure_Hash_Algorithm">Secure Hash Algorithms</a> (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters (brute-forcing attack), it&#8217;ll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker&#8217;s work more difficult too.
+Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client&#8217;s computer. Then, on each subsequent request to the server Web browser will place the session if in the HTTP request object and send it along with each request. So technically, user&#8217;s identity is  always available at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource.</p>
+</div>
+<div class="paragraph">
+<p>Have you ever wondered why Automated Teller Machines (ATM) often ask you to enter PIN more then once? Say, you&#8217;ve deposited a check and then want to see  the balance.on your account. After the check deposit has been completed your ATM session was invalidated to protect the careless users who may rush out from the bank in a hurry as soon as the transaction is finished. Otherwise the next person by the ATM could have requested a cash withdrawal from your bank account.</p>
+</div>
+<div class="paragraph">
+<p>On the same note, if the Web application&#8217;s session is idling more than allowed time interval, the session should be automatically invalidated.  If a trader in a brokerage house is not interacting with the Web trading application for some time, invalidate the session to exclude the situation when the trader stepped out, and someone else is buying financial products on his behalf.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_authorization">Authorization</h3>
+<div class="paragraph">
+<p><em>Authorization</em> is a way to determine which operations the user can perform and what data he can access. For example, the owner of the company can perform money withdrawals and transfers from the online business bank account, while the company accountant is provided with the read-only access.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Similarly to authentication the user&#8217;s authorization can be checked more than once during the user&#8217;s session. As a matter of fact, authorization can even change during the session (e.g. a financial application can allow trades only during the business hours of the stock exchange).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Users of the application are grouped by roles, and each role comes with a set of privileges. The user can be given a privilege to read and modify certain data, while other can be hidden. In the relational DBMS realm there is a term <em>row-level security</em>, which means that the same query can produce different results to different users. Such security policies are implemented at the data source level.</p>
+</div>
+<div class="paragraph">
+<p>A simple use case where row-level security is really useful is a salary report. While the employee can see only his salary report, the head of department can see the data of all subordinates.</p>
+</div>
+<div class="paragraph">
+<p>Authorization is usually linked with the user&#8217;s session. HTTP is stateless protocol, so if a user retrieves a Web page from a Web server, and then goes to another Web page, this second page does not know what has been shown or selected on the first one. For example, in case of an online store the user adds an item to the shopping cart and moves to another page to continue shopping. To preserve the data needed to more than one Web pages (e.g. the content of the shopping cart) the server-side code must implement session tracking. The session information can be passed all the way down to the database level when need be.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_what_s_oauth">What&#8217;s OAuth</h3>
+<div class="paragraph">
+<p>If the application A needs to access the application B, e.g. the user&#8217;s Facebook account for authentication and authorization, the app A may ask the user&#8217;s ID and password for the app B. This is not the right approach, because it gives the app A the complete  access to the user&#8217;s account in app B. But the only thing the app A needed was to authenticate the user. Besides, the app A now knows the user&#8217;s password to app B in clear text. There was a need for a mechanism to give a limited access to third party applications.</p>
+</div>
+<div class="paragraph">
+<p><a href="http://oauth.net/">OAuth</a> is "An open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications".
+Its <a href="http://tools.ietf.org/html/rfc6749">current draft specification</a> provides the following definition:</p>
+</div>
+<div class="paragraph">
+<p><em>The OAuth 2.0 authorization framework enables a third-party application to obtain limited access to an HTTP service, either on behalf of a resource owner by orchestrating an approval interaction between the resource owner and the HTTP service, or by allowing the third-party application to obtain access on its own behalf.</em></p>
+</div>
+<div class="paragraph">
+<p>OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of token with limited privileges and for a limited time.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Any communications with OAuth 2.0 servers are made through the https connections.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The user who wants to use some service is called <em>resource owner</em>.</p>
+</div>
+<div class="paragraph">
+<p>The application that tries to authenticate the resource owner is called <em>the client</em>. This is an application that offers the buttons like "Login with FaceBook".</p>
+</div>
+<div class="paragraph">
+<p>The <em>resource server</em> is a server that has implemented OAuth API for the client. Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth 2.0  implementations visit <a href="http://oauth.net/2">oauth.net/2</a>. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Using Facebook with OAuth</div>
+<div class="paragraph">
+<p>The process of using Facebook server is described in the document titled <a href="https://developers.facebook.com/docs/facebook-login/getting-started-web/">Getting Started with Facebook Login for Web</a>.</p>
+</div>
+<div class="paragraph">
+<p>In short, you start with creating an application ID on the Facebook App Dashboard, and then copy/paste a JavaScript SDK code (provided by Facebook) into your application. Include the newly created app id there too. Then add a JavaScript code to support Facebook login to your application and the URL of the redirection page in case of successful login.</p>
+</div>
+<div class="paragraph">
+<p>Facebook Login API will continue communicating with your application by sending events as soon as the login status changes. Facebook will send the authorization token to your application&#8217;s code and will take care of its storage. Authorization token is a secure random string that identifies the user and the app, contains the information about permissions and has expiration time. Your application&#8217;s JavaScript code makes calls to Facebook SDK API, and each of these calls will include the token as a parameter.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>OAuth has provisions for creating authorization tokens to browser-only applications, for mobile applications, and for the server-to-server communications. For the in-depth coverage get the O&#8217;Reilly book by Aaron Parecki <a href="http://shop.oreilly.com/product/0636920023531.do">"OAuth 2.0: The Definite Guide"</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_top_security_risks">Top Security Risks</h3>
+<div class="paragraph">
+<p><a href="https://www.owasp.org"> Open Web Application Security Project (OWASP)</a> is an open source project focused on improving security of Web applications. OWASP is a collection of guides and tools for increasing  security of Web applications. OWASP publishes and maintains the list of <a href="https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project">top 10 security risks</a>. Figure <a href="#FIG10-1">Top 10 security risks circa 2013</a> shows how this list looked in 2013:</p>
+</div>
+<div id="FIG10-1" class="imageblock">
+<div class="content">
+<img src="images/fig_10_01.png" alt="fig 10 01">
+</div>
+<div class="title">Figure 1. Top 10 security risks circa 2013</div>
+</div>
+<div class="paragraph">
+<p>This Web site allows you to drill down on each of the items from this list, see the illustration of the selected security vulnerability and recommendations on how to prevent it. You can also download this list as a <a href="http://owasptop10.googlecode.com/files/OWASP%20Top%2010%20-%202013.pdf">PDF document</a>. Let&#8217;s review  some of the top 10 security threats.</p>
+</div>
+<div class="sect3">
+<h4 id="_injection">Injection</h4>
+<div class="paragraph">
+<p>If a bad guy will be able to <em>inject</em> a piece of code that will run inside your Web application, such code can steal or damage the data from your Web application. In the world of compiled libraries and executables injecting malicious code would be a rather difficult task. But if an application uses interpreted languages (e.g. JavaScript or clear text SQL) the task of injecting malicious code becomes a lot easier than you might think. Let&#8217;s look at a typical example of SQL injection.</p>
+</div>
+<div class="paragraph">
+<p>Say your application can search for data based on some keywords the user enters into a text input field. For example, to find all donors in the city of New York the user will enter the following:</p>
+</div>
+<div class="paragraph">
+<p><em>"New York"; delete from donors;</em></p>
+</div>
+<div class="paragraph">
+<p>If the server side code of your application would be simply attaching the entered text to the SQL statement, this could result in execution of the following command:</p>
+</div>
+<div class="paragraph">
+<p><em>Select * from donors where city="New York"; delete from donors;</em></p>
+</div>
+<div class="paragraph">
+<p>This command doesn&#8217;t require any additional comments, does it? Is there a way to prevent the users of you Web application from entering something like this? The first thing that comes to mind is to not allow the user to enter the city, but force him to select it from the list. But such a list of possible values might be huge. Besides, the hacker can modify the HTTP request after the browser sends it to the server.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Always use pre-compiled SQL statements that use parameters to pass the user&#8217;s input into the database query (e.g. the <em>PreparedStatement</em> in Java).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The importance of the server-side validation shouldn&#8217;t be underestimated. In some scenarios you can come up with a regular expression that checks for the matching patterns in the data received from the clients. In other cases you can write a regular expression that invalidate the data if it contains SQL (or other) keywords that leads to modifications  of the data on the server.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Always minimize the interval between validating and using the data.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the ideal world the client-side code should not even send the non-validated data to the server. But in real-world you&#8217;ll end up with duplicating some of the validation code in both the client and server.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_cross_site_scripting">Cross-Site Scripting</h4>
+<div class="paragraph">
+<p>Cross-site scripting (XSS) - the user of your Web application receive some unwanted code fragments from a malicious server that reaches the user via the site that a person visited (hence cross-site). This can happen in three ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Reflected (a.k.a. phishing) - the Web page contains a link that seems valid, but when the user clicks on it, the user&#8217;s browser receives and executes the the script created by the attacker.</p>
+</li>
+<li>
+<p>Stored - the external attacker managed to store the malicious script on the server that hosts someone&#8217;s  Web application so every user will get it as a part of the Web page and their Web browser will execute it. For example, if a user&#8217;s forum allows posting texts that include JavaScript code, a malicious code typed by a "bad guy" can be saved in the server&#8217;s database and executed by users' browsers visited this forum afterward.</p>
+</li>
+<li>
+<p>Local - no server is involved. Web page A opens Web page B with malicious code, which in turn modifies the code of the page A. If your application uses a hash-tag(#) in URLs (e.g. <a href="http://savesickchild.org#something)">http://savesickchild.org#something)</a>, make sure that before processing this <em>something</em> doesn&#8217;t contain anything like "<em>javascript:somecode</em>", which may have been attached to the URL by an attacker.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>W3C has published the draft of the <a href="https://dvcs.w3.org/hg/content-security-policy/raw-file/tip/csp-specification.dev.html">Content Security Policy</a> document - "a mechanism web applications can use to mitigate a broad class of content injection vulnerabilities, such as cross-site scripting".</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+In application security the term <em>man in the middle attack</em> refers to the case when an attacker intercepts and modifies the data transmitted between two parties (usually the client and the server).
+</td>
+</tr>
+</table>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">STRIDE - Classification of Security Threats</div>
+<div class="paragraph">
+<p>Microsoft has published <a href="http://msdn.microsoft.com/en-us/magazine/cc163519.aspx#S2">a classification</a> that divides security threats into six categories (hence six letters in the acronym STRIDE):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Spoofing - an attacker pretends to be a legitimate user of some application, e.g. a banking system. This may be implemented using XSS.</p>
+</li>
+<li>
+<p>Tampering - modifying the data that were not supposed to be modified (e.g. via SQL injection).</p>
+</li>
+<li>
+<p>Repudiation - the user denies that he sent the data (e.g. made an online transaction like purchase or sale) by modifying application&#8217;s log files.</p>
+</li>
+<li>
+<p>Information disclosure - an attacker get an access to the classified information</p>
+</li>
+<li>
+<p>Denial of Service (a.k.a. DoS) - make a server unavailable for the legitimate users, which often is implemented by generating a large number of simultaneous requests to saturate the server.</p>
+</li>
+<li>
+<p>Elevation of privilege - gaining an elevated access to the data, e.g. by obtaining administrative rights.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+While we&#8217;ve been working on the section describing Apple&#8217;s developers certificates (Chapter 14) their Web site was hacked and was not available for about two weeks.
 </td>
 </tr>
 </table>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_from_dhtml_to_html5">From DHTML to HTML5</h3>
-<div class="paragraph">
-<p>DHTML has been introduced in Microsoft Internet Explorer (IE) 5, and several years later it was substituted with a more popular acronym AJAX. Back in 1999 Microsoft introduced <code>XMLHttpRequest</code> object to allow the Web version of their mail client Outlook to update the browser&#8217;s window without the need to refresh the entire Web page. The market share of IE5 was about 90% at the time, and in enterprises it was literally the only approved browser.</p>
 </div>
-<div class="paragraph">
-<p>Many years passed by and today&#8217;s Internet ecosystems changed quite a bit. Web browsers are a lot smarter and performance of JavaScript improved substantially. The browsers support 6-8-12 simultaneous connections per domain (as opposed to 2 five years ago), which gave a performance boost to all AJAX applications. At least one third of all Web requests is being made from smart phones or tablets. Apple Inc. started their war against browser&#8217;s plugins hence using embedded Java VM or Flash Player is not an option there. The growing need to support a huge variety of mobile devices gave another boost for HTML5 stack, which is supported by all devices.</p>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-important" title="Important"></i>
+</td>
+<td class="content">
+One of the OWASP guides is titled <a href="https://www.owasp.org/index.php/Web_Application_Penetration_Testing">Web Application Penetration Testing</a>. In about 350 pages it explains the methodology of testing a Web application for each vulnerability. OWASP defines <em>penetration test</em> as a method of evaluating the security of a computer systems by simulating an attack. Hundreds of security experts from around the world have contributed to this guide. Running penetration tests should become a part of your development process, and the sooner you start running them the better.
+</td>
+</tr>
+</table>
 </div>
-<div class="paragraph">
-<p>But choosing HTML5 as the least common denominator that works in various devices and browsers means lowering requirements for your enterprise project. From the very beginning parameters like reliability, ability to adapt to different the screen sizes and densities will be simplified comparing to developing for one specific VM, device or OS. Instead of implementing these features, the functional specification will include testing under several Web browsers, in many different screen sizes and
-resolutions. HTML5 developers spend a lot more time in the debugger that people who develop for a known VM.
-Get ready to solving problems like a dropdown does not show any data in one browser while working fine in all others. Can you imagine a situation when the click event is not always generated while working in Java, Flex, or Silverlight? Get ready for such surprises while testing your DHTML application.</p>
-</div>
-<div class="paragraph">
-<p>You&#8217;ll save some time because there is no need to compile JavaScript, but you&#8217;ll spend more time testing deployed code. The final deliverable of an HTML5 project may have as low as half of the functionality
-comparing to the same project developed for a VM. But you&#8217;ll gain a little better Web adaptability, easier implementation of full text search and mashups. The integration with other technologies will also
-become easier with HTML/JavaScript. If all these advantages are important to your application choose HTML5.</p>
-</div>
-<div class="paragraph">
-<p>JavaScript will enforce its limitations on any serious and complex enterprise project. You can develop a number of fairly independent windows, but creating a well tested and reliable HTML5 takes time.</p>
-</div>
-<div class="paragraph">
-<p>In this book we&#8217;ll be using some JavaScript frameworks - the are dozens of those on the market. Several of them promise to cover all the needs of your Web application. Overall, there are two main categories of
-frameworks:</p>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>a) Those that allow you to take an existing DHTML Web site and easily add new attributes to all or some page elements so they would start shining, blinking, or do some other fun stuff. Such frameworks don&#8217;t promote component-based development. They may not include navigation components, grids, trees, which are pretty typical for any UI of the corporate tasks. JQuery is probably the best representative of this group- it&#8217;s light (30Kb), extendable, and easy to learn.</p>
-</div>
-<div class="paragraph">
-<p>b) Another group of frameworks offers rich libraries of high-level components and allow you to extend them.But overall, such components are supposed to be used together becoming a platform for your Web UI. These components process some events, offer support of the Model-View-Controller paradigm, have a proprietary way of laying out elements on the Web page, organize navigation et al. Ext JS from Sencha belongs to this group.</p>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>We&#8217;ll use both JQuery and Ext JS and will show you how to develop Web applications with each of these popular frameworks. JQuery is good for improving an existing JavaScript site. JQuery can be used to program
-about 80% of a Web site. You should use it for the look and feel support, which is what it&#8217;s meant for. But you can&#8217;t use it for building your application component model. The component model of Ext JS is
-applicable in about 20% of a Web site, which includes an application piece rather than just being a set of Web pages. Typically it&#8217;s a serious view navigator or a wizard to implement a serious business
-process or a workflow that includes a client&#8217;s part.</p>
-</div>
-<div class="quoteblock">
-<blockquote>
-<div class="paragraph">
-<p>JavaScript frameworks are hiding from software developers all incompatibilities and take care of the cases when a Web browser doesn&#8217;t support some HTML5, CSS3, or JavaScript features yet.</p>
-</div>
-</blockquote>
-</div>
-<div class="paragraph">
-<p>High-level UI components and a workflow support are needed for a typical enterprise application where the user needs to perform several steps to complete the business process. And these 20% of an application&#8217;s code will require 80% of the project time of complex development. So choosing a framework is not the most difficult task. The main problem with DHTML projects is not how to pick the best JavaScript framework for
-development, but finding the right software developers. Lack of qualified developers increases the importance of using specialized frameworks for code testing. The entire code base must be thoroughly
-tested over and over again. We&#8217;ll discuss this subject in the Chapter 5 dedicated to test-driven development.</p>
-</div>
-<div class="paragraph">
-<p>A JavaScript developer has to remember all unfinished pieces of code. Many things that we take for granted with compiled languages simply don&#8217;t exist in JavaScript. For example, in Java or C# just by looking at
-the method signature you know what are the data types of the method&#8217;s parameters. In JavaScript you can only guess if the parameter names are self descriptive. Take the Google&#8217;s framework GWT that allows developers write code in Java with auto-generation of the JavaScript code. Writing code in one language with further conversion and deployment in another one is a controversial idea unless the source and generated languages are very similar. We&#8217;re not big fans of GWT, because after writing the code you&#8217;ll need
-to be able to debug it. This is when a Java developer meets a foreign language JavaScript.The ideology and psychology of programming in JavaScript and Java are different. A person who writes in Java/GWT has
-to know how to read and interpret deployed JavaScript code. On the other hand, using TypeScript or CoffeeScript to produce JavaScript code can be a time saver.</p>
-</div>
-<div class="paragraph">
-<p>The Ext JS framework creators decided to extend JavaScript introducing their version of classes and more familiar syntax for object-oriented languages. Technically they are extending or replacing the constructs of the JavaScript itself extending the alphabet. Ext JS recommends creating objects using <code>ext.create</code> instead of the operator <code>new</code>. But Ext JS is still a JavaScript framework.</p>
-</div>
-<div class="paragraph">
-<p>JQuery framework substantially simplifies working with browser&#8217;s DOM elements and there are millions of small components that know how to do one thing well, for example, an image slider. But it&#8217;s still JavaScript and requires developers to understand the power of JavaScript functions, callbacks, and closures.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_should_we_develop_in_html5_if_its_standard_is_not_finalized_yet">Should we develop in HTML5 if its standard is not finalized yet?</h3>
+<h3 id="_some_application_security_considerations">Some Application Security Considerations</h3>
 <div class="paragraph">
-<p>The short answer is yes. If you are planning to develop mainly for the mobile market, it&#8217;s well equipped with the latest Web browsers and if you&#8217;ll run into issues there. they won&#8217;t be caused by the lack of HTML5
-support. In the market of the enterprise Web applications, the aging Internet Explorer 8 is still being widely used and they don&#8217;t support some of the HTML5 specific features. But it&#8217;s not a show stopper either.If you are using one of the JavaScript frameworks that offers cross-browser compatibility, most likely, they take care of IE8 issues.</p>
+<p>In this section we&#8217;ll share with you our experience of dealing with security while creating a company that sells software as service. Four years ago we&#8217;ve founded a startup that automates certain workflows for insurance agents. In addition to developing the application we had to set up the data centers and take care of security issues too.</p>
 </div>
 <div class="paragraph">
-<p>The more conservative approach to achieving the browser compatibility is not by relying on the framework promises, but by testing and adjusting your application in different browsers. The chances are that you may
-need to be fixing the framework&#8217;s code here and there. Maintaining compatibility is a huge challenge for any framework&#8217;s vendor, which in some cases can consist of just one developer. You shouldn&#8217;t have hard
-feelings against the developers behind the framework of your choice. These guys simply don&#8217;t have time to fix everything. You need to form an attitude that a JavaScript framework is similar to a good Legos set that will require your creativity too. Don&#8217;t get angry. Cure the framework. Spend some time working on the framework, and then work on your application code. Ideally, submit your fixes back to the framework&#8217;s
-code base - most of them are open source.</p>
+<p>So far in this chapter we&#8217;ve been discussing security vulnerabilities from the technical perspective. But there is another aspect that can&#8217;t be ignored - the regulatory compliance of the business you automate.</p>
 </div>
 <div class="paragraph">
-<p>If you are planning to write pure JavaScript, add a tiny framework Modernizr to your code base, which will detect if a certain feature is supported by the user&#8217;s Web browser, and if not - provide an alternative solution. We like the analogy with TV sets. People with latest 3D HD TV sets and those who have 50-year old black and white televisions can watch the same movie even though the quality of the picture will be drastically different.</p>
+<p>For example, our customers are insurance agencies and carriers. We charge for our services, and our customers pay using credit cards using our application. This opens up a totally different category of security concerns. Where the credit card numbers are stored? What if they get stolen? How secure is the payment portion of your application? How the card holder&#8217;s data is protected? Is there a firewall protecting customer&#8217;s data? How the data is encrypted?</p>
+</div>
+<div class="paragraph">
+<p>One of the first questions our perspective customers ask if our application is <em>PCI compliant</em>. They won&#8217;t work with us until they review the <em>application-level security</em> implemented in our system. As per the <a href="http://www.pcicomplianceguide.org/pci-basics.php">PCI Compliance Guide</a>, "the Payment Card Industry Data Security Standard is used by all card brands to assure the security of the data gathered while an employee is making a transaction at a bank or participating vendor".</p>
+</div>
+<div class="paragraph">
+<p>Pretty often our perspective customers send us a questionnaire to see if our security measures are compliant with their requirements. In some cases this document can include as many as 300 questions.</p>
+</div>
+<div class="paragraph">
+<p>If your application stores PCI data, authenticating via FaceBook, Google or a similar OAuth service won&#8217;t be an option. The users will be required to authenticate themselves by entering long passwords containing combinations of letters, numbers and special characters.</p>
+</div>
+<div class="paragraph">
+<p>Even if you are not dealing with the credit card information, there are other areas where the application data must be protected. Take the human resources application - social security numbers (unique ID&#8217;s of the USA residents) of employees must be encrypted.</p>
+</div>
+<div class="paragraph">
+<p>You may want to implement different levels of security depending on what devices is being used to access your application - a public computer, an internal corporate computer, iPad or an Android tablet. If a desktop user forgot his password, you may implement a recovery mechanism that send an email to the user and expects to receive a certain  response from him. If the user holds a smartphone, the application can send a text message to his device.</p>
+</div>
+<div class="paragraph">
+<p>If the user&#8217;s record contains both his email and the cell phone number, the application should ask where to send the password recovery instructions. If a mobile device runs the hybrid or native version of the application, the user can be automatically switched to a messaging app of the device so he can read the text message while the main application remains at the view where authentication was required.</p>
+</div>
+<div class="paragraph">
+<p>In the enterprise Web applications more than one layer of security must be implemented: at the communication protocol level, at the session level, and at the application level. The HTTP server <a href="http://nginx.com/">Nginx</a> besides being a high-performance proxy server and load balancer can serve as a security layer too. Your Web application can offload authentication tasks and validation of SSL certificates to Nginx.</p>
+</div>
+<div class="paragraph">
+<p>Most of the enterprise Web applications are deployed on the cluster of servers, which adds another task to your project plan: how to manage sessions in a cluster. The user&#8217;s session has to be shared between all servers in a cluster. High-end application servers may implement this feature out of the box. For example, IBM WebSphere server has an option to tightly integrate HTTP sessions with its application security module. Another example is Terracotta Cluster, which has the Terracotta Web Sessions module that allows session to survive the nod hops and failures. But small or mid-size applications may require some custom solutions for distributed sessions.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Minimize the amount of data stored in the user&#8217;s session to simplify session replication. Store the data in the application cache, that can be replicated quickly and efficiently using open source or commercial products (e.g. JGroups, Terracotta et al).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Here&#8217;s another topic to consider: multiple data centers when each one runs a cluster of servers. To speed up the disaster recovery process, your Web application has to be deployed in more than one data centers located in different geographical regions. The user authentication must work even if one of the data centers becomes not operational.</p>
+</div>
+<div class="paragraph">
+<p>An external computer (e.g. Nginx server) can perform token-based authentication, but inside the system the token is used only when the access to protected resources is required. For example, when the application need to process a payment, it doesn&#8217;t need to know any credit card details - it just uses the token to authorize the transaction of the  previously authenticated user.</p>
+</div>
+<div class="paragraph">
+<p>This grab bag of security considerations mentioned in this section is not a complete list of security-related issues that your IT organization needs to take care of. Our message to you is simple: "Take security very seriously if you are planning to develop deploy, and run a production-grade  enterprise Web application".</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_summary">Summary</h3>
 <div class="paragraph">
-<p>If you are starting working on your first HTML5 enterprise project, get ready to solve the same tasks as Java, JavaFX, Silverlight, or Flex developers face:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Reliability of the network communications. What if the data never arrive from/to the server? Is it possible to recover the lost data? Where they got lost? Can we re-send the lost data? What to do with
-duplicates?</p>
-</li>
-<li>
-<p>Modularization of your application. If your application has certain rarely used menus don&#8217;t even load the code that handles this menu.</p>
-</li>
-<li>
-<p>Perceived performance. How quickly the main window of your application is loaded to the user&#8217;s computer? How heavy is the framework&#8217;s code base?</p>
-</li>
-<li>
-<p>Should you store the application state on the server or on the client?</p>
-</li>
-<li>
-<p>Does the framework offer a rich library of components?</p>
-</li>
-<li>
-<p>Does the framework support creation of loosely coupled application components? Is the event model well designed?</p>
-</li>
-<li>
-<p>Does the framework of your choice cover most of the needs of your application, or you&#8217;ll need to use several frameworks?</p>
-</li>
-<li>
-<p>Is well written documentation available?</p>
-</li>
-<li>
-<p>Does the framework of your choice locks you in? Does it restrict your choices? Can you easily replace this framework with another one if need be?</p>
-</li>
-<li>
-<p>Is there an active community to ask for help with technical questions?</p>
-</li>
-</ul>
+<p>Every enterprise Web application has to run in a secure environment. The mere fact that the application runs inside the firewall doesn&#8217;t make it secure. First, if you&#8217;re opening at least one port to the outside world, a malicious code can sneak in. Second, there can be an "angry employee" or just a "curious programmer" inside the organization who can inject the unwanted code.</p>
 </div>
 <div class="paragraph">
-<p>We could continue adding items to this list. But our main message is that developing HTML5 applications is not just about adding tag video and canvas to a Web page. It&#8217;s about serious JavaScript programming.</p>
+<p>The proper validation of the received data is very important. Ideally, use the <em>white list</em> validation to compare the user&#8217;s input against the list of allowed values. Otherwise do a <em>black list</em> validation to compare against the keywords that are not allowed in the data entered by the user.</p>
+</div>
+<div class="paragraph">
+<p>With proliferation of clouds, social networks, and sites that offer free or cheap storage people lose control over security hoping that Amazon, Google or Dropbox will take care of it. Besides software solutions, software-as-a-service providers deploy specialized hardware - security appliances that serve as firewalls, perform content filtering, virus and intrusion detection. Interestingly enough, hardware security appliances are also vulnerable.</p>
+</div>
+<div class="paragraph">
+<p>In any case, the end users upload their personal files without thinking twice. Enterprises are more cautious and prefer private clouds installed on their own servers, where they administer and protect data themselves. The users who access Internet from their mobile devices have little or no control of how secure their devices are. So the person in charge of the Web application has to make sure that it&#8217;s as secure as possible.</p>
 </div>
 </div>
 </div>
@@ -785,7 +1037,7 @@ duplicates?</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-09-28 00:32:10 PDT
+Last updated 2013-09-28 00:20:01 PDT
 </div>
 </div>
 </body>
