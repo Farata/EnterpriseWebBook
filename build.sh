@@ -52,7 +52,7 @@ if [ "$1" = "html" ]; then
     makeDir $OUT_DIR
 
     # list all asciidoc files in the DOCS_DIR
-    adoc_files=(./acknowledgements.asciidoc ./appendix_a.asciidoc ./ch10_security.asciidoc ./ch11_responsive.asciidoc ./ch12_jquerymobile.asciidoc ./ch13_senchatouch.asciidoc ./ch14_hybrid.asciidoc ./ch1_advancedjs.asciidoc ./ch2_html.asciidoc ./ch3_mockup.asciidoc ./ch4_ajax_json.asciidoc ./ch5_jquery.asciidoc ./ch6_ext_js.asciidoc ./ch7_large_js_apps.asciidoc ./ch8_testdriven_js.asciidoc ./ch9_websockets.asciidoc ./Introduction.asciidoc)
+    adoc_files=(./acknowledgements.asciidoc ./appendix_a.asciidoc ./ch10_security.asciidoc ./ch11_responsive.asciidoc ./ch12_jquerymobile.asciidoc ./ch13_senchatouch.asciidoc ./ch14_hybrid.asciidoc ./ch1_advancedjs.asciidoc ./ch2_html.asciidoc ./ch3_mockup.asciidoc ./ch4_ajax_json.asciidoc ./ch5_jquery.asciidoc ./ch6_ext_js.asciidoc ./ch7_large_js_apps.asciidoc ./ch8_testdriven_js.asciidoc ./ch9_websockets.asciidoc ./Introduction.asciidoc ./ch_preface.asciidoc)
 
     convert `printf "%s " "${adoc_files[@]}" | cut -d " " -f 1-${#adoc_files[@]}`
 
