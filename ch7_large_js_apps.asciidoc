@@ -17,13 +17,13 @@ image::fig_07_01.png[image]
 
 As you see, _1.9Mb_ worth of code and other resources have been downloaded as a result of this click. Should the application architects of the MB USA decided to bring this code to the user's device on the initial load of http://mbusa.com, the wait time would increase by another second or more. This  is unnecessary because only a tiny number of American drivers would be interested in exploring the European Delivery option. This example illustrates the use case where modularization and lazy loading is needed.
 
-Our Save Sick Child application is not as big as the Mercedes Benz site. But we'll use it to give you an example of how to build modularized Web applications that won't bring the large and monolithic code to the client's machine, but will load the code on as needed basis. We'll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.
+Our Save The Child application is not as big as the Mercedes Benz site. But we'll use it to give you an example of how to build modularized Web applications that won't bring the large and monolithic code to the client's machine, but will load the code on as needed basis. We'll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.
 
 Users consider a Web application fast for one of two reasons: either it's actually fast or it gives an impression of being fast. Ideally, you should do your best to create a Web application that's very responsive. 
 
 TIP: No matter how slow your Web application is, it should never feel like it's being frozen.
 
-This chapter is about modularization techniques that will allow quick rendering of the first page of your Web application by the user's browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save Sick Child application to illustrate using modules.
+This chapter is about modularization techniques that will allow quick rendering of the first page of your Web application by the user's browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save The Child application to illustrate using modules.
 
 === Modularization basics
 
@@ -44,7 +44,7 @@ As the application gets larger the number of script files grows accordingly, whi
 <head>
     <meta charset="utf-8">
     
-    <title>Save Sick Child | Home Page</title>
+    <title>Save The Child | Home Page</title>
     <link rel="stylesheet" href="assets/css/styles.css">
 
     <script src="components/jquery.js></script>     <!--1-->
@@ -76,7 +76,7 @@ As the application gets larger the number of script files grows accordingly, whi
 
 We need other than adding `<script>` tags approach to modularizing applications. Let's start with using the Module pattern to leverage so called Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we'll introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications defining sets of APIs. 
 
-You'll learn pros and cons of both formats later in the chapter, but the AMD module format plays nicely with the asynchronous nature of Web. In this chapter you'll see the use of the AMD module format and http://requirejs.org/[RequireJS] framework to implement the modularized version of the Save Sick Child application.
+You'll learn pros and cons of both formats later in the chapter, but the AMD module format plays nicely with the asynchronous nature of Web. In this chapter you'll see the use of the AMD module format and http://requirejs.org/[RequireJS] framework to implement the modularized version of the Save The Child application.
 
 Also, you'll see how to use the RequireJS APIs to implement on-demand loading of the application components (e.g. What We Do, Ways To Give et al.)
 
@@ -118,7 +118,7 @@ include::include/ch7_iife_global_loginModule.js[]
 include::include/ch7_iife_namespace_loginModule.js[]
 ----
 <1> Here we have modification of the approach described in previous snippet. To avoid name conflicts, create a namespace for our application called `ssc`. Note that we check for this object existence in the next line.
-<2> Now we can logically structure application code using namespaces. The global `ssc` object will contain only the code related to the Save Sick Child application.
+<2> Now we can logically structure application code using namespaces. The global `ssc` object will contain only the code related to the Save The Child application.
 
 The Module patterns works well for implementing encapsulation in a rather small applications. It's easy to implement and is frameworks agnostic. However this approach doesn't scale well because when working with an application with the large number of modules you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.
 
@@ -205,7 +205,7 @@ define(
 <3> The function for instantiating the module or object. The factory function will only be executed once
 +
 
-For example, the Save Sick Child application has a menu Way To Give, which in turn depends on other module called `otherContent`. If the user clicks on this menu, we can load the module that can be defined in the +wayToGive.js+ as follows:
+For example, the Save The Child application has a menu Way To Give, which in turn depends on other module called `otherContent`. If the user clicks on this menu, we can load the module that can be defined in the +wayToGive.js+ as follows:
 +
 
 [[LISTING_define_modeule]]
@@ -477,19 +477,19 @@ Using the _globals_ option in the _compile-modules_ command line produces the co
 To learn the up-to-date information on the ES6 browsers' support visit http://kangax.github.io/es5-compat-table/es6/[ECMAScript 6 compatibility table].
 ****
 
-NOTE: http://www.typescriptlang.org/[TypeScript] is an open-source language from Microsoft that compiles to JavaScript and brings object-oriented concepts like classes and modules to JavaScript. It has a module syntax, which is very similar to what ES6 standard proposes. The TypeScript compiler can produce CommonJS and AMD module formats. You can learn more about TypeScript from http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf[language specification]. You can find Save Sick Child application written in TypeScript in Appendix B.
+NOTE: http://www.typescriptlang.org/[TypeScript] is an open-source language from Microsoft that compiles to JavaScript and brings object-oriented concepts like classes and modules to JavaScript. It has a module syntax, which is very similar to what ES6 standard proposes. The TypeScript compiler can produce CommonJS and AMD module formats. You can learn more about TypeScript from http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf[language specification]. You can find Save The Child application written in TypeScript in Appendix B.
 
 [[REQUIREJS]]
-=== Dicing the Save Sick Child Application Into Modules
+=== Dicing the Save The Child Application Into Modules
 
-Now that you know the basics of AMD and different modularization patterns, let's see how you can dice our Save Sick Child application into smaller pieces. In this section we'll apply the AMD-complaint module loader from the framework http://requirejs.org/[RequireJS].
+Now that you know the basics of AMD and different modularization patterns, let's see how you can dice our Save The Child application into smaller pieces. In this section we'll apply the AMD-complaint module loader from the framework http://requirejs.org/[RequireJS].
 
 TIP: http://github.com/cujojs/curl[curl.js] offers  another AMD-compliant asynchronous resource loader. Both curl.js and RequireJS have similar functionality, and to learn how they differ follow https://groups.google.com/forum/#!topic/requirejs/niUyLZrivgs[this thread on RequireJS group]. 
 
-Let's start with a brief explanation of the directory structure of the modularized Save Sick Child application.
+Let's start with a brief explanation of the directory structure of the modularized Save The Child application.
 
 [[ssc_structure]]
-.A directory structure of Save Sick Child
+.A directory structure of Save The Child
 image::fig_07_05.png[align="center"]
 
 1. All application's JavaScript files reside in the _app/modules_ directory.
@@ -502,10 +502,10 @@ Inside the _modules_ directory you can have as many nested folders as you want, 
 4. The _dist_  directory serves as the location for the optimized version of our application. We will cover optimization with `r.js` later in the <<using_reuiqrejs_optimizer>> section.
 5. The QUnit/Jasmine tests will live in the _test_ directory. Testing will be covered in Chapter 8. 
 
-We are not going to dice the Save Sick Child application into multiple modules, but will just show you how to start this process. <<ssc_modules_graph>> illustrates the modules' dependencies. For example, the `main` module depends on `login`, `svg-pie-chart`, `campaigns-map`, `donation`, and `generic`. There is also a group of modules that will be loaded on demand: `whereWeWork`, `whatWeDo`, `wayToGive`, `whoWeAre`.
+We are not going to dice the Save The Child application into multiple modules, but will just show you how to start this process. <<ssc_modules_graph>> illustrates the modules' dependencies. For example, the `main` module depends on `login`, `svg-pie-chart`, `campaigns-map`, `donation`, and `generic`. There is also a group of modules that will be loaded on demand: `whereWeWork`, `whatWeDo`, `wayToGive`, `whoWeAre`.
 
 [[ssc_modules_graph]]
-.The modules graph of Save Sick Child
+.The modules graph of Save The Child
 image::fig_07_08.png[align="center"]
 
 To dice the application into modules you'll need the the modularization framework RequireJS, which can either be downloaded from its github repository or you can install it using a package manager <<what_is_bower,Bower>>.
@@ -534,13 +534,13 @@ Bower simplifies the delivery of dependencies into target platform, which means 
 
 TIP: There are pros and cons for storing dependencies in the source control repositories. Read the http://addyosmani.com/blog/checking-in-front-end-dependencies/[article by Addi Osmani] that covers this subject in more detail.
 
-Your application will have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`, which will deliver all your dependency files into the +components+ directory. Here is the content of the file bower.json for our Save Sick Child application. 
+Your application will have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`, which will deliver all your dependency files into the +components+ directory. Here is the content of the file bower.json for our Save The Child application. 
 
 [source,javascript]
 ----
 {
   "name": "ch7_dynamic_modules",
-  "description": "Chapter 7: Save Sick Child, Dynamic Modules app",
+  "description": "Chapter 7: Save The Child, Dynamic Modules app",
   "dependencies": {
     "requirejs": "~2.1.5",
     "jquery": ">= 1.8.0",
@@ -633,7 +633,7 @@ include::include/ch7_commonjs_require.js[]
 
 ==== Loading Modules On-Demand
 
-As per the Save Sick Child modules graph, some components shouldn't when the application starts. Similar to Mercedes Benz website example, some functionality of Save Sick Child can be loaded later when user needs it. The user might never want to visit the "Where we work" section. Hence this functionality is a good candidate for the _load on-demand_ module. You may want to load such a module on demand when the user clicks the button or selects a menu item. 
+As per the Save The Child modules graph, some components shouldn't when the application starts. Similar to Mercedes Benz website example, some functionality of Save The Child can be loaded later when user needs it. The user might never want to visit the "Where we work" section. Hence this functionality is a good candidate for the _load on-demand_ module. You may want to load such a module on demand when the user clicks the button or selects a menu item. 
 
 At any given time a module can be in one of three states: 
 
@@ -654,7 +654,7 @@ include::include/ch7_module_ondemand.js[]
 <3> Setting the module into the intermediate state until it's fully loaded. 
 <4> Once the `whereWeWork` module is loaded, the callback will receive the reference to this module - instantiate `whereWeWork` and render it on the page.
 
-Let's apply the technique demonstrated in <<load_ondemand_snippet>> snippet for Save Sick Child application to lazy load the "Who We Are", "What We Do", "Where We Work" and "What To Give" modules only if the user clicked on the corresponding top bar link.
+Let's apply the technique demonstrated in <<load_ondemand_snippet>> snippet for Save The Child application to lazy load the "Who We Are", "What We Do", "Where We Work" and "What To Give" modules only if the user clicked on the corresponding top bar link.
 
 .The Main Module
 [source,javascript]
@@ -677,7 +677,7 @@ include::include/ch7_main_module.js[]
 
 RequireJS plugins are special modules that implement specific API. For example, the _text_ plugin allows to specify a text file as a dependency, _cs!_ translates _CoffeeScript_ files into JavaScript. The plugin's module name comes before the _!_ separator. Plugins can extend the default loader's functionality.
 
-In the Save Sick Child application we use the _order.js_ plugin that allows to specify the exact order in which the dependencies should be loaded. You can find the full list of the available RequireJS plugins at the following https://github.com/jrburke/requirejs/wiki/Plugins[wiki page].
+In the Save The Child application we use the _order.js_ plugin that allows to specify the exact order in which the dependencies should be loaded. You can find the full list of the available RequireJS plugins at the following https://github.com/jrburke/requirejs/wiki/Plugins[wiki page].
 
 
 [[using_reuiqrejs_optimizer]]
@@ -686,7 +686,7 @@ In the Save Sick Child application we use the _order.js_ plugin that allows to s
 RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that performs module optimization. 
 Earlier in this chapter, we've specified the dependencies as an array of string literals that are passed to the top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
 
-Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files. We are going to use http://gruntjs.com/[Grunt] - the JavaScript task runner. If you're not familiar with Grunt please refer <<appendix_a>> for the additional information about usage Grunt in Save Sick Child project.
+Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files. We are going to use http://gruntjs.com/[Grunt] - the JavaScript task runner. If you're not familiar with Grunt please refer <<appendix_a>> for the additional information about usage Grunt in Save The Child project.
 
 Let's configure our Grunt project to enable the optimization task. Here's the command to install RequireJS, and Grunt's task packages clean, concat and uglify and save them as development dependencies in the file package.json:
 
@@ -696,7 +696,7 @@ Let's configure our Grunt project to enable the optimization task. Here's the co
 > npm install grunt-contrib-requirejs grunt-contrib-concat grunt-contrib-clean grunt-contrib-uglify --saveDev 
 ----
 
-<<rjs_gruntfile_list,The following listing>> describes the script to setup RequireJS optimizer and the related optimization tasks for Grunt. You'll need to run this script to generate optimized version of the Save Sick Child application. 
+<<rjs_gruntfile_list,The following listing>> describes the script to setup RequireJS optimizer and the related optimization tasks for Grunt. You'll need to run this script to generate optimized version of the Save The Child application. 
 
 [[rjs_gruntfile_list]]
 [source,javascript]
@@ -711,22 +711,22 @@ include::include/ch7_rjs_Gruntfile.js[]
 <5> Loading plugins that provide necessary tasks.
 <6> The default task to execute all tasks in order.
 
-Run the http://localhost:8080/ssc-requirejs[Save Sick Child] application built with RequireJS and monitor the network traffic in Chrome Developer Tools. You'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 browser's requests are for loading all required modules. The modules that may be loaded on demand are not here.
+Run the http://localhost:8080/ssc-requirejs[Save The Child] application built with RequireJS and monitor the network traffic in Chrome Developer Tools. You'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 browser's requests are for loading all required modules. The modules that may be loaded on demand are not here.
 
 [[unoptim_require_fig]]
-.Unoptimized version of the Save Sick Child Application
+.Unoptimized version of the Save The Child Application
 image::fig_07_02.png[]
 
-The next <<optim_with_rjs_fig,screenshot>> shows loading of the Save Sick Child application optimized with RequireJS optimizer. We've managed to pack all our modules, their dependencies and loader's code into a single file, which considerably decreased the number of the server-side calls.
+The next <<optim_with_rjs_fig,screenshot>> shows loading of the Save The Child application optimized with RequireJS optimizer. We've managed to pack all our modules, their dependencies and loader's code into a single file, which considerably decreased the number of the server-side calls.
 
 [[optim_with_rjs_fig]]
-.Loading of optimized version of the Save Sick Child 
+.Loading of optimized version of the Save The Child 
 image::fig_07_03.png[]
 
 TIP: Read more on optimization topics in the RequireJS documentation site under http://requirejs.org/docs/optimization.html[``Optimization''] section.
 
 
-RequireJS took care of the optimal module loading, but you should properly arrange the inter-module communication. The Save Sick Child application doesn't have modules that heed to exchange data so we'll describe how to properly arrange inter-module communications in a separate application.
+RequireJS took care of the optimal module loading, but you should properly arrange the inter-module communication. The Save The Child application doesn't have modules that heed to exchange data so we'll describe how to properly arrange inter-module communications in a separate application.
 
 [[mediator_section]]
 === Loosely-Coupled Inter-Module Communications With Mediator

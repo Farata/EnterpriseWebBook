@@ -4,7 +4,7 @@
 
 This chapter is about upgrading from the HTTP protocol to a more responsive HTML5 WebSocket. It starts with a brief overview of the existing legacy Web networking, and then you'll learn why and how to use HTML5's Server-Sent Events (SSE) and WebSockets.
 
-The new version of our Save Sick Child application will include the online auction utilizing WebSocket, and you'll see an example of using Server-Sent Events for broadcasting the up-to-the-minute donation information. The goal is to let you see the advantages of changing the way of client-server communications on the Web. You'll clearly see the advantages of WebSocket over a regular HTTP by monitoring the network traffic with such tools as Wireshark and Google Chrome Developer Tools.
+The new version of our Save The Child application will include the online auction utilizing WebSocket, and you'll see an example of using Server-Sent Events for broadcasting the up-to-the-minute donation information. The goal is to let you see the advantages of changing the way of client-server communications on the Web. You'll clearly see the advantages of WebSocket over a regular HTTP by monitoring the network traffic with such tools as Wireshark and Google Chrome Developer Tools.
 
 All the server-side functionality supporting this chapter is written in Java, using Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which will be the part of upcoming Java EE 7 specification. We are using the http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/[latest available build of the Glassfish Application Server]. If you don't know Java, just treat this server-side setup as a service that supports WebSocket protocol. For Java developers interested in diving into the server-side, we'll provide the source code and brief comments as a part of the code samples that come with this book.
 
@@ -406,7 +406,7 @@ Since WebSocket protocol has literally no overhead it should be considered for t
 - Multi-player online games
 - Real-time updates in social streams
 
-For the next version of Save Sick Child application we're going to use WebSocket to implement an online auction communication layer. The goal is to let individuals and businesses purchase hand-made crafts and arts made by children. All proceeds will go to help sick children.
+For the next version of Save The Child application we're going to use WebSocket to implement an online auction communication layer. The goal is to let individuals and businesses purchase hand-made crafts and arts made by children. All proceeds will go to help The Children.
 
 Having said that WebSocket protocol is a great solution, it has the downside too: the WebSocket specification defines only the protocol for transporting frames, but it doesn't include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from protocol modeling perspective.
 
@@ -455,7 +455,7 @@ Google Protocol Buffers is a language and platform-neutral extensible mechanism 
 
 A developer needs to specify how the serializable information has to be structured by defining the protocol buffer message types in the +.proto+ files. Each protocol buffer message is a small logical record of information, containing a series of the name/value pairs. This protocol buffer message file is language agnostic. The `protoc` utility compiles +proto+ files and produces language specific artifacts, e.g. +.java+, +.js+, etc files.
 
-For example, you can create a protocol buffer +proto+ file for our Save Sick Child to represent the information about donors.
+For example, you can create a protocol buffer +proto+ file for our Save The Child to represent the information about donors.
 
 [source,java]
 .Protocol Buffer for Donation message ( +donation.proto+ )
@@ -539,9 +539,9 @@ If you want to get more details on how a WebSocket-enabled application has to de
 
 TIP: The author of this book use http://nginx.com/[NGINX], a hugely popular load balancer and proxy server to serve static resources (e.g. images and text files), balance the load between Java servers, and for SSL offloading (turning Web browser's HTTPS requests into HTTP). NGINX uses a very small number threads to support thousands concurrent users as opposed to traditional Web servers that use one worker thread per connection. Recently NGINX started supporting WebSockets protocol.
 
-=== Adding an Auction to Save Sick Child ===
+=== Adding an Auction to Save The Child ===
 
-We gave you just enough of a theory to whet your appetite to start implementing WebSocket in our Save Sick Child application. The goal is to create an auction where people can bid and purchase various goods so the proceeds would go to sick children. Auctions require real-time communications - everyone interested in the particular auction item must be immediately notified if she was overbid or won. So we'll use WebSocket as a means for bidding and notifications of the changes in the auction.
+We gave you just enough of a theory to whet your appetite to start implementing WebSocket in our Save The Child application. The goal is to create an auction where people can bid and purchase various goods so the proceeds would go to The Children. Auctions require real-time communications - everyone interested in the particular auction item must be immediately notified if she was overbid or won. So we'll use WebSocket as a means for bidding and notifications of the changes in the auction.
 
 To start the auction, the user has to select the _Auction_ option under the menu _Way To Give_ (see <<FIG9-9>>). We realize that only a small number of users will decide to participate in the auction, which from the architectural point of view means that the code supporting the auction should be loaded _on demand_ only if the user chooses to visit the auction. This why we need to write this code as a loadable module, and the reader will get a practical example of how a Web application can be modularized.
 
@@ -591,7 +591,7 @@ image::images/fig_09_09.png[]
 In Google Chrome Developer Tools console you can see that login and donation modules are reporting about successful loading. <<FIG9-10>> confirms that these modules perform fine - clicking on the button Donate reveals the form and clicking on the Login button makes the id/password fields visible.
 
 [[FIG9-10]]
-.Two modules are loaded during the Save Sick Child application startup
+.Two modules are loaded during the Save The Child application startup
 image::images/fig_09_10.png[]
 
 Now click the Way To Give menu item and keep an eye on the Developer Tools console <<FIG9-11>>. You will see the way-to-give module reporting about its loading and rendering.
@@ -600,7 +600,7 @@ Now click the Way To Give menu item and keep an eye on the Developer Tools conso
 .The auction controls are loaded and rendered
 image::images/fig_09_11.png[]
 
-Once the user clicks the menu Way to Give the framework require.js has to load code of the WebSocket-based auction module. Here is the code snippet from the JavaScript file `app.js` - the entry point of our Save Sick Child application. This is how it loads the module _on demand_ (see Chapter 7 for the Require.js refresher).
+Once the user clicks the menu Way to Give the framework require.js has to load code of the WebSocket-based auction module. Here is the code snippet from the JavaScript file `app.js` - the entry point of our Save The Child application. This is how it loads the module _on demand_ (see Chapter 7 for the Require.js refresher).
 
 [source,javascript]
 ----------------------------------------------------------------------
@@ -728,7 +728,7 @@ image::images/fig_09_21.png[]
 
 
 [[Auction_Messages_Specification]]
-==== Save Sick Child Auction Protocol
+==== Save The Child Auction Protocol
 
 Since WebSocket is just a transport protocol, we need to come up with the application-level protocol of how the auction messages should be formatted in the client-server interaction. This is how we decided to do it:
 
@@ -832,6 +832,6 @@ This is pretty much it. The amount of code to implement the client's side of the
 
 === Summary
 
-After reading this chapter you should see the benefits of using WebSocket protocol in Web applications. In many cases WebSocket is an ultimate means for improving the application performance by reducing the network latency and removing the HTTP-headers overhead. You've learned how to integrate the WebSocket-based functionality into the existing HTTP-based application Save Sick Child. There is no need to make the entire communication of the Web application over WebSocket. Use this powerful protocol when it's clearly improves the performance and responsiveness of your application.
+After reading this chapter you should see the benefits of using WebSocket protocol in Web applications. In many cases WebSocket is an ultimate means for improving the application performance by reducing the network latency and removing the HTTP-headers overhead. You've learned how to integrate the WebSocket-based functionality into the existing HTTP-based application Save The Child. There is no need to make the entire communication of the Web application over WebSocket. Use this powerful protocol when it's clearly improves the performance and responsiveness of your application.
 
 As a side benefit, you've learned how to use the network monitoring capabilities of Google Chrome Developer Tools and Wireshark application by sniffing the WebSocket traffic. You can't underestimate the importance of monitoring tools, which are the best friends of Web developers.

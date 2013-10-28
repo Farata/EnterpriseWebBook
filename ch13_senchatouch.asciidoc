@@ -9,7 +9,7 @@ Enterprise IT managers need to be aware of another important difference: Ext JS 
 
 This chapter is structured similarly to the previous one that described jQuery Mobile - minimum theory followed by the code. The fundamental difference though is that if Chapter 12 has almost no JavaScript, while this chapter will have almost no HTML. 
 
-We'll try minimizing repeating the information you can find in http://www.sencha.com/learn/touch[Sencha Touch Learning Center] and extensive product documentation, which has multiple well written http://docs.sencha.com/touch/2.2.0/#!/guide[Guides] on various topics. This chapter will start with a brief overview of the features of Sencha Touch followed by the code review of yet another version of the Save Sick Child application. 
+We'll try minimizing repeating the information you can find in http://www.sencha.com/learn/touch[Sencha Touch Learning Center] and extensive product documentation, which has multiple well written http://docs.sencha.com/touch/2.2.0/#!/guide[Guides] on various topics. This chapter will start with a brief overview of the features of Sencha Touch followed by the code review of yet another version of the Save The Child application. 
 In this chapter we are going to use Sencha Touch 2.2.1, which is the latest version at the time of this writing. It supports iOS, Android, Blackberry, and recently have announced support of Window Phone 8. 
 
 NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these frameworks are built on the same foundation and we assume that you are familiar with such concepts as MVC architecture and things like `xType`, SASS and some others explained in Chapter 6. For the most part Ext JS and Sencha Touch non-UI classes are compatible, but there are some differences that may prevent you from 100% code reuse between these frameworks(e.g. see section "Stores and Models"). The future releases Sencha should come up with some standard solutions to remove the differences in class systems of both frameworks.
@@ -18,7 +18,7 @@ NOTE: If you haven't read Chapter 6 on Ext JS, please do it now. Both of these f
 
 Let's start with downloading Sencha Touch from http://www.sencha.com/products/touch/download/[http://www.sencha.com/products/touch/download]. If you want to get a free commercial license just specify your email address, and you'll receive the link to download in the email. Sencha Touch framework comes as a zip file, which you should unzip in any  directory - later you'll copy the framework's code either into your project directory or in the document root of your Web server.  
 
-WARNING: Commercial license of Sencha Touch doesn't include charts (you'd need to get either Sencha Complete or Sencha Touch Bundle for the chart support). Because of this we'll be using the GPL version for the open source Save Sick Child project, and our users will see a little watermark "Powered by Sencha Touch GPLv3" as shown on Figure <<FIG13-1>> below. 
+WARNING: Commercial license of Sencha Touch doesn't include charts (you'd need to get either Sencha Complete or Sencha Touch Bundle for the chart support). Because of this we'll be using the GPL version for the open source Save The Child project, and our users will see a little watermark "Powered by Sencha Touch GPLv3" as shown on Figure <<FIG13-1>> below. 
 
 [[FIG13-1]]
 .A GPL license watermark 
@@ -91,7 +91,7 @@ The production microloader of Sencha Touch offers a smarter solution for minimiz
 
 _sencha app build production_
 
-See the section http://docs.sencha.com/touch/2.2.1/#!/guide/command_app["Deploying Your Application"] for more details on Sencha CMD builds. When we start building our Save Sick Child application, you'll see how to prompt the user that the application code has been updated. Refer to the http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch[online documentation] on using Sencha CMD with Sencha Touch for details.
+See the section http://docs.sencha.com/touch/2.2.1/#!/guide/command_app["Deploying Your Application"] for more details on Sencha CMD builds. When we start building our Save The Child application, you'll see how to prompt the user that the application code has been updated. Refer to the http://docs.sencha.com/cmd/3.1.2/#!/guide/command_app_touch[online documentation] on using Sencha CMD with Sencha Touch for details.
 
 .Code Distribution and Modularization  
 ************
@@ -168,7 +168,7 @@ Ext.application({
 
 <1> This code instructs the loader that any class that starts with _Ext_ can be found in the directory _touch/src_ or its subdirectories. The classes with names that starts with _HelloWorld_ are under the _app_ directory.
 
-<2> This is an interception of the event that's triggered if the code on the server was updated. The user is warned that the new version of the application has been downloaded. See more on this in the comments to app.js in the section Save Sick Child With Sencha Touch.
+<2> This is an interception of the event that's triggered if the code on the server was updated. The user is warned that the new version of the application has been downloaded. See more on this in the comments to app.js in the section Save The Child With Sencha Touch.
 
 The code of the generated main view of this application (Main.js) is shown next. It extends the class `Ext.tab.Panel` so each page of the application is one tab in this panel. Figure <<FIG13-4>> is a snapshot of a collapsed version of Main.js taken from http://www.jetbrains.com/webstorm/[WebStorm IDE] from JetBrains, which is our IDE of choice in this chapter. 
 
@@ -248,7 +248,7 @@ Sencha Touch has a number UI components specifically designed  for mobile device
 
 In general, the process of implementing of a mobile application with Sencha Touch will consist of selecting the appropriate containers and arranging the navigation between them. Each screen that user sees is a container. Pretty often it'll include a toolbar _docked_ on top or bottom of the container.
 
-Containers can be nested - they are needed for better grouping of UI components on the screen. The lightest container is `Ext.Container`. It inherits all the functionality from it ancestor `Ext.Component` plus it can contain other components.  When you'll be reviewing the code of the Save Sick Child application, note that the main view `SSC.view.Main` from Main.js extends `Ext.Container`. The hierarchy of Sencha Touch containers is shown on Figure <<FIG13-5>>.
+Containers can be nested - they are needed for better grouping of UI components on the screen. The lightest container is `Ext.Container`. It inherits all the functionality from it ancestor `Ext.Component` plus it can contain other components.  When you'll be reviewing the code of the Save The Child application, note that the main view `SSC.view.Main` from Main.js extends `Ext.Container`. The hierarchy of Sencha Touch containers is shown on Figure <<FIG13-5>>.
 
 [[FIG13-5]]
 .Sencha Touch Containers Hierarchy
@@ -256,7 +256,7 @@ image::images/fig_13_05.png[image]
 
 The `FieldSet` is also a pretty light container - it simply adds the title to a group of fields that belong together. You'll see several code samples in this chapter with `xtype: 'fieldset'` (e.g. Login or Donate screens). 
 
-If your containers display forms with such inputs as text field, text area, password, and numbers, the virtual keyboard will automatically show up occupying half of the user's screen. On some platforms, virtual keyboards will adapt to the type of the input field, for example, if the field has `xtype: 'emailfield'`, the keyboard will be modified for easier input of emails. Figure <<FIG13-6>> is a snapshot taken from the Donate screen of the Save Sick Child application when the user tapped inside the email field - note the key with the at-sign on the main keyboard, which wouldn't be shown for non-email inputs.  
+If your containers display forms with such inputs as text field, text area, password, and numbers, the virtual keyboard will automatically show up occupying half of the user's screen. On some platforms, virtual keyboards will adapt to the type of the input field, for example, if the field has `xtype: 'emailfield'`, the keyboard will be modified for easier input of emails. Figure <<FIG13-6>> is a snapshot taken from the Donate screen of the Save The Child application when the user tapped inside the email field - note the key with the at-sign on the main keyboard, which wouldn't be shown for non-email inputs.  
 
 [[FIG13-6]]
 .The iPhone virtual keyboard for entering emails
@@ -278,7 +278,7 @@ TIP: If you want to control how much of a vertical or horizontal screen space is
 
 The `fit` layout will fill the entire container's space with its child element. If you have more than one child element in the container - the first one will fill the entire space, and the other one will be ignored. The `card` layout is somewhat similar to `fit`, but it can accommodate multiple children while displaying only one at a time. The container's method `setActiveItem()` allows programmatically select the "card" to be on top of the deck. 
 
-You can find examples of `card` and `fit` layouts in the code of Main.js of the Save Sick Child application. Figure <<FIG13-14>> shows `card` layout, but if you'll expand the `tabpanel` container, each tab has the `fit` layout. 
+You can find examples of `card` and `fit` layouts in the code of Main.js of the Save The Child application. Figure <<FIG13-14>> shows `card` layout, but if you'll expand the `tabpanel` container, each tab has the `fit` layout. 
 
 The classes `TabPanel` and `Carousel` represent two different implementations of the containers with `card` layout.
 
@@ -315,7 +315,7 @@ listeners: {
 
 TIP: Read the comments to the code of `SSC.view.CampaignsMap` in Chapter 6 about the right place for declaring listeners.
 
-You can also define event handlers using yet another config property `control` from `Ext.Container`. For example the following code fragment from the Login controller of the Save Sick Child application shows how to assign the `tap` event handler functions `showLoginView()` and `cancelLogin()` for the buttons Login and Cancel.
+You can also define event handlers using yet another config property `control` from `Ext.Container`. For example the following code fragment from the Login controller of the Save The Child application shows how to assign the `tap` event handler functions `showLoginView()` and `cancelLogin()` for the buttons Login and Cancel.
 
 [source, javascript]
 ----
@@ -346,9 +346,9 @@ TIP: If you want to fire custom events, use the method `fireEvent()`, providing 
 NOTE: The Bring Your Own Device is getting more and more popular in enterprises. Sencha offers a product called Sencha Space, which is a secure and managed environment to deploy  enterprise HTML5 application that can be run on a variety of devices that employees can bring to the workplace. Sencha Space promises a clear separation between work-related applications and personal data. It uses secure database and secure File API and allows App-to-App communication.For more details visit the http://www.sencha.com/products/space/[Sencha Space Web page].  
 
 
-=== Save Sick Child With Sencha Touch
+=== Save The Child With Sencha Touch
 
-The Sencha Touch version of the Save Sick Child application will be based on the mockup from Chapter 12, section "Prototyping Mobile Version" with some minor changes. This time the home page of the application will be a slightly different version of the About page shown on <<FIG13-11>>. 
+The Sencha Touch version of the Save The Child application will be based on the mockup from Chapter 12, section "Prototyping Mobile Version" with some minor changes. This time the home page of the application will be a slightly different version of the About page shown on <<FIG13-11>>. 
 
 IMPORTANT: The materials presented in this chapter were tested only with the current version of Sencha Touch framework, which at the time of this writing was 2.2.1.
 
@@ -358,7 +358,7 @@ image::images/fig_13_11.png[]
 
 ==== The Application Object 
 
-Below is the code of the app.js in the Save Sick Child project (we've just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications. 
+Below is the code of the app.js in the Save The Child project (we've just removed the default startup images and icons for brevity). For the most part is has the same structure as Ext JS applications. 
 
 [source, javascript]
 ----
@@ -418,7 +418,7 @@ Ext.application({
 
 The application loads all the dependencies listed in app.js and will instantiate models and stores. The views that require data from the store will either mention the store name like `store: 'Videos'` or will  use the get method from the class `StoreMgr`, for example `Ext.StoreMgr.get('Campaigns');`.  After this is done, the `launch` function will be called - this is where the main view is created.
 
-In this version of the Save Sick Child application we have only one controller `Login` that doesn't use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. The application instantiates all controllers automatically. Accordingly, all controllers live in the context of the http://docs.sencha.com/touch/2.2.1/#!/api/Ext.app.Application[Application] object. 
+In this version of the Save The Child application we have only one controller `Login` that doesn't use any stores, but the mechanism of pointing controllers to the appropriate store instances is the same as for views. The application instantiates all controllers automatically. Accordingly, all controllers live in the context of the http://docs.sencha.com/touch/2.2.1/#!/api/Ext.app.Application[Application] object. 
 
 We don't use explicitly defined models here - all the data are hard-coded in the stores in the `data` attributes. 
 
@@ -565,7 +565,7 @@ Ext.define('SSC.view.Main', {
 
 <5> Each view will have a Login button on the toolbar. It's implemented in the LoginToolbar.js shown later in this chapter.
 
-Starting from version 2.2 Sencha Touch can render icons using  icon fonts from http://pictos.cc/[Pictos library] located in the folder _resources/sass/stylesheets/fonts_.  We've used icon fonts in the jQuery Mobile version of our application, and in this version we'll also fonts, which take a lot less memory than images. Below is the content of our app.scss file that includes several font icons used in the Save Sick Child application. 
+Starting from version 2.2 Sencha Touch can render icons using  icon fonts from http://pictos.cc/[Pictos library] located in the folder _resources/sass/stylesheets/fonts_.  We've used icon fonts in the jQuery Mobile version of our application, and in this version we'll also fonts, which take a lot less memory than images. Below is the content of our app.scss file that includes several font icons used in the Save The Child application. 
 
 [source, css]
 ----
@@ -788,7 +788,7 @@ But if the `control` config is defined not in the controller, but in a component
 
 ==== The Other Views
 
-Let's do a brief code review of other Save Sick Child views. 
+Let's do a brief code review of other Save The Child views. 
 
 ===== LoginForm
 
@@ -863,7 +863,7 @@ Ext.define('SSC.view.LoginToolbar', {
   xtype: 'logintoolbar',
 
   config: {
-      title: 'Save Sick Child',
+      title: 'Save The Child',
       docked: 'top',                // <1>
 
       items: [
@@ -884,7 +884,7 @@ Ext.define('SSC.view.LoginToolbar', {
 
 <2> Adding the `Ext.Spacer` component to occupy all the space before the button Login. By default, spacer has flex value of 1, which means take all the space in this case. You can read more about it in Chapter 6 in the section "The flex Property".  
 
-TIP: If you'll add the Save Sick Child application as an icon to the home screen on iOS devices, the browser's address bar will not be displayed.
+TIP: If you'll add the Save The Child application as an icon to the home screen on iOS devices, the browser's address bar will not be displayed.
 
 
 ===== DonateForm
@@ -1146,7 +1146,7 @@ Ext.define('SSC.view.DonateForm', {
 
 <12> Resume event dispatching.  The `true` argument is for discarding all the queued events.
 
-Previous versions of the Save Sick Child application illustrated how to submit the Donate form to the server for further processing. The Sencha Touch version of this application doesn't include this code.  If you'd like to experiment with this, just create a new controller class that extends `Ext.app.Controller` and define there an event handler for the button Donate (see the Login controller as an example). 
+Previous versions of the Save The Child application illustrated how to submit the Donate form to the server for further processing. The Sencha Touch version of this application doesn't include this code.  If you'd like to experiment with this, just create a new controller class that extends `Ext.app.Controller` and define there an event handler for the button Donate (see the Login controller as an example). 
 
 On the `tap` event invoke `donateform.submit()` specifying the URL of the server that knows how to process this form. You can find details on submitting and populating forms in the online documentation for http://docs.sencha.com/touch/2.2.1/#!/api/Ext.form.Panel[`Ext.form.Panel`] - the ancestor of the `DonateForm`.
 
@@ -1413,7 +1413,7 @@ geo.updateLocation();  // start the location updates
 
 ==== Stores and Models
 
-In the Sencha Touch version of the Save Sick Child application all the data is hard-coded. All store classes are located in the store directory (see Figure <<FIG13-14>>), and each of them has the `data` property. For example, here's the code of the Videos.js. 
+In the Sencha Touch version of the Save The Child application all the data is hard-coded. All store classes are located in the store directory (see Figure <<FIG13-14>>), and each of them has the `data` property. For example, here's the code of the Videos.js. 
 
 [source, javascript]
 ----
