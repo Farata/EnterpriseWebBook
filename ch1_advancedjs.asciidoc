@@ -5,9 +5,9 @@
 
 _"Atwood's Law: any application that can be written in JavaScript, will eventually be written in JavaScript._
 
-This chapter is dedicated to the JavaScript programming language. While in the future chapters you'll see how JavaScript frameworks can greatly minimize the amount of the JavaScript code that you need to write manually, you still need to understand the language itself. We assume that you have some programming experience with any programming, understand the HTML syntax, and are familiar with general principal of communications between Web browsers and Web servers. We've included the word _advanced_ in the title of this chapter because because of these assumptions. 
+This chapter is dedicated to the JavaScript programming language. While in the future chapters you'll see how JavaScript frameworks can greatly minimize the amount of the JavaScript code that you need to write manually, you still need to understand the language itself. We assume that you have some programming experience with any programming, understand the HTML syntax, and are familiar with general principal of communications between Web browsers and Web servers. We've included the word _advanced_ in the title of this chapter because because of these assumptions. This chapter starts with basics of the language, but then it quickly progresses to such advanced topics as _prototypal inheritance, callbacks, and closures_. 
 
-This chapter starts with basics of the language, but then it quickly progresses to such advanced topics as _prototypal inheritance, callbacks, and closures_. If you prefer fat manuals covering each and every detail of programming languages, we can recommend you the book "JavaScript: The Definite Guide", Sixth Edition by David Flanagan.
+NOTE: If you're absolute beginner with Web development and had no previous exposure to JavaScript, consider reading one of the fundamental tutorials covering each and every detail of JavaScript. We can recommend you the book "JavaScript: The Definite Guide", Sixth Edition by David Flanagan.
 
 Besides the JavaScript coverage this chapter includes a section on the tools (IDEs, debuggers, Web inspectors et al.) that will make your development process more productive.  
 
@@ -245,7 +245,7 @@ Yet another example of a function expression is when it's placed inside the _gro
 
 The outermost parentheses hide its internal code from the outside world creating a scope or a closed ecosystem, where the function's code will operate. Try to add a line invoking this function after the last line in the above code sample, e.g. `calcTax(50000,2)`, and you'll get an error - "calcTax is not defined". There is a way to expose some of the internal content of such a _closure_ and you'll see how to do it later in this chapter. 
 
-If you'll take away the outermost parentheses and the closing semicolon, you'll get the function declaration, which will be subject to _hoisting_ explained later in this chapter. But if you'll add a couple of parentheses at the end of this expression, you'll get a _self-executing_ function. This extra pair of parentheses will cause the function expression located in the first set of parentheses to be executed right away.
+If you'll take away the outermost parentheses and the closing semicolon, you'll get the function declaration, which will be subject to _hoisting_ explained later in this chapter. The function expressions are usually a part of a larger expression. For example, if you'll add a couple of parentheses at the end of this expression, you'll get a _self-invoked_ function. This extra pair of parentheses will cause the function expression located in the first set of parentheses to be executed right away. 
 
 [source,javascript]
 ----
@@ -254,6 +254,7 @@ If you'll take away the outermost parentheses and the closing semicolon, you'll 
 })();
 ----
 
+TIP: The topic "Function declaration vs. function expressions" is one of those fuzzy JavaScript areas that can cause unexpected behavior of your code. Angus Croll published http://javascriptweblog.wordpress.com/2010/07/06/function-declarations-vs-function-expressions/[a well-written article] on this subject.    
 
 === JavaScript Objects. Gentle Introduction
 
@@ -965,12 +966,18 @@ myTaxObject.doTaxes();
 
 ==== Callbacks
 
-Can you live without using `call()` and `apply()`?  Sure you can, but in JavaScript can easily create _callbacks_ - you can pass the code of one function as a parameter to another function for execution in the latter function's context. Most likely you've seen how event handlers are declared. If a user clicks on this button here's the name of the handler function to call:
-`myButton.addEventListener("click", myFunctionHandler)` 
+Can you live without using `call()` and `apply()`?  Sure you can, but JavaScript allows you to easily create callbacks. The callback mechanism lets you pass the code of one function as a parameter to another function for execution in the latter function's context. This is a very useful feature of the language. Imagine an object with a method `processData()`. Depending on the business logic you can pass to this method (as an argument) different functions that will do actual data processing - these are callbacks.
 
-It's important to understand that you don't not immediately call the function `myFunctionHandler` here - you are just registering it. If and only if the user will click on `myButton` then the callback `myFunctionHandler` has to be invoked in the context of the `myButton` object. The functions `call()` and `apply()` exist exactly for this purpose.  
+Another example of callbacks is event handlers. If a user clicks on this button here's the name of the handler function to call:
 
-Let's consider an example when you need to write a function that will take two arguments - and array with preliminary tax data and a callback function to be applied to each element of this array. The following code sample creates `myTaxObject` that has two properties: `taxDeduction` and the `applyDeduction`. The latter is a method with two parameters: array and a callback to be applied to this array. 
+[source, Javascript]
+----
+`myButton.addEventListener("click", myFunctionHandler);` 
+----
+
+It's important to understand that _you don't not immediately call_ the function `myFunctionHandler` here - you are just registering it as the function argumrnt. If the user will click on `myButton` then the code of the callback `myFunctionHandler` will be given to the object `myButton` and will be  invoked in the context of the `myButton` object. The functions `call()` and `apply()` exist exactly for this purpose.  
+
+Let's consider an example when you need to write a function that will take two arguments: an array containing preliminary tax data and a callback function, which will be applied to each element of this array. The following code sample creates `myTaxObject` that has two properties: `taxDeduction` and the `applyDeduction`. The latter is a method with two parameters: 
 
 
 [source, javascript]
@@ -1013,11 +1020,13 @@ Hello from callback. Your final tax is 1600
 Hello from callback. Your final tax is 2600  
 ----
 
-You may be wondering, why passing the function to another object if we could take an array, subtract 400 from each of its elements and be done with it? The solution with callbacks gives you an ability to make the decision on what function to call during the runtime and call it only when a certain event happens. Callbacks allow you to do asynchronous processing. For example, you make an asynchronous  request to a server and register the callback to be invoked if a result comes back. The code is not blocked and doesn't wait until the server response is ready. Here's an example from AJAX: `request.onreadystatechange=myHandler`. You register `myHandler` callback but not immediately call it. JavaScript functions are objects, so get used to the fact that you can pass them around as you'd be passing any objects.
+You may be wondering, why passing the function to another object if we could take an array, subtract 400 from each of its elements and be done with it? The solution with callbacks gives you an ability to make the decision on what function to call during the runtime and call it only when a certain event happens. Callbacks allow you to do _asynchronous processing_. For example, you make an asynchronous  request to a server and register the callback to be invoked if a result comes back. The code is not blocked and doesn't wait until the server response is ready. Here's an example from AJAX: `request.onreadystatechange=myHandler`. You register `myHandler` callback but not immediately call it. JavaScript functions are objects, so get used to the fact that you can pass them around as you'd be passing any objects.
 
 ==== Hoisting
 
-A variable scope depends on where it was declared.  You already had a chance to see that a variable declared inside a function with the keyword `var` is visible only inside this function. Some programming languages allow to narrow down the scope even further. For example, in Java declaring a variable inside any block of code surrounded with curly braces makes it visible only inside such a block. In JavaScript it works differently. No matter where in the function you declared the variable its declaration will be _hoisted_ to the top of the function, and you can use this variable anywhere inside the function. 
+A variable scope depends on where it was declared.  You already had a chance to see that a variable declared inside a function with the keyword `var` is visible only inside this function and any function declared within it. Some programming languages allow to narrow down the scope even further. For example, in Java declaring a variable inside any block of code surrounded with curly braces makes it visible only inside such a block. In JavaScript it works differently. No matter where in the function you declared the variable its declaration will be _hoisted_ to the top of the function, and you can use this variable anywhere inside the function. 
+
+===== Hoisting Variables
 
 The following code snippet will print 5 even though the variable b has been declared inside the if-statement. It's declaration has been hoisted to the top:
 
@@ -1058,6 +1067,9 @@ test();
 ----
 
 Due to hoisting, JavaScript doesn't complain when the first `console.log(b)` is invoked. It knows about the variable `b`, but its value is `undefined` just yet. By the time the second `console.log(b)` is called, the variable b was initialized with the value of 5. Just remember that hoisting just applies to variable declaration and doesn't interferes with your code when it comes to initialization.
+
+===== Hoisting Functions
+
 JavaScript function declarations are hoisted too, and this is illustrated in the following code sample.
 
 [source, javascript]
@@ -1081,7 +1093,7 @@ function test () {
 test();
 ----
 
-This code will print 5. We can call the function printB() here because its declaration was hoisted to the top. But the situation changes if instead of function declaration we'll use the function expression. The following code will give you an error "PrintB is not a function". Notice that it the error doesn't complain about `printB` being undefined cause the variable declaration was hoisted, but since the function expression wasn't the JavaScript engine doesn't know yet that `printB` will become a function really soon. Anyway, moving the invocation line `printB()` to the bottom of the function `test()` cures this issue. Function expressions are not being hoisted. 
+This code will print 5. We can call the function printB() here because its declaration was hoisted to the top. But the situation changes if instead of function declaration we'll use the function expression. The following code will give you an error "PrintB is not a function".  
 
 [source, javascript]
 ----
@@ -1105,32 +1117,14 @@ function test () {
 test();
 ----
 
+Notice that it the error doesn't complain about `printB` being undefined cause the variable declaration was hoisted, but since the function expression wasn't the JavaScript engine doesn't know yet that `printB` will become a function really soon. Anyway, moving the invocation line `printB()` to the bottom of the function `test()` cures this issue. 
 
-All code samples in this section first declare the function `test()` and then invoke it. This function `test()` is being called once and there is no reason to give it a name. Using so called _self-invoked_ function notation allows to declare and automatically invoke the function (note the extra parentheses at the end of the following code).
+TIP: Function expressions are not being hoisted, but the variables they are assigned to (if any) are being hoisted.
 
-[source, javascript]
-----
-(function () {
-    var a=1;
-
-    if(a>0) {
-        var b;
-    }
-    
-    b=5;
-    
-    printB();
-    
-    var printB = function(){
-        console.log(b);
-    }   
-    
-})();
-----
 
 ==== Function properties
 
-Functions as any other objects can have properties. You can attach any properties to a Function object and their values can be used by all instances of this object. Static variables in programming languages with the classical inheritance is the closest analogy to function properties in JavaScript. 
+Functions as any other objects can have properties. You can attach any properties to a `Function` object and their values can be used by all instances of this object. Static variables in programming languages with the classical inheritance is the closest analogy to function properties in JavaScript. 
 
 Let's consider an example of a constructor function `Tax`. An accounting program can create multiple instances if `Tax` - one per person. Say this program will be used in a Florida neighborhood with predominantly Spanish speaking people. The following code illustrates the case when the method `doTax()` can be called with or without parameters. 
 
@@ -1186,9 +1180,26 @@ TIP: If multiple instances of a function object need to access certain HTML elem
 
 === Closures
 
-Imagine a function that contains a private variable, and a nested function. Is it possible to invoke the nested function from the outside of the outer one? And if it's possible, what this inner function knows about its surroundings? 
+==== A Formal Definition Attempt
 
-Larry Ullman, a Web developer and computer books author offers the following definition: "Closure is a function call with memory". We can offer you our version: "Closure is a function call with strings attached". Now it's turn for the explanation of these mysterious definitions, and we'll do it by example. Consider the following code that is yet another example of implementing tax collection functionality.
+A _closure_ is one of those terms that are easier explained by examples. Closures have formal definitions, which are not very helpful for the first timers. Here's the http://en.wikipedia.org/wiki/Closure_(computer_science)[definiton of a closure from Wikipedia]: 
+
+_"In programming languages, a closure (also lexical closure or function closure) is a function or reference to a function together with a referencing environment—a table storing a reference to each of the non-local variables (also called free variables or upvalues) of that function. A closure—unlike a plain function pointer—allows a function to access those non-local variables even when invoked outside its immediate lexical scope."_
+
+It's not a very helpful definition, is it? Let's try to give a better one. Imagine a function that contains a private variable, and a nested function. Is it possible to invoke the nested function from the outside of the outer one? And if it's possible, what this inner function knows about its surroundings? 
+
+Larry Ullman, gives the following definition in his book "Modern Java Script": "Closure is a function call with memory". We can offer you our version of what a closure is: "Closure is a function call with strings attached". 
+
+
+==== Why do we Need Closures? 
+
+In classical object-oriented languages you create an object with a certain state and behavior and can pass if to a method of another object for further processing. In JavaScript you can pass even a function to some object's method for further processing. But what if a function also need to remember the state (the values of external variables) of the context where the function was defined?
+
+Think of a closure as a function that remembers  state - it's just a special type of object that can be passed between objects and use certain variables that didn't seem to be defined in the function's code. But there existed in the context where the  the function was defined.
+
+====Closures by Example
+
+Now it's time for the explanation of these mysterious definitions, and we'll do it by example. Consider the following code that is yet another example of implementing tax collection functionality.
 
 [source, javascript]
 ----
@@ -1298,7 +1309,7 @@ var result2 = p2.doTaxes(100000);
 
 The calculated taxes in this example are the same as in the previous one: John Smith has to pay $4500, while Tony Soprano only $4000. But we used different technique for exposing the closure. We want to make sure that you didn't overlooked the parentheses at the very end of the function expression for `doTaxes`. These parenthesis force the anonymous function to self-invoke itself, it'll run into a `return` statement and will assign the code of the anonymous inner function that takes parameter `income` to the property `doTaxes`. So when the line `var result1 = p1.doTaxes(100000);` calls the closure the variable `result1` will have the value 4500. Remove these important parentheses, and the value of `result1` is not the tax amount, but the the code of the closure itself - the invocation of the closure is not happening. 
 
-The following code fragment is yet another example of returning the closure that remembers its context.First, the closure is returned to the caller of `prepareTaxes()`, and when the closure will be invoked it'll remember the values defined in its outer context. After looking at this code you can say that there is nothing declared in the closure's outside context! There is - by the time when the closure is created the value of the `studentDeductionAmount` will be known.
+The following code fragment is yet another example of returning the closure that remembers its context.
 
 [source, javascript]
 ----
@@ -1320,11 +1331,13 @@ console.log("You tax is " + yourTaxIs);  // <4>
 <3> This is actual invocation of the closure 	
 <4> the console output is "your tax is 200"
 
+First, the closure is returned to the caller of `prepareTaxes()`, and when the closure will be invoked it'll remember the values defined in its outer context. After looking at this code you may say that there is nothing declared in the closure's outside context! There is - by the time when the closure is created the value of the `studentDeductionAmount` will be known.	
+
 TIP: Check the quality of your code with the help of the JavaScript code quality tool http://www.jslint.com/[JSLint]. 
 
 ==== Closures as callbacks	
 
-Let's revisit the code from the section Callbacks above. That code has shown how to pass an arbitrary function to another one and invoke it there using `call()`. But if that version of the function `taxHandler` was not aware of the context it was created in, the version below will. If in classical object-oriented languages you'd need to pass a method that knows about it's context, you'd need to create an instance of an object that contains the method and the required object-level properties, and then you'd be passing this wrapper-object to another object for processing. But since the closure remembers its context anyway, we can just pass a closure instead of object. Compare the code below with the code from the Callbacks section.
+Let's revisit the code from the section Callbacks above. That code has shown how to pass an arbitrary function to another one and invoke it there using `call()`. But if that version of the function `taxHandler` was not aware of the context it was created in, the version below will. If in classical object-oriented languages you'd need to pass a method that knows about it's context, you'd need to create an instance of an object that contains the method and the required object-level properties, and then you'd be passing this wrapper-object to another object for processing. But since the closure remembers its context anyway, we can just pass a closure as an object. Compare the code below with the code from the Callbacks section.
 
 [source, javascript]
 ----
@@ -1367,6 +1380,8 @@ The last line of the above example calls `taxHandler(200)`, which creates a clos
 
 The need to extend capabilities of objects can be fulfilled by inheritance, but this is not the only way of adding behavior to objects. In this section you'll see an example of something that would not be possible in the object-oriented languages like Java or C#, which don't support multiple inheritance. JavaScript allows taking a piece of code and _mix it into any object_ regardless of what its inheritance chain is. _Mixin_ is a code fragment that an object can borrow if need be. 
 
+In the next code fragment we'll define a function expression and will assign it to a variable named `Tax`. This is a closure that includes the function `calcTax()` that knows the values of `income` and `state`.  There is also an independent mixin `TaxMixin` with a couple of functions `mafiaSpecial()` and `drugCartelSpecial()`. We want to blend in this mixin into `Tax`. After this is is done, the Tax object will have its original functionality,i.e. `calcTax()`, as well as a new "mafia and drug cartel flavors": 
+
 [source, javascript]
 ----
 // Defining a function expession 
@@ -1397,7 +1412,7 @@ TaxMixin.prototype = {
 
 };
 
-// this function can blend TaxMixin into tax
+// this function can blend TaxMixin into Tax
 function blend( mainDish, spices ) {
 
   for ( var methodName in spices.prototype ) {
@@ -1417,7 +1432,9 @@ var rawTax = t.calcTax();
 t.mafiaSpecial(rawTax);
 ----
 
-The function `blend()` loops through the code of the `TaxMixin` and copies all its properties into `Tax`. Mixins can be useful is you want to provide a specific feature to a number of different object without changing their inheritance. The other use case is if you want to prepare a bunch of small code fragments (spices) and add any combination of them to the various objects (dishes) as needed. Mixins give you a lot of flexibility in what you can achieve with the minimum code, but they may decrease the readability of your code.
+The function `blend()` loops through the code of the `TaxMixin` and copies all its properties into `Tax`. After the function `blend()` is finished, you can call on the `Tax` instance newly acquired methods `mafiaSpecial()` and `drugCartelSpecial()`. 
+
+Mixins can be useful is you want to provide a specific feature to a number of different objects  without changing their inheritance chains. The other use case is if you want to prepare a bunch of small code fragments (think spices) and add any combination of them to the various objects (dishes) as needed. Mixins give you a lot of flexibility in what you can achieve with the minimum code, but they may decrease the readability of your code.
 
 If you've read this far, you should have a good understanding of the syntax of the JavaScript language.Studying the code samples provided in this chapter has one extra benefit: now you can apply for a job as a tax accountant in a mafia near you. 
 
@@ -1425,11 +1442,13 @@ If you've read this far, you should have a good understanding of the syntax of t
 
 After learning all these facts and techniques about the language you might be eager to see "the real-world use of JavaScript". Slowly but surely a Web browser becomes the leading platform for development of the user interface.  The vast majority today's JavaScript programs primarily manipulate HTML elements of Web pages. In this section we'll be doing exactly this – applying JavaScript code to modify the content or style of HTML elements. 
 
+==== The Document Object Model (DOM)
+
 DOM stands for Document Object Model. It's an object representing the hierarchy of HTML elements of a  Web page. Every element of the HTML document is loaded into DOM. Each DOM element has a reference to its children and siblings. When DOM was invented, the Web pages were simple and static. DOM was not meant to be an object actively accessed by the code. This is the reason that on some of the heavily populated Web pages manipulating of DOM elements can be slow. Most likely DOM is the main target for anyone who's trying to optimize the performance of a Web page.
 
 TIP: If your Web page is slow, analyze it with http://yslow.org/[YSlow], the tool built based on the Yahoo! rules for high performance Web sites. Also, you can minimize and obfuscate your JavaScript code with the help of  http://javascriptcompressor.com/[JavaScript Compressor].
 
-When a Web Browser is receiving the content it keeps performing the following activities:
+When a Web Browser is receiving the content it  performs the following activities:
 
 * Adding arriving HTML elements to DOM and laying out the content of the Web pages
 * Rendering of the UI
@@ -1445,11 +1464,11 @@ Let's consider the operations your application needs to be able to perform insid
 
 * Programmatically finding the required element by id, type, or a CSS class
 * Changing styles of the elements (show, hide, apply fonts and colors et al.)
-* Processing events that may happen to HTML elements (+click+, +mouseover+ and the like)
+* Processing events that may happen to HTML elements (`click`, `mouseover` and the like)
 * Dynamically adding or removing HTML elements from the page or changing their contents
 * Communicating with the server side, e.g. submitting forms or making AJAX requests for some data from the server
 
-Now you'll see some code samples illustrating the use of JavaScript for the listed above operations. Even if you’ll be using one of the popular JavaScript frameworks, your program will be performing similar operations applying the syntax prescribed by your framework of choice. So let's learn how it can be done.
+Now you'll see some code samples illustrating the use of JavaScript for the operations listed above. Even if you’ll be using one of the popular JavaScript frameworks, your program will be performing similar operations applying the syntax prescribed by your framework of choice. So let's learn how it can be done.
 
 
 ==== Working with DOM
@@ -1483,19 +1502,19 @@ Have you seen a Web page showing an input box of Google's Gmail? It looks like a
 
  Below are some of the methods that exist on the `document` object:
 
-`document.write(text)` – adds the specifies text to the DOM. Careless using of the method `write()` can result in unpredictable results if after changing the DOM the HTML content is still arriving.
+* `document.write(text)` – adds the specifies text to the DOM. Careless using of the method `write()` can result in unpredictable results if after changing the DOM the HTML content is still arriving.
 
-`document.getElementById(id)` – get a reference to the HTML element by its unique identifier
+* `document.getElementById(id)` – get a reference to the HTML element by its unique identifier
 
-`document.getElementsByTagName(tname)` - get a reference to one or more elements by tag names, e.g.get a reference to all `<div>` elements.
+* `document.getElementsByTagName(tname)` - get a reference to one or more elements by tag names, e.g.get a reference to all `<div>` elements.
 
-`document.getElementsByName(name)` -  get a reference to all elements that have requested value in their `name` attribute.
+* `document.getElementsByName(name)` -  get a reference to all elements that have requested value in their `name` attribute.
 
-`document.getElementsByClassName(className)` – get a reference to all elements to use specified CSS class.
+* `document.getElementsByClassName(className)` – get a reference to all elements to use specified CSS class(es), like `document.getElementsByClassName('red text-left')`.
 
-`document.querySelector(cssSelector)` – Find the first element that matches provided CSS selector. string.
+* `document.querySelector(cssSelector)` – Find the first element that matches provided CSS selector. string. It comes handy if you want to specify more complex queries that just a class name, e.g. `document.querySelector("style[type='text-left']");`.
 
-`document.querySelectorAll(cssSelector)` – Find all elements that match provided CSS selector string.
+* `document.querySelectorAll(cssSelector)` – Find all elements that match provided CSS selector string.
 
 The next code sample contains the HTML `<span>` element that has an id `emp`. Initially it contains ellipsis, but when the user enters the name in the input text field, the JavaScript code will find the reference to this `<span>` element and will replace the ellipsis with the content of the input text field. 
 
@@ -1589,7 +1608,7 @@ Our function `processNode()` just prints the name of the current node, but you c
 .Traversing the DOM in Firefox
 image::images/fig_02_22.jpg[]
 
-While some of the output is self-explanatory, there is a number of `#text` nodes that you won't find in the code sample above. Unfortunately, Web browsers treat whitespaces differently, and inserts different number of text nodes in the DOM representing whitespaces found in the HTML document. So you'll be better off using one of the JavaScript frameworks for traversing the DOM cross-browser way. For example, JQuery framework's API for DOM traversing is listed at http://bit.ly/WXj2r2[http://bit.ly/WXj2r2]. 
+While some of the output is self-explanatory, there is a number of `#text` nodes that you won't find in the code sample above. Unfortunately, Web browsers treat white-spaces in differently - some will ignore them, while others will report them as DOM elements. Accordingly, different browsers insert different number of text nodes in the DOM representing whitespaces found in the HTML document. So you'll be better off using one of the JavaScript frameworks for traversing the DOM cross-browser way. For example, JQuery framework's API for DOM traversing is listed at http://bit.ly/WXj2r2[http://bit.ly/WXj2r2]. 
 
 .Styling Web Pages with CSS
 ****************
@@ -1598,7 +1617,7 @@ http://www.w3.org/Style/CSS/current-work[http://www.w3.org/Style/CSS/current-wor
 
 TIP: You can find CSS tutorial as well as tons of other learning resources at http://www.webplatform.org/[webplatform.org].
 
-You can include CSS into a Web page either by linking to separate files using the HTML tag `<link>` or by in-lining the styles with the tag `<style>`. For example, if CSS is located in the file `mystyles.css` in
+You can include CSS into a Web page by linking to separate files using the HTML tag `<link>`, or by in-lining the styles with the tag `<style>`, or using the `style` attribute. For example, if CSS is located in the file `mystyles.css` in
 the folder css add the following tag to HTML:
 
 [source,html]
@@ -1619,7 +1638,7 @@ Placing the `@import` attribute inside the `<style>` tag allows to include style
 ----
 
 What’s the best way of including CSS in HTML? Keeping CSS in multiple files separately from HTML and JavaScript makes the code more readable and reusable. On the other hand, if your Web site has
-consists of many files, the Web browser will have to make multiple round trips to your server just to load all resources required by the HTML document, which can worsen the responsiveness of your Web application.
+consists of many files, the Web browser will have to make multiple round trips to your server just to load all resources required by the HTML document, which can worsen the responsiveness of your Web application.Usually all files are merged before deploying Web application in QA or production servers.  
 ****************
 
 HTML documents are often prettyfied by using CSS class selectors, and you can switch them  programmatically with JavaScript.  Imagine that a `<style>` section has the following definition of two class selectors `badStyle` and `niceStile`:
@@ -1634,7 +1653,7 @@ HTML documents are often prettyfied by using CSS class selectors, and you can sw
       	background-color:red;
     }
       
-    .niceStyle{
+    .niceStyle{		
       	font-family: Verdana;
       	font-size:large;
       	font-style:italic;
@@ -1708,7 +1727,7 @@ An _event handler (a.k.a. event listener)_ is a JavaScript code you want to be c
 
 TIP: Each HTML element has a certain number of predefined _event attributes_, which start with the prefix `on` followed by the name of the event. For example `onclick` is an event attribute that you can use for specifying the handler for the `click` event. You can find out what event attributes are available in the online document titled http://www.w3.org/TR/DOM-Level-3-Events//[Document Object Model Events].
 
-The preferred way of adding event listener was introduced in the DOM Level 2 specification back in 2000. You should find the HTML element in the DOM, and then assign the event listener to it by calling the method `addEventListener()`.  For example:
+The preferred way of adding event listener was introduced in the DOM Level 2 specification back in 2000. You should find the HTML element in the DOM, and then assign the event listener to it by calling the method `addEventListener()` (this is done differently in Internet Explorer below version 9).  For example:
 
 [source, javascript]
 ----
@@ -1765,7 +1784,7 @@ Each event goes through three different phases: _Capture, Target, and Bubble_. I
 
 Then event reaches the button, and it's a target phase. After the event is handled by the button's `click` handler, the event bubbles up through the enclosing containers, and this is the bubble phase. you can create listeners and handle this event after the button finished its processing at the target phase. The next code sample is based on the previous one, but it demonstrates the event processing in all three phases. 
 
-Note that if your event handler function is declared with the event parameter, it'll receive the `Event` object, which contains a number of useful parameters. For more information refer to the "Document Object Model Events" online.
+Note that if your event handler function is declared with the event parameter, it'll receive the `Event` object (not in IE 8), which contains a number of useful parameters. For more information refer to the "Document Object Model Events" online.
 
 
 [source, javascript]
