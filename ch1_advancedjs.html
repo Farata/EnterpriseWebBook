@@ -608,6 +608,8 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_closures">Closures</a></li>
 <li>
 <ul class="sectlevel3">
+<li><a href="#_a_formal_definition_attempt">A Formal Definition Attempt</a></li>
+<li><a href="#_why_do_we_need_closures">Why do we Need Closures?</a></li>
 <li><a href="#_closures_as_callbacks">Closures as callbacks</a></li>
 </ul>
 </li>
@@ -615,6 +617,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_javascript_in_the_web_browser">JavaScript in the Web Browser</a></li>
 <li>
 <ul class="sectlevel3">
+<li><a href="#_the_document_object_model_dom">The Document Object Model (DOM)</a></li>
 <li><a href="#_working_with_dom">Working with DOM</a></li>
 <li><a href="#_dom_events">DOM Events</a></li>
 </ul>
@@ -633,10 +636,19 @@ p.tableblock.header { color: #6d6e71; }
 <p><em>"Atwood&#8217;s Law: any application that can be written in JavaScript, will eventually be written in JavaScript.</em></p>
 </div>
 <div class="paragraph">
-<p>This chapter is dedicated to the JavaScript programming language. While in the future chapters you&#8217;ll see how JavaScript frameworks can greatly minimize the amount of the JavaScript code that you need to write manually, you still need to understand the language itself. We assume that you have some programming experience with any programming, understand the HTML syntax, and are familiar with general principal of communications between Web browsers and Web servers. We&#8217;ve included the word <em>advanced</em> in the title of this chapter because because of these assumptions.</p>
+<p>This chapter is dedicated to the JavaScript programming language. While in the future chapters you&#8217;ll see how JavaScript frameworks can greatly minimize the amount of the JavaScript code that you need to write manually, you still need to understand the language itself. We assume that you have some programming experience with any programming, understand the HTML syntax, and are familiar with general principal of communications between Web browsers and Web servers. We&#8217;ve included the word <em>advanced</em> in the title of this chapter because because of these assumptions. This chapter starts with basics of the language, but then it quickly progresses to such advanced topics as <em>prototypal inheritance, callbacks, and closures</em>.</p>
 </div>
-<div class="paragraph">
-<p>This chapter starts with basics of the language, but then it quickly progresses to such advanced topics as <em>prototypal inheritance, callbacks, and closures</em>. If you prefer fat manuals covering each and every detail of programming languages, we can recommend you the book "JavaScript: The Definite Guide", Sixth Edition by David Flanagan.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you&#8217;re absolute beginner with Web development and had no previous exposure to JavaScript, consider reading one of the fundamental tutorials covering each and every detail of JavaScript. We can recommend you the book "JavaScript: The Definite Guide", Sixth Edition by David Flanagan.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Besides the JavaScript coverage this chapter includes a section on the tools (IDEs, debuggers, Web inspectors et al.) that will make your development process more productive.</p>
@@ -1024,7 +1036,7 @@ var myTax=doTax(50000,2);</code></pre>
 <p>The outermost parentheses hide its internal code from the outside world creating a scope or a closed ecosystem, where the function&#8217;s code will operate. Try to add a line invoking this function after the last line in the above code sample, e.g. <code>calcTax(50000,2)</code>, and you&#8217;ll get an error - "calcTax is not defined". There is a way to expose some of the internal content of such a <em>closure</em> and you&#8217;ll see how to do it later in this chapter.</p>
 </div>
 <div class="paragraph">
-<p>If you&#8217;ll take away the outermost parentheses and the closing semicolon, you&#8217;ll get the function declaration, which will be subject to <em>hoisting</em> explained later in this chapter. But if you&#8217;ll add a couple of parentheses at the end of this expression, you&#8217;ll get a <em>self-executing</em> function. This extra pair of parentheses will cause the function expression located in the first set of parentheses to be executed right away.</p>
+<p>If you&#8217;ll take away the outermost parentheses and the closing semicolon, you&#8217;ll get the function declaration, which will be subject to <em>hoisting</em> explained later in this chapter. The function expressions are usually a part of a larger expression. For example, if you&#8217;ll add a couple of parentheses at the end of this expression, you&#8217;ll get a <em>self-invoked</em> function. This extra pair of parentheses will cause the function expression located in the first set of parentheses to be executed right away.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1032,6 +1044,18 @@ var myTax=doTax(50000,2);</code></pre>
    // Do stuff here
 })();</code></pre>
 </div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The topic "Function declaration vs. function expressions" is one of those fuzzy JavaScript areas that can cause unexpected behavior of your code. Angus Croll published <a href="http://javascriptweblog.wordpress.com/2010/07/06/function-declarations-vs-function-expressions/">a well-written article</a> on this subject.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
@@ -1991,14 +2015,21 @@ myTaxObject.doTaxes();</code></pre>
 <div class="sect3">
 <h4 id="_callbacks">Callbacks</h4>
 <div class="paragraph">
-<p>Can you live without using <code>call()</code> and <code>apply()</code>?  Sure you can, but in JavaScript can easily create <em>callbacks</em> - you can pass the code of one function as a parameter to another function for execution in the latter function&#8217;s context. Most likely you&#8217;ve seen how event handlers are declared. If a user clicks on this button here&#8217;s the name of the handler function to call:
-<code>myButton.addEventListener("click", myFunctionHandler)</code></p>
+<p>Can you live without using <code>call()</code> and <code>apply()</code>?  Sure you can, but JavaScript allows you to easily create callbacks. The callback mechanism lets you pass the code of one function as a parameter to another function for execution in the latter function&#8217;s context. This is a very useful feature of the language. Imagine an object with a method <code>processData()</code>. Depending on the business logic you can pass to this method (as an argument) different functions that will do actual data processing - these are callbacks.</p>
 </div>
 <div class="paragraph">
-<p>It&#8217;s important to understand that you don&#8217;t not immediately call the function <code>myFunctionHandler</code> here - you are just registering it. If and only if the user will click on <code>myButton</code> then the callback <code>myFunctionHandler</code> has to be invoked in the context of the <code>myButton</code> object. The functions <code>call()</code> and <code>apply()</code> exist exactly for this purpose.</p>
+<p>Another example of callbacks is event handlers. If a user clicks on this button here&#8217;s the name of the handler function to call:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="Javascript language-Javascript">`myButton.addEventListener("click", myFunctionHandler);`</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s consider an example when you need to write a function that will take two arguments - and array with preliminary tax data and a callback function to be applied to each element of this array. The following code sample creates <code>myTaxObject</code> that has two properties: <code>taxDeduction</code> and the <code>applyDeduction</code>. The latter is a method with two parameters: array and a callback to be applied to this array.</p>
+<p>It&#8217;s important to understand that <em>you don&#8217;t not immediately call</em> the function <code>myFunctionHandler</code> here - you are just registering it as the function argumrnt. If the user will click on <code>myButton</code> then the code of the callback <code>myFunctionHandler</code> will be given to the object <code>myButton</code> and will be  invoked in the context of the <code>myButton</code> object. The functions <code>call()</code> and <code>apply()</code> exist exactly for this purpose.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s consider an example when you need to write a function that will take two arguments: an array containing preliminary tax data and a callback function, which will be applied to each element of this array. The following code sample creates <code>myTaxObject</code> that has two properties: <code>taxDeduction</code> and the <code>applyDeduction</code>. The latter is a method with two parameters:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2042,14 +2073,16 @@ Hello from callback. Your final tax is 2600</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>You may be wondering, why passing the function to another object if we could take an array, subtract 400 from each of its elements and be done with it? The solution with callbacks gives you an ability to make the decision on what function to call during the runtime and call it only when a certain event happens. Callbacks allow you to do asynchronous processing. For example, you make an asynchronous  request to a server and register the callback to be invoked if a result comes back. The code is not blocked and doesn&#8217;t wait until the server response is ready. Here&#8217;s an example from AJAX: <code>request.onreadystatechange=myHandler</code>. You register <code>myHandler</code> callback but not immediately call it. JavaScript functions are objects, so get used to the fact that you can pass them around as you&#8217;d be passing any objects.</p>
+<p>You may be wondering, why passing the function to another object if we could take an array, subtract 400 from each of its elements and be done with it? The solution with callbacks gives you an ability to make the decision on what function to call during the runtime and call it only when a certain event happens. Callbacks allow you to do <em>asynchronous processing</em>. For example, you make an asynchronous  request to a server and register the callback to be invoked if a result comes back. The code is not blocked and doesn&#8217;t wait until the server response is ready. Here&#8217;s an example from AJAX: <code>request.onreadystatechange=myHandler</code>. You register <code>myHandler</code> callback but not immediately call it. JavaScript functions are objects, so get used to the fact that you can pass them around as you&#8217;d be passing any objects.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_hoisting">Hoisting</h4>
 <div class="paragraph">
-<p>A variable scope depends on where it was declared.  You already had a chance to see that a variable declared inside a function with the keyword <code>var</code> is visible only inside this function. Some programming languages allow to narrow down the scope even further. For example, in Java declaring a variable inside any block of code surrounded with curly braces makes it visible only inside such a block. In JavaScript it works differently. No matter where in the function you declared the variable its declaration will be <em>hoisted</em> to the top of the function, and you can use this variable anywhere inside the function.</p>
+<p>A variable scope depends on where it was declared.  You already had a chance to see that a variable declared inside a function with the keyword <code>var</code> is visible only inside this function and any function declared within it. Some programming languages allow to narrow down the scope even further. For example, in Java declaring a variable inside any block of code surrounded with curly braces makes it visible only inside such a block. In JavaScript it works differently. No matter where in the function you declared the variable its declaration will be <em>hoisted</em> to the top of the function, and you can use this variable anywhere inside the function.</p>
 </div>
+<div class="sect4">
+<h5 id="_hoisting_variables">Hoisting Variables</h5>
 <div class="paragraph">
 <p>The following code snippet will print 5 even though the variable b has been declared inside the if-statement. It&#8217;s declaration has been hoisted to the top:</p>
 </div>
@@ -2091,8 +2124,13 @@ test();</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Due to hoisting, JavaScript doesn&#8217;t complain when the first <code>console.log(b)</code> is invoked. It knows about the variable <code>b</code>, but its value is <code>undefined</code> just yet. By the time the second <code>console.log(b)</code> is called, the variable b was initialized with the value of 5. Just remember that hoisting just applies to variable declaration and doesn&#8217;t interferes with your code when it comes to initialization.
-JavaScript function declarations are hoisted too, and this is illustrated in the following code sample.</p>
+<p>Due to hoisting, JavaScript doesn&#8217;t complain when the first <code>console.log(b)</code> is invoked. It knows about the variable <code>b</code>, but its value is <code>undefined</code> just yet. By the time the second <code>console.log(b)</code> is called, the variable b was initialized with the value of 5. Just remember that hoisting just applies to variable declaration and doesn&#8217;t interferes with your code when it comes to initialization.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_hoisting_functions">Hoisting Functions</h5>
+<div class="paragraph">
+<p>JavaScript function declarations are hoisted too, and this is illustrated in the following code sample.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2116,7 +2154,7 @@ test();</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This code will print 5. We can call the function printB() here because its declaration was hoisted to the top. But the situation changes if instead of function declaration we&#8217;ll use the function expression. The following code will give you an error "PrintB is not a function". Notice that it the error doesn&#8217;t complain about <code>printB</code> being undefined cause the variable declaration was hoisted, but since the function expression wasn&#8217;t the JavaScript engine doesn&#8217;t know yet that <code>printB</code> will become a function really soon. Anyway, moving the invocation line <code>printB()</code> to the bottom of the function <code>test()</code> cures this issue. Function expressions are not being hoisted.</p>
+<p>This code will print 5. We can call the function printB() here because its declaration was hoisted to the top. But the situation changes if instead of function declaration we&#8217;ll use the function expression. The following code will give you an error "PrintB is not a function".</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2141,33 +2179,26 @@ test();</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>All code samples in this section first declare the function <code>test()</code> and then invoke it. This function <code>test()</code> is being called once and there is no reason to give it a name. Using so called <em>self-invoked</em> function notation allows to declare and automatically invoke the function (note the extra parentheses at the end of the following code).</p>
+<p>Notice that it the error doesn&#8217;t complain about <code>printB</code> being undefined cause the variable declaration was hoisted, but since the function expression wasn&#8217;t the JavaScript engine doesn&#8217;t know yet that <code>printB</code> will become a function really soon. Anyway, moving the invocation line <code>printB()</code> to the bottom of the function <code>test()</code> cures this issue.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="javascript language-javascript">(function () {
-    var a=1;
-
-    if(a&gt;0) {
-        var b;
-    }
-
-    b=5;
-
-    printB();
-
-    var printB = function(){
-        console.log(b);
-    }
-
-})();</code></pre>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Function expressions are not being hoisted, but the variables they are assigned to (if any) are being hoisted.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_function_properties">Function properties</h4>
 <div class="paragraph">
-<p>Functions as any other objects can have properties. You can attach any properties to a Function object and their values can be used by all instances of this object. Static variables in programming languages with the classical inheritance is the closest analogy to function properties in JavaScript.</p>
+<p>Functions as any other objects can have properties. You can attach any properties to a <code>Function</code> object and their values can be used by all instances of this object. Static variables in programming languages with the classical inheritance is the closest analogy to function properties in JavaScript.</p>
 </div>
 <div class="paragraph">
 <p>Let&#8217;s consider an example of a constructor function <code>Tax</code>. An accounting program can create multiple instances if <code>Tax</code> - one per person. Say this program will be used in a Florida neighborhood with predominantly Spanish speaking people. The following code illustrates the case when the method <code>doTax()</code> can be called with or without parameters.</p>
@@ -2254,11 +2285,34 @@ If multiple instances of a function object need to access certain HTML elements 
 </div>
 <div class="sect2">
 <h3 id="_closures">Closures</h3>
+<div class="sect3">
+<h4 id="_a_formal_definition_attempt">A Formal Definition Attempt</h4>
 <div class="paragraph">
-<p>Imagine a function that contains a private variable, and a nested function. Is it possible to invoke the nested function from the outside of the outer one? And if it&#8217;s possible, what this inner function knows about its surroundings?</p>
+<p>A <em>closure</em> is one of those terms that are easier explained by examples. Closures have formal definitions, which are not very helpful for the first timers. Here&#8217;s the <a href="http://en.wikipedia.org/wiki/Closure_(computer_science)">definiton of a closure from Wikipedia</a>:</p>
 </div>
 <div class="paragraph">
-<p>Larry Ullman, a Web developer and computer books author offers the following definition: "Closure is a function call with memory". We can offer you our version: "Closure is a function call with strings attached". Now it&#8217;s turn for the explanation of these mysterious definitions, and we&#8217;ll do it by example. Consider the following code that is yet another example of implementing tax collection functionality.</p>
+<p><em>"In programming languages, a closure (also lexical closure or function closure) is a function or reference to a function together with a referencing environment—a table storing a reference to each of the non-local variables (also called free variables or upvalues) of that function. A closure—unlike a plain function pointer—allows a function to access those non-local variables even when invoked outside its immediate lexical scope."</em></p>
+</div>
+<div class="paragraph">
+<p>It&#8217;s not a very helpful definition, is it? Let&#8217;s try to give a better one. Imagine a function that contains a private variable, and a nested function. Is it possible to invoke the nested function from the outside of the outer one? And if it&#8217;s possible, what this inner function knows about its surroundings?</p>
+</div>
+<div class="paragraph">
+<p>Larry Ullman, gives the following definition in his book "Modern Java Script": "Closure is a function call with memory". We can offer you our version of what a closure is: "Closure is a function call with strings attached".</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_why_do_we_need_closures">Why do we Need Closures?</h4>
+<div class="paragraph">
+<p>In classical object-oriented languages you create an object with a certain state and behavior and can pass if to a method of another object for further processing. In JavaScript you can pass even a function to some object&#8217;s method for further processing. But what if a function also need to remember the state (the values of external variables) of the context where the function was defined?</p>
+</div>
+<div class="paragraph">
+<p>Think of a closure as a function that remembers  state - it&#8217;s just a special type of object that can be passed between objects and use certain variables that didn&#8217;t seem to be defined in the function&#8217;s code. But there existed in the context where the  the function was defined.</p>
+</div>
+<div class="paragraph">
+<p>====Closures by Example</p>
+</div>
+<div class="paragraph">
+<p>Now it&#8217;s time for the explanation of these mysterious definitions, and we&#8217;ll do it by example. Consider the following code that is yet another example of implementing tax collection functionality.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2391,7 +2445,7 @@ var result2 = p2.doTaxes(100000);</code></pre>
 <p>The calculated taxes in this example are the same as in the previous one: John Smith has to pay $4500, while Tony Soprano only $4000. But we used different technique for exposing the closure. We want to make sure that you didn&#8217;t overlooked the parentheses at the very end of the function expression for <code>doTaxes</code>. These parenthesis force the anonymous function to self-invoke itself, it&#8217;ll run into a <code>return</code> statement and will assign the code of the anonymous inner function that takes parameter <code>income</code> to the property <code>doTaxes</code>. So when the line <code>var result1 = p1.doTaxes(100000);</code> calls the closure the variable <code>result1</code> will have the value 4500. Remove these important parentheses, and the value of <code>result1</code> is not the tax amount, but the the code of the closure itself - the invocation of the closure is not happening.</p>
 </div>
 <div class="paragraph">
-<p>The following code fragment is yet another example of returning the closure that remembers its context.First, the closure is returned to the caller of <code>prepareTaxes()</code>, and when the closure will be invoked it&#8217;ll remember the values defined in its outer context. After looking at this code you can say that there is nothing declared in the closure&#8217;s outside context! There is - by the time when the closure is created the value of the <code>studentDeductionAmount</code> will be known.</p>
+<p>The following code fragment is yet another example of returning the closure that remembers its context.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2428,6 +2482,9 @@ console.log("You tax is " + yourTaxIs);  <i class="conum" data-value="4"></i><b>
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>First, the closure is returned to the caller of <code>prepareTaxes()</code>, and when the closure will be invoked it&#8217;ll remember the values defined in its outer context. After looking at this code you may say that there is nothing declared in the closure&#8217;s outside context! There is - by the time when the closure is created the value of the <code>studentDeductionAmount</code> will be known.</p>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -2440,10 +2497,11 @@ Check the quality of your code with the help of the JavaScript code quality tool
 </tr>
 </table>
 </div>
+</div>
 <div class="sect3">
 <h4 id="_closures_as_callbacks">Closures as callbacks</h4>
 <div class="paragraph">
-<p>Let&#8217;s revisit the code from the section Callbacks above. That code has shown how to pass an arbitrary function to another one and invoke it there using <code>call()</code>. But if that version of the function <code>taxHandler</code> was not aware of the context it was created in, the version below will. If in classical object-oriented languages you&#8217;d need to pass a method that knows about it&#8217;s context, you&#8217;d need to create an instance of an object that contains the method and the required object-level properties, and then you&#8217;d be passing this wrapper-object to another object for processing. But since the closure remembers its context anyway, we can just pass a closure instead of object. Compare the code below with the code from the Callbacks section.</p>
+<p>Let&#8217;s revisit the code from the section Callbacks above. That code has shown how to pass an arbitrary function to another one and invoke it there using <code>call()</code>. But if that version of the function <code>taxHandler</code> was not aware of the context it was created in, the version below will. If in classical object-oriented languages you&#8217;d need to pass a method that knows about it&#8217;s context, you&#8217;d need to create an instance of an object that contains the method and the required object-level properties, and then you&#8217;d be passing this wrapper-object to another object for processing. But since the closure remembers its context anyway, we can just pass a closure as an object. Compare the code below with the code from the Callbacks section.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2489,6 +2547,9 @@ myTaxObject.applyDeduction(preliminaryTaxes, taxHandler(200));</code></pre>
 <div class="paragraph">
 <p>The need to extend capabilities of objects can be fulfilled by inheritance, but this is not the only way of adding behavior to objects. In this section you&#8217;ll see an example of something that would not be possible in the object-oriented languages like Java or C#, which don&#8217;t support multiple inheritance. JavaScript allows taking a piece of code and <em>mix it into any object</em> regardless of what its inheritance chain is. <em>Mixin</em> is a code fragment that an object can borrow if need be.</p>
 </div>
+<div class="paragraph">
+<p>In the next code fragment we&#8217;ll define a function expression and will assign it to a variable named <code>Tax</code>. This is a closure that includes the function <code>calcTax()</code> that knows the values of <code>income</code> and <code>state</code>.  There is also an independent mixin <code>TaxMixin</code> with a couple of functions <code>mafiaSpecial()</code> and <code>drugCartelSpecial()</code>. We want to blend in this mixin into <code>Tax</code>. After this is is done, the Tax object will have its original functionality,i.e. <code>calcTax()</code>, as well as a new "mafia and drug cartel flavors":</p>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">// Defining a function expession
@@ -2519,7 +2580,7 @@ TaxMixin.prototype = {
 
 };
 
-// this function can blend TaxMixin into tax
+// this function can blend TaxMixin into Tax
 function blend( mainDish, spices ) {
 
   for ( var methodName in spices.prototype ) {
@@ -2540,7 +2601,10 @@ t.mafiaSpecial(rawTax);</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The function <code>blend()</code> loops through the code of the <code>TaxMixin</code> and copies all its properties into <code>Tax</code>. Mixins can be useful is you want to provide a specific feature to a number of different object without changing their inheritance. The other use case is if you want to prepare a bunch of small code fragments (spices) and add any combination of them to the various objects (dishes) as needed. Mixins give you a lot of flexibility in what you can achieve with the minimum code, but they may decrease the readability of your code.</p>
+<p>The function <code>blend()</code> loops through the code of the <code>TaxMixin</code> and copies all its properties into <code>Tax</code>. After the function <code>blend()</code> is finished, you can call on the <code>Tax</code> instance newly acquired methods <code>mafiaSpecial()</code> and <code>drugCartelSpecial()</code>.</p>
+</div>
+<div class="paragraph">
+<p>Mixins can be useful is you want to provide a specific feature to a number of different objects  without changing their inheritance chains. The other use case is if you want to prepare a bunch of small code fragments (think spices) and add any combination of them to the various objects (dishes) as needed. Mixins give you a lot of flexibility in what you can achieve with the minimum code, but they may decrease the readability of your code.</p>
 </div>
 <div class="paragraph">
 <p>If you&#8217;ve read this far, you should have a good understanding of the syntax of the JavaScript language.Studying the code samples provided in this chapter has one extra benefit: now you can apply for a job as a tax accountant in a mafia near you.</p>
@@ -2551,6 +2615,8 @@ t.mafiaSpecial(rawTax);</code></pre>
 <div class="paragraph">
 <p>After learning all these facts and techniques about the language you might be eager to see "the real-world use of JavaScript". Slowly but surely a Web browser becomes the leading platform for development of the user interface.  The vast majority today&#8217;s JavaScript programs primarily manipulate HTML elements of Web pages. In this section we&#8217;ll be doing exactly this – applying JavaScript code to modify the content or style of HTML elements.</p>
 </div>
+<div class="sect3">
+<h4 id="_the_document_object_model_dom">The Document Object Model (DOM)</h4>
 <div class="paragraph">
 <p>DOM stands for Document Object Model. It&#8217;s an object representing the hierarchy of HTML elements of a  Web page. Every element of the HTML document is loaded into DOM. Each DOM element has a reference to its children and siblings. When DOM was invented, the Web pages were simple and static. DOM was not meant to be an object actively accessed by the code. This is the reason that on some of the heavily populated Web pages manipulating of DOM elements can be slow. Most likely DOM is the main target for anyone who&#8217;s trying to optimize the performance of a Web page.</p>
 </div>
@@ -2567,7 +2633,7 @@ If your Web page is slow, analyze it with <a href="http://yslow.org/">YSlow</a>,
 </table>
 </div>
 <div class="paragraph">
-<p>When a Web Browser is receiving the content it keeps performing the following activities:</p>
+<p>When a Web Browser is receiving the content it  performs the following activities:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2624,7 +2690,8 @@ If you are interested in learning how the browsers work in detail, read an excel
 </ul>
 </div>
 <div class="paragraph">
-<p>Now you&#8217;ll see some code samples illustrating the use of JavaScript for the listed above operations. Even if you’ll be using one of the popular JavaScript frameworks, your program will be performing similar operations applying the syntax prescribed by your framework of choice. So let&#8217;s learn how it can be done.</p>
+<p>Now you&#8217;ll see some code samples illustrating the use of JavaScript for the operations listed above. Even if you’ll be using one of the popular JavaScript frameworks, your program will be performing similar operations applying the syntax prescribed by your framework of choice. So let&#8217;s learn how it can be done.</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_working_with_dom">Working with DOM</h4>
@@ -2671,26 +2738,30 @@ console.log(window.address);</code></pre>
 <pre>Below are some of the methods that exist on the `document` object:</pre>
 </div>
 </div>
-<div class="paragraph">
+<div class="ulist">
+<ul>
+<li>
 <p><code>document.write(text)</code> – adds the specifies text to the DOM. Careless using of the method <code>write()</code> can result in unpredictable results if after changing the DOM the HTML content is still arriving.</p>
-</div>
-<div class="paragraph">
+</li>
+<li>
 <p><code>document.getElementById(id)</code> – get a reference to the HTML element by its unique identifier</p>
-</div>
-<div class="paragraph">
+</li>
+<li>
 <p><code>document.getElementsByTagName(tname)</code> - get a reference to one or more elements by tag names, e.g.get a reference to all <code>&lt;div&gt;</code> elements.</p>
-</div>
-<div class="paragraph">
+</li>
+<li>
 <p><code>document.getElementsByName(name)</code> -  get a reference to all elements that have requested value in their <code>name</code> attribute.</p>
-</div>
-<div class="paragraph">
-<p><code>document.getElementsByClassName(className)</code> – get a reference to all elements to use specified CSS class.</p>
-</div>
-<div class="paragraph">
-<p><code>document.querySelector(cssSelector)</code> – Find the first element that matches provided CSS selector. string.</p>
-</div>
-<div class="paragraph">
+</li>
+<li>
+<p><code>document.getElementsByClassName(className)</code> – get a reference to all elements to use specified CSS class(es), like <code>document.getElementsByClassName('red text-left')</code>.</p>
+</li>
+<li>
+<p><code>document.querySelector(cssSelector)</code> – Find the first element that matches provided CSS selector. string. It comes handy if you want to specify more complex queries that just a class name, e.g. <code>document.querySelector("style[type='text-left']");</code>.</p>
+</li>
+<li>
 <p><code>document.querySelectorAll(cssSelector)</code> – Find all elements that match provided CSS selector string.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p>The next code sample contains the HTML <code>&lt;span&gt;</code> element that has an id <code>emp</code>. Initially it contains ellipsis, but when the user enters the name in the input text field, the JavaScript code will find the reference to this <code>&lt;span&gt;</code> element and will replace the ellipsis with the content of the input text field.</p>
@@ -2794,7 +2865,7 @@ console.log(window.address);</code></pre>
 <div class="title">Figure 22. Traversing the DOM in Firefox</div>
 </div>
 <div class="paragraph">
-<p>While some of the output is self-explanatory, there is a number of <code>#text</code> nodes that you won&#8217;t find in the code sample above. Unfortunately, Web browsers treat whitespaces differently, and inserts different number of text nodes in the DOM representing whitespaces found in the HTML document. So you&#8217;ll be better off using one of the JavaScript frameworks for traversing the DOM cross-browser way. For example, JQuery framework&#8217;s API for DOM traversing is listed at <a href="http://bit.ly/WXj2r2">http://bit.ly/WXj2r2</a>.</p>
+<p>While some of the output is self-explanatory, there is a number of <code>#text</code> nodes that you won&#8217;t find in the code sample above. Unfortunately, Web browsers treat white-spaces in differently - some will ignore them, while others will report them as DOM elements. Accordingly, different browsers insert different number of text nodes in the DOM representing whitespaces found in the HTML document. So you&#8217;ll be better off using one of the JavaScript frameworks for traversing the DOM cross-browser way. For example, JQuery framework&#8217;s API for DOM traversing is listed at <a href="http://bit.ly/WXj2r2">http://bit.ly/WXj2r2</a>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -2816,7 +2887,7 @@ You can find CSS tutorial as well as tons of other learning resources at <a href
 </table>
 </div>
 <div class="paragraph">
-<p>You can include CSS into a Web page either by linking to separate files using the HTML tag <code>&lt;link&gt;</code> or by in-lining the styles with the tag <code>&lt;style&gt;</code>. For example, if CSS is located in the file <code>mystyles.css</code> in
+<p>You can include CSS into a Web page by linking to separate files using the HTML tag <code>&lt;link&gt;</code>, or by in-lining the styles with the tag <code>&lt;style&gt;</code>, or using the <code>style</code> attribute. For example, if CSS is located in the file <code>mystyles.css</code> in
 the folder css add the following tag to HTML:</p>
 </div>
 <div class="listingblock">
@@ -2843,7 +2914,7 @@ stiles are loaded before the content of the Web page.</p>
 </div>
 <div class="paragraph">
 <p>What’s the best way of including CSS in HTML? Keeping CSS in multiple files separately from HTML and JavaScript makes the code more readable and reusable. On the other hand, if your Web site has
-consists of many files, the Web browser will have to make multiple round trips to your server just to load all resources required by the HTML document, which can worsen the responsiveness of your Web application.</p>
+consists of many files, the Web browser will have to make multiple round trips to your server just to load all resources required by the HTML document, which can worsen the responsiveness of your Web application.Usually all files are merged before deploying Web application in QA or production servers.</p>
 </div>
 </div>
 </div>
@@ -2964,7 +3035,7 @@ Each HTML element has a certain number of predefined <em>event attributes</em>, 
 </table>
 </div>
 <div class="paragraph">
-<p>The preferred way of adding event listener was introduced in the DOM Level 2 specification back in 2000. You should find the HTML element in the DOM, and then assign the event listener to it by calling the method <code>addEventListener()</code>.  For example:</p>
+<p>The preferred way of adding event listener was introduced in the DOM Level 2 specification back in 2000. You should find the HTML element in the DOM, and then assign the event listener to it by calling the method <code>addEventListener()</code> (this is done differently in Internet Explorer below version 9).  For example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3034,7 +3105,7 @@ Each HTML element has a certain number of predefined <em>event attributes</em>, 
 <p>Then event reaches the button, and it&#8217;s a target phase. After the event is handled by the button&#8217;s <code>click</code> handler, the event bubbles up through the enclosing containers, and this is the bubble phase. you can create listeners and handle this event after the button finished its processing at the target phase. The next code sample is based on the previous one, but it demonstrates the event processing in all three phases.</p>
 </div>
 <div class="paragraph">
-<p>Note that if your event handler function is declared with the event parameter, it&#8217;ll receive the <code>Event</code> object, which contains a number of useful parameters. For more information refer to the "Document Object Model Events" online.</p>
+<p>Note that if your event handler function is declared with the event parameter, it&#8217;ll receive the <code>Event</code> object (not in IE 8), which contains a number of useful parameters. For more information refer to the "Document Object Model Events" online.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3158,7 +3229,7 @@ The Microsoft&#8217;s Web browsers Internet Explorer 8 and below didn&#8217;t im
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-10-28 21:31:46 EDT
+Last updated 2013-10-30 08:53:15 EDT
 </div>
 </div>
 </body>
