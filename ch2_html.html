@@ -573,23 +573,32 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_selected_html5_apis">Selected HTML5 APIs</a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#_html5_web_messaging">HTML5 Web Messaging</a></li>
-<li><a href="#_web_workers">Web Workers</a></li>
+<li><a href="#_does_your_browser_support_html5">Does your Browser Support HTML5?</a></li>
+<li><a href="#_handling_differences_in_browsers">Handling Differences in Browsers</a></li>
+<li><a href="#_html5_web_messaging_api">HTML5 Web Messaging API</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_sending_and_receiving_messages">Sending and Receiving Messages</a></li>
+<li><a href="#_communicating_with_an_iframe">Communicating with an iFrame</a></li>
+<li><a href="#_applying_the_mediator_design_pattern">Applying the Mediator Design Pattern</a></li>
+</ul>
+</li>
+<li><a href="#_web_workers_api">Web Workers API</a></li>
 <li>
 <ul class="sectlevel3">
 <li><a href="#_creating_and_communicating_with_workers">Creating and Communicating with Workers</a></li>
 <li><a href="#_dedicated_and_shared_workers">Dedicated and Shared Workers</a></li>
 </ul>
 </li>
-<li><a href="#_websockets">WebSockets</a></li>
+<li><a href="#_websockets_api">WebSockets API</a></li>
 <li><a href="#_offline_web_applications">Offline Web Applications</a></li>
 <li>
 <ul class="sectlevel3">
 <li><a href="#_prerequisites_for_developing_offline_web_applications">Prerequisites for developing Offline Web Applications</a></li>
-<li><a href="#_application_cache">Application Cache</a></li>
+<li><a href="#_application_cache_api">Application Cache API</a></li>
 <li><a href="#_is_your_application_offline">Is Your Application Offline?</a></li>
 <li><a href="#_options_for_storing_data_locally">Options for Storing Data Locally</a></li>
-<li><a href="#_localstorage_and_sessionstorage">localStorage and sessionStorage</a></li>
+<li><a href="#_web_storage_specification_apis">Web Storage Specification APIs</a></li>
 <li><a href="#_introduction_to_indexeddb">Introduction to IndexedDB</a></li>
 </ul>
 </li>
@@ -614,7 +623,7 @@ p.tableblock.header { color: #6d6e71; }
 <p>This chapter is a brief review of selected HTML5 APIs. HTML5 is just a commonly used term for a combination of HTML, JavaScript, CSS, and several new APIs that appeared during the last several years. Five years ago people were using the term <em>Web 2.0</em> to define modern looking applications. These days HTML5 is almost a household name, and we&#8217;ll go along with it. But HTML5 is about the same old development in JavaScript plus latest advances in HTML and CSS.</p>
 </div>
 <div class="paragraph">
-<p>This chapter differs from all others because it includes a little less code, and is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, offline Web applications, Web Workers, and History API.</p>
+<p>This chapter differs from all others because it includes a little less code, and is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, Application Cache, IndexedDB, localStorage, Web Workers, and History API.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -628,13 +637,15 @@ To understand code samples included in this chapter you have to be familiar with
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="_does_your_browser_support_html5">Does your Browser Support HTML5?</h3>
 <div class="paragraph">
 <p>The majority of the modern Web browsers already support the current version of <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers">HTML5 specification</a>, which will become a W3C standard in 2014. The question is if the users of your Web application have a modern browser installed on their device? There are two groups of users that will stick to the outdated browsers for some time:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Computer illiterate people who are afraid of installing any new software one their PCs, especially, people of the older generation. <em>"John, after the last visit of our grandson our computer works even slower than before. Please don&#8217;t let him install these new fancy browsers here. I just need my old Internet Explorer, access to Hotmail and Facebook".</em></p>
+<p>Less technically savvy people may be afraid of installing any new software one their PCs, especially, people of the older generation. <em>"John, after the last visit of our grandson our computer works even slower than before. Please don&#8217;t let him install these new fancy browsers here. I just need my old Internet Explorer, access to Hotmail and Facebook".</em></p>
 </li>
 <li>
 <p>Business users working for large corporations, where all the installations of the software on their PCs is done by a dedicated technical support team. They say, <em>"We have 50000 PCs in or firm. An upgrade from Internet Explorer version 8 to version 9 is a major undertaking. Internal users work with hundreds Web applications on a regular basis. They can install whatever browser they want, but if some of these applications won&#8217;t work as expected, the users will flood us with support requests we&#8217;re not qualified to resolve</em> . Hence the strategy of using the lowest denominator browser often wins.</p>
@@ -642,10 +653,10 @@ To understand code samples included in this chapter you have to be familiar with
 </ol>
 </div>
 <div class="paragraph">
-<p>Often Web developers need to make both of the above groups of users happy. Take an online banking - an old couple has to be able to use your Web application from their old PCs otherwise they can transfer their lifetime savings to a different bank which doesn&#8217;t require, say the latest version of Firefox installed.</p>
+<p>Often Web developers need to make both of the above groups of users happy. Take for example online banking - an old couple has to be able to use your Web application from their old PCs otherwise they will transfer their lifetime savings to a different bank which doesn&#8217;t require, say the latest version of Firefox installed.</p>
 </div>
 <div class="paragraph">
-<p>Does it mean that enterprise Web developers shouldn&#8217;t even bother using HTML5 that&#8217;s not 100% supported? Not at all. This means that a substantial portion of their application&#8217;s code will be bloated with if-statements figuring out what this specific Web browser supports and providing several solutions that keep your application on float in any Web browser. This what makes the job of DHTML developers a lot more difficult than of, say Java or .Net developers who know exactly the VM where their code will work. If you don&#8217;t install the Java Runtime of version 1.6 our application won&#8217;t work. As simple as that. How about asking Java developers writing applications that will work in any runtime released during the last 10 years? No, we&#8217;re not that nasty.</p>
+<p>Does it mean that enterprise Web developers shouldn&#8217;t even bother using HTML5 that&#8217;s not 100% supported? Not at all. This means that a substantial portion of their application&#8217;s code will be bloated with if-statements figuring out what this specific Web browser supports and providing several solutions that keep your application on float in any Web browser. This what makes the job of DHTML developers a lot more difficult than that of, say Java or .Net developers who know exactly the VM where their code will work. If you don&#8217;t install the Java Runtime of version 1.6 our application won&#8217;t work. As simple as that. How about asking Java developers writing applications that will work in any runtime released during the last 10 years? No, we&#8217;re not that nasty.</p>
 </div>
 <div class="paragraph">
 <p>Do you believe it would be a good idea for Amazon or Facebook to re-write their UI in Java? Of course not unless they want to loose most of their customers who will be scared to death after seeing the message of the 20-step Java installer asking for the access to the internals of their computer. Each author of this book is a Java developer, and we love using Java&#8230; on the server side. But when it comes to the consumer facing Web applications there are better than Java choices.</p>
@@ -674,11 +685,14 @@ screencast by Paul Irish</a>, a co-creator of HTML5 Boilerplate. You can also re
 </tr>
 </table>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_handling_differences_in_browsers">Handling Differences in Browsers</h3>
 <div class="paragraph">
 <p>This chapter is about selected HTML APIs that we find important to understand in Web applications. But before using any of the API&#8217;s listed here you want to check if the versions of the Web browsers you have to user support these APIs. The Web site <a href="http://caniuse.com">http://caniuse.com</a> will give you the up-to-date information about all major browsers and their versions that do (or don&#8217;t) support the API in question. For example, to see which browsers support Worker API visit <a href="http://caniuse.com/#search=Worker">caniuse.com</a>.</p>
 </div>
 <div class="paragraph">
-<p>It&#8217;s a good practice to include in your code a line that test it an API is supported. For example, if the following if-statement returns false, the Web Worker is not supported and the code should fallback to a single-threaded processing mode:</p>
+<p>It&#8217;s a good practice to include in your code a line that tests if a specific API is supported. For example, if the following if-statement returns false, the Web Worker is not supported and the code should fallback to a single-threaded processing mode:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -701,13 +715,16 @@ screencast by Paul Irish</a>, a co-creator of HTML5 Boilerplate. You can also re
 )</code></pre>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_html5_web_messaging">HTML5 Web Messaging</h3>
-<div class="paragraph">
-<p><a href="http://www.w3.org/TR/webmessaging/">HTML5 Web Messaging</a> allows you to arrange for communication between different Web pages of the same Web application. More officially, it&#8217;s about "communicating between browsing contexts in HTML documents". Web messaging also allows you to work around <em>the same domain policy</em> that would result in security error if a window A has one origin (the combination of URL scheme, host name and port, e.g. <a href="http://myserver.com:8080)">http://myserver.com:8080)</a> would try to access property of a window B that was downloaded from another origin. But with messaging API windows downloaded from different origins can send messages to each other.</p>
 </div>
+<div class="sect2">
+<h3 id="_html5_web_messaging_api">HTML5 Web Messaging API</h3>
 <div class="paragraph">
-<p>The API is pretty straightforward: if a script in <code>WindowA</code> has a reference to <code>WindowB</code> where you want to send a message, invoke the following method:</p>
+<p><a href="http://www.w3.org/TR/webmessaging/">HTML5 Web Messaging</a> allows you to arrange for communication between different Web pages of the same Web application. More officially, it&#8217;s about "communicating between browsing contexts in HTML documents". Web messaging also allows you to work around the "same domain" policy that would result in security error if a browser&#8217;s page A has one origin (the combination of URL scheme, host name and port, e.g. <a href="http://myserver.com:8080)">http://myserver.com:8080)</a> and tries to access property of a page B that was downloaded from another origin. But with messaging API windows downloaded from different origins can send messages to each other.</p>
+</div>
+<div class="sect3">
+<h4 id="_sending_and_receiving_messages">Sending and Receiving Messages</h4>
+<div class="paragraph">
+<p>The API is pretty straightforward: if a script in the page <code>WindowA</code> has a reference to <code>WindowB</code> where you want to send a message, invoke the following method:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -715,7 +732,10 @@ screencast by Paul Irish</a>, a co-creator of HTML5 Boilerplate. You can also re
 </div>
 </div>
 <div class="paragraph">
-<p>The object referenced by <code>myWindowB</code> will receive an event object with the content of payload <code>someData</code> in the event&#8217;s property <code>data</code>.  The <code>targetOrigin</code> specifies the origin where <code>myWindowB</code> was downloaded from. Specifying a concrete URI of the destination window in <code>targetOrigin</code> is the right way to do messaging. This way if a malicious site will try to intercept the message it won&#8217;t be delivered since the URI specified in <code>targetOrigin</code> would be different from the malicious site&#8217;s URI. But if you&#8217;re absolutely sure that your application is operating in absolutely safe environment, you can specify <code>"*"</code> as <code>targetOrigin</code>.</p>
+<p>The object referenced by <code>myWindowB</code> will receive an event object with the content of payload <code>someData</code> in the event&#8217;s property <code>data</code>.  The <code>targetOrigin</code> specifies the origin where <code>myWindowB</code> was downloaded from.</p>
+</div>
+<div class="paragraph">
+<p>Specifying a concrete URI of the destination window in <code>targetOrigin</code> is the right way to do messaging. This way if a malicious site will try to intercept the message it won&#8217;t be delivered since the URI specified in <code>targetOrigin</code> would be different from the malicious site&#8217;s URI. But if you&#8217;re absolutely sure that your application is operating in absolutely safe environment, you can specify <code>"*"</code> as <code>targetOrigin</code>.</p>
 </div>
 <div class="paragraph">
 <p>Accordingly, <code>myWindowB</code> has to define an event handler for processing of this external event <code>message</code>, for example:</p>
@@ -729,6 +749,9 @@ function myEventHandler(event){
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_communicating_with_an_iframe">Communicating with an iFrame</h4>
 <div class="paragraph">
 <p>Let&#8217;s consider an example where an HTML Window creates an iFrame and needs to communicate with it. In particular, the iFrame will notify the main window that it has loaded, and the main window will acknowledge receiving of this message.</p>
 </div>
@@ -759,7 +782,7 @@ function myEventHandler(event){
     &lt;h1&gt;This is Main Window &lt;/h1&gt;
 
     &lt;iframe id="myFrame"&gt;
-        &lt;p&gt;....&lt;/p&gt;
+        &lt;p&gt;Some page content goes here&lt;/p&gt;
     &lt;/iframe&gt;
 
    &lt;script type="text/javascript"&gt;
@@ -889,6 +912,9 @@ To implement error processing add a handler for the <code>window.onerror</code> 
 <div class="paragraph">
 <p>If you need to build a UI of the application from reusable components, applying messaging techniques allows you to create loosely coupled components. Say you&#8217;ve created a window for a financial trader. This window receives the data push from the server showing the latest stock prices. When a trader likes the price he may click on the Buy or Sell button to initiate a trade. The order to trade can be is implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important.</p>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_applying_the_mediator_design_pattern">Applying the Mediator Design Pattern</h4>
 <div class="paragraph">
 <p>Three years ago O&#8217;Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we&#8217;ve described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending-receiving events from the <em>mediator</em> object.  The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can&#8217;t be underestimated.</p>
 </div>
@@ -905,13 +931,13 @@ To implement error processing add a handler for the <code>window.onerror</code> 
 <p>The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending-receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some portal that&#8217;s used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it&#8217;s easy to reuse the existing code in such a dashboard.</p>
 </div>
 <div class="paragraph">
-<p>You&#8217;ll see a more advanced example of the inter-component communication techniques that uses  <em>Mediator Design Pattern</em> in <a href="#mediator_section">corresponding section</a> of Chapter 7.</p>
+<p>You&#8217;ll see a more advanced example of the inter-component communication techniques that uses  <em>Mediator Design Pattern</em> in <a href="#mediator_section">corresponding section</a> of Chapter 7 of this book.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
 <div class="title">HTML5 Forms</div>
 <div class="paragraph">
-<p>While this chapter is about selected HTML APIs, we&#8217;ve decided to bring your attention to the improvements in the HTML5 <code>&lt;form&gt;</code> tag too.</p>
+<p>While this chapter is about selected HTML APIs, we&#8217;ve should briefly bring your attention to  improvements in the HTML5 <code>&lt;form&gt;</code> tag too.</p>
 </div>
 <div class="paragraph">
 <p>It&#8217;s hard to imagine an enterprise Web application that is not using forms. At the very minimum the Contact Us form has to be there. A login view is yet another example of the HTML form that almost every enterprise application needs. People fill out billing and shipping forms, they answer long questionnaires while purchasing insurance policies online. HTML5 includes some very useful additions that simplify working with forms.</p>
@@ -965,13 +991,26 @@ To implement error processing add a handler for the <code>window.onerror</code> 
 <p>To validate the input values, use the <code>required</code> attribute. It doesn&#8217;t include any logic, but won&#8217;t allow submitting the form until the input field marked as <code>required</code> has something in it.</p>
 </div>
 <div class="paragraph">
-<p>The <code>pattern</code> attribute allows you to write a regular expression that ensures that the field contains certain symbols or words. For example, adding <code>pattern="http:.+"</code> won&#8217;t consider the input data valid, unless it starts with <code>http://</code> followed by one or more characters, one of which has to be period. It&#8217;s a good idea to include a <code>pattern</code> attribute with a regular expression most of the input fields.</p>
+<p>The <code>pattern</code> attribute allows you to write a regular expression that ensures that the field contains certain symbols or words. For example, adding <code>pattern="http:.+"</code> won&#8217;t consider the input data valid, unless it starts with <code>http://</code> followed by one or more characters, one of which has to be period. It&#8217;s a good idea to include a <code>pattern</code> attribute with a regular expression in most of the input fields.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you&#8217;re not familiar with regular expressions, watch the presentation <a href="https://www.youtube.com/watch?v=EkluES9Rvak#at=15">Demistifying Regular Expressions</a>  made by Lea Verou at O&#8217;Reilly Fluent conference -  it&#8217;s a good primer on this topic.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_web_workers">Web Workers</h3>
+<h3 id="_web_workers_api">Web Workers API</h3>
 <div class="paragraph">
 <p>When you start a Web Browser or any other application on your computer or other device, you start <em>a task</em> or <em>a process</em>. <em>A thread</em> is a lighter process within another process. While JavaScript doesn&#8217;t support multi-threaded mode, HTML5 has a way to run a script as a separate thread in background.</p>
 </div>
@@ -979,7 +1018,7 @@ To implement error processing add a handler for the <code>window.onerror</code> 
 <p>A typical Web application has a UI part (HTML) and a processing part (JavaScript). If a user clicks on a button, which starts a JavaScript function that runs, say for a hundred mili-seconds, there won&#8217;t be any noticeable delays in user interaction. But if the JavaScript will run a couple of seconds, user experience will suffer. In some cases the Web browser will assume that the script became <em>unresponsive</em> and will offer the user to kill it.</p>
 </div>
 <div class="paragraph">
-<p>Imagine an HTML5 game where a click on the button has to do some major recalculation of coordinates and repainting of multiple images in the browser&#8217;s window. Ideally, we&#8217;d like to parallelize the execution of UI interactions and background JavaScript functions as much as possible, so the user won&#8217;t notice any delays.  Another example is a CPU-intensive spell checker function that find errors while the user keeps typing. Parsing JSON object is yet another candidate to be done in background. Polling a server for some data is yet another use case where Web workers fit well.</p>
+<p>Imagine an HTML5 game where a click on the button has to do some major recalculation of coordinates and repainting of multiple images in the browser&#8217;s window. Ideally, we&#8217;d like to parallelize the execution of UI interactions and background JavaScript functions as much as possible, so the user won&#8217;t notice any delays.  Another example is a CPU-intensive spell checker function that find errors while the user keeps typing. Parsing JSON object is yet another candidate to be done in background. Web workers are also good at polling a server data.</p>
 </div>
 <div class="paragraph">
 <p>In other words, use Web workers when you want to be able to run multiple parallel <em>threads of execution</em> within the same task.
@@ -992,7 +1031,7 @@ On a multi-processor computer parallel threads can run on different CPU’s.On a
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new Worker(spellChecker.js);</code></pre>
+<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new Worker("spellChecker.js");</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1000,7 +1039,7 @@ On a multi-processor computer parallel threads can run on different CPU’s.On a
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new Worker(spellChecker.js);
+<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new Worker("spellChecker.js");
     mySpellChecker.onmessage = function(event){
 
         // processing the worker's response
@@ -1013,7 +1052,7 @@ On a multi-processor computer parallel threads can run on different CPU’s.On a
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new Worker(spellChecker.js);
+<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new Worker("spellChecker.js");
     mySpellChecker.addEventListener("message", function(event){
 
         // processing the worker's response
@@ -1074,7 +1113,7 @@ On a multi-processor computer parallel threads can run on different CPU’s.On a
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new SharedWorker(spellChecker.js);</code></pre>
+<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new SharedWorker("spellChecker.js");</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1085,7 +1124,7 @@ On a multi-processor computer parallel threads can run on different CPU’s.On a
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new SharedWorker(spellChecker.js);
+<pre class="highlight"><code class="javascript language-javascript">var mySpellChecker = new SharedWorker("spellChecker.js");
     mySpellChecker.port.addEventListener("message", function(event){
         document.getElementById('myEditorArea').textContent = event.data;
     });
@@ -1153,20 +1192,22 @@ When the user switches to another page in a browser and the current Web page los
 </div>
 </div>
 <div class="sect2">
-<h3 id="_websockets">WebSockets</h3>
+<h3 id="_websockets_api">WebSockets API</h3>
 <div class="paragraph">
-<p>Authors of this book believe that WebSocket API is so important, that we dedicated the entire Chapter 9 of this book to this API. In this section we&#8217;ll just introduce this API very briefly.</p>
+<p>For many years Web applications were associated with HTTP as the main protocol for communication between Web browsers and servers. HTTP is a request-response based protocol that adds hundreds of additional bytes to the application data being sent between browsers and the servers. WebSocket is not a request-response, but a bi-directional full-duplex socket-based protocol, which adds only a couple of bytes (literally) to the application data . WebSockets can become a future replacement for HTTP, but Web applications that require the near-real-time communications (e.g. financial trading applications, online games or auctions) can benefit from this protocol today.  Authors of this book believe that WebSocket API is so important, that we dedicated the entire Chapter 9 of this book to this API. In this section we&#8217;ll just introduce this API very briefly.</p>
 </div>
-<div class="paragraph">
-<p>While HTTP is a request-response based protocol, WebSocket is a bi-directional full-duplex socket-based protocol. This is how it works:</p>
+<div class="literalblock">
+<div class="content">
+<pre>This is how the WebSockets workflow  goes:</pre>
+</div>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>A Web application establish a socket connection between the client and the server using HTTP for the initial handshake.</p>
+<p>A Web application tries to establish a socket connection between the client and the server using HTTP only for the initial handshake.</p>
 </li>
 <li>
-<p>The server switches the communication protocol from HTTP to a socket-based protocol.</p>
+<p>If the server supports WebSockets, it switches the communication protocol from HTTP to a socket-based protocol.</p>
 </li>
 <li>
 <p>From this point on both client and server can send messages in both directions simultaneously (i.e. in full duplex mode).</p>
@@ -1194,7 +1235,7 @@ When the user switches to another page in a browser and the current Web page los
 <p>To be useful in a disconnected mode, HTML-based application needs to have access to some local storage on the device, in which case the data entered by the user in the HTML windows can be saved locally with further synchronization with the server when connection becomes available. Think of a salesman of a pharmaceutical visiting medical offices trying to sell new pills. What if connection is not available at certain point? She can still use her tablet demonstrate the marketing materials and more importantly, collect some data about this visit and save them locally. When the Internet connection becomes  available again, the Web application should support automatic or manual data synchronization so the information about the salesman activity will be stored in a central database.</p>
 </div>
 <div class="paragraph">
-<p>Having a local storage accessible from HTML/JavaScript UI is a prerequisite for building offline Web applications. The other important design decision is to ensure that the server sends to the client only the data, no HTML markup (see <a href="#FIG1-3">Design with Offline Use in Mind</a>). So all these server-side frameworks that prepare the data heavily sprinkled with HTML markup should not be used. For example, the front-end should be developed in HTML/JavaScript/CSS, the back end in your favorite language (Java, .Net, PHP, etc.), and the JSON-formatted data are being sent from the server to the client and back.</p>
+<p>There are two main prerequisites for building offline Web applications. You need local storage, and you need to ensure that the server sends only raw data to the client, with no HTML markup (see <a href="#FIG1-3">Design with Offline Use in Mind</a>). So all these server-side frameworks that prepare the data heavily sprinkled with HTML markup should not be used. For example, the front-end should be developed in HTML/JavaScript/CSS, the back end in your favorite language (Java, .Net, PHP, etc.), and the JSON-formatted data are being sent from the server to the client and back.</p>
 </div>
 <div id="FIG1-3" class="imageblock">
 <div class="content">
@@ -1210,7 +1251,7 @@ When the user switches to another page in a browser and the current Web page los
 </div>
 </div>
 <div class="sect3">
-<h4 id="_application_cache">Application Cache</h4>
+<h4 id="_application_cache_api">Application Cache API</h4>
 <div class="paragraph">
 <p>First of all, application&#8217;s cache is not related to the Web browser&#8217;s cache. It&#8217;s main reason for existence is to allow creating applications that can run even if there is no Internet connection available. The user will still go to her browser and enter the URL, but the trick is that the browser will load some previously saved Web pages from the local <em>application cache</em>. So even if the user is not online, the application will start anyway.</p>
 </div>
@@ -1280,26 +1321,68 @@ window.addEventListener("online", function(e) {
 <div class="sect3">
 <h4 id="_options_for_storing_data_locally">Options for Storing Data Locally</h4>
 <div class="paragraph">
-<p>In the past, Web browsers could only store their own cache and application&#8217;s cookies on the user&#8217;s computer. Cookies are small files (up to 4Kb) that a Web browser would automatically save locally if the server&#8217;s <code>HTTPResponse</code> would include them. On the next visit of the same URL, the Web browser would send all non-expired cookies back to the browser as a part of <code>HTTPRequest</code> object. Cookies were used for arranging HTTP session management and couldn&#8217;t be considered a solution for setting up a local storage. HTML5 offers a lot more advanced solutions for storing data locally, namely:</p>
+<p>In the past, Web browsers could only store their own cache and application&#8217;s cookies on the user&#8217;s computer.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Cookies are small files (up to 4Kb) that a Web browser would automatically save locally if the server&#8217;s <code>HTTPResponse</code> would include them. On the next visit of the same URL, the Web browser would send all non-expired cookies back to the browser as a part of <code>HTTPRequest</code> object. Cookies were used for arranging HTTP session management and couldn&#8217;t be considered a solution for setting up a local storage.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>HTML5 offers a lot more advanced solutions for storing data locally, namely:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="http://www.w3.org/TR/webstorage/">Web Storage</a> that includes Local Storage and Session Storage.</p>
+<p><a href="http://www.w3.org/TR/webstorage/">Web Storage</a> which offers Local Storage for long-term storing data and Session Storage for storing a single session data.</p>
 </li>
 <li>
 <p><a href="http://www.w3.org/TR/IndexedDB/">IndexedDB</a>: a NoSQL database that stores key-value pairs.</p>
 </li>
 </ul>
 </div>
-<div class="paragraph">
-<p>There is another option worth mentioning - <a href="http://www.w3.org/TR/webdatabase/">Web SQL Database</a>. The specification was based on the open source SQLite database, which probably was the wrong decision in the foirst place.  But the work on this specification is stopped and future versions of the browsers may not support it. That&#8217;s why we are not going to discuss Web SQL Database in this book.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+There is another option worth mentioning - <a href="http://www.w3.org/TR/webdatabase/">Web SQL Database</a>. The specification was based on the open source SQLite database, which probably was the wrong decision in the first place.  But the work on this specification is stopped and future versions of the browsers may not support it. That&#8217;s why we are not going to discuss Web SQL Database in this book.
+</td>
+</tr>
+</table>
 </div>
-<div class="paragraph">
-<p>At the time of this writing (Summer of 2013) local and session storage are supported by all modern Web browsers. Web SQL database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn&#8217;t support it yet, so if your main development platform is iOS, you may need to stick to Web SQL database. Consider using a polyfill for indexedDB using Web SQL API called <a href="https://github.com/axemclion/IndexedDBShim">IndexedDBShim</a>.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+By the end of 2013 local and session storage were supported by all modern Web browsers. Web SQL database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn&#8217;t support it yet, so if your main development platform is iOS, you may need to stick to Web SQL database. Consider using a polyfill for indexedDB using Web SQL API called <a href="https://github.com/axemclion/IndexedDBShim">IndexedDBShim</a>.
+</td>
+</tr>
+</table>
 </div>
-<div class="paragraph">
-<p>To get the current status visit caniuse.com and search for the API you&#8217;re interested in.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+To get the current status visit caniuse.com and search for the API you&#8217;re interested in.
+</td>
+</tr>
+</table>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -1308,22 +1391,27 @@ window.addEventListener("online", function(e) {
 <i class="icon-important" title="Important"></i>
 </td>
 <td class="content">
-While Web browsers send cookies to the Web server, they  don&#8217;t send there the data saved in a local storage. The saved data is used only on the user&#8217;s device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.
+Although Web browsers send cookies to the Web server, they  don&#8217;t send there the data saved in a local storage. The saved data is used only on the user&#8217;s device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.
 </td>
 </tr>
 </table>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_localstorage_and_sessionstorage">localStorage and sessionStorage</h4>
+<h4 id="_web_storage_specification_apis">Web Storage Specification APIs</h4>
 <div class="paragraph">
-<p>With <code>window.localStorage</code> or <code>window.sessionStorage</code> (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. Both objects implement <code>Storage</code> interface. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with <code>window.localStorage</code> will survive while the data saved via <code>window.sessionStorage</code> won&#8217;t.</p>
+<p>With <code>window.localStorage</code> or <code>window.sessionStorage</code> (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. Both objects implement the <code>Storage</code> interface. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with <code>window.localStorage</code> will survive while the data saved via <code>window.sessionStorage</code> won&#8217;t.</p>
 </div>
 <div class="paragraph">
 <p>Another distinction is that the data from <code>window.localStorage</code> is available for any page loaded from the same origin as the page that saved the data.  In case of <code>window.sessionStorage</code>, the data is available only to the window or a browser&#8217;s tab that saved it.</p>
 </div>
 <div class="paragraph">
-<p>Currently we use JavaScript API to work with Web Storage, but in the future any other programming language that can run in the browser will be able to work with the storage.  Saving the application state is the main use of the local storage. Coming back to a use case with the pharmaceutical salesman, in the offline mode you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for example:</p>
+<p>Currently we use JavaScript API to work with Web Storage, but in the future any other programming language that can run in the browser will be able to work with the storage.</p>
+</div>
+<div class="sect4">
+<h5 id="_localstorage_api">localStorage API</h5>
+<div class="paragraph">
+<p>Saving the application state is the main use of the local storage. Coming back to a use case with the pharmaceutical salesman, in the offline mode you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for example:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1484,8 +1572,22 @@ If you are interested in intercepting the moments when the content of local stor
 </tr>
 </table>
 </div>
+</div>
+<div class="sect4">
+<h5 id="_sessionstorage_api">sessionStorage API</h5>
 <div class="paragraph">
-<p>The Web storage API is pretty simple to use, but its major drawbacks are that it doesn&#8217;t give you a way to put any structure to your stored data, you always have to store strings, and the API is synchronous, which may case delays in the user interaction when your application is accessing the disk. In the next section you&#8217;ll learn about a more advanced way of storing data on the user&#8217;s computer.</p>
+<p>The <code>sessionStorage</code> life is short - it&#8217;s only available for a Web page while the browser stays open. If the user decides to refresh the page, the <code>sessionStorage</code> will survive, but opening a page in a new browser&#8217;s tab or window will create a new <code>sessionStorage</code> object. Working with the session storage is pretty straightforward, for example</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="Javascript language-Javascript">sessionStorage.setItem("userID","jsmith");
+
+var userID = sessionStorage.getItem("userID");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The APIs from Web Storage specification are pretty simple to use, but their major drawbacks are that they don&#8217;t give you a way to put any structure to the stored data, you always have to store strings, and the API is synchronous, which may case delays in the user interaction when your application is accessing the disk. In the next section you&#8217;ll learn about a more advanced way of storing data on the user&#8217;s computer.</p>
+</div>
 </div>
 </div>
 <div class="sect3">
@@ -2238,7 +2340,7 @@ If you&#8217;ll run into a browser that doesn&#8217;t support HTML5 History API,
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-10-17 11:01:09 EDT
+Last updated 2013-10-30 15:14:43 EDT
 </div>
 </div>
 </body>
