@@ -1196,10 +1196,8 @@ When the user switches to another page in a browser and the current Web page los
 <div class="paragraph">
 <p>For many years Web applications were associated with HTTP as the main protocol for communication between Web browsers and servers. HTTP is a request-response based protocol that adds hundreds of additional bytes to the application data being sent between browsers and the servers. WebSocket is not a request-response, but a bi-directional full-duplex socket-based protocol, which adds only a couple of bytes (literally) to the application data . WebSockets can become a future replacement for HTTP, but Web applications that require the near-real-time communications (e.g. financial trading applications, online games or auctions) can benefit from this protocol today.  Authors of this book believe that WebSocket API is so important, that we dedicated the entire Chapter 9 of this book to this API. In this section we&#8217;ll just introduce this API very briefly.</p>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>This is how the WebSockets workflow  goes:</pre>
-</div>
+<div class="paragraph">
+<p>This is how the WebSockets workflow  goes:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1572,6 +1570,18 @@ If you are interested in intercepting the moments when the content of local stor
 </tr>
 </table>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Another good example of a use case when  <code>locaStorage</code> becomes handy is when the user is booking air tickets using more than one browser&#8217;s tab.
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect4">
 <h5 id="_sessionstorage_api">sessionStorage API</h5>
@@ -1586,21 +1596,45 @@ var userID = sessionStorage.getItem("userID");</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The APIs from Web Storage specification are pretty simple to use, but their major drawbacks are that they don&#8217;t give you a way to put any structure to the stored data, you always have to store strings, and the API is synchronous, which may case delays in the user interaction when your application is accessing the disk. In the next section you&#8217;ll learn about a more advanced way of storing data on the user&#8217;s computer.</p>
+<p>Chrome Developer Tools include the tab Resources that allows browsing the local or session storage if a Web page uses it. For example, <a href="#FIG1-0">Browsing local storage in Chrome Developer Tools</a> shows the storage used by cnn.com.</p>
+</div>
+<div id="FIG1-0" class="imageblock">
+<div class="content">
+<img src="images/fig_01_00.png" alt="fig 01 00">
+</div>
+<div class="title">Figure 5. Browsing local storage in Chrome Developer Tools</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_localstorage_and_sessionstorage_commonalities">localStorage and sessionStorage Commonalities</h5>
+<div class="paragraph">
+<p>Both <code>localStorage</code> and <code>sessionStorage</code> are subject to the same-origin policy, meaning that saved data will be available only for the Web pages that came from the same host, port and via the same protocol.</p>
+</div>
+<div class="paragraph">
+<p>Both <code>localStorage</code> and <code>sessionStorage</code> are browser-specific. For example, if the Web application stored the data from Firefox, the data won&#8217;t be available if the user opens the same application from Safari.</p>
+</div>
+<div class="paragraph">
+<p>The APIs from Web Storage specification are pretty simple to use, but their major drawbacks are that they don&#8217;t give you a way to put any structure to the stored data, you always have to store strings, and the API is synchronous, which may case delays in the user interaction when your application is accessing the disk.</p>
+</div>
+<div class="paragraph">
+<p>There is no actual limits for the size of local storage, but the browsers usually default this size to 5Mb. If the application tries to store more data that the browser permits, the `QUOTA_EXCEEDED_ERR`exception will be thrown - always use the try-catch blocks when saving data.</p>
+</div>
+<div class="paragraph">
+<p>Even if the user&#8217;s browser allows increasing this setting (e.g. via <em>about:config</em> URL in Firefox), access to such data may be slow. Consider using <a href="http://www.w3.org/TR/FileAPI/">File API</a> or IndexedDB that will be introduced in the in the next section.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_introduction_to_indexeddb">Introduction to IndexedDB</h4>
 <div class="paragraph">
-<p><a href="http://www.w3.org/TR/IndexedDB/">Indexed Database API</a> (a.k.a. IndexedDB) is a solution based on the NoSql database. The data is stored as key-value objects, and API offers a lot more advanced transactional handling of objects than with <code>Storage</code> interface. IndexedDB creates indexes of the stored objects for fast retrieval.
-With Web Storage you can only store strings, and we had to do these tricks with JSON <code>stingify()</code> and <code>parse()</code> to give some structure to these strings. With IndexedDB you store and index regular JavaScript objects.</p>
+<p><a href="http://www.w3.org/TR/IndexedDB/">Indexed Database API</a> (a.k.a. IndexedDB) is a solution based on the NoSql database. Like with the <code>Storage</code> interface, IndexedDB stores data as key-value pairs, but it also offers  transactional handling of objects. IndexedDB creates indexes of the stored objects for fast retrieval.
+With Web Storage you can only store strings, and we had to do these tricks with JSON <code>stingify()</code> and <code>parse()</code> to give some structure to these strings. With IndexedDB you can directly store and index regular JavaScript objects.</p>
 </div>
 <div class="paragraph">
 <p>IndexedDB allows you to accesses data asynchronously, so there won&#8217;t be UI freezes while accessing large objects on disk. You make a request to the database and define the event handlers that should process errors or result when ready. IndexedDB uses DOM events for all notifications. Success events don&#8217;t bubble, while error events do.</p>
 </div>
 <div class="paragraph">
-<p>The users will have a feeling that the application is pretty responsive, which wouldn&#8217;t be the case if you&#8217;ll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the <em>same origin policy</em>.</p>
+<p>The users will have a feeling that the application is pretty responsive, which wouldn&#8217;t be the case if you&#8217;ll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1636,10 +1670,10 @@ if (!window.indexedDB){
 <p>In the above code snippet the <a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBKeyRange"><code>IDBKeyRange</code></a> is an object that allows to restrict the range for the continuous keys while iterating through the objects. <a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction"><code>IDBTransaction</code></a> is an implementation of transaction support. The <a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor"><code>IDBCursor</code></a> is an object that represents a cursor for traversing over multiple objects in the database.</p>
 </div>
 <div class="paragraph">
-<p>IndexedDB doesn&#8217;t require you to describe a formal structure of your stored objects - any JavaScript object can be stored there.  Not having a formal definition of a database scheme is an advantage comparing to the relational databases where you can&#8217;t store the data until the structure of the tables is defined.</p>
+<p>IndexedDB doesn&#8217;t require you to define a formal structure of your stored objects - any JavaScript object can be stored there.  Not having a formal definition of a database scheme is an advantage comparing to the relational databases where you can&#8217;t store the data until the structure of the tables is defined.</p>
 </div>
 <div class="paragraph">
-<p>Your Web application can have one or more databases, and each of them can contain one or more <em>object stores</em>.  Each of the object stores will contain similar objects, e.g. one store is for salesman&#8217;s visits, while another has upcoming promotions.</p>
+<p>Your Web application can have one or more databases, and each of them can contain one or more <em>object stores</em>.  Each of the object stores will contain similar objects, e.g. one store is for salesman&#8217;s visits, while another stores upcoming promotions.</p>
 </div>
 <div class="paragraph">
 <p>Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide if you want to maintain the value in this property manually, or use the the <code>autoIncrement</code> option where the values to this property will be assigned automatically. Coming back to our Visits example, you can either maintain the unique values of the <code>officeId</code> on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as surrogate keys never decreases, and starts with the value of 1 in each object store.</p>
@@ -1684,6 +1718,18 @@ request.onupgradeneeded = function(event){  <i class="conum" data-value="4"></i>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>The <code>onupgradeneeded</code> handler is the place to create or upgrade the storage to a new version. This is explained next.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+There are several scenarios to consider while deciding if you need to use the <code>autoIncrement</code> property with the store key or not. Kristof Degrave described the article <a href="http://www.kristofdegrave.be/2012/02/indexed-db-to-provide-key-or-not-to.html">http://www.kristofdegrave.be/2012/02/indexed-db-to-provide-key-or-not-to.html</a>[Indexed DB: To provide a key or not to provide a key.
+</td>
 </tr>
 </table>
 </div>
@@ -1771,13 +1817,13 @@ IndexedDB doesn&#8217;t offer a secure way of storing data. Anyone who has acces
 <p>When a transaction is created, you should assign listeners to its <code>complete</code>, <code>error</code>, and <code>abort</code> events. If the <code>complete</code> event is fired, transaction is automatically commited - manual commits are not supported. If the <code>error</code> event is dispatched, the entire transaction is rolled back. Calling the method <code>abort()</code> will fire the <code>abort</code> event and will roll back transaction too.</p>
 </div>
 <div class="paragraph">
-<p>Here&#8217;s a sample scenario. Open the database and in the <code>onsuccess</code> handler create a transaction. Then open a transaction by calling the method <code>objectStore()</code> and perform data manipulations. In the next section you&#8217;ll see how to add objects to an object store using transactions.</p>
+<p>Typically, you should open the database and in the <code>onsuccess</code> handler create a transaction. Then open a transaction by calling the method <code>objectStore()</code> and perform data manipulations. In the next section you&#8217;ll see how to add objects to an object store using transactions.</p>
 </div>
 </div>
 <div class="sect4">
 <h5 id="_modyfying_the_object_store_data">Modyfying the Object Store Data</h5>
 <div class="paragraph">
-<p>The following code snippet creates the transaction that allows updates of the store <code>visits</code> (you could create a transaction for more than one store) and add add two visit object by invoking the method <code>add()</code>:</p>
+<p>The following code snippet creates the transaction that allows updates of the store <code>Visits</code> (you could create a transaction for more than one store) and add two visit object by invoking the method <code>add()</code>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1825,7 +1871,7 @@ IndexedDB doesn&#8217;t offer a secure way of storing data. Anyone who has acces
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Open a transaction for updates and assign listeners for success and failure. When all visits are added the <code>complete</code> event is fired and transaction commits. If adding of any visit failed, the <code>error</code> event is dispatched and transaction rolls back.</td>
+<td>Open a transaction for updates and assign listeners for success and failure. The first argument is an array of object stores that the transaction will span (only <code>Visits</code> in this case). When all visits are added the <code>complete</code> event is fired and transaction commits. If adding of any visit failed, the <code>error</code> event is dispatched and transaction rolls back.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
@@ -1864,6 +1910,18 @@ In the above code sample, the each object that represents a visit has a property
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">var deleteRequest = visitsStore.delete(1);</code></pre>
 </div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can browse the data from your IndexedDB database in Chrome Developer Tools under the tab Resources (see <a href="#FIG1-0">Browsing local storage in Chrome Developer Tools</a>).
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect4">
@@ -1916,7 +1974,7 @@ officeIdIndex.openCursor().onsuccess = function(event){
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>false</code> in the third argument of <code>bound()</code> means that 123 should be included in the range, and the <code>true</code> in the fourth parameter excludes the object with <code>officeID=250</code> from the range. The methods <code>lowerbound()</code> and <code>upperbound()</code> are other variations of the method <code>bound()</code> - consult the online documentation for details.</p>
+<p>The <code>false</code> in the third argument of <code>bound()</code> means that 123 should be included in the range, and the <code>true</code> in the fourth parameter excludes the object with <code>officeID=250</code> from the range. The methods <code>lowerbound()</code> and <code>upperbound()</code> are other variations of the method <code>bound()</code> - consult the <a href="http://www.w3.org/TR/IndexedDB/#dfn-key-range">online documentation</a> for details.</p>
 </div>
 <div class="paragraph">
 <p>If you need to fetch just one specific record, restrict the selected range to only one value using the method <code>only()</code>:</p>
@@ -1994,7 +2052,7 @@ officeIdIndex.openCursor().onsuccess = function(event){
 <div class="content">
 <img src="images/fig_01_05.png" alt="fig 01 05">
 </div>
-<div class="title">Figure 5. Chrome&#8217;s console after running the Visits sample</div>
+<div class="title">Figure 6. Chrome&#8217;s console after running the Visits sample</div>
 </div>
 <div class="paragraph">
 <p>The next version of our sample HTML file will populate the object store Visits with some data, and then will iterate through all the Visit objects and display the values of their properties on the console.</p>
@@ -2124,7 +2182,7 @@ function readAllVisitsData(){
 <div class="content">
 <img src="images/fig_01_06.png" alt="fig 01 06">
 </div>
-<div class="title">Figure 6. Chrome&#8217;s console after reading the first Visit object</div>
+<div class="title">Figure 7. Chrome&#8217;s console after reading the first Visit object</div>
 </div>
 <div class="paragraph">
 <p>This concludes our brief introduction to IndexedDB. Those of you who have experience in working with relational databases may find the querying capabilities of IndexedDB rather limited comparing to powerful relational databases like Oracle or MySQL. On the other hand, IndexedDB is pretty flexible - it allows you to store and look up any JavaScript objects without worrying about creating a database schema first. At the time of this writing there are no books dedicated to IndexedDB. For up to date information refer to <a href="https://developer.mozilla.org/en-US/docs/IndexedDB">IndexedDB online documentation</a> at Mozilla Developer Network.</p>
@@ -2135,13 +2193,13 @@ function readAllVisitsData(){
 <div class="sect2">
 <h3 id="_history_api">History API</h3>
 <div class="paragraph">
-<p>To put is simple, <a href="http://www.w3.org/TR/html5/browsers.html#the-history-interface">History API</a> is about ensuring that the Back/Forward  buttons on the browser toolbar can be controlled programmatically. Each Web browser has the <code>window.history</code> object. The History API is not a new HTML5 API,and the <code>history</code> object had such methods as <code>back()</code>, <code>forward()</code>, and <code>go()</code> for many years. But HTML5 adds new methods <code>pushState()</code> and <code>replaceState()</code>, which allow to modify the browser&#8217;s address bar without reloading the Web page.</p>
+<p>To put is simple, <a href="http://www.w3.org/TR/html5/browsers.html#the-history-interface">History API</a> is about ensuring that the Back/Forward  buttons on the browser toolbar can be controlled programmatically. Each Web browser has the <code>window.history</code> object. The History API is not new to HTML5. The <code>history</code> object has been around for many years, with methods like <code>back()</code>, <code>forward()</code>, and <code>go()</code>. But HTML5 adds new methods <code>pushState()</code> and <code>replaceState()</code>, which allow to modify the browser&#8217;s address bar without reloading the Web page.</p>
 </div>
 <div class="paragraph">
 <p>Imagine a Single Page Application (SPA) that has a navigational menu to open various views as based on the user&#8217;s interaction. Since these views represents some URLs loaded by making AJAX calls from your code, the Web browser still shows the original URL of the home page of your Web application.</p>
 </div>
 <div class="paragraph">
-<p>The perfect user would always navigate your application using the menus and controls you provided, but what if she clicks on the Back button of the Web browser?  If the navigation controls were not changing the URL in the browser&#8217;s address bar, the browser obediently will show the Web page that the user has visited before even launching your application, which is not what she intended to do.</p>
+<p>The perfect user would always navigate your application using the menus and controls you provided, but what if she clicks on the Back button of the Web browser?  If the navigation controls were not changing the URL in the browser&#8217;s address bar, the browser obediently will show the Web page that the user has visited before even launching your application, which is most likely not what she intended to do. History API allows to create more fine grained bookmarks that define specific state within the Web page.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2158,13 +2216,13 @@ Not writing any code that would process clicks on the Back and Forward buttons i
 <div class="sect3">
 <h4 id="_modifying_the_browser_s_history_with_pushstate">Modifying the Browser&#8217;s History with pushState()</h4>
 <div class="paragraph">
-<p>If the URL of your application is <a href="http://myapp.com">http://myapp.com</a> and the user clicked on the menu item Get Customers, which made an AJAX call loading the cucustomers, you can programmatically change the URL on the browser&#8217;s address line to be <a href="http://myapp.com/customers">http://myapp.com/customers</a> without asking to Web browser to load anything from this URL. You do this by invoking the <code>pushState()</code> method.</p>
+<p>Imagine you have a customer-management application that has a URL <a href="http://myapp.com">http://myapp.com</a>.  The user clicked on the menu item Get Customers, which made an AJAX call loading the customers. You can programmatically change the URL on the browser&#8217;s address line to be <a href="http://myapp.com/customers">http://myapp.com/customers</a> without asking the Web browser to make a request to  this URL. You do this by invoking the <code>pushState()</code> method.</p>
 </div>
 <div class="paragraph">
 <p>The browser will just remember that the current URL is <a href="http://myapp.com/customers">http://myapp.com/customers</a>, while the previous was <a href="http://myapp.com">http://myapp.com</a>. So pressing the Back button would change the address back to <a href="http://myapp.com">http://myapp.com</a>, and not some unrelated Web application. The Forward button will also behave properly as per the history chain set by your application.</p>
 </div>
 <div class="paragraph">
-<p>The <code>pushState()</code> takes three arguments:</p>
+<p>The <code>pushState()</code> takes three arguments (the values from the first two may be ignored by some Web browsers):</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2172,7 +2230,7 @@ Not writing any code that would process clicks on the Back and Forward buttons i
 <p>The application specific state to be associated with the current view of the Web page</p>
 </li>
 <li>
-<p>The title of the current view of the Web page. It&#8217;s currently not supported</p>
+<p>The title of the current view of the Web page.</p>
 </li>
 <li>
 <p>The suffix to be associated with the current view of the page. It&#8217;ll be added to the address bar of the browser.</p>
@@ -2229,7 +2287,7 @@ Not writing any code that would process clicks on the Back and Forward buttons i
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Calling <code>pushState()</code> to remember the customer id, the page titleis empty (not supported yet), and adding the suffix <em>/whoweare</em> will serve as a path to the server-side REST request.</td>
+<td>Calling <code>pushState()</code> to remember the customer id, the page title is empty (not supported yet), and adding the suffix <em>/who_we_are</em> will serve as a path to the server-side REST request.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
@@ -2237,7 +2295,7 @@ Not writing any code that would process clicks on the Back and Forward buttons i
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Calling <code>pushState()</code> to remember the customer id, the page titleis empty (not supported yet), and adding the suffix <em>/whatwedo</em> will serve as a path to the server-side REST request.</td>
+<td>Calling <code>pushState()</code> to remember the customer id, the page titleis empty (not supported yet), and adding the suffix <em>/what_we_do</em> will serve as a path to the server-side REST request.</td>
 </tr>
 </table>
 </div>
@@ -2251,7 +2309,7 @@ Not writing any code that would process clicks on the Back and Forward buttons i
 <div class="content">
 <img src="images/fig_01_11.png" alt="fig 01 11">
 </div>
-<div class="title">Figure 7. Testing pushState()</div>
+<div class="title">Figure 8. Testing pushState()</div>
 </div>
 <div class="paragraph">
 <p>Using the <code>replaceState()</code> you can technically "change the history". We are talking about the browser&#8217;s history, of course.</p>
@@ -2279,7 +2337,7 @@ Not writing any code that would process clicks on the Back and Forward buttons i
 <div class="content">
 <img src="images/fig_01_12.png" alt="fig 01 12">
 </div>
-<div class="title">Figure 8. Monitoring popState with Chrome Developers Tool</div>
+<div class="title">Figure 9. Monitoring popState with Chrome Developers Tool</div>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2309,7 +2367,7 @@ If you&#8217;ll run into a browser that doesn&#8217;t support HTML5 History API,
 </div>
 </div>
 <div class="paragraph">
-<p>If this example doesn&#8217;t impress you, wait till Chapter 12, where you&#8217;ll learn how to use jQuery Mobile. The creators of this library use these <code>data-</code> attributes in a very smart way.</p>
+<p>Behind the scenes, a custom framework can find all elements that have the <code>data-phone</code> attribute and generate some additional code for processing of the provided phone number. If this example doesn&#8217;t impress you, wait till Chapter 12, where you&#8217;ll learn how to use jQuery Mobile. The creators of this library use these <code>data-</code> attributes in a very smart way.</p>
 </div>
 </div>
 </div>
@@ -2318,10 +2376,10 @@ If you&#8217;ll run into a browser that doesn&#8217;t support HTML5 History API,
 <div class="sect2">
 <h3 id="_summary">Summary</h3>
 <div class="paragraph">
-<p>In this chapter you&#8217;ve got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0? In this case <a href="http://www.google.com/chromeframe">Google Chrome Frame</a> plugin for Internet Explorer.</p>
+<p>In this chapter you&#8217;ve got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0? Google used to offer a nice solution:  <a href="http://www.google.com/chromeframe">Google Chrome Frame</a>, which was a plugin for Internet Explorer.</p>
 </div>
 <div class="paragraph">
-<p>The users have to install Google Frame on their machines, and Web developers just need to add the following line to their Web pages:</p>
+<p>The users had to install Ghrome Frame on their machines, and Web developers just needed to add the following line to their Web pages:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2329,10 +2387,10 @@ If you&#8217;ll run into a browser that doesn&#8217;t support HTML5 History API,
 </div>
 </div>
 <div class="paragraph">
-<p>After that the Web page rendering will be done by Chrome Frame while your Web application will run in Internet Explorer.</p>
+<p>After that the Web page rendering would be done by Chrome Frame while your Web application would run in Internet Explorer. Unfortunately, Google decided not to support the Chrome project as of January 2014. They are recommending to prompt the user of your application to upgrade the Web browser, which may not be something that the users will be willing to do. But let&#8217;s hope for the best.</p>
 </div>
 <div class="paragraph">
-<p>In Chapter 3 you&#8217;ll learn how to use HTML5 GeoLocation API, and Chapter 9 is completely devoted to working with WebSocket API.</p>
+<p>In this chapter we&#8217;ve briefly reviewed a number of useful HTML5 APIs, but we&#8217;re not done yet. In Chapter 3 you&#8217;ll learn how to use HTML5 GeoLocation API - our sample Save The Child application will include Google maps. Also,  Chapter 9 is completely devoted to working with WebSocket API - you&#8217;ll see how to add an auction to you Web application.</p>
 </div>
 </div>
 </div>
@@ -2340,7 +2398,7 @@ If you&#8217;ll run into a browser that doesn&#8217;t support HTML5 History API,
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-10-30 15:14:43 EDT
+Last updated 2013-10-31 16:50:10 EDT
 </div>
 </div>
 </body>
