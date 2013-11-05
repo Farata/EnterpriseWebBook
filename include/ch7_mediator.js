@@ -1,7 +1,7 @@
 define(function() {
     "use strict";
-    return (function() {
-        var components = {};    // <1>
+    return (function() {    // <1>
+        var components = {};
 
         function Mediator() {}
 
