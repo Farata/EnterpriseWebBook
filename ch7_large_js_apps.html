@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="generator" content="Asciidoctor 0.1.4">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Large-Scale JavaScript Projects</title>
+<title>Modularizing Large-Scale JavaScript Projects</title>
 <style>
 @import url(http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css);
 @import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic);
@@ -570,7 +570,7 @@ p.tableblock.header { color: #6d6e71; }
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_large_scale_javascript_projects">Large-Scale JavaScript Projects</a></li>
+<li><a href="#_modularizing_large_scale_javascript_projects">Modularizing Large-Scale JavaScript Projects</a></li>
 <li>
 <ul class="sectlevel2">
 <li><a href="#_modularization_basics">Modularization basics</a></li>
@@ -587,7 +587,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#REQUIREJS">Dicing the Save The Child Application Into Modules</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#inside_config">Inside config.js</a></li>
+<li><a href="#inside_config">Inside RequireJS configuration: config.js</a></li>
 <li><a href="#_writing_amd_modules">Writing AMD Modules</a></li>
 <li><a href="#_loading_modules_on_demand">Loading Modules On-Demand</a></li>
 <li><a href="#requirejs_plugins">RequireJS plugins</a></li>
@@ -603,16 +603,22 @@ p.tableblock.header { color: #6d6e71; }
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_large_scale_javascript_projects">Large-Scale JavaScript Projects</h2>
+<h2 id="_modularizing_large_scale_javascript_projects">Modularizing Large-Scale JavaScript Projects</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Reducing the application startup latency and implementing lazy loading of certain parts of the application are the main reasons for modularization. A good illustration of why you may want to consider cutting the code into pieces is a well designed Web application of the <a href="http://www.mbusa.com/">Mercedes Benz USA</a>. This Web application serves people who live in America and either own or consider purchasing cars from this European car manufacturer.</p>
+<p>Reducing the application startup latency and implementing lazy loading of certain parts of the application are the main reasons for modularization.</p>
 </div>
 <div class="paragraph">
-<p>One of the options to purchase a vehicle is called European Delivery. An American resident can combine car purchase with a vacation. She would fly to Europe to the Mercedes Benz factory, pick up the car there and then she would be vacationing for two weeks driving her new vehicle in Europe. After the vacation is over, this car would be shipped to her home town in the USA.  This really nice program  would have added several thousand dollars to the price of the car.</p>
+<p>A good illustration of why you may want to consider modularization is a well designed Web application of the <a href="http://www.mbusa.com/">Mercedes Benz USA</a>. This Web application serves people who live in America and either own or consider purchasing cars from this European car manufacturer.</p>
 </div>
 <div class="paragraph">
-<p>From the application design code of view, we don&#8217;t need to include the code that supports the European Delivery to each and every user&#8217;s who decided to visit mbusa.com. <em>If and only if</em> the user visits the menu Owners and clicks on the European Delivery link, then the required code and resources have to be pushed to the user&#8217;s computer or mobile device. The snapshot in <a href="#FIG7-1">MB USA: Europian Delivery</a> was taken after clicking on this link with Chrome Developer tools panel open.</p>
+<p>One of their purchasing options is called "European Delivery". An American resident who chooses this particular package can combine a vacation with their car purchase. She then flies to the Mercedes Benz factory in Europe, picks up her car, and has a two week vacation, driving her new vehicle around in Europe. After the vacation is over, the car is shipped to her hometown in the US. Needless to say, this program adds several thousand dollars to the price of the car.</p>
+</div>
+<div class="paragraph">
+<p>From an application design point of view, we don&#8217;t need to include the code that supports the European Delivery to each and every user&#8217;s who decided to visit mbusa.com. <em>If</em> the user visits the menu Owners and clicks on the European Delivery link, then <em>and only then</em> the required code and resources be pushed to the user&#8217;s computer or mobile device.</p>
+</div>
+<div class="paragraph">
+<p>The snapshot in <a href="#FIG7-1">MB USA: Europian Delivery</a> was taken after clicking on this link with Chrome Developer tools panel open.</p>
 </div>
 <div id="FIG7-1" class="imageblock">
 <div class="content">
@@ -647,7 +653,7 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <div class="sect2">
 <h3 id="_modularization_basics">Modularization basics</h3>
 <div class="paragraph">
-<p>Modules are code fragments that implement certain   functionality written using a specific techniques. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the <em>module concept</em> in the JavaScript language itself. This is the future.</p>
+<p>Modules are code fragments that implement certain functionality and are written using a specific techniques. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the <em>module concept</em> in the JavaScript language itself. This is the future.</p>
 </div>
 <div class="paragraph">
 <p>You may ask, "Aren&#8217;t .js files modules already?" Of course, you can include and load each JavaScript file using the <code>&lt;script&gt;</code> tag. But this approach is error prone and slow. Developers have to manually manage dependencies and file loading order. Moreover, each <code>&lt;script&gt;</code> tag results in the  additional HTTP call to the server.</p>
@@ -707,13 +713,16 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 </table>
 </div>
 <div class="paragraph">
-<p>We need other than adding <code>&lt;script&gt;</code> tags approach to modularizing applications. Let&#8217;s start with using the Module pattern to leverage so called Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we&#8217;ll introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications defining sets of APIs.</p>
+<p>As you can see, we need a better way to modularize applications than simply adding <code>&lt;script&gt;</code> tags. As our first step, we can use the Module design pattern and leverage the so-called "Immediately Invoked Function Expressions".</p>
 </div>
 <div class="paragraph">
-<p>You&#8217;ll learn pros and cons of both formats later in the chapter, but the AMD module format plays nicely with the asynchronous nature of Web. In this chapter you&#8217;ll see the use of the AMD module format and <a href="http://requirejs.org/">RequireJS</a> framework to implement the modularized version of the Save The Child application.</p>
+<p>Next, we&#8217;ll introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications defining sets of APIs.</p>
 </div>
 <div class="paragraph">
-<p>Also, you&#8217;ll see how to use the RequireJS APIs to implement on-demand loading of the application components (e.g. What We Do, Ways To Give et al.)</p>
+<p>You&#8217;ll learn pros and cons of both formats later in the chapter, but the AMD module format plays nicely with the asynchronous nature of Web. You&#8217;ll also see the use of the AMD module format and <a href="http://requirejs.org/">RequireJS</a> framework to implement the modularized version of the Save The Child application.</p>
+</div>
+<div class="paragraph">
+<p>Also, you&#8217;ll see how to use the RequireJS APIs to implement on-demand ("<em>lazy</em>") loading of the application components (e.g. What We Do, Ways To Give et al.)</p>
 </div>
 <div class="paragraph">
 <p>The upcoming ECMAScript 6 specification suggests how to handle modules, and how to start using ES6 module syntax today with the help of third-party tools like <a href="http://corner.squareup.com/2013/02/es6-module-transpiler.html">transpiler</a>. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD. You can find more details about CommonJS, AMD and the ES6 module format in the corresponding sections of this chapter.</p>
@@ -728,7 +737,23 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <div class="sect2">
 <h3 id="_roads_to_modularization">Roads To Modularization</h3>
 <div class="paragraph">
-<p>Although JavaScript has no build-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. The <em>Module pattern</em> doesn&#8217;t require any additional frameworks and works in any JavaScript environment. The <em>CommonJS</em> module format is widely adopted for the server-side JavaSctipt, while the <em>AMD</em> format is popular in the applications running in Web browsers.</p>
+<p>Although JavaScript has no build-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. In this section, we&#8217;ll explore a few options for modularizing your application.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The Module Pattern</p>
+</li>
+<li>
+<p>CommonJS</p>
+</li>
+<li>
+<p>Asynchronous Module Definition (AMD)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Of these three, the <em>Module pattern</em> doesn&#8217;t require any additional frameworks and works in any JavaScript environment. The <em>CommonJS</em> module format is widely adopted for the server-side JavaSctipt, while the <em>AMD</em> format is popular in the applications running in Web browsers.</p>
 </div>
 <div class="sect3">
 <h4 id="_the_module_pattern">The Module Pattern</h4>
@@ -804,7 +829,7 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
     };
 
     global.loginModule = module;
-})(window);  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+})(this);  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -857,7 +882,7 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 </table>
 </div>
 <div class="paragraph">
-<p>The Module patterns works well for implementing encapsulation in a rather small applications. It&#8217;s easy to implement and is frameworks agnostic. However this approach doesn&#8217;t scale well because when working with an application with the large number of modules you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.</p>
+<p>The Module patterns works well for implementing encapsulation in a rather small applications. It&#8217;s easy to implement and is framework-agnostic. However this approach doesn&#8217;t scale well because when working with an application with the large number of modules you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.</p>
 </div>
 <div class="paragraph">
 <p>The Module pattern has a serious drawback - you  still need to deal with manual dependency management and manually arrange <code>&lt;script&gt;</code> tags in the HTML document.</p>
@@ -872,16 +897,19 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <div class="content">
 <div class="title">Node.js, V8, and NPM</div>
 <div class="paragraph">
-<p>Node.js (or simply Node) is a server-side JavaScript framework. Node uses V8, the JavaScript engine by Google used in Chrome/Chromium. The V8 engine provides JavaScript API for accessing the file system, sockets and  running processes. The Grunt tool is built on top of Node JavaScript APIs. You can find more information about Node.js at  <a href="http://nodejs.org/about/">their website</a>.</p>
+<p>Node.js (or simply Node) is a server-side JavaScript framework. Node uses V8, the JavaScript engine by Google used in Chrome/Chromium. The V8 engine provides JavaScript API for accessing the file system, sockets and running processes. Node is ultimate consumer of CommonJS modules format. You can find more information about Node at <a href="http://nodejs.org/about/">their website</a>.</p>
 </div>
 <div class="paragraph">
-<p>Node Package Manager (NPM) is a utility as well as <a href="https://npmjs.org/">community repository</a> for open source JavaScript projects. NPM provides unified API and metadata model for managing dependencies in JavaScript projects. A <code>package.json</code> file is the project&#8217;s dependencies descriptor. NPM installs project dependencies using information from <code>package.json</code>.</p>
+<p>Many tools built on top of Node JavaScript APIs. The <a href="http://gruntjs.com/">Grunt</a> tool is one of them. We will use Grunt later in this book to automate execution of some development tasks.</p>
+</div>
+<div class="paragraph">
+<p>Node Package Manager (NPM) is a utility that comes bundled with Node. NPM provides unified API and metadata model for managing dependencies in JavaScript projects. A <code>package.json</code> file is the project&#8217;s dependencies descriptor. NPM installs project dependencies using information from <code>package.json</code>. NPM uses <a href="https://npmjs.org/">community repository</a> for open source JavaScript projects to resolve dependencies.</p>
 </div>
 <div class="paragraph">
 <p>Node and NPM are cross-platform software and binaries available for Windows, Linux and Mac OS X operating systems.</p>
 </div>
 <div class="paragraph">
-<p>To use code samples from this chapter you need to download and install Node from <a href="http://nodejs.org/download/">their web site</a>. Then follow <a href="http://gruntjs.com/getting-started"> the instructions from Grunt&#8217;s  website</a> to install it on your machine.</p>
+<p>To use code samples from this chapter you need to download and install Node from <a href="http://nodejs.org/download/">their web site</a>. Then follow <a href="http://gruntjs.com/getting-started"> the instructions from Grunt&#8217;s  website</a> to install it on your machine. After that make yourself familiar with Grunt basics by reading <a href="#appendix_a">[appendix_a]</a>. We will use Grunt later in this chapter.</p>
 </div>
 </div>
 </div>
@@ -893,8 +921,7 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">/*jslint node: true */
-"use strict";
+<pre class="highlight"><code class="javascript language-javascript">"use strict";
 var loginModule = {};
 var privateVariable = 42;
 
@@ -957,7 +984,7 @@ The snippet above may give you an impression that the module&#8217;s code is exe
 </table>
 </div>
 <div class="paragraph">
-<p><span class="underline">CommonJS pros:</span></p>
+<p><span class="underline">Pros to using CommonJS:</span></p>
 </div>
 <div class="ulist">
 <ul>
@@ -970,7 +997,7 @@ The snippet above may give you an impression that the module&#8217;s code is exe
 </ul>
 </div>
 <div class="paragraph">
-<p><span class="underline">CommonJS cons:</span></p>
+<p><span class="underline">Cons to using CommonJS:</span></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1008,17 +1035,23 @@ If you want to write modules in the format that can be used in both browser and 
 <li>
 <p><a href="http://nodejs.org/docs/latest/api/modules.html#modules_modules">Node.js Modules Reference</a></p>
 </li>
+<li>
+<p><a href="http://browserify.org/">Browserify</a></p>
+</li>
 </ul>
 </div>
 </div>
 <div class="sect3">
 <h4 id="amd_section">Asynchronous Module Definition</h4>
 <div class="paragraph">
+<p>The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded.
+The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">this specification</a>.</p>
+</div>
+<div class="paragraph">
 <p>AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further work on module&#8217;s format moved to the <a href="https://github.com/amdjs">amdjs Github page</a>.</p>
 </div>
 <div class="paragraph">
-<p>The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded.
-The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">this specification</a>. The AMD API have the following main functions:</p>
+<p>The AMD API have the following main functions:</p>
 </div>
 <div id="DEFINE_DESC" class="ulist">
 <ul>
@@ -1054,11 +1087,16 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 <td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>An optional array of dependencies' ids.</td>
 </tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The function for instantiating the module or object. The factory function will only be executed once</td>
-</tr>
 </table>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The factory <code>function{}</code> above will only be executed once.</p>
 </div>
 <div class="paragraph">
 <p>For example, the Save The Child application has a menu Way To Give, which in turn depends on other module called <code>otherContent</code>. If the user clicks on this menu, we can load the module that can be defined in the <code>wayToGive.js</code> as follows:</p>
@@ -1069,7 +1107,7 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 <pre class="highlight"><code class="javascript language-javascript">define(["otherContent"], function(otherContent) { <i class="conum" data-value="1"></i><b>(1)</b>
     var wayToGive;
 
-    console.log("way-to-give module is loaded");
+    console.log("otherContent module is loaded");
     wayToGive = function() {
         return {
             render: function() {
@@ -1106,12 +1144,6 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 </tr>
 </table>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
 <div id="REQUIRE_DESC" class="ulist">
 <ul>
 <li>
@@ -1138,7 +1170,7 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 </ul>
 </div>
 <div class="paragraph">
-<p><span class="underline">AMD pros:</span></p>
+<p><span class="underline">Pros to using AMD:</span></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1178,7 +1210,7 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 </ul>
 </div>
 <div class="paragraph">
-<p><span class="underline">AMD Cons:</span></p>
+<p><span class="underline">Cons to using AMD:</span></p>
 </div>
 <div class="ulist">
 <ul>
@@ -1230,7 +1262,10 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 <div class="sect3">
 <h4 id="umd">Universal Module Definition</h4>
 <div class="paragraph">
-<p>Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used to support multiple module formats. Here is an example of the module definition in UMD notation. In the following example, the module can be used with the AMD loader and as one of the variations of the Module Pattern.</p>
+<p>Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used to support multiple module formats. UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules will run in more than one type of environment (e.g. a Web browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.</p>
+</div>
+<div class="paragraph">
+<p>Here is an example of the module definition in UMD notation. In the following example, the module can be used with the AMD loader and as one of the variations of the Module Pattern.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1272,9 +1307,6 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 </table>
 </div>
 <div class="paragraph">
-<p>It&#8217;s worth mentioning that UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules will run in more than one type of environment (e.g. a Web browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.</p>
-</div>
-<div class="paragraph">
 <p>You can find more information about UMD and commented code snippets for different situations in <a href="https://github.com/umdjs/umd">the UMD project repository</a>.</p>
 </div>
 </div>
@@ -1289,18 +1321,13 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 <div class="listingblock">
 <div class="title">Login module definition</div>
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">export function login(userNameValue, userPasswordValue) { <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlight"><code class="javascript language-javascript">export function login(userNameValue, userPasswordValue) {
     console.log("login implementation omitted");
 };</code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The keyword <code>export</code> specifies the function or object (a separate file) to be exposed as a module, which can be used from any other JavaScript code as follows:</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>The keyword <code>export</code> specifies the function or object (a separate file) to be exposed as a module, which can be used from any other JavaScript code as follows:</p>
 </div>
 <div class="listingblock">
 <div class="title">Main application module</div>
@@ -1309,9 +1336,11 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 var result = login("admin", "password");</code></pre>
 </div>
 </div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">ES6 Module Transpiler</div>
+<div class="paragraph">
+<p>With the <code>import</code> keyword we assign instance of <code>login()</code> function imported from <code>login</code> module.</p>
+</div>
+<div class="sect4">
+<h5 id="_es6_module_transpiler">ES6 Module Transpiler</h5>
 <div class="paragraph">
 <p>Although ES6 standard is not implemented yet by most of browsers you can use the third party tools to get a taste of upcoming enhancements in JavaScript language. <a href="http://corner.squareup.com/2013/02/es6-module-transpiler.html">ES6 Module Transpiler</a> library developed by the <a href="http://squareup.com/">Square</a> Engineers helps using the module authoring syntax from ES6 and compile it down to the transport formats that you learned earlier in this chapter.</p>
 </div>
@@ -1488,8 +1517,6 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 <div class="paragraph">
 <p>To learn the up-to-date information on the ES6 browsers' support visit <a href="http://kangax.github.io/es5-compat-table/es6/">ECMAScript 6 compatibility table</a>.</p>
 </div>
-</div>
-</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -1497,10 +1524,11 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-<a href="http://www.typescriptlang.org/">TypeScript</a> is an open-source language from Microsoft that compiles to JavaScript and brings object-oriented concepts like classes and modules to JavaScript. It has a module syntax, which is very similar to what ES6 standard proposes. The TypeScript compiler can produce CommonJS and AMD module formats. You can learn more about TypeScript from <a href="http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf">language specification</a>. You can find Save The Child application written in TypeScript in Appendix B.
+<a href="http://www.typescriptlang.org/">TypeScript</a> is an open-source language from Microsoft that compiles to JavaScript and brings object-oriented concepts like classes and modules to JavaScript. It has a module syntax, which is very similar to what ES6 standard proposes. The TypeScript compiler can produce CommonJS and AMD module formats. You can learn more about TypeScript from <a href="http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf">language specification</a>.
 </td>
 </tr>
 </table>
+</div>
 </div>
 </div>
 </div>
@@ -1665,7 +1693,7 @@ There are pros and cons for storing dependencies in the source control repositor
 </table>
 </div>
 <div class="sect3">
-<h4 id="inside_config">Inside config.js</h4>
+<h4 id="inside_config">Inside RequireJS configuration: config.js</h4>
 <div class="paragraph">
 <p>RequiredJS uses a configuration object that includes modules and dependencies that have to be managed by the framework.</p>
 </div>
@@ -1802,7 +1830,7 @@ require(['main'], function() {}); <i class="conum" data-value="3"></i><b>(3)</b>
 <div class="sect3">
 <h4 id="_loading_modules_on_demand">Loading Modules On-Demand</h4>
 <div class="paragraph">
-<p>As per the Save The Child modules graph, some components shouldn&#8217;t when the application starts. Similar to Mercedes Benz website example, some functionality of Save The Child can be loaded later when user needs it. The user might never want to visit the "Where we work" section. Hence this functionality is a good candidate for the <em>load on-demand</em> module. You may want to load such a module on demand when the user clicks the button or selects a menu item.</p>
+<p>As per the Save The Child modules graph, some components shouldn&#8217;t load when the application starts. Similar to Mercedes Benz website example, some functionality of Save The Child can be loaded later when user needs it. The user might never want to visit the "Where we work" section. Hence this functionality is a good candidate for the <em>load on-demand</em> module. You may want to load such a module on demand when the user clicks the button or selects a menu item.</p>
 </div>
 <div class="paragraph">
 <p>At any given time a module can be in one of three states:</p>
@@ -1817,6 +1845,9 @@ require(['main'], function() {}); <i class="conum" data-value="3"></i><b>(3)</b>
 </li>
 <li>
 <p>fully loaded (<code>module !== null</code>).</p>
+</li>
+</ul>
+</div>
 <div id="load_ondemand_snippet" class="listingblock">
 <div class="title">Loading the module on demand</div>
 <div class="content">
@@ -1837,9 +1868,6 @@ var buttonClickHandler = function(event) {
   }
 };</code></pre>
 </div>
-</div>
-</li>
-</ul>
 </div>
 <div class="colist arabic">
 <table>
@@ -1867,69 +1895,75 @@ var buttonClickHandler = function(event) {
 <div class="listingblock">
 <div class="title">The Main Module</div>
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">define(["order!login", "order!donation", "order!svg-pie-chart", "modules/generic-module"], function() { <i class="conum" data-value="1"></i><b>(1)</b>
-    "use strict";
-    return (function() {
-        var initModule, lazyLoadingEventHandlerFactory, module, modulesConfig, way_to_give, what_we_do, where_we_work, who_we_are, _i, _len;
+<pre class="highlight"><code class="javascript language-javascript">define(["order!login",
+        "order!donation",
+        "order!svg-pie-chart",
+        "modules/generic-module"],
+        function() { <i class="conum" data-value="1"></i><b>(1)</b>
+            "use strict";
+            return (function() {
+                var initModule, lazyLoadingEventHandlerFactory,
+                module, modulesConfig, way_to_give,
+                what_we_do, where_we_work, who_we_are, _i, _len;
 
-        way_to_give = document.getElementById("way-to-give");
-        what_we_do = document.getElementById("what-we-do");
-        who_we_are = document.getElementById("who-we-are");
-        where_we_work = document.getElementById("where-we-work");
-        modulesConfig = [{      <i class="conum" data-value="2"></i><b>(2)</b>
-            moduleId: "whoWeAre",
-            button: who_we_are,
-            containerId: "who-we-are-container",
-            htmlContentUrl: "assets/html-includes/who-we-are.html"
-        }, {
-            moduleId: "whatWeDo",
-            button: what_we_do,
-            containerId: "what-we-do-container",
-            htmlContentUrl: "assets/html-includes/what-we-do.html"
-        }, {
-            moduleId: "whereWeWork",
-            button: where_we_work,
-            containerId: "where-we-work-container",
-            htmlContentUrl: "assets/html-includes/where-we-work.html"
-        }, {
-            moduleId: "wayToGive",
-            button: way_to_give,
-            containerId: "way-to-give-container",
-            htmlContentUrl: "assets/html-includes/way-to-give.html"
-        }];
-        lazyLoadingEventHandlerFactory = function(moduleId, containerId, htmlContentPath) { <i class="conum" data-value="3"></i><b>(3)</b>
-            return function(event) {
-                var module;
+                way_to_give = document.getElementById("way-to-give");
+                what_we_do = document.getElementById("what-we-do");
+                who_we_are = document.getElementById("who-we-are");
+                where_we_work = document.getElementById("where-we-work");
+                modulesConfig = [{      <i class="conum" data-value="2"></i><b>(2)</b>
+                    moduleId: "whoWeAre",
+                    button: who_we_are,
+                    containerId: "who-we-are-container",
+                    htmlContentUrl: "assets/html-includes/who-we-are.html"
+                }, {
+                    moduleId: "whatWeDo",
+                    button: what_we_do,
+                    containerId: "what-we-do-container",
+                    htmlContentUrl: "assets/html-includes/what-we-do.html"
+                }, {
+                    moduleId: "whereWeWork",
+                    button: where_we_work,
+                    containerId: "where-we-work-container",
+                    htmlContentUrl: "assets/html-includes/where-we-work.html"
+                }, {
+                    moduleId: "wayToGive",
+                    button: way_to_give,
+                    containerId: "way-to-give-container",
+                    htmlContentUrl: "assets/html-includes/way-to-give.html"
+                }];
+                lazyLoadingEventHandlerFactory = function(moduleId, containerId, htmlContentPath) { <i class="conum" data-value="3"></i><b>(3)</b>
+                    return function(event) {
+                        var module;
 
-                if (module === "loading") {
-                    return;
+                        if (module === "loading") {
+                            return;
+                        }
+                        if (typeof module !== "undefined" &amp;&amp; module !== null) {
+                            return module.render(event.target.id, containerId, htmlContentPath);
+                        } else {
+                            module = "loading";
+                            return require(["modules/generic-module"], function(GenericModule) {
+                                module = new GenericModule(moduleId);
+                                return module.render(event.target.id, containerId, htmlContentPath);
+                            });
+                        }
+                    };
+                };
+
+                initModule = function(module) {     <i class="conum" data-value="4"></i><b>(4)</b>
+                    var handler;
+
+                    handler = lazyLoadingEventHandlerFactory(module.moduleId,
+                              module.containerId, module.htmlContentUrl);
+                    return module.button.addEventListener("click", handler, false);
+                };
+
+                for (_i = 0, _len = modulesConfig.length; _i &lt; _len; _i++) {    <i class="conum" data-value="5"></i><b>(5)</b>
+                    module = modulesConfig[_i];
+                    initModule(module);
                 }
-                if (typeof module !== "undefined" &amp;&amp; module !== null) {
-                    return module.render(event.target.id, containerId, htmlContentPath);
-                } else {
-                    module = "loading";
-                    return require(["modules/generic-module"], function(GenericModule) {
-                        module = new GenericModule(moduleId);
-                        return module.render(event.target.id, containerId, htmlContentPath);
-                    });
-                }
-            };
-        };
-
-        initModule = function(module) {     <i class="conum" data-value="4"></i><b>(4)</b>
-            var handler;
-
-            handler = lazyLoadingEventHandlerFactory(module.moduleId,
-                      module.containerId, module.htmlContentUrl);
-            return module.button.addEventListener("click", handler, false);
-        };
-
-        for (_i = 0, _len = modulesConfig.length; _i &lt; _len; _i++) {    <i class="conum" data-value="5"></i><b>(5)</b>
-            module = modulesConfig[_i];
-            initModule(module);
-        }
-        console.log("app is loaded");
-    })();
+                console.log("app is loaded");
+            })();
 });</code></pre>
 </div>
 </div>
@@ -1982,7 +2016,9 @@ Earlier in this chapter, we&#8217;ve specified the dependencies as an array of s
 <div class="listingblock">
 <div class="title">Adding dependencies to package.json</div>
 <div class="content">
-<pre class="highlight"><code class="bash language-bash">&gt; npm install grunt-contrib-requirejs grunt-contrib-concat grunt-contrib-clean grunt-contrib-uglify --saveDev</code></pre>
+<pre class="highlight"><code class="bash language-bash">&gt; npm install grunt-contrib-requirejs\
+grunt-contrib-concat grunt-contrib-clean\
+grunt-contrib-uglify --saveDev</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2186,8 +2222,8 @@ Read more on optimization topics in the RequireJS documentation site under <a hr
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define(function() {
     "use strict";
-    return (function() {
-        var components = {};    <i class="conum" data-value="1"></i><b>(1)</b>
+    return (function() {    <i class="conum" data-value="1"></i><b>(1)</b>
+        var components = {};
 
         function Mediator() {}
 
@@ -2294,10 +2330,10 @@ Read more on optimization topics in the RequireJS documentation site under <a hr
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">define(["mediator"], function() {
+<pre class="highlight"><code class="javascript language-javascript">define(function() {
     "use strict";
     return (function() {
-        var mediator = {};
+        var mediator;
 
         function PricePanel() {
         }
@@ -2346,11 +2382,11 @@ Read more on optimization topics in the RequireJS documentation site under <a hr
     "use strict";
     return (function () {
         var mediator;
-        mediator = {};
+
         function OrderPanel() {
         }
 
-        OrderPanel.prototype.getMediator = function () {        <i class="conum" data-value="1"></i><b>(1)</b>
+        OrderPanel.prototype.getMediator = function () {      <i class="conum" data-value="1"></i><b>(1)</b>
             return mediator;
         };
 
@@ -2392,7 +2428,7 @@ Read more on optimization topics in the RequireJS documentation site under <a hr
 <div class="sect2">
 <h3 id="_summary">Summary</h3>
 <div class="paragraph">
-<p>The size of any application tends to increase, and sooner or later you&#8217;ll need to decide how to cut it into several loadable blocks of functionality. The sooner you start modularizing your application the better.</p>
+<p>The size of any application tends to increase with time, and sooner or later you&#8217;ll need to decide how to cut it into several loadable blocks of functionality. The sooner you start modularizing your application the better.</p>
 </div>
 <div class="paragraph">
 <p>In this chapter we&#8217;ve reviewed several options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using just the classical  Module Pattern. These advantages include avoiding creating global variables for each module and better support for static and dynamic dependency management.</p>
@@ -2406,7 +2442,7 @@ Read more on optimization topics in the RequireJS documentation site under <a hr
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-10-28 11:19:49 EDT
+Last updated 2013-11-05 07:56:30 EST
 </div>
 </div>
 </body>
