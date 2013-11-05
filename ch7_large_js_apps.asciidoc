@@ -140,19 +140,6 @@ The Module pattern has a serious drawback - you  still need to deal with manual 
 
 http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for both modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of the server-side JavaScript.
 
-.Node.js, V8, and NPM
-****
-Node.js (or simply Node) is a server-side JavaScript framework. Node uses V8, the JavaScript engine by Google used in Chrome/Chromium. The V8 engine provides JavaScript API for accessing the file system, sockets and running processes. Node is ultimate consumer of CommonJS modules format. You can find more information about Node at http://nodejs.org/about/[their website].
-
-Many tools built on top of Node JavaScript APIs. The http://gruntjs.com/[Grunt] tool is one of them. We will use Grunt later in this book to automate execution of some development tasks.
-
-Node Package Manager (NPM) is a utility that comes bundled with Node. NPM provides unified API and metadata model for managing dependencies in JavaScript projects. A `package.json` file is the project's dependencies descriptor. NPM installs project dependencies using information from `package.json`. NPM uses https://npmjs.org/[community repository] for open source JavaScript projects to resolve dependencies.
-
-Node and NPM are cross-platform software and binaries available for Windows, Linux and Mac OS X operating systems. 
-
-To use code samples from this chapter you need to download and install Node from http://nodejs.org/download/[their web site]. Then follow http://gruntjs.com/getting-started[ the instructions from Grunt's  website] to install it on your machine. After that make yourself familiar with Grunt basics by reading <<appendix_a>>. We will use Grunt later in this chapter.
-****
-
 On the Web browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One of the solutions suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. On the server side separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.
 
 In brief, the CommonJS specification requires the environment to have  http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context[three free variables]: `require`, `exports`, and `module`. The syntax to define the module is called _authoring format_. To make the module loadable by a Web browser it has to be transformed into _transport format_. 
@@ -516,7 +503,7 @@ image::fig_07_05.png[align="center"]
 Inside the _modules_ directory you can have as many nested folders as you want, e.g. _utils_ folder.
 
 2. The application assets remain the same as in previous chapters.
-3. We keep all Bower-managed dependencies (see the sidebar <<what_is_bower>> ) in the _components_ directory such as  RequireJS, jQuery etc. 
+3. We keep all Bower-managed dependencies in the _bower_components_ directory such as  RequireJS, jQuery etc. 
 4. The _dist_  directory serves as the location for the optimized version of our application. We will cover optimization with `r.js` later in the <<using_reuiqrejs_optimizer>> section.
 5. The QUnit/Jasmine tests will live in the _test_ directory. Testing will be covered in Chapter 8. 
 
@@ -526,58 +513,7 @@ We are not going to dice the Save The Child application into multiple modules, b
 .The modules graph of Save The Child
 image::fig_07_08.png[align="center"]
 
-To dice the application into modules you'll need the the modularization framework RequireJS, which can either be downloaded from its github repository or you can install it using a package manager <<what_is_bower,Bower>>.
-
-[[what_is_bower]]
-.What is *Bower*?
-****
-https://github.com/bower/bower[Bower] is a package manager for Web projects. Twitter has  donated it to the open-source community. Bower is a utility and a community driven repository of libraries that help in downloading the third-party software required for the application code that will run in a Web  browser. The Bower's purpose is very similar to NPM, but the latter is more suitable for the server-side projects.
-
-Bower can take care of transitive (dependency of a dependency) dependencies and download all required library components. Each Bower's package has a bower.json file, which contains the package metadata for managing the package's transitive dependencies. Also, bower.json can contain information about the package repository, readme file, license et al. You can find bower.json in the root directory of the package. For example, _components/requirejs/bower.json_ is a path for the RequireJS metadata file. Bower can installed via NPM. The following line shows how to install Bower globally in your system.
-
-[source,bash]
-----
-npm install -g bower    
-----
-
-You can start using Bower now. For example, here is a Bower's command to install RequireJS.
-
-[source,bash]
-----
-bower install requirejs --save 
-----
-Bower installs RequireJS into _components/requirejs_ directory and saves information about dependencies in bower.json configuration file.
-
-Bower simplifies the delivery of dependencies into target platform, which means that you don't need to store dependencies of your application in the source control system. Just keep you application code there and let Bower to bring all other dependencies described in its configuration file. 
-
-TIP: There are pros and cons for storing dependencies in the source control repositories. Read the http://addyosmani.com/blog/checking-in-front-end-dependencies/[article by Addi Osmani] that covers this subject in more detail.
-
-Your application will have its own file bower.json with the list of the dependencies. At this point, Bower can install all required application dependencies with one command - `bower install`, which will deliver all your dependency files into the +components+ directory. Here is the content of the file bower.json for our Save The Child application. 
-
-[source,javascript]
-----
-{
-  "name": "ch7_dynamic_modules",
-  "description": "Chapter 7: Save The Child, Dynamic Modules app",
-  "dependencies": {
-    "requirejs": "~2.1.5",
-    "jquery": ">= 1.8.0",
-    "qunit": "~1.11.0",
-    "modernizr": "~2.6.2",
-    "requirejs-google-maps": "latest"
-  }
-}
-----
-
-Application dependencies are specified in corresponding "dependencies section. The _>=_ sign specifies that the corresponding software has to be not older than the specified version.
-
-[[application_components]]
-.Directory structure of application's components
-image::fig_07_04.png[align="center"]
-
-Also, there is a http://sindresorhus.com/bower-components/[Bower search tool] to find the desired component in its repository.
-
-****
+To dice the application into modules you'll need the the modularization framework RequireJS, which can either be downloaded from its github repository or you can install it using a package manager Bower that was explained in previous chapter on automation tools. 
 
 Once RequireJS downloaded and placed into the project directory, add it to the index.html file as demonstrated in <<add_requirejs>> snippet.
 
@@ -704,7 +640,7 @@ In the Save The Child application we use the _order.js_ plugin that allows to sp
 RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that performs module optimization. 
 Earlier in this chapter, we've specified the dependencies as an array of string literals that are passed to the top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
 
-Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files. We are going to use http://gruntjs.com/[Grunt] - the JavaScript task runner. If you're not familiar with Grunt please refer <<appendix_a>> for the additional information about usage Grunt in Save The Child project.
+Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files. We are going to use the JavaScript task runner http://gruntjs.com/[Grunt] that you learned in previous chapter on automation tools. 
 
 Let's configure our Grunt project to enable the optimization task. Here's the command to install RequireJS, and Grunt's task packages clean, concat and uglify and save them as development dependencies in the file package.json:
 
