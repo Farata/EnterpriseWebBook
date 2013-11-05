@@ -1,11 +1,29 @@
 :toc:
 :toclevels: 4
 
-== Developing Web Applications With Ext JS Framework
+== Developing Web Applications in Ext JS Framework
 
 In the previous chapter you've got familiar with the JavaScript library jQuery. Now we'll introduce you to a more complex product - a JavaScript framework http://www.sencha.com/products/extjs[Ext JS] from http://www.sencha.com[Sencha]. This is one of the most feature-complete frameworks available on the market, and you should give it a serious consideration while deciding on the tooling for your next enterprise HTML5 application.
 
-Providing detailed coverage of Ext JS framework in on chapter is mission impossible. The material in this chapter is divided into three parts:
+=== JavaScript Frameworks
+
+The word _framework_ implies that there is some pre-created "software frame", and application developers need to fit their business-specific code inside such a frame. Why someone would want to do this as opposed to having a full freedom in developing your application code the way you want? The reason being that most enterprise projects are developed by teams of software engineers, and having an agreed-upon structure of the application with clear separation of software layers can make the entire process of development more productive.
+
+There are JavaScript frameworks that are mainly forcing developers to organize application code in layers implementing the Model-View-Controller design pattern.  There are more than a dozen MVC JavaScript frameworks that are being used by professional developers: http://backbonejs.org/[Backbone.js], http://www.sencha.com/products/extjs[ExtJS], http://angularjs.org/[AngularJS], http://emberjs.com/[Ember.js], http://knockoutjs.com/[Knockout] just to name a few.
+
+NOTE: Ext JS also supports MVC, and you can read about it later in this chapter in section titled MVC in Ext JS.
+
+TIP: There is an excellent Web site called http://todomvc.com/[TodoMVC], which shows the examples of implementing the same application (a Todo list) using various popular frameworks. Studying the source code of this application implemented in several frameworks can help you in selecting the one for your project.
+
+NOTE: To keep the size of this book manageable, we were not able to review more of JavaScript frameworks. But if you'd ask us to name one more great JavaScript framework that didn't make it into this book, we would recommend you to learn AngularJS from Google. There are lots of free online resources on AngularJS that Jeff Cunningham has collected all in one place https://github.com/jmcunningham/AngularJS-Learning[GitHub].
+
+Besides splitting the code into tiers, frameworks may offer a number of pre-fabricated UI components and build tools, and Ext JS is one of such frameworks.
+
+NOTE: If you decide to develop your application with Ext JS, you don't need to use jQuery library. 
+
+=== What This Chapter Covers 
+
+The title clearly states that this chapter is about Ext JS framework. Providing detailed coverage of Ext JS in on chapter is almost mission impossible because of the vast variety of features this framework offers. Consider this chapter a hands-on overview of Ext JS. The material in this chapter is divided into three parts:
 
 1. You'll get a high level overview of the Ext JS framework.
 
@@ -15,11 +33,11 @@ Providing detailed coverage of Ext JS framework in on chapter is mission impossi
 
 === Why Ext JS?
 
-After learning how jQuery library can simplify development of the HTML5 applications you might be wondering, what's so good about Ext JS framework that makes it worthwhile for studying. First of all, Core jQuery is just a library of utilities that simplify working with DOM and - you still need to write the Web application using HTML and JavaScript. In addition to it, there are lots and lots of jQuery plugins that include handy widgets to add to your manually created Web site. There are other HTML5 frameworks that help better organizing your project (e.g. Angular.js) or modularizing your project (e.g. Require.js), but enterprise application may need more. So here comes the Ext JS sales pitch. 
+After learning how jQuery library can simplify development of the HTML5 applications you might be wondering, what's so good about Ext JS framework that makes it worthwhile for studying. First of all, Core jQuery is just a library of utilities that simplify working with DOM and - you still need to write the Web application using HTML and JavaScript. In addition to it, there are lots and lots of jQuery plugins that include handy widgets to add to your manually created Web site. We just mentioned the frameworks that help better organizing or modularizing your project, but enterprise application may need more. So here comes the Ext JS sales pitch. 
 
-1. Ext JS an HTML5 framework that doesn't require you to write HTML. Yes, your only tiny HTML file will just include three files: one  with Ext JS framework, one CSS file, and one _app.js_, but the `<body>` section will be empty. 
+1. Ext JS an HTML5 framework that doesn't require you to write HTML. Your single HTML file (index.html) will just include three files in the head section: one  with Ext JS framework, one CSS file, and one _app.js_, but the `<body>` section will be empty. 
 
-2. Ext JS offers you a comprehensive JavaScript-based classes that include pretty much everything you need to develop a Web application (UI components, UI layouts, collections, networking, collections, CSS compiler, packaging tool, and more).
+2. Ext JS includes a comprehensive library of JavaScript-based classes that can help you with  pretty much everything you need to develop a Web application (UI components, UI layouts, collections, networking, collections, CSS compiler, packaging tool, and more).
 
 3. Ext JS offers you a way to write object-oriented code, define classes and inheritance in a way that's closer to classical inheritance and doesn't require the `prototype` property.
 
@@ -28,8 +46,7 @@ After learning how jQuery library can simplify development of the HTML5 applicat
 5. Ext JS is a cross-browser framework that promises to automatically take care of all differences in major Web browsers. 
 
 If you just finished reading the jQuery chapter, you'll need to switch to a different state of mind. Core jQuery library was light, it didn't drastically change the way of developing pure HTML/JavaScript applications. But working with Ext JS framework is a completely different ball game. It's not about improving an existing Web page, it's about re-writing it from scratch without using HTML. 
-
-Ext JS includes a rich library of UI components, a flexible class system, custom layouts, code generators. But Web browsers understand only HTML, DOM, CSS, and JavaScript. This means that the framework will have to do some extra work in converting the code written using the home-made Ext JS class system into same old HTML objects. Such extra work requires additional time, and we'll discuss this in the section titled "The Components Lifecycle". 
+Ext JS includes a rich library of UI components, a flexible class system, custom layouts, code generators. But Web browsers understand only HTML, DOM, CSS, and JavaScript. This means that the framework will have to do some extra work in converting the code written using the home-made Ext JS class system into same old HTML objects. Such extra work requires additional processing time, and we'll discuss this in the section titled "The Components Lifecycle". 
 
 === Downloading and Installing Ext JS
 
@@ -47,13 +64,15 @@ After unzipping the Ext JS distribution, you'll find a number of files and folde
 
 * ext-all-dev.js - human-readable source code of Ext JS that includes console.log() statements that generates and outputs debugging information in the browser's console.
 
-Similarly, there are files that don't include _all_ in their names: ext.js, ext-debug.js, and ext-dev.js. These are much smaller files that do not include the entire framework, but rather a minimum set of classes required to start the application. Later on, the additional classes may be lazy-loaded on the as-needed basis.
+Similarly, there are files that don't include _all_ in their names: ext.js, ext-debug.js, and ext-dev.js. These are much smaller files that do not include the entire framework, but rather a minimum set of classes required to start the application. Later on, the additional classes may be lazy-loaded on the as-needed basis. 
+
+NOTE: Typically, you shouldn't be using the _all_ files. We recommend you to use the file ext.js and Sencha CMD tool to create a customized version of Ext JS library to be included with your application. You can find more details in the section Sencha CMD later in this chapter. 
 
 The _docs_ folder contains extensive documentation - just open the file index.html in your browser and start reading and studying. 
 
 The _builds_ folder includes sandboxed versions of Ext JS in case you need to to use say Ext JS 4.2 along with older versions of this framework. Browsing the _builds_ folder reveals that the Ext JS framework consists of three parts:
 
-* Ext Core - it's a free to use http://www.sencha.com/products/extcore/[JavaScript library] for enhancing Web sites. It supports DOM manipulation with CSS selectors, events and AJAX requests. It also offers a syntax to define and create classes that can extend from each other. The functionality of Ext Core is comparable to Core jQuery, but the latter has a huge community of users and contributors, so it's not likely that anyone would be using just Ext Core.
+* Ext Core - it's a free to use http://www.sencha.com/products/extcore/[JavaScript library] for enhancing Web sites. It supports DOM manipulation with CSS selectors, events and AJAX requests. It also offers a syntax to define and create classes that can extend from each other. The functionality of Ext Core is comparable to Core jQuery.
 
 * Ext JS - a UI framework that includes a rich library of UI components.
 
@@ -61,15 +80,15 @@ The _builds_ folder includes sandboxed versions of Ext JS in case you need to to
 
 Such code separation allowed creators of Ext JS reuse a large portion of the framework's code in the mobile library Sencha Touch, which we'll cover in Chapter 13.   
 
-Ext JS framework is large so be prepared that your application will weigh at least 1Mb. So if you just need to create a small Web site, you may be better off by just using a lightweight, easy to learn and free jQuery library or one of a dozen of other JavaScript frameworks that either improve organizational structure of your project or offer a set of a la cart components to prettify your HTML5 application. But if you had a chance to develop or use rich Internet applications developed with such frameworks as Microsoft Silverlight or Apache Flex, then you'll quickly realize that Ext JS is the closest by functionality, rich set of components and tools.  
+NOTE: Ext JS framework is large so be prepared that your application will weigh at least 1Mb. This is not an issues for enterprise applications that run on fast networks. But if you need to create a small consumer-oriented Web site, you may be better off by just using a lightweight, easy to learn and free jQuery library or one of a dozen of other JavaScript frameworks that either improve organizational structure of your project or offer a set of a la cart components to prettify your HTML5 application. On the other hand, if  you had a chance to develop or use rich Internet applications developed with such frameworks as Microsoft Silverlight or Apache Flex, then you'll quickly realize that Ext JS is the closest by functionality, rich set of components and tools.  
 
 === Getting Familiar with Ext JS and Tooling
 
-This section is not going to be an Ext JS tutorial that gradually explains each and every feature and API of Ext JS. For this we'd need to write a fat Ext JS book. Sencha published multiple online tutorials, documentation and videos, besides there are several current books written by independent authors. In this section chapter you'll get an overview of the framework. 
+This section is not going to be an Ext JS tutorial that gradually explains each and every feature and API of Ext JS. For this we'd need to write a fat Ext JS book. Sencha publishes multiple online tutorials, documentation and videos, besides there are several current books written by independent authors. In this section chapter you'll get an overview of the framework. 
 
 ==== The First Version of Hello World
 
-But we'll start with developing a Hello World application before explaining how things work in Ext JS. But the section where we'll review the code of the Save The Child application will serve as a hands-on way of learning the framework. You'll read the code fragments followed by brief explanations. You'll be able to run and debug this application on your own computer seeing how various components and program layers work in practice. But first things first - let's create a couple of versions of Hello World.
+Before we'll explain how things work in Ext JS, we'll develop a Hello World application. But the section where we'll review the code of the Save The Child application will serve as a hands-on way of learning the framework. You'll read the code fragments followed by brief explanations. You'll be able to run and debug this application on your own computer seeing how various components and program layers work in practice. But first things first - let's create a couple of versions of Hello World.
 
 Create a new directory (e.g. _hello1_). Inside _hello1_ create a subdirectory named _ext_ and copy there the entire content of your Ext JS installation directory. Create yet another subdirectory _app_ inside _hello1_ - this is where your application JavaScript files will go.
 
@@ -105,9 +124,11 @@ This `Ext.application()` method gets a _configuration object_ - JavaScript liter
 
 Open the file index.html in your Web browser and you'll see this greeting. But this was a plain vanilla Hello World. In the next section we'll automate the process of creation of a fancier Hello World (or the initial version of any other application) by using the Sencha Cmd tool.
 
+.Configuration Options
+*********
 In the pre 4.0 versions ofExt JS you'd be invoking the `Ext.onReady()` method instead of passing the configuration object with the `launch` _config option_. 
 
-Providing a function argument as a configuration object overrides configurable properties of the current instance of the class. This is different from the class properties, which are defines at the prototype level and changing a values of a property would apply to all instances of the class. When you'll be reading Ext JS online documentation for any class, you'll three three categories of class elements: Configs, Properties, and Methods. For example, this is how you can create a panel passing configs:
+Providing a function argument as a configuration object overrides configurable properties of the current instance of the class. This is different from the class properties, which are defined at the prototype level and changing a value of a property would apply to all instances of the class. When you'll be reading Ext JS online documentation for any class, you'll see three categories of class elements: Configs, Properties, and Methods. For example, this is how you can create a panel passing configs:
 
 [source, javascript]
 ----
@@ -118,21 +139,22 @@ Ext.create('Ext.panel.Panel', {
 });
 ----
 
-In this example we are creating an instance of the panel usinc configuration object with three config options: `title`, `width`, and `html`. The values of these properties will be assigned to the corresponding properties of this instance only. If you'll read documentation for http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.panel.Panel[`Ext.panel.Panel`], you'll find 116 available configs that you can set on the panel instance.
+In this example we are creating an instance of the panel using a configuration object with three config options: `title`, `width`, and `html`. The values of these properties will be assigned to the corresponding properties of this instance only. For example, the documentation for http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.panel.Panel[`Ext.panel.Panel`] lists 116 available configs that you can set on the panel instance.
 
-NOTE: Ext JS classes are organized into packages. For example, the class `Panel` in the above example is located in the package `Ext.panel`. You'll be using packaging in your applications too. For example, later in the chapter you'll see classes from Save The Child and Clear frameworks named as `SSC.view.DonateForm` or `Clear.override.ExtJSOverrider`. Such packages should be properly _namespaced_ and `SSC` and `Clear` are top-level namespaces here. The next fragment shows how to give a name to your application, and such a given name will serve as a top-level namespace. 
+Ext JS classes are organized into packages. For example, the class `Panel` in the above example is located in the package `Ext.panel`. You'll be using packaging in your applications too. For example, later in the chapter you'll see classes from Save The Child and Clear frameworks named as `SSC.view.DonateForm` or `Clear.override.ExtJSOverrider`. Such packages should be properly _namespaced_ and `SSC` and `Clear` are top-level namespaces here. The next fragment shows how to give a name to your application, and such a given name will serve as a top-level namespace. 
 
 [source, javascript]
 ----
 Ext.application({
     name: 'SSC',
-    // more config options go here
+    // more config options can go here
 });
 ----
+*********
 
-In the next section we'll automate the process of creating of Hello World application and will see another example of the configuration object.
+In the next section we'll automate the process of creating of Hello World application.
 
-==== Using Sencha CMD Tool
+==== Generating Applications With Sencha CMD Tool
 
 Sencha CMD is a handy command line tool that automates your work starting from scaffolding your application to minimizing, packaging and deploying it.  
 
@@ -150,7 +172,7 @@ image::images/fig_06_01.png[image]
 
 The generated project is created with the assumption that your application will be built using the MVC paradigm discussed in the section Best Practice:MVC. The JavaScript is located in the _app_ folder, which includes the _view_ subfolder with the visual portion of your application, the _controller_ folder with controller classes, and the _model_ is for data. The _ext_ folder contains multiple distributions of the Ext JS framework. The _sass_ folder is a place for your application's CSS files (see the sidebar titled SASS and CSS later in this chapter).
 
-The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js, which contains the mapping of the long names if the framework and application classes to their shorter names (_xtypes_).
+The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js, which contains the mapping of the long names if the framework and application classes to their shorter names (_xtypes_). Here's how the generated index.html file looks:
 
 [source, html]
 ----
@@ -195,7 +217,7 @@ Ext.application({
 Finally, if you'll open index.html in your Web browser, you'll see our Hello World initial Web page that looks as in <<Fig6-2>>. This view uses so called `border` layout and shows a `panel` on the west and a `tabpanel` in the central region of the view. 
 
 [[FIG6-2]]
-.Running the Generated Application 
+.The UI of our Sencha CMD-generated Application 
 image::images/fig_06_02.png[image]
 
 The total size of this version of the Hello World application is pretty large: 4Mb, and the browser makes 173 requests to the server by the time the user sees the application shown on <<FIG6-2>>. But Sencha Cmd knows how to build the production version of the Ext JS application. It minimizes and merges the application's and required framework's JavaScript code into one file. The application css file is also minimized and the references to the image resources become relative hence shorter. Besides, the images may be automatically sliced - cut into smaller rectangular pieces that can be downloaded by the browser simultaneously.
@@ -222,11 +244,11 @@ TIP: Sencha CMD 3.1 comes with embedded Jetty 8.1.7 Web server. Open the Termina
 
 If your organization is developing Web applications with Ext JS without using Sencha CMD - it's a mistake. Sencha CMD is a very useful code generator and optimizer that also enforces the MVC principles of application design.
 
-==== Configuring Eclipse IDE, Apache Tomcat, and Ext JS
+==== Setting Up Eclipse IDE
 
-In this chapter we'll switch from Aptana IDE to its parent Eclipse IDE. Although Eclipse is not the best IDE for JavaScript developers, but it's the most popular IDE among enterprise Java developers, and we'll need it later in this chapter to demonstrate the application generation using Java and CDB. Besides, Sencha offers Eclipse plugin (not covered in the book) for those who purchased a license of Sencha Complete .
+In this chapter we'll switch from Aptana IDE to its parent Eclipse IDE. You may ask, "Why did we go through all of that with Aptana Studio in the previous chapters to switch horses now?"  Aptana Studio is a was a free IDE with limited capabilities. It may suffice for simple projects. But in enterprise setup you may need to use an IDE that supports not just JavaScript, but other languages too. In particular, in this chapter we'll illustrate how JavaScript and Java can live in the same IDE. Although Eclipse is not the best IDE for JavaScript developers, but it's the most popular IDE among enterprise Java developers, and we'll need it later in this chapter to demonstrate the application generation using Java and CDB. Besides, Sencha offers Eclipse plugin (not covered in the book) for those who purchased a license of Sencha Complete. 
 
-We'll use two IDEs in this chapter: Eclipse and WebStorm. In particular, we'll use the version "Eclipse IDE for Java EE developers", which is the most popular IDE among enterprise Java developers. It's available free of charge at http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable, and you'll see the workbench that looks very similar to Aptana.  
+Switching from one IDE to another is not a major event. As a matter of fact, we'll use two IDEs in this chapter: Eclipse and WebStorm. In particular, we'll use the version "Eclipse IDE for Java EE developers", which is the most popular IDE among enterprise Java developers. It's available free of charge at http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable, and you'll see the workbench that looks very similar to Aptana.  
 
 But in our opinion, the best IDE for JavaScript developers (regardless of which framework they use) is JetBrain's http://www.jetbrains.com/webstorm/[WebStorm IDE]. Later in this chapter we'll show you how to use WebStorm for developing JavaScript portion of the project even if the Java part has to be developed in Eclipse.
 
@@ -234,12 +256,11 @@ TIP: WebStorm IDE comes with a simple http://blog.jetbrains.com/webide/2013/03/b
 
 ===== Apache Tomcat
 
-http://tomcat.apache.org[Apache Tomcat] is probably the most popular free and open source server used by Java developers for deploying Web applications. Besides being a Web Server, Tomcat also contains Java Servlet container that will be used later in this chapter in the section "Generating CRUD applications". But for most examples we'll use Tomcat as a Web server where Ext JS code will be deployed. 
+In the previous chapter we used a XAMPP server that was running PHP scripts. Since this chapter will include server-side code written in Java, we'll use http://tomcat.apache.org[Apache Tomcat], which is one of the http://w3techs.com/technologies/details/ws-tomcat/all/all[popular] servers used by Java developers for deploying Web applications. Besides being a Web Server, Tomcat also contains Java Servlet container that will be used later in this chapter in the section "Generating CRUD applications". But for most examples we'll use Tomcat as a Web server where Ext JS code will be deployed. 
 
-Get the latest version of Apache Tomcat from the Download section at http://tomcat.apache.org. At the time of this writing Tomcat 7.0.39 is the latest build, so download the zip file with the Tomcat's Binary Distributions (Core). Unzip the file in the directory of your choice.
+Get the latest version of Apache Tomcat from the Download section at http://tomcat.apache.org. At the time of this writing Tomcat 7 is the latest producation-quality build, so download the zip file with the Tomcat's Binary Distributions (Core). Unzip the file in the directory of your choice.
 
 Even though you can start Tomcat from a separate command window, the  more productive way is to configure Tomcat right in the Eclipse IDE. This will allow to deploy your applications, and start/stop Tomcat without the need to leave Eclipse. 
-
 To add a server to Eclipse, open Eclipse Java EE perspective (menu Window | Open Perspective ), select the menu  File | New | Other | Server |Server | Apache | Tomcat v7.0 Server, select your Tomcat installation directory and press Finish. If you don’t see Tomcat 7 in the list of Apache servers, click on “Download additional server adapters”.
 
 You'll see the Tomcat entry in the Eclipse Project Explorer. Go to Eclipse menu Windows | Show View and open the Servers view. Start Tomcat using the right-click menu.
@@ -248,10 +269,9 @@ TIP: By default, Eclipse IDE keeps all required server configuration and deploym
 
 In the next section you'll learn how to create Dynamic Web Projects in Eclipse, where you'll need to specify the Target Runtime for deployment of your Web applications. This newly installed and configured Tomcat server will serve as a deployment target for our sample projects. 
 
-
 ===== Dynamic Web Projects and Ext JS
 
-Eclipse for Java EE developers comes with http://www.eclipse.org/webtools/[Web Tools Platform] that simplifies development of Web applications by allowing you to create so-called Dynamic Web Project, which will be specifically created for deployment under a particular Java server - Apache Tomcat in our case. 
+Eclipse for Java EE developers comes with http://www.eclipse.org/webtools/[Web Tools Platform] that simplifies development of Web applications by allowing you to create so-called Dynamic Web Project. This is an Eclipse pre-configured project that already knows where its Java server located and deployment to the server is greatly simplified. Sample projects from this chapter will be   specifically created for deployment under Apache Tomcat server. 
 
 To create such a project select Eclipse menu File | New | Other | Web | Dynamic Web Project. It'll pop up a window similar to <<FIG6-4>>. Note that the Target Runtime is Apache Tomcat v7.0 that we've configured in the previous section. 
 
@@ -272,7 +292,7 @@ If you don't have Sencha Eclipse plugin, there is a couple of solutions to this 
 To implement the first solution, right click on the properties of your project and select JavaScript | Include Path. Then switch to the Source tab, expand the project's Web content and press the buttons Edit and then Add. One by one add the ext, build, and packages as exclusion patterns (add the slash at the end) as shown in <<Fig6-5>>
     
 [[FIG6-5]]
-.Excluding folders in Eclipse
+.Solution 1: Excluding folders in Eclipse
 image::images/fig_06_05.png[image]
 
 For the second solution, you'll need to add your Ext JS folder as a static Tomcat module. Double-click at the Tomcat name in the Servers view and then click on the bottom tab Modules. Then Click on Add External Web Module. In the popup window find the folder where your Ext JS is (in my computer it's inside the Library folder as in <<Fig6-6>>) and give it a name (e.g. /extjs-4.2). Now Tomcat will know that on each start it has to load year another static Web module known as /extjs-4.2. If you're interested in details of such deployment, open up the file server.xml located in your Eclipse workspace in the hidden directory _.metadata/.plugins/org.eclipse.wst.server.core/tmp0/conf_.
@@ -280,7 +300,7 @@ For the second solution, you'll need to add your Ext JS folder as a static Tomca
 To ensure that you did everything right, just enter in your browser the URL http://localhost:8080/extjs-4.2, and you should see the  welcome screen of Ext JS.
 
 [[FIG6-6]]
-.Adding Ext JS to Tomcat as a static module 
+.Solution 2: Adding Ext JS to Tomcat as a static module 
 image::images/fig_06_06.png[image]
 
 In both of these solutions you'll lose the Ext JS context sensitive help, but at least you will eliminate the long pauses caused by Eclipse internal indexing processes. Again, developing ExtJS code in WebStorm IDE or IntelliJ IDEA IDEs would spare you from all these issues because these IDE's are smart enough to produce context-sensitive help from an external JavaScript library.   
@@ -290,26 +310,24 @@ In this section we brought together three pieces of software: Eclipse IDE, Apach
 _sencha -sdk /Library/ext-4.2 generate app HelloWorld /Users/yfain11/myEclipseWorkspace/hello2/WebContent_
 
 
-==== Which Ext JS Framework to use?
+==== Which Ext JS Distribution to Use?
 
-First you need to select the packaging of the Ext JS framework that fits your need. You may select its minimized version to be used in production or a larger and commented version with detailed comments and error messages. Besides, you may select a version of Ext JS that include either all or only the core classes. The third option is to create a custom build of Ext JS that will include only the those framework classes that are used by your application.
+First you need to select the packaging of the Ext JS framework that fits your needs. You may select its minimized version to be used in production or a larger and commented version with detailed comments and error messages. As we mentioned earlier in this chapter, you may select a version of Ext JS that include either all or only the core classes. The third option is to create a custom build of Ext JS that will include only the those framework classes that are used by your application.
 
-The file with the minimized production version of Ext JS is called ext-all.js and its size is pretty large: 1.4Mb. But as we described in the section on Sencha CMD, your can create a build fine tuned to your application . If this application will be used on the high-speed networks and size is not the object, simply add it to your index.html from your local servers or see if Sencha offers the CDN for the Ext JS version you need, which may look similar to the following:
+The files with the minimized production version of Ext JS are called ext-all.js and ext.all. We usually pick the latter one. Its size is more than 1Mb, but as we described in the section on Sencha CMD, your can create a build fine-tuned to your application . If this application will be used on the high-speed networks and size is not the object, simply add it to your index.html from your local servers or see if Sencha offers the CDN for the Ext JS version you need, which may look similar to the following:
 
 [source, html]
 ----
 <link rel="http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css" />
 
 <script type="text/javascript" charset="utf-8" 
-        src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all.js"></script> 
+        src="http://cdn.sencha.io/ext-4.2.0-gpl/ext.js"></script> 
 ----
 
-TIP: If the name of the file with Ext JS framework contains _-all_, this indicates that all framework classes are included in this file.
 
 ==== Declaring, Loading and Instantiating Classes
 
 In Chapter 1 we've stated that JavaScript doesn't have classes and that constructor functions were the closest to classes language elements. Ext JS extends the JavaScript language and introduces classes and a special way to define and instantiate them with functions `Ext.define()` and `Ext.create()`. Ext JS also allows to extend one class from another using the property `extend` and define class constructors using the property `constructor`. 
-
 With `Ext.define()` contains you declare a class declaration, and `Ext.create()` instantiate it. Basically, `define()` serves as a template for creation of one or more instances. 
 
 Usually the first argument you specify to `define()` is a fully qualified class name, the second argument is an object literal that contains the class definition. If you use `null` as the first argument Ext JS creates an anonymous class. 
@@ -332,19 +350,13 @@ Ext.define("SSC.view.Header", {
   layout: {
     type: 'hbox',
     align: 'middle'
-  },
-
-  constructor: function() {     // <3> 
-    this.callParent(arguments);
- }
+  }
 });
 ----
 
 <1> Render this panel to an HTML element with `id=content`.
 
-<2>  Defining a custom config property `logo`.
-
-<3> This is a constructor function. In this example it calls the constructor of its superclass `Ext.panel.Panel`. In general, it's a good practice to pass the standard JavaScript array `arguments` in one shot rather than trying to explicitly define each and every parameter.
+<2>  Defining a custom `config` property `logo`.
 
 You can optionally include a third argument for `define()`, which is a function to be called when the class definition is created. Now you can create one or more instances of the class class, for example:
 
@@ -353,12 +365,13 @@ You can optionally include a third argument for `define()`, which is a function 
 var myHeader = Ext.create("SSC.view.Header");
 ----
 
-The values of custom config properties from the `config{}` section  of the class can be reassigned during the class instantiation. For example, the next code snippet will print sony.png for the first instance of the header, and sony_small.png for the second one. Please not that Ext JS automatically generated getters and setters for all config properties, which allowed us to use the method `getLogo()`.
+The values of custom config properties from the `config{}` section  of the class can be reassigned during the class instantiation. For example, the next code snippet will print sony.png for the first instance of the header, and sony_small.png for the second one. Please not that Ext JS automatically generated getters and setters for all `config` properties, which allowed us to use the method `getLogo()`.
 
 [source, javascript]
 ----
 Ext.onReady(function () {
    var myHeader1 = Ext.create("SSC.view.Header");
+   // 
    var myHeader2 = Ext.create("SSC.view.Header", 
                                 { logo: 'sony_small.png' });
     
@@ -385,7 +398,7 @@ Ext.define('SSC.view.Viewport', {
 
 `Ext.create()` is a preferred way of instantiation as it does more than the `new` operator that is also allowed in Ext JS. But `Ext.create()` may perform some additional functionality, for example id `Ext.Loader` is enabled, `create()` will attempt to  synchronously load dependencies (if you haven't used the option `require`). But with `requires` your preloads all dependencies asynchronously in parallel and is a preferred way of specifying dependencies. Besides, the async mode allows loading from different domains, while sync loading doesn't.
 
-TIP: Ed Spencer published a useful list of reccomendation on improving performance of Ext JS applications in his blog titled http://edspencer.net/2013/07/19/sencha-con-2013-ext-js-performance-tips/[SenchaCon 2013: Ext JS Performance Tips].
+TIP: Ed Spencer published a useful list of recommendations on improving performance of Ext JS applications in his blog titled http://edspencer.net/2013/07/19/sencha-con-2013-ext-js-performance-tips/[SenchaCon 2013: Ext JS Performance Tips].
 
 .Dynamic Class Loading
 ****
@@ -413,7 +426,7 @@ TIP: The instance of any object has access to its class via a special variable h
 
 Prior to creating a class, Ext JS will run some pre-processors and some post-processors based on the class definition. For example, the class `'SSC.view.Viewport'` from the code sample above uses `extend: 'Ext.container.Viewport'`, which will engage the _extend_ pre-processor that will do some background work to properly build a subclass of extend: `Viewport`. If your class includes the `config` section, the _config_ preprocessor will be engaged. 
 
-===== What's xtype
+===== Xtype: An Efficient Way to Create Class Instances
 
 One of the interesting pre-processors is _xtype_, which is an alternative to the invocation of the `create()` method for creating the instance of the class. Every Ext JS component has assigned and documented `xtype`. For example, `Ext.panel.Panel` has an `xtype` of `panel`. Online documentation displays the name of the corresponding `xtype` in the header of each component as in <<FIG6-7>>.
 
@@ -468,9 +481,9 @@ But the class `SSC.view.LoginBox` also includes `xtype: 'loginbox'`  - we decide
  
 TIP: Ext JS UI components allows you to use `alias`, which have similar to `xtype` use. Each of the aliases have to have a `widget` prefix, e.g. `alias: 'widget.DonatePanel'` in a definition of the component that extends `Ext.panel.Panel`.  
 
-===== Ext JS Mixins
+===== Multiple Inheritance With Mixins
 
-Object-oriented languages Java and C# can be considered as simpler version of pass:[C++]. One of the pass:[C++] features that didn't make it into Java and C# was support of multiple inheritance: a class can extend only one other class. This was done for a good reason - debugging of the pass:[C++] programs that were written with multiple inheritance was difficult. 
+Object-oriented languages Java and C# can be considered as simpler version of pass:[C++]. One of the pass:[C++] features that didn't make it into Java and C# was support of multiple inheritance: in these languages a class can extend only one other class. This was done for a good reason - debugging of the pass:[C++] programs that were written with multiple inheritance was difficult. 
 
 Ext JS supports multiple inheritance via JavaScript mixins. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly. The following code snippet shows how to define a `classB` that will have features defined in classes `classA`,`classC`, and `classD`.
 
@@ -533,7 +546,7 @@ Ext.application({
 });
 ----
 
-The above code is a clean and simple to read/write code helps Ext JS framework in generating additional code required for wiring views, models, controllers and stores together. For better understanding of the rest of this chapter you should read the http://docs.sencha.com/extjs/4.2.0/#!/guide/application_architecture[MVC Architecture] section from Ext JS documentation. We don't want to repeat the content of Sencha product documentation, but rather will be giving you brief descriptions while doing code review of the Save The Child application. 
+The above code is a clean and simple to read/write code helps Ext JS framework in generating additional code required for wiring views, models, controllers and stores together. There is no explicit `models` section, because in our implementation the models were defined inside the `stores`. For better understanding of the rest of this chapter you should read the http://docs.sencha.com/extjs/4.2.0/#!/guide/application_architecture[MVC Architecture] section from Ext JS documentation. We don't want to repeat the content of Sencha product documentation, but rather will be giving you brief descriptions while doing code review of the Save The Child application. 
 
 ===== Models and Stores
 
@@ -562,7 +575,7 @@ sscDonor.set('name', 'Farata Systems');
 var donorName= sscDonor.get('name');
 ----
 
-A store in Ext JS holds a collection of instances of some model. For example, if you the application has retrieved the information about ten donors, it'll be represented in Ext JS as a collection of yen instances of the class `Donor`. A custom store in your application has to extend from the class `Ext.data.Store`. 
+A store in Ext JS holds a collection of instances of some model. For example, if you the application has retrieved the information about ten donors, it'll be represented in Ext JS as a collection of ten instances of the class `Donor`. A custom store in your application has to extend from the class `Ext.data.Store`. 
 
 If you need to quickly create a mock store for testing purposes, you can declare a store with inline data that you can specify using the config option `data`. The next code sample shows a declaration of the store for providing the information about the donors as inline data:
 
@@ -653,8 +666,9 @@ Ext.define('SSC.controller.Donate', {
     refs: [{                                      // <2>
         ref: 'donatePanel',                        
         selector: '[cls=donate-panel]'
-        // more views go here
-    }],
+    }
+    // more views can go here
+    ],
 
     init: function () {                            // <3>
 
@@ -676,9 +690,9 @@ Ext.define('SSC.controller.Donate', {
 
 <2> Listing one or more views of your application in the `refs` property, which simplifies the search of the component globally or within some container. Controller generates getters and setters for each object listed in the `refs`.
 
-<3> Registering event listeners in the function `init()`
+<3> Registering event listeners in the function `init()`. In this case we're registering the event handler function `showDonateForm` that will process clicks on the button, which has an attribute `action=showform`.
 
-<4> An event handler to process clicks on the button that has an attribute `action=showform`
+<4> The getter `getDonatePanel()` will be auto-generated by Ext JS because `donatePanel` was included in the `refs` section.
 
 `Ext.StoreManager` provides a convenience method to look up the store by store ID. If stores were automatically injected into `Ext.StoreManager` by the controller, the default store ID is its name, e.g. `SSC.store.Donors`:
 
@@ -695,21 +709,23 @@ The above `SSC.controller.Donate` doesn't use the config properties `views`, but
 TIP: You can view and test Ext JS components against bundled themes browsing the Theme Viewer at the http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html[Ext JS 4.2 Examples] page.
 
 
-==== Component's Lifecycle
+==== A Component's Lifecycle
 
-In previous versions of our Save Sick Chils application CSS was responsible for all layouts of the UI components. In Chapter 11 you'll be learning about the _responsive design_ techniques and CSS media queries, which allow to create fluid layouts that automatically adjust to the size of the viewport. 
-
-But this section is about Ext JS proprietary way of creating and adding UI components to Web pages. Before the user will see a component, Ext JS framework will go through the following phases for each component:
+In previous versions of our Save The Child application CSS was responsible for all layouts of the UI components. In Chapter 11 you'll be learning about the _responsive design_ techniques and CSS media queries, which allow to create fluid layouts that automatically adjust to the size of the viewport. But this section is about Ext JS proprietary way of creating and adding UI components to Web pages. Before the user will see a component, Ext JS framework will go through the following phases for each component:
 
 * Load - load the required (or all) Ext JS classes and their dependencies 
-* Initialize components when the DOM is ready
+* Initialization of components when the DOM is ready
 * Rendering  - convert components to HTML elements
 * Layout - measuring and assigning sizes
 * Destruction - removing the reference from DOM, removing event listeners and unregistering from the component manager. 
 
-Rendering and layout are the most time consuming phases. The rendering does a lot of preparations to give the browser's rendering engine HTML elements and not Ext JS classes. The layout phase is slow because the calculation of sizes and positions (unless they are in absolute coordinates) and applying of cascading stylesheets takes time. Ext JS 4.1 was redesigned to minimize the number of reflows, which happen when  the code reads-measures-writes to the DOM and makes dynamic style modifications. Now a large portion or recalculations is done in a batch before modifying the DOM.
+Rendering and layout are the most time consuming phases. The rendering does a lot of preparations to give the browser's rendering engine HTML elements and not Ext JS classes. The layout phase is slow because the calculation of sizes and positions (unless they are in absolute coordinates) and applying of cascading stylesheets takes time. 
 
-Each Web page consists of one or more containers, which include some children - components (in Ext JS they are subclasses of http://bit.ly/Zy3iZU[`Ext.Component`]), for example, `Ext.button.Button`. If a component can contain other components, it's a container (e.g. `Ext.panel.Panel`) and will have http://bit.ly/13QH0TG[`Ext.container.Container`] as one of its ancestors. In Ext JS class hierarchy, `Container` is a subclass of `Component`, so all methods and properties defined for a component are available for a container too. 
+There's also the issue of _reflows_, which happen when the code reads-measures-writes to the DOM and makes dynamic style modifications. Fortunately, Ext JS 4.1 was redesigned to minimize the number of reflows; now a large portion of recalculations is done in a batch before modifying the DOM.
+
+===== Components as Containers
+
+If a component can contain other components, it's a container (e.g. `Ext.panel.Panel`) and will have http://bit.ly/13QH0TG[`Ext.container.Container`] as one of its ancestors. In Ext JS class hierarchy, `Container` is a subclass of `Component`, so all methods and properties defined for a component are available for a container too. Each Web page consists of one or more containers, which include some children - components (in Ext JS they are subclasses of http://bit.ly/Zy3iZU[`Ext.Component`]), for example, `Ext.button.Button`.
 
 You'll be defining your container class with as a subclass of a container by including `extend: Ext.container.Container`. The child elements of a container are accessible via its property `items`. In the `Ext.define()` statement of the container you may specify the code that will loop through this `items` array and, say style the components, but actual instances of the children will be provided during the `Ext.create()` call via configuration object. 
 
@@ -717,9 +733,8 @@ The process of adding a component to a container will typically consist of invok
 
 But under the hood Ext JS will do a lot more work. The framework will auto-generate a unique ID for the component, assign some event listeners, instantiate component plugins if specified, invoke the `initComponent()`, and add the component to `Ext.ComponentManager`.  
 
-WARNING: Even though you can manually assign an ID to the component via configuration object, it's not recommended to avoid duplicate IDs.
+WARNING: Even though you can manually assign an ID to the component via configuration object, it's not recommended because it could result in duplicate IDs.
 
-TIP: At any time your program can get from the `ComponentManager` a reference to a component by ID, for example, `var donationForma = Ext.getCmp();`
 
 ==== Events
 
@@ -757,7 +772,7 @@ Ext.create('Ext.button.Button', {
 }
 ----
 
-In Chapter 1 you've learned about event bubbling. In Ext JS event bubbling mechanism enables events dispatched by components that include `Ext.util.Observable` bubble up through all enclosing containers. For components it means that you can handle component’s event on container level. It can be handy to subscribe and handle multiple similar events in one place. To enable bubbling for selected events use the `enableBubble()` method, for example: 
+In Chapter 1 you learned about event bubbling. In Ext JS event bubbling mechanism enables events dispatched by components that include `Ext.util.Observable` bubble up through all enclosing containers. For components it means that you can handle component’s event on container level. It can be handy to subscribe and handle multiple similar events in one place. To enable bubbling for selected events use the `enableBubble()` method, for example: 
 
 [source, javascript]
 ----
@@ -776,8 +791,7 @@ For components you have to define custom events inside the `initComponent()` met
 
 ==== Layouts
 
-In Ext JS each container has a property `items`, which stores references to its child components. The container's property `layout` controls how its children are
-laid out inside. If you won't explicitly set the `layout` property, its default value is `Auto`, which is just placing components inside the container top to bottom regardless of the component size.
+The container's property `layout` controls how its children are laid out. It does it by referring to the container's property `items`, which lists all of the child components. If you won't explicitly set the `layout` property, its default value is `Auto`, which is just placing components inside the container top to bottom regardless of the component size.
 
 Usually you'll be explicitly specifying the layout. For example, the `hbox` layout would arrange all components inside the container horizontally next to each other, but `vbox` layout would arrange them vertically. The `card` layout places the components one under another, but only the top component is visible (think of a tab folder, where the content of only one tab is visible at any given time).
 
@@ -813,7 +827,7 @@ Ext.define('MyApp.view.Viewport', {
 });
 ----
 
-===== The flex Property
+===== Setting Proportional Layouts With The flex Property
 
 Ext JS has a property `flex` that allows make your layout more flexible. Instead of specifying the width or height of a child component in absolute values you can split the available space proportionally. For example if the space has to be divided between two components having the `flex` values 2 and 1, this means that the 2/3 of the container's space will be allocated to the first component, and 1/3 to the second one as illustrated in the following code snippet.
 
@@ -834,20 +848,20 @@ Ext JS has a property `flex` that allows make your layout more flexible. Instead
  }]
 ----
 
-Tip: the format of this book doesn't allow us to include detailed description of major Ext JS component. If you are planning to use Ext JS for development of enterprise Web applications, allocate some extra time to learn the data grid `Ext.grid.Panel` that's used for rendering of tabular data. You should also master working with forms with `Ext.form.Panel`.
+NOTE: The format of this book doesn't allow us to include detailed description of major Ext JS component. If you are planning to use Ext JS for development of enterprise Web applications, allocate some extra time to learn the data grid `Ext.grid.Panel` that's used for rendering of tabular data. You should also master working with forms with `Ext.form.Panel`.
 
 In the next section you'll see Ext JS layouts in action while working on the Save The Child application.
 
 
 === Developing Save The Child With Ext JS
 
-In this section we'll do a code walk-through of the Ext JS version of our Save The Child application. We've prepared two separate Eclipse projects SSC_Top_ExJS.zip contains the top portion of the application, and SSC_Complete_ExtJS.zip contains the complete version. To test these applications in Eclipse, you need to have it configured with Tomcat as described earlier in the section "Configuring Eclipse project with Apache Tomcat and Ext JS".  
+In this section we'll do a code walk-through of the Ext JS version of our Save The Child application. We've prepared two separate Eclipse projects SSC_Top_ExJS.zip contains the code required to render the top portion of the UI, and SSC_Complete_ExtJS.zip contains the complete version. To test these applications in Eclipse, you need to have it configured with Tomcat as described earlier in the section "Configuring Eclipse project with Apache Tomcat and Ext JS".  
 
 ==== Save The Child: The Top Portion
 
 Then select Eclipse menu File | Import | General | Existing projects into workspace and press the button Next. Then select the option Select archive file and press browse to find SSC_Top_ExJS.zip on your disk. This will import the entire Dynamic Web Project, and most likely you'll see one error in the Problems view indicating that the target runtime with so-and-so name is not defined. This may happen because the name of the Tomcat configuration in your Eclipse is different from the one in the file SSC_Top_ExJS.zip. 
 
-To fix this issue right-click on the project name and select the menu Properties | Targeted runtimes. Then uncheck the Tomcat name that was imported from our archive and check the name of your Tomcat configuration. This action will make the project SSC_Top_ExtJS deployable under your Tomcat server. Right-click on the server name in the Servers view and select Add and Remove menu item. You'll see a popup window similar to <<FIG6-1-SSC>>, which depicts a state when the project SSC_Top_ExtJS is deployed, but SSC_Complete_ExtJS.
+To fix this issue right-click on the project name and select the menu Properties | Targeted runtimes. Then uncheck the Tomcat name that was imported from our archive and check the name of your Tomcat configuration. This action will make the project SSC_Top_ExtJS deployable under your Tomcat server. Right-click on the server name in the Servers view and select Add and Remove menu item. You'll see a popup window similar to <<FIG6-1-SSC>>, which depicts a state when the project SSC_Top_ExtJS is configured (deployed), but SSC_Complete_ExtJS isn't yet.
 
 [[FIG6-1-SSC]]
 .Deploying Dynamic Web Project
@@ -923,7 +937,6 @@ Ext.define('SSC.controller.Donate', {
   }],
 
   init: function () {                 // <1> 
-    'use strict';
 
     this.control({                    
       'button[action=showform]': {    // <2>
@@ -964,7 +977,7 @@ Ext.define('SSC.controller.Donate', {
 
 <5> Finding the children of the container can be done using the method `down()` method. in this case we are finding the child `<form>` element of a donate panel. If you need to find the parents of the component use `up()`. 
 
-TIP: Since MVC paradigm splits the code into separate layers, you can unit test them separately, e.g. test your controllers separately from the Views. Chapter 8 is dedicated to JavaSctipr testing, and it contains a section that illustrates how to arrange for testing of the model in the Ext JS version of the Save The Child application. 
+TIP: Since MVC paradigm splits the code into separate layers, you can unit test them separately, e.g. test your controllers separately from the Views. Chapter 8 is dedicated to JavaScript testing, and it contains sections "Testing The Models" and "Testing The Controllers" that illustrate how to arrange for separate testing of the models and controllers in the Ext JS version of the Save The Child application. 
 
 The top level window is a `SSC.view.Viewport`, which will contain the `Header` and the `Donate` form views. 
 
@@ -1058,7 +1071,9 @@ In Ext JS the column layout is used when you are planning to present the informa
 
 The width of _0.5, 980, 0.5_ means to give the middle column 980 pixels and share the remaining space equally between empty columns. 
 
-Tip: There is another way to lay out this screen using Horizontal Box `hbox` with the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.layout.container.HBox-cfg-pack[`pack` configuration property], but we decided to keep the column layout for illustration purposes.
+Note: There is another way to lay out this screen using Horizontal Box `hbox` with the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.layout.container.HBox-cfg-pack[`pack` configuration property], but we decided to keep the column layout for illustration purposes.
+
+TIP: Consider using http://www.sencha.com/learn/getting-started-with-ext-designer/[Ext Designer] for creating layouts in the wysiwyg mode.  
 
 .SASS and CSS
 **************
