@@ -2,11 +2,11 @@ define(function () {
     "use strict";
     return (function () {
         var mediator;
-        mediator = {};
+
         function OrderPanel() {
         }
 
-        OrderPanel.prototype.getMediator = function () {        // <1>
+        OrderPanel.prototype.getMediator = function () {      // <1>
             return mediator;
         };
 
