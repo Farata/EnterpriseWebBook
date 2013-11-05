@@ -1,7 +1,7 @@
-define(["mediator"], function() {
+define(function() {
     "use strict";
     return (function() {
-        var mediator = {};
+        var mediator;
 
         function PricePanel() {
         }

@@ -3,13 +3,17 @@
 :icons: font
 :imagesdir: ./images
 
-== Large-Scale JavaScript Projects
+== Modularizing Large-Scale JavaScript Projects
 
-Reducing the application startup latency and implementing lazy loading of certain parts of the application are the main reasons for modularization. A good illustration of why you may want to consider cutting the code into pieces is a well designed Web application of the http://www.mbusa.com/[Mercedes Benz USA]. This Web application serves people who live in America and either own or consider purchasing cars from this European car manufacturer.
+Reducing the application startup latency and implementing lazy loading of certain parts of the application are the main reasons for modularization.
 
-One of the options to purchase a vehicle is called European Delivery. An American resident can combine car purchase with a vacation. She would fly to Europe to the Mercedes Benz factory, pick up the car there and then she would be vacationing for two weeks driving her new vehicle in Europe. After the vacation is over, this car would be shipped to her home town in the USA.  This really nice program  would have added several thousand dollars to the price of the car.
+A good illustration of why you may want to consider modularization is a well designed Web application of the http://www.mbusa.com/[Mercedes Benz USA]. This Web application serves people who live in America and either own or consider purchasing cars from this European car manufacturer.
 
-From the application design code of view, we don't need to include the code that supports the European Delivery to each and every user's who decided to visit mbusa.com. _If and only if_ the user visits the menu Owners and clicks on the European Delivery link, then the required code and resources have to be pushed to the user's computer or mobile device. The snapshot in <<FIG7-1>> was taken after clicking on this link with Chrome Developer tools panel open.
+One of their purchasing options is called "European Delivery". An American resident who chooses this particular package can combine a vacation with their car purchase. She then flies to the Mercedes Benz factory in Europe, picks up her car, and has a two week vacation, driving her new vehicle around in Europe. After the vacation is over, the car is shipped to her hometown in the US. Needless to say, this program adds several thousand dollars to the price of the car.
+
+From an application design point of view, we don't need to include the code that supports the European Delivery to each and every user's who decided to visit mbusa.com. _If_ the user visits the menu Owners and clicks on the European Delivery link, then _and only then_ the required code and resources be pushed to the user's computer or mobile device. 
+
+The snapshot in <<FIG7-1>> was taken after clicking on this link with Chrome Developer tools panel open.
 
 [[FIG7-1]]
 .MB USA: Europian Delivery 
@@ -27,7 +31,7 @@ This chapter is about modularization techniques that will allow quick rendering 
 
 === Modularization basics
 
-Modules are code fragments that implement certain   functionality written using a specific techniques. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the _module concept_ in the JavaScript language itself. This is the future. 
+Modules are code fragments that implement certain functionality and are written using a specific techniques. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the _module concept_ in the JavaScript language itself. This is the future. 
 
 You may ask, "Aren't .js files modules already?" Of course, you can include and load each JavaScript file using the `<script>` tag. But this approach is error prone and slow. Developers have to manually manage dependencies and file loading order. Moreover, each `<script>` tag results in the  additional HTTP call to the server.
 
@@ -74,11 +78,13 @@ As the application gets larger the number of script files grows accordingly, whi
 
 <3> The script for the main Web page should be loaded after all dependencies have finished loading.
 
-We need other than adding `<script>` tags approach to modularizing applications. Let's start with using the Module pattern to leverage so called Immediately-Invoked Function Expressions (IIFE) as the first step to modularization. Next, we'll introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications defining sets of APIs. 
+As you can see, we need a better way to modularize applications than simply adding `<script>` tags. As our first step, we can use the Module design pattern and leverage the so-called "Immediately Invoked Function Expressions".
 
-You'll learn pros and cons of both formats later in the chapter, but the AMD module format plays nicely with the asynchronous nature of Web. In this chapter you'll see the use of the AMD module format and http://requirejs.org/[RequireJS] framework to implement the modularized version of the Save The Child application.
+Next, we'll introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications defining sets of APIs. 
 
-Also, you'll see how to use the RequireJS APIs to implement on-demand loading of the application components (e.g. What We Do, Ways To Give et al.)
+You'll learn pros and cons of both formats later in the chapter, but the AMD module format plays nicely with the asynchronous nature of Web. You'll also see the use of the AMD module format and http://requirejs.org/[RequireJS] framework to implement the modularized version of the Save The Child application.
+
+Also, you'll see how to use the RequireJS APIs to implement on-demand ("_lazy_") loading of the application components (e.g. What We Do, Ways To Give et al.)
 
 The upcoming ECMAScript 6 specification suggests how to handle modules, and how to start using ES6 module syntax today with the help of third-party tools like http://corner.squareup.com/2013/02/es6-module-transpiler.html[transpiler]. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD. You can find more details about CommonJS, AMD and the ES6 module format in the corresponding sections of this chapter.
 
@@ -88,7 +94,13 @@ The next section reviews various approaches and patterns of modular JavaScript a
 
 === Roads To Modularization
 
-Although JavaScript has no build-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. The _Module pattern_ doesn't require any additional frameworks and works in any JavaScript environment. The _CommonJS_ module format is widely adopted for the server-side JavaSctipt, while the _AMD_ format is popular in the applications running in Web browsers. 
+Although JavaScript has no build-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. In this section, we'll explore a few options for modularizing your application. 
+
+* The Module Pattern
+* CommonJS
+* Asynchronous Module Definition (AMD)
+
+Of these three, the _Module pattern_ doesn't require any additional frameworks and works in any JavaScript environment. The _CommonJS_ module format is widely adopted for the server-side JavaSctipt, while the _AMD_ format is popular in the applications running in Web browsers. 
 
 ==== The Module Pattern
 
@@ -120,7 +132,7 @@ include::include/ch7_iife_namespace_loginModule.js[]
 <1> Here we have modification of the approach described in previous snippet. To avoid name conflicts, create a namespace for our application called `ssc`. Note that we check for this object existence in the next line.
 <2> Now we can logically structure application code using namespaces. The global `ssc` object will contain only the code related to the Save The Child application.
 
-The Module patterns works well for implementing encapsulation in a rather small applications. It's easy to implement and is frameworks agnostic. However this approach doesn't scale well because when working with an application with the large number of modules you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.
+The Module patterns works well for implementing encapsulation in a rather small applications. It's easy to implement and is framework-agnostic. However this approach doesn't scale well because when working with an application with the large number of modules you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.
 
 The Module pattern has a serious drawback - you  still need to deal with manual dependency management and manually arrange `<script>` tags in the HTML document. 
 
@@ -130,13 +142,15 @@ http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. 
 
 .Node.js, V8, and NPM
 ****
-Node.js (or simply Node) is a server-side JavaScript framework. Node uses V8, the JavaScript engine by Google used in Chrome/Chromium. The V8 engine provides JavaScript API for accessing the file system, sockets and  running processes. The Grunt tool is built on top of Node JavaScript APIs. You can find more information about Node.js at  http://nodejs.org/about/[their website].
+Node.js (or simply Node) is a server-side JavaScript framework. Node uses V8, the JavaScript engine by Google used in Chrome/Chromium. The V8 engine provides JavaScript API for accessing the file system, sockets and running processes. Node is ultimate consumer of CommonJS modules format. You can find more information about Node at http://nodejs.org/about/[their website].
 
-Node Package Manager (NPM) is a utility as well as https://npmjs.org/[community repository] for open source JavaScript projects. NPM provides unified API and metadata model for managing dependencies in JavaScript projects. A `package.json` file is the project's dependencies descriptor. NPM installs project dependencies using information from `package.json`.
+Many tools built on top of Node JavaScript APIs. The http://gruntjs.com/[Grunt] tool is one of them. We will use Grunt later in this book to automate execution of some development tasks.
+
+Node Package Manager (NPM) is a utility that comes bundled with Node. NPM provides unified API and metadata model for managing dependencies in JavaScript projects. A `package.json` file is the project's dependencies descriptor. NPM installs project dependencies using information from `package.json`. NPM uses https://npmjs.org/[community repository] for open source JavaScript projects to resolve dependencies.
 
 Node and NPM are cross-platform software and binaries available for Windows, Linux and Mac OS X operating systems. 
 
-To use code samples from this chapter you need to download and install Node from http://nodejs.org/download/[their web site]. Then follow http://gruntjs.com/getting-started[ the instructions from Grunt's  website] to install it on your machine.
+To use code samples from this chapter you need to download and install Node from http://nodejs.org/download/[their web site]. Then follow http://gruntjs.com/getting-started[ the instructions from Grunt's  website] to install it on your machine. After that make yourself familiar with Grunt basics by reading <<appendix_a>>. We will use Grunt later in this chapter.
 ****
 
 On the Web browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One of the solutions suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. On the server side separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.
@@ -156,12 +170,12 @@ include::include/ch7_commonjs.js[]
 WARNING: The snippet above may give you an impression that the module's code is executed in the global scope, but it's not. Each module is executed in its own scope which helps to isolate them. This works automatically when you write modules for NodeJS environment running on the server (see Chapter 8). But to use CommonJS module format in the Web browser you need to use an extra tool to generate transport format from _authoring format_. http://browserify.org/[Browserify] takes all your scripts and concatenates them it to one large file.  Besides the module's code the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually developers perform the _code/save/refresh browser_ routine, but it doesn't work in this case and requires an extra steps as you need to install the additional build tool and write  build scripts. 
 
 
-[underline]#CommonJS pros:#
+[underline]#Pros to using CommonJS:#
 
 * It's a simple API for writing and using modules.
 * Such a pattern of organizing  modules is widespread in the server-side JavaScript, e.g. NodeJS.
 
-[underline]#CommonJS cons:#
+[underline]#Cons to using CommonJS:#
 
 * Web browsers don't automatically create the scoped variables `require`, `exports`, `module` hence the additional build step is required.
 * The `require` method is synchronous, but there is no exact indication if dependent module's values are fully loaded because of the asynchronous nature of Web browsers. There is no event to notify the application that 100% of the required resources is loaded. 
@@ -173,15 +187,18 @@ Further reading:
 
 * http://wiki.commonjs.org/wiki/Modules/1.1[CommonJS Modules 1.1 specification]
 * http://nodejs.org/docs/latest/api/modules.html#modules_modules[Node.js Modules Reference]
+* http://browserify.org/[Browserify]
 
 
 [[amd_section]]
 ==== Asynchronous Module Definition
 
+The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded. 
+The AMD API is based on https://github.com/amdjs/amdjs-api/wiki/AMD[this specification]. 
+
 AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further work on module's format moved to the https://github.com/amdjs[amdjs Github page].
 
-The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded. 
-The AMD API is based on https://github.com/amdjs/amdjs-api/wiki/AMD[this specification]. The AMD API have the following main functions:
+The AMD API have the following main functions:
 
 [[DEFINE_DESC]]
 * `define` for facilitating module definition. This function takes tree arguments:
@@ -202,11 +219,10 @@ define(
 ----
 <1> This string literal defines +module_id+ that will be used by the AMD loader for loading this module.
 <2> An optional array of dependencies' ids.
-<3> The function for instantiating the module or object. The factory function will only be executed once
-+
+
+The factory `function{}` above will only be executed once.
 
 For example, the Save The Child application has a menu Way To Give, which in turn depends on other module called `otherContent`. If the user clicks on this menu, we can load the module that can be defined in the +wayToGive.js+ as follows:
-+
 
 [[LISTING_define_modeule]]
 .The definition of the wayToGive module
@@ -233,7 +249,7 @@ require(["main"], function() {
 }); 
 ----
 
-[underline]#AMD pros:#
+[underline]#Pros to using AMD:#
 
 * It's a very simple API that has only two functions - `require` and `define`. 
 
@@ -263,7 +279,7 @@ In modularized applications you can easier localize errors.
 
 * Performance: module are loaded only when required hence the initial portion of the application's code become smaller.
 
-[underline]#AMD Cons:#
+[underline]#Cons to using AMD:#
 
 * The dependency array can get rather large for complex modules.
 +
@@ -287,7 +303,9 @@ include::include/ch7_define_module_ids_order.js[]
 [[umd]]
 ==== Universal Module Definition
 
-Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used to support multiple module formats. Here is an example of the module definition in UMD notation. In the following example, the module can be used with the AMD loader and as one of the variations of the Module Pattern.
+Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used to support multiple module formats. UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules will run in more than one type of environment (e.g. a Web browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.
+
+Here is an example of the module definition in UMD notation. In the following example, the module can be used with the AMD loader and as one of the variations of the Module Pattern.
 
 
 [source,javascript]
@@ -300,8 +318,6 @@ include::include/ch7_umd_amd_globals.js[]
 
 <3> Passing the top-level context and providing a implementation of a factory function.
 
-It's worth mentioning that UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules will run in more than one type of environment (e.g. a Web browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.
-
 You can find more information about UMD and commented code snippets for different situations in https://github.com/umdjs/umd[the UMD project repository].
 
 ==== ECMAScript 6 Modules
@@ -313,11 +329,12 @@ One of the most important features of ES6 specification is the _module syntax_. 
 .Login module definition
 [source,javascript]
 ----
-export function login(userNameValue, userPasswordValue) { // <1>
+export function login(userNameValue, userPasswordValue) { 
     console.log("login implementation omitted");
 };
 ----
-<1> The keyword `export` specifies the function or object (a separate file) to be exposed as a module, which can be used from any other JavaScript code as follows:
+
+The keyword `export` specifies the function or object (a separate file) to be exposed as a module, which can be used from any other JavaScript code as follows:
 
 .Main application module
 [source,javascript]
@@ -326,8 +343,10 @@ import login from 'login'
 var result = login("admin", "password");
 ----
 
-.ES6 Module Transpiler
-****
+With the `import` keyword we assign instance of `login()` function imported from `login` module.
+
+===== ES6 Module Transpiler
+
 Although ES6 standard is not implemented yet by most of browsers you can use the third party tools to get a taste of upcoming enhancements in JavaScript language. http://corner.squareup.com/2013/02/es6-module-transpiler.html[ES6 Module Transpiler] library developed by the http://squareup.com/[Square] Engineers helps using the module authoring syntax from ES6 and compile it down to the transport formats that you learned earlier in this chapter.
 
 Consider the following module circle.js: 
@@ -475,9 +494,8 @@ Using the _globals_ option in the _compile-modules_ command line produces the co
 ----
 
 To learn the up-to-date information on the ES6 browsers' support visit http://kangax.github.io/es5-compat-table/es6/[ECMAScript 6 compatibility table].
-****
 
-NOTE: http://www.typescriptlang.org/[TypeScript] is an open-source language from Microsoft that compiles to JavaScript and brings object-oriented concepts like classes and modules to JavaScript. It has a module syntax, which is very similar to what ES6 standard proposes. The TypeScript compiler can produce CommonJS and AMD module formats. You can learn more about TypeScript from http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf[language specification]. You can find Save The Child application written in TypeScript in Appendix B.
+NOTE: http://www.typescriptlang.org/[TypeScript] is an open-source language from Microsoft that compiles to JavaScript and brings object-oriented concepts like classes and modules to JavaScript. It has a module syntax, which is very similar to what ES6 standard proposes. The TypeScript compiler can produce CommonJS and AMD module formats. You can learn more about TypeScript from http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf[language specification].
 
 [[REQUIREJS]]
 === Dicing the Save The Child Application Into Modules
@@ -585,7 +603,7 @@ Once RequireJS downloaded and placed into the project directory, add it to the i
 
 
 [[inside_config]]
-==== Inside config.js
+==== Inside RequireJS configuration: config.js
 
 RequiredJS uses a configuration object that includes modules and dependencies that have to be managed by the framework.
 
@@ -633,14 +651,14 @@ include::include/ch7_commonjs_require.js[]
 
 ==== Loading Modules On-Demand
 
-As per the Save The Child modules graph, some components shouldn't when the application starts. Similar to Mercedes Benz website example, some functionality of Save The Child can be loaded later when user needs it. The user might never want to visit the "Where we work" section. Hence this functionality is a good candidate for the _load on-demand_ module. You may want to load such a module on demand when the user clicks the button or selects a menu item. 
+As per the Save The Child modules graph, some components shouldn't load when the application starts. Similar to Mercedes Benz website example, some functionality of Save The Child can be loaded later when user needs it. The user might never want to visit the "Where we work" section. Hence this functionality is a good candidate for the _load on-demand_ module. You may want to load such a module on demand when the user clicks the button or selects a menu item. 
 
 At any given time a module can be in one of three states: 
 
 * not loaded (`module === null`)
 * loading is in progress (`module === 'loading'`)
 * fully loaded (`module !== null`).
-+
+
 
 [[load_ondemand_snippet]]
 .Loading the module on demand
@@ -693,7 +711,9 @@ Let's configure our Grunt project to enable the optimization task. Here's the co
 .Adding dependencies to package.json
 [source,bash]
 ----
-> npm install grunt-contrib-requirejs grunt-contrib-concat grunt-contrib-clean grunt-contrib-uglify --saveDev 
+> npm install grunt-contrib-requirejs\ 
+grunt-contrib-concat grunt-contrib-clean\ 
+grunt-contrib-uglify --saveDev 
 ----
 
 <<rjs_gruntfile_list,The following listing>> describes the script to setup RequireJS optimizer and the related optimization tasks for Grunt. You'll need to run this script to generate optimized version of the Save The Child application. 
@@ -837,7 +857,7 @@ The introduction of the Mediator increases reusability of components by decoupli
 
 === Summary
 
-The size of any application tends to increase, and sooner or later you'll need to decide how to cut it into several loadable blocks of functionality. The sooner you start modularizing your application the better. 
+The size of any application tends to increase with time, and sooner or later you'll need to decide how to cut it into several loadable blocks of functionality. The sooner you start modularizing your application the better. 
 
 In this chapter we've reviewed several options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using just the classical  Module Pattern. These advantages include avoiding creating global variables for each module and better support for static and dynamic dependency management.
 
