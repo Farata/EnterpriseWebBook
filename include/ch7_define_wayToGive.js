@@ -1,7 +1,7 @@
 define(["otherContent"], function(otherContent) { // <1>
     var wayToGive;
 
-    console.log("way-to-give module is loaded");
+    console.log("otherContent module is loaded");
     wayToGive = function() {
         return {
             render: function() {

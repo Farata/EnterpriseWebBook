@@ -20,4 +20,4 @@
     };
 
     global.loginModule = module;
-})(window);  // <2>
+})(this);  // <2>
