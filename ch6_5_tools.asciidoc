@@ -1,0 +1,644 @@
+:toc:
+:toclevels: 4
+
+== Selected Productivity Tools for Enterprise Developers
+
+In this chapter we'd like to highlight the a handful of productivity tools that authors of this book use in their consulting projects. In particular, we'll introduce you to Clear Toolkit for Ext JS, Grunt, and Bower.  
+
+=== Productive Enterprise Web Development with Ext JS and CDB 
+
+Authors of this book work for the company called Farata Systems, which has developed an open source freely available software Clear Toolkit for Ext JS, and the code generator and Eclipse IDE plugin CDB comes with it. CDB is a productivity tool that was created specifically for the applications that need to retrieve, manipulate, and save the data in some persistent storage. 
+
+Such applications are known as _CRUD applications_ because they perform Create-Retrieve-Update-Delete operations with data. If the server side of your Web application is developed in Java, with CDB you can easily generate a CRUD application, where Ext JS front end communicates the Java back end. In this section you will learn how jump start development of such CRUD Web applications. 
+
+IMPORTANT: Familiarity with core Java concepts like classes, constructors, getters and setters, and annotations is required for understanding of the materials of this section.
+
+The phrase _to be more productive_ means to write less code while producing the results faster. This is what CDB is for, and you'll see it helps you to integrate the client side with the back end using the RPC style and how to implements data pagination for your application.
+
+
+==== Part One: Ext JS MVC Application Scaffolding 
+
+In this part we'll cover the following topics:
+
+- What is Clear Toolkit for Ext JS 
+- How to create an Ext JS MVC front end for a Java-based project
+- How to deploy and run your first Ext JS and Java application on Apache Tomcat server
+
+Clear Toolkit for Ext JS includes the following:
+
+- Clear Data Builder - an Eclipse plugin that supports code generation Ext JS MVC artifacts based on the code written in Java. CDB comes with wizards to start new project with plain Java or with popular frameworks like Hibernate, Spring, MyBatis.
+
+- Clear JS - a set of JavaScript components that extends Ext JS standard components. In particular, it includes a `ChangeObject` that traces the modifications of any item in a store. 
+
+- Clear Runtime - Java components that implements server side part of ChangeObject, DirectOptions an others.
+
+CDB distribution available as plug-in for a popular among Java developers Eclipse IDE. The current update site of CDB is located http://cleartoolkit.com/downloads/plugins/extjs/cleardatabuilder/4.1.4/[here].  The current version is 4.1.4. You can install this plug-in via the +Install New Software+ menu in Eclipse IDE. The <<FIG6-1-CDB>> shows "Clear Data Builder for Ext JS feature" in the list of Installed Software in your Eclipse IDE, which means that CDB is installed.
+
+IMPORTANT: You have to have work with "Eclipse IDE for Java EE Developers", which includes plugins for automation of the Web application development.
+
+[[FIG6-1-CDB]]
+.Verifying CDB installation
+image::images/fig_06_01cdb.png[image]
+
+Clear Data Builder comes with a set of prepared examples that demonstrate the integration with popular Java frameworks - MyBatis, Hibernate, and Spring. There is also a plain Java project example that doesn't use any persistence frameworks. Let's start with the creation of the new project by selecting Eclipse  menu File -> New -> Other -> Clear. You'll see a window similar to <<FIG6-2-CDB>>. 
+
+[[FIG6-2-CDB]]
+.New CDB Project Wizard
+image::images/fig_06_02cdb.png[image]
+
+Name the new project +episode_1_intro+. CDB supports different ways of linking the Ext JS framework to the application. CDB automatically copies the Ext JS framework under the Web server (Apache Tomcat in our case). We're going to use this local Ext JS URL, but you can specify any folder in your machine and CDB will copy the Ext JS file from there into your project. You can also  use Ext JS from the Sencha's CDN, if you don't want to store these libraries inside your project. Besides, using a common CDN will allow Web browser to reuse the cached version of Ext JS. 
+
+For this project we are not going to use any server-side persistence frameworks like MyBatis or Hibernate. Just click the button Finish, and you'll see some some initial CDB messages on the Eclipse console. When CDB runs for the first time it creates in your project's +WebContent+ folder the directory structure recommended by Sencha for MVC applications.  It also generates +index.html+ for this application, which contains the link to the entry point of our Ext JS application. 
+
+CDB generates an empty project with one sample controller and one view - +Viewport.js+. To run this application, you need to add the newly generated Dynamic Web Project to Tomcat and start the server (right-click on the Tomcat in the Servers view of Eclipse IDE).  
+
+[[FIG6-3-CDB]]
+.Adding web project to Tomcat
+image::images/fig_06_03cdb.png[image]
+
+Open this application in your Web browser at +http://localhost:8080/episode_1_intro+ . Voila! In less than  a couple of minutes we've created a new Dynamic Web Project with the Ext JS framework and one fancy button as shown on <<FIG6-4-CDB>>.
+
+[[FIG6-4-CDB]]
+.Running scaffolded application
+image::images/fig_06_04cdb.png[image]
+
+The next step is to make something useful out of this basic application.
+
+==== Part Two: Generating a CRUD application 
+
+The Part Two of the CDB section covers the process of creation of a simple CRUD application that uses Ext JS and Java. We'll go through the following steps:
+
+* Create a plain old Java object (POJO) and the corresponding `Ext.data.Model`
+* Create a Java service and populate `Ext.data.Store` with data from service
+* Use the auto-generated Ext JS application
+* Extend the auto-generated CRUD methods
+* Use `ChangeObject` to track the data changes
+
+Now let's use CDB to create a CRUD application. You'll learn how turn a POJO into an Ext JS model, namely:
+
+* how to populate the Ext JS store from a remote service
+* how to use automatically generated UI for that application
+* how to extend the UI
+* what the `ChangeObject` class is for
+
+First, we'll extend the application from Part One - the CRUD application needs a Java POJO.  To start, create a Java class `Person` in the package `dto`. Then add to this class the properties (as well as getters and setters) `firstName`, `lastName`, `address`, `ssn` and `phone` and `id`. Add the class  constructor that initializes these properties as shown in the code listing below. 
+
+[[LISTING_1]]
+.Person data transfer object
+[source,java]
+-----------------------------------------------------
+package dto;
+
+import com.farata.dto2extjs.annotations.JSClass;
+import com.farata.dto2extjs.annotations.JSGeneratedId;
+
+@JSClass
+public class Person {
+
+  @JSGeneratedId
+  private Integer id;
+  private String firstName;
+  private String lastName;
+  private String phone;
+  private String ssn;
+  
+  public Person(Integer id, String firstName, String lastName, 
+                                    String phone, String ssn) {
+  	super();
+  	this.id = id;
+  	this.firstName = firstName;
+  	this.lastName = lastName;
+  	this.phone = phone;
+  	this.ssn = ssn;
+  }
+  
+  // Getters and Setters are omitted for brevity
+}
+
+-----------------------------------------------------
+
+You may also add a `toString()` method to the class. Now you'll need the same corresponding Ext JS model for  the Java class `Person`. Just annotate this class with the annotation `@JSClass` to have CDB generate the Ext JS model. 
+
+The next step is to annotate the `id` field with the CDB annotation `@JSGeneratedId`. This annotation  instructs CDB to threat this field as an auto generated id. Let's examine the directory of Ext JS MVC application to see what's inside the model folder. In the JavaScript section there is the folder dto which corresponds to the Java +dto+ package where the `PersonModel` resides as illustrated on <<FIG6-5-CDB>>. 
+
+[[FIG6-5-CDB]]
+.Generated from Java class Ext JS model
+image::images/fig_06_05cdb.png[image]
+
+Clear Data Builder generated two files as recommended by the http://martinfowler.com/dslCatalog/generationGap.html[Generation Gap pattern], which is about keeping the generated and handwritten parts separate by putting them in different classes linked by inheritance. Let's open the person model. In our case the `PersonModel.js` is extended from the generated `_PersonModel.js`. Should we need to customize this class, we'll do it inside the +Person.js+, but this underscore-prefixed file will be regenerated each and every time when we change something in our model. CDB follows this pattern for all generated artifacts - Java services, Ext JS models and stores. This model contains all the fields from our Person DTO. 
+
+Now we need to create a Java service to populate the Ext JS store with the data. Let's create a Java  interface `PersonService` in the package `service`. This service will to return the list of `Person` objects. This interface contains one method -`List<Person> getPersons()`. 
+
+To have CDB to expose this service as a remote object, we'll use the annotation called `@JSService`.  Another annotation `@JSGenetareStore` will instruct CDB to generate the store. In this case CDB will create the _destination-aware store_. This means that store will know from where to populate its content. All configurations of the store's proxies will be handled by the code generator. With `@JSFillMethod` annotation we will identify our main read method (the "R" from CRUD).
+
+Also it would be nice to have some sort of a sample UI to test the service - the annotation `@JSGenerateSample` will help here. CDB will examine the interface `PersonService`, and based on these annotations will generate all Ext JS MVC artifacts (models, views, controller) and the sample application. 
+
+[[LISTING_2]]
+.PersonService interface annotated with CDB annotations
+[source,java]
+----------------------------------------------------------------------
+@JSService
+public interface PersonService {
+    @JSGenerateStore
+    @JSFillMethod
+    @JSGenerateSample
+    List<Person> getPersons();
+}
+----------------------------------------------------------------------
+
+When the code generation is complete, you'll get the implementation for the service - `PersonServiceImpl`. The store folder inside the application folder (+WebContent\app+) has the Ext JS store, which is bound to the previously generated `PersonModel`. In this case, CDB generated store that binds to the remote service. 
+
+[[FIG6-6-CDB]]
+.Structure of store and model folders
+image::images/fig_06_06cdb.png[image]
+
+All this intermediate translation from the JavaScript to Java and from Java to JavaScript is done by DirectJNgine, which is a server side implementation of the Ext Direct Protocol. You can read about this protocol in http://www.sencha.com/products/extjs/extdirect[Ext JS documentation]. 
+
+CDB has generated a sample UI for us too. Check out the samples directory shown on <<FIG6-7-CDB>>.
+
+[[FIG6-7-CDB]]
+.Folder with generated UI files
+image::images/fig_06_07cdb.png[image]
+
+CDB has generated `SampleController.js`, `SampleGridPanel.js`, and the Ext JS application entry point `sampleApp.js`. To test this application just copy the file  `SampleController.js` into the controller folder, `SampleGridPanel.js` panel into the view folder, and the sample application in the root of the WebContent folder. Change the application entry point with to be `sampleApp.js` in the index.html of the Eclipse project as shown below.
+
+[source,html]
+----------------------------------------------------------------------
+<script type="text/javascript" src="sampleApp.js"></script>
+----------------------------------------------------------------------
+
+This is how the generated UI of the sample application looks like <<FIG6-8-CDB>>.
+
+[[FIG6-8-CDB]]
+.Scaffolded CRUD application template
+image::images/fig_06_08cdb.png[image]
+On the server side, CDB also follows the _Generation Gap Pattern_ and it generated stubs for the service methods. Override these methods when you're ready to implement the CRUD functionality, similar to the below code sample. 
+
+[[LISTING_3]]
+.Implementation of PersonService interface
+[source,java]
+----------------------------------------------------------------------
+package service;
+import java.util.ArrayList;
+import java.util.List;
+
+import clear.data.ChangeObject;
+import dto.Person;
+import service.generated.*;
+
+public class PersonServiceImpl extends _PersonServiceImpl { // <1>
+
+  @Override
+  public List<Person> getPersons() {                        // <2>
+      List<Person> result = new ArrayList<>();
+      Integer id= 0;
+      result.add(new Person(++id, "Joe", "Doe", 
+                      "555-55-55", "1111-11-1111"));
+      result.add(new Person(++id, "Joe", "Doe", 
+                      "555-55-55", "1111-11-1111"));
+      result.add(new Person(++id, "Joe", "Doe", 
+                      "555-55-55", "1111-11-1111"));
+      result.add(new Person(++id, "Joe", "Doe", 
+                      "555-55-55", "1111-11-1111"));
+      return result;                    // <3>
+  }
+
+  @Override
+  public void getPersons_doCreate(ChangeObject changeObject) { // <4>
+      Person dto = (Person) deserializeObject(
+                      (Map<String, String>) changeObject.getNewVersion(),
+                      Person.class);
+
+      System.out.println(dto.toString());
+  }
+
+  @Override
+  public void getPersons_doUpdate(ChangeObject changeObject) { // <5> 
+      // TODO Auto-generated method stub
+      super.getPersons_doUpdate(changeObject);
+  }
+
+  @Override
+  public void getPersons_doDelete(ChangeObject changeObject) { // <6>
+      // TODO Auto-generated method stub
+      super.getPersons_doDelete(changeObject);
+  }
+}
+----------------------------------------------------------------------
+<1> Extend the generated class and provide the actual implementation
+
+<2> The `getPerson()` is our retrieve method (the R in CRUD)
+
+<3> For this sample application we can use `java.util.ArrayList` class as in-memory server side storage of the `Person` objects. In the real world applications you'd use a database or other persistent storage
+
+<4> +fillmethod++`doCreate()` is our create method (the C in CRUD)
+
+<5> +fillmethod++` doUpdate` is our update method (the U in CRUD)
+
+<6> +fillmethod++` doDelete` is our delete method (the D in CRUD)
+
+Click on the +Load+ menu on the UI, and the application will retrieve four persons from our server 
+
+To test the rest of the CRUD methods, we'll ask the user to insert one new row, modify three existing ones and remove two rows using the generated Web client. The `Clear.data.DirectStore` object will automatically create a collection of six `ChangeObject`s - one to represent a new row, three to represent the modified ones, and two for the removed rows.
+
+When the user clicks on the +Sync+ UI menu the changes will be sent to the corresponding `do...` remote method. When you `sync()` a standard `Ext.data.DirectStore` Ext JS is POST-ing new, modified and deleted items to the server. When the request is complete the server's response data is applied to the store expecting that some items can be modified by the server. In case of `Clear.data.DirectStore` instead of passing around items, we pass the deltas, wrapped in the `ChangeObject`.
+
+Each instance of the `ChangeOject` contains the following:
+
+- `newVersion`  - it's an instance of the newly inserted or modified item. On the Java side it's available via `getNewVersion()`.
+- `prevVersion` - it's an instance of the deleted of old version of modified item. On the Java side it's available via `getPrevVersion()`.
+- array of `changepropertyNames` if this `ChangeObject` represents an update operation.
+
+The rest of `ChangeObject` details described on the https://github.com/Farata/ClearJS/wiki/Change-Object%3A-Synchronization-Keystone[Clear Toolkit Wiki].
+
+The corresponding Java implementation of `ChangeObject` is available on the server side and Clear Toolkit passes `ChangeObject` instances to the appropriate `do*` method of the service class. Take a look at the `getPersons_doCreate()` method from <<LISTING_3>>. When the server needs to read the new or updated data arrived from the client your Java class has to invoke the method `changeObject.getNewVersion()`. This method will return the JSON object that you need to deserialize into the object `Person`. This is done in <<LISTING_3>> and looks like this.
+
+[source,java]
+----------------------------------------------------------------------
+ Person dto = (Person) deserializeObject(
+            (Map<String, String>) changeObject.getNewVersion(),Person.class);
+----------------------------------------------------------------------
+
+When the new version of the `Person` object is extracted from the `ChangeObject` you can do with it whatever has to be done to persist it in the appropriate storage. In our example we just print the new person information on the server-side Java console. This is why we said earlier, that it may be a good idea to provide a pretty printing feature on the class `Person` by overriding method `toString()`. Similarly, when you need to do a delete, the `changeObject.getPrevVersion()` would give you a person to be deleted.
+
+
+==== Part Three: Data Pagination 
+
+The pagination feature is needed in almost every enterprise web application. Often you don't want to bring all the  data to the client at once - a page by page feed brings the data to the user a lot faster. The user can navigate back and forth between the pages using pagination UI components. To do that, we need to split our data on the server side into chunks, to send them page by page by the client request. Implementing pagination is the agenda for this section. We'll do the following:
+
+* Add the data pagination to our sample CRUD application:
+
+    ** Add the `Ext.toolbar.Paging` component
+    ** Bind both _grid_ and _pagingtoolbar_ to the same store
+    ** Use `DirectOptions` class to read the pagination parameters
+
+We are going to improve our CRUD application by adding the paging toolbar component bound to the same store as the grid. The class `DirectOptions` will handle the pagination parameters on the server side. 
+
+So far CDB has generate the UI from the Java back end service as well as the Ext JS store and model. We'll refactor the service code from previous example to generate more data (a thousand objects) so we have something to paginate, see below. 
+
+[[LISTING_4]]
+.Refactored implementation of PersonService Interface
+[source,java]
+----------------------------------------------------------------------
+public class PersonServiceImpl extends _PersonServiceImpl {
+  @Override
+    public List<Person> getPersons() {
+        List<Person> result = new ArrayList<>();
+        for (int i=0; i<1000; i++){
+            result.add(new Person(i, "Joe", "Doe", "555-55-55", 
+                                                   "1111-11-1111"));
+        }
+        return result;
+    }   
+}
+----------------------------------------------------------------------
+
+If you'll re-run the application now, the Google Chrome Console will show that `PersonStore` is populated with one thousand records. Now we'll add the the Ext JS paging `toolbarpaging` UI component to the file sampleApp.js as shown below. 
+
+[[LISTING_5]]
+.Sample Application Entry
+[source,javascript]
+-----------------------------------------------------
+Ext.Loader.setConfig({
+	disableCaching : false,
+	enabled : true,
+	paths : {
+		episode_3_pagination : 'app',
+		Clear : 'clear'
+	}
+});
+
+Ext.syncRequire('episode_3_pagination.init.InitDirect');
+// Define GridPanel
+var myStore = Ext.create('episode_3_pagination.store.dto.PersonStore',{}); //<1>
+Ext.define('episode_3_pagination.view.SampleGridPanel', {
+	extend : 'Ext.grid.Panel',
+	store : myStore,
+	alias : 'widget.samplegridpanel',
+	autoscroll : true,
+	plugins : [{
+		ptype : 'cellediting'
+	}],
+	dockedItems: [
+		{
+			xtype: 'pagingtoolbar',		//<2>
+			displayInfo: true,
+			dock: 'top',
+			store: myStore			//<3>
+		}
+	],
+	columns : [
+		{header : 'firstName', dataIndex : 'firstName', 
+		              editor : {xtype : 'textfield'}, flex : 1 },
+		{header : 'id', dataIndex : 'id', flex : 1 },
+		{header : 'lastName', dataIndex : 'lastName', 
+		              editor : {xtype : 'textfield'}, flex : 1 },
+		{header : 'phone', dataIndex : 'phone', 
+		              editor : {xtype : 'textfield'}, flex : 1 },
+		{header : 'ssn', dataIndex : 'ssn', 
+		              editor : {xtype : 'textfield'}, flex : 1 }],
+	tbar : [
+		{text : 'Load', action : 'load'},
+		{text : 'Add', action : 'add'},
+		{text : 'Remove', action : 'remove'},
+		{text : 'Sync', action : 'sync'}
+		]
+	});
+// Launch the application
+Ext.application({
+	name : 'episode_3_pagination',
+	requires : ['Clear.override.ExtJSOverrider'],
+	controllers : ['SampleController'],
+	launch : function() {
+		Ext.create('Ext.container.Viewport', {
+			items : [{
+				xtype : 'samplegridpanel'
+			}]
+		});
+	}
+});
+
+-----------------------------------------------------
+
+<1> Manual store instantiation - create a separate variable `myStore` for this store with empty +config+ object 
+<2> Adding the +xtype+ `pagingtoolbar` to this component docked items property to display the information and dock this element at the top.
+<3> Now the paging toolbar is also connected to same store.
+
+The next step is to fix the automatically generated controller to take care of the loading of data on 
+click of +Load+ button as shown in the code below. 
+
+[[LISTING_6]]
+.Controller for sample application
+[source,javascript]
+-----------------------------------------------------
+Ext.define('episode_3_pagination.controller.SampleController', {
+	extend: 'Ext.app.Controller',
+	stores: ['episode_3_pagination.store.dto.PersonStore'],
+	refs: [{								//<1>
+		ref: 'ThePanel',
+		selector: 'samplegridpanel'
+	}],
+
+	init: function() {
+		this.control({
+			'samplegridpanel button[action=load]': {
+				click: this.onLoad
+			}
+		});
+	},
+
+	onLoad: function() {
+		// returns instance of PersonStore
+		var store = this.getThePanel().getStore();		//<2>
+		store.load();
+	}
+});
+-----------------------------------------------------
+
+<1> Bind the store instance to our grid panel. In controller's `refs` property we're referencing our  `simplegrid` panel with `ThePanel` alias.
+
+<2> In this case there is no need to explicitly retrieve the store instance by name. Instead, we can use getters `getPanel()` and `getStore()` automatically generated by the Ext JS framework.
+
+When the user clicks the button _next_ or _previous_ the method `loadPage` of the underlying store is called. Let's examine the `directprovider` URL - the server side router of the remoting calls - to see how the direct request looks like.  Open Google Chrome Developer Tools from the menu View -> Developer, refresh the Web page and go to the Network tab. You'll see that each time the user clicks on the _next_ or _previous_ buttons on the pagination toolbar the component sends `directOptions` as a part of the request. 
+
+[[FIG6-9-CDB]]
+.Request payload details
+image::images/fig_06_09cdb.png[image]
+
+The default Ext Direct request doesn't carry any information about the page size. Clear JS has the client side extension of the Ext JS framework that adds some extra functionality to +Ext.data.DirectStore+ component to pass the page +start+ and +limit+ values to the server side. At this point, the `directOptions` request property (see <<FIG6-9-CDB>>) can be extracted on the server side to get the information about the page boundaries. Let's add some code to the `PersonServiceImpl.java`. At this point the pagination doesn't work. The server sends the entire thousand records, because it doesn't know that the data has to be paginated. We'll fix it in the following listing. 
+
+[[LISTING_7]]
+.Implementation of PersonService With Pagination
+[source,java]
+----------------------------------------------------------------------
+package service;
+import java.util.ArrayList;
+import java.util.List;
+
+import clear.djn.DirectOptions;			//<1>
+
+import dto.Person;
+import service.generated.*;
+
+public class PersonServiceImpl extends _PersonServiceImpl {
+	@Override
+	public List<Person> getPersons() {
+		List<Person> result = new ArrayList<>();
+		for (int i=0; i<1000; i++){
+			result.add(new Person(i, "Joe", "Doe", "555-55-55","1111-11-1111"));
+		}
+		//<2>
+		int start = ((Double)DirectOptions.getOption("start")).intValue();
+		int limit = ((Double)DirectOptions.getOption("limit")).intValue();
+		
+		limit = Math.min(start+limit, result.size() );		//<3>
+		DirectOptions.setOption("total", result.size());	//<4>
+		result = result.subList(start, limit);			//<5>
+
+		return result;
+	}
+}
+----------------------------------------------------------------------
+<1> On the server side there is a special object called `DirectOptions`, which comes with Clear Toolkit.
+
+<2> We want to monitor the +start+ and in +limit+ values (see <<FIG6-9-CDB>>).
+
+<3> Calculate the actual limit. Assign the size of the data collection to the `limit` variable if it's  less than the page size (`start+limit`).
+
+<4> Notify the component about the total number of elements on the server side by using `DirectOptions.setOption()` method with +total+ option.
+
+<5> Before returning the result, create a subset, an actual page of data using the method +java.util.List.sublist()+ which produces the view of the portion of this list between indexes specified by the `start` and the `limit` parameters.  
+
+As you can see from the Network tab in <<FIG6-8-CDB>>, we've limited the data load to 25 elements per page. Clicking on +next+ or +previous+ buttons will get you only a page worth of data. The Google Chrome Developers Tools Network tab shows that that we are sending the +start+ and +limit+ values with every request, and the response contains the object with 25 elements.
+
+If you'd like to repeat all of the above steps on you own, watch http://faratasystems.com/training-at-farata-youtube-chanel/[the screencasts] where we demonstrate all the actions described in the section on CDB.
+
+=== Automate Everything With Grunt
+
+You should automate every aspect of the development workflow to reduce the cost of building, deploying, and maintaining your application. 
+
+In this appendix we are going to introduce http://gruntjs.com/[Grunt] - a task runner framework for the JavaScript projects - that can help you with automation of repetitive operations like running tests when the code changes.
+
+Grunt can watch your code changes and automate the process of running tests when the code changes.  Tests should help in assessing the quality of our code.
+
+With the Grunt tool you can have a script to run all your tests. If you came from the Java world, you know about Apache Ant, a general-purpose command-line tool to drive processes described _build files_ as _targets_ in the build.xml file. Grunt also runs  the tasks described in scripts. There is a wide range of tasks available today - starting with running automated unit tests and ending with JavaScript code minification. Grunt provides a separate layer of abstraction where you can define tasks in a special DSL (domain-specific language) in Gruntfile for execution.
+
+=== The Simplest Grunt File
+
+Let's start with the simplest Grunt project setup. The following two files must be present in the project directory:
+
+* `package.json`: This file is used by NPM to store metadata and a project dependencies. 
++
+List Grunt and its plugins that your project needs as _devDependencies_ in this file.
+
+* `Gruntfile`: This file is named `Gruntfile.js` or `Gruntfile.coffee` and is used to configure or define the tasks and load Grunt plugins.
+
+.The simplest possible Gruntfile
+[source,javascript]
+----------------------------------------------------------------------
+module.exports = function (grunt) {
+    'use strict';
+
+    grunt.registerTask('hello', 'say hello', function(){    // <1>
+        grunt.log.writeln("Hello from grunt");              // <2>
+    });
+
+    grunt.registerTask('default', 'hello');                 // <3>              
+};
+----------------------------------------------------------------------
+
+<1> Register a new task named `hello`.
+
+<2> Print the greeting text using http://gruntjs.com/api/grunt.log[grunt's log API].
+
+<3> With `grunt.registerTask` we define a default task to run when Grunt is called without any parameters. 
+
+Each task can be called separately from the command line by passing the task's name as a command line parameter. For example, `grunt hello` would only execute the task named "hello" from the above script.
+
+Let's run this `hello` task with the following command 
+`grunt --gruntfile Grunt_simple.js hello`.
+
+[source,bash]
+----------------------------------------------------------------------
+Running "hello" task
+Hello from grunt
+
+Done, without errors.
+----------------------------------------------------------------------
+
+=== Using Grunt to run JSHint checks
+
+Now after covering the basics of Grunt tool we can use it for something more interesting than just printing "_hello world_" on the screen. Since JavaScript is a interpreted language there is no compiler to help catch syntax errors. But you can use http://www.jshint.com/[JSHint], an open source tool, which helps with identifying errors in JavaScript code in lieu of compiler. Consider the following JavaScript <<LISTING_WITH_ERRORS,code>>.
+
+[[LISTING_WITH_ERRORS]]
+
+.A JavaScript array with a couple typos
+[source,javascript]
+----
+var bonds = [                   // <1>
+            'Sean Connery',
+            'George Lazenby',
+            'Roger Moore',
+            'Timothy Dalton',
+            'Pierce Brosnan',
+            'Daniel Craig',     // <2>
+            //'Unknow yet actor' 
+        ]                       // <3>
+----
+<1> We want to define an array that contains names of actors who played James Bond in a canonical series.
+<2> Here is example of a typical typo. A developer commented out the line containing an array element but kept the coma in previous line.
+<3> A missing semicolon is a typical typo. It is not an actual error, but omitting semicolon is not a good habit. An automatic semicolon insertion (ASI) will get you covered in this case.
+
+.What is a Automatic Semicolon Insertion?
+****
+In JavaScript, you can omit a semicolon between two statements written in separate lines. Automatic semicolon insertion is a source code parsing procedure that infers omitted semicolons in certain contexts into your program. You can read more about optional semicolons in JavaScript in the chapter "Optional Semicolons" in  <<flanagan, 'JavaScript. Definitive Guide. 6th Edition'>> book.
+****
+
+The above code snippet is a fairly simple example that can cause trouble and frustration if you don't have proper tools to check the code semantics and syntax. Let's see how JSHint can help in this situation. JSHint can be installed via NPM with command `npm install jshint -g`. Now you can run JSHint against our code snippet:
+
+[source,bash]
+----
+> jshint jshint_example.js
+jshint_example.js: line 7, col 27, Extra comma. (it breaks older versions of IE)
+jshint_example.js: line 9, col 10, Missing semicolon. # <1>
+
+2 errors            # <2>
+----
+<1> JSHint reports the location of error and a short description of the problem.
+
+<2> The total count of errors 
+
+TIP: WebStorm IDE has http://blogs.jetbrains.com/idea/2012/05/lint-your-javascript-with-jslintjshint-in-real-time/[built-in support] for JSHint tool. There is 3rd party plugin for Eclipse - http://github.eclipsesource.com/jshint-eclipse/[jshint-eclipse].
+
+Grunt also has a task to run JSHint against your JavaScript code base. Here is how JSHint configuration in Grunt looks like.
+
+.A grunt file with JSHint support
+[source,javascript]
+----
+module.exports = function(grunt) {
+  grunt.initConfig({
+    jshint: {
+      gruntfile: {          // <1>
+        src: ['Gruntfile_jshint.js']
+      },
+      app: {
+        src: ['app/js/app.js']
+      }
+    }
+  });
+  grunt.loadNpmTasks('grunt-contrib-jshint');       
+  grunt.registerTask('default', ['jshint']);        // <2>
+};
+----
+<1> Because Gruntfile is JavaScript file, JSHint can check it as well and identify the errors.
+
+<2> When grunt will be run without any parameters, default task +jshint+ will be triggered.
+
+[source,bash]
+----
+> grunt 
+
+Running "jshint:gruntfile" (jshint) task
+>> 1 file lint free.
+
+Running "jshint:app" (jshint) task
+>> 1 file lint free.
+
+Done, without errors.
+----
+
+=== Watching For the File Changes
+
+Another handy task that to use in developer's environment is the `watch` task. The purpose of this task is to monitor files in pre-configured locations. When the watcher detects any changes in those files it will run the configured task. Here is how a <<LIST_WATCH_TASK,watch task config>> looks like:
+
+.A `watch` task config 
+[source,javascript]
+----
+module.exports = function(grunt) {
+    grunt.initConfig({
+        jshint: {
+            // ... configuration code is omitted 
+        },
+        watch: {        // <1>
+            reload: {
+                files: ['app/*.html', 'app/data/**/*.json', 'app/assets/css/*.css', 'app/js/**/*.js', 'test/test/tests.js', 'test/spec/*.js'],  // <2>
+                tasks: ['jshint']           // <3>
+            }
+        }
+    });
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.registerTask('default', ['jshint']);
+};
+----
+
+<1> The `watch` task configuration starts here
+
+<2> The list of the files that need to be monitored for changes
+
+<3> A array of tasks to be triggered after file change event occurs
+
+[source,bash]
+----
+> grunt watch
+
+Running "watch" task
+Waiting...OK
+>> File "app/js/Player.js" changed.
+Running "jshint:gruntfile" (jshint) task
+>> 1 file lint free.
+
+Running "jshint:app" (jshint) task
+>> 1 file lint free.
+
+Done, without errors.
+
+Completed in 0.50s at Tue May 07 2013 00:41:42 GMT-0400 (EDT) - Waiting...
+----
+
+=== Bower
+
+
+
+
+
