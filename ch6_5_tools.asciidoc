@@ -5,6 +5,13 @@
 
 In this chapter we'd like to highlight the a handful of productivity tools that authors of this book use in their consulting projects. In particular, we'll introduce you to Clear Toolkit for Ext JS, Grunt, and Bower.  
 
+With Clear Toolkit you'll be able to quickly start the project that utilizes Ext JS framework for the front-end development and Java on the server side.
+
+Grunt is a task runner framework for the JavaScript projects that allows to automate repetitive operations like running tests.
+
+Bower Bower is a package manager for the web that helps in maintaining application dependencies. 
+
+
 === Productive Enterprise Web Development with Ext JS and CDB 
 
 Authors of this book work for the company called Farata Systems, which has developed an open source freely available software Clear Toolkit for Ext JS, and the code generator and Eclipse IDE plugin CDB comes with it. CDB is a productivity tool that was created specifically for the applications that need to retrieve, manipulate, and save the data in some persistent storage. 
@@ -360,12 +367,12 @@ Ext.application({
 
 -----------------------------------------------------
 
-<1> Manual store instantiation - create a separate variable `myStore` for this store with empty +config+ object 
-<2> Adding the +xtype+ `pagingtoolbar` to this component docked items property to display the information and dock this element at the top.
+<1> Manual store instantiation - create a separate variable `myStore` for this store with empty `config` object 
+<2> Adding the `xtype` `pagingtoolbar` to this component docked items property to display the information and dock this element at the top.
 <3> Now the paging toolbar is also connected to same store.
 
 The next step is to fix the automatically generated controller to take care of the loading of data on 
-click of +Load+ button as shown in the code below. 
+click of Load button as shown in the code below. 
 
 [[LISTING_6]]
 .Controller for sample application
@@ -405,7 +412,7 @@ When the user clicks the button _next_ or _previous_ the method `loadPage` of th
 .Request payload details
 image::images/fig_06_09cdb.png[image]
 
-The default Ext Direct request doesn't carry any information about the page size. Clear JS has the client side extension of the Ext JS framework that adds some extra functionality to +Ext.data.DirectStore+ component to pass the page +start+ and +limit+ values to the server side. At this point, the `directOptions` request property (see <<FIG6-9-CDB>>) can be extracted on the server side to get the information about the page boundaries. Let's add some code to the `PersonServiceImpl.java`. At this point the pagination doesn't work. The server sends the entire thousand records, because it doesn't know that the data has to be paginated. We'll fix it in the following listing. 
+The default Ext Direct request doesn't carry any information about the page size. Clear JS has the client side extension of the Ext JS framework that adds some extra functionality to `Ext.data.DirectStore` component to pass the page `start` and `limit` values to the server side. At this point, the `directOptions` request property (see <<FIG6-9-CDB>>) can be extracted on the server side to get the information about the page boundaries. Let's add some code to the PersonServiceImpl.java. At this point the pagination doesn't work. The server sends the entire thousand records, because it doesn't know that the data has to be paginated. We'll fix it in the following listing. 
 
 [[LISTING_7]]
 .Implementation of PersonService With Pagination
@@ -441,15 +448,15 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 ----------------------------------------------------------------------
 <1> On the server side there is a special object called `DirectOptions`, which comes with Clear Toolkit.
 
-<2> We want to monitor the +start+ and in +limit+ values (see <<FIG6-9-CDB>>).
+<2> We want to monitor the `start` and in `limit` values (see <<FIG6-9-CDB>>).
 
 <3> Calculate the actual limit. Assign the size of the data collection to the `limit` variable if it's  less than the page size (`start+limit`).
 
-<4> Notify the component about the total number of elements on the server side by using `DirectOptions.setOption()` method with +total+ option.
+<4> Notify the component about the total number of elements on the server side by using `DirectOptions.setOption()` method with `total` option.
 
-<5> Before returning the result, create a subset, an actual page of data using the method +java.util.List.sublist()+ which produces the view of the portion of this list between indexes specified by the `start` and the `limit` parameters.  
+<5> Before returning the result, create a subset, an actual page of data using the method `java.util.List.sublist()` which produces the view of the portion of this list between indexes specified by the `start` and the `limit` parameters.  
 
-As you can see from the Network tab in <<FIG6-8-CDB>>, we've limited the data load to 25 elements per page. Clicking on +next+ or +previous+ buttons will get you only a page worth of data. The Google Chrome Developers Tools Network tab shows that that we are sending the +start+ and +limit+ values with every request, and the response contains the object with 25 elements.
+As you can see from the Network tab in <<FIG6-8-CDB>>, we've limited the data load to 25 elements per page. Clicking on `next` or `previous` buttons will get you only a page worth of data. The Google Chrome Developers Tools Network tab shows that that we are sending the `start` and `limit` values with every request, and the response contains the object with 25 elements.
 
 If you'd like to repeat all of the above steps on you own, watch http://faratasystems.com/training-at-farata-youtube-chanel/[the screencasts] where we demonstrate all the actions described in the section on CDB.
 
@@ -457,7 +464,7 @@ If you'd like to repeat all of the above steps on you own, watch http://faratasy
 
 You should automate every aspect of the development workflow to reduce the cost of building, deploying, and maintaining your application. 
 
-In this appendix we are going to introduce http://gruntjs.com/[Grunt] - a task runner framework for the JavaScript projects - that can help you with automation of repetitive operations like running tests when the code changes.
+In this section we are going to introduce http://gruntjs.com/[Grunt] - a task runner framework for the JavaScript projects - that can help you with automation of repetitive operations like running tests when the code changes.
 
 Grunt can watch your code changes and automate the process of running tests when the code changes.  Tests should help in assessing the quality of our code.
 
@@ -467,11 +474,11 @@ With the Grunt tool you can have a script to run all your tests. If you came fro
 
 Let's start with the simplest Grunt project setup. The following two files must be present in the project directory:
 
-* `package.json`: This file is used by NPM to store metadata and a project dependencies. 
+* package.json: This file is used by NPM to store metadata and a project dependencies. 
 +
 List Grunt and its plugins that your project needs as _devDependencies_ in this file.
 
-* `Gruntfile`: This file is named `Gruntfile.js` or `Gruntfile.coffee` and is used to configure or define the tasks and load Grunt plugins.
+* `Gruntfile`: This file is named Gruntfile.js or Gruntfile.coffee and is used to configure or define the tasks and load Grunt plugins.
 
 .The simplest possible Gruntfile
 [source,javascript]
@@ -495,8 +502,9 @@ module.exports = function (grunt) {
 
 Each task can be called separately from the command line by passing the task's name as a command line parameter. For example, `grunt hello` would only execute the task named "hello" from the above script.
 
-Let's run this `hello` task with the following command 
-`grunt --gruntfile Grunt_simple.js hello`.
+Let's run this `hello` task with the following command:
+
+_grunt --gruntfile Grunt_simple.js hello_.
 
 [source,bash]
 ----------------------------------------------------------------------
@@ -506,7 +514,7 @@ Hello from grunt
 Done, without errors.
 ----------------------------------------------------------------------
 
-=== Using Grunt to run JSHint checks
+=== Using Grunt to run JSHint Checks
 
 Now after covering the basics of Grunt tool we can use it for something more interesting than just printing "_hello world_" on the screen. Since JavaScript is a interpreted language there is no compiler to help catch syntax errors. But you can use http://www.jshint.com/[JSHint], an open source tool, which helps with identifying errors in JavaScript code in lieu of compiler. Consider the following JavaScript <<LISTING_WITH_ERRORS,code>>.
 
@@ -572,7 +580,7 @@ module.exports = function(grunt) {
 ----
 <1> Because Gruntfile is JavaScript file, JSHint can check it as well and identify the errors.
 
-<2> When grunt will be run without any parameters, default task +jshint+ will be triggered.
+<2> When grunt will be run without any parameters, default task `jshint` will be triggered.
 
 [source,bash]
 ----
