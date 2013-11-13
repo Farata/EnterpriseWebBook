@@ -2,23 +2,23 @@
 
 This chapter is about bringing the external data to HTML Web pages. In the previous chapters we've been using only hard-coded data - our goal was to see how to layout the Web page and how to change the layout in case some events have happened, e.g. the user clicked on the menu button. Now we'll make sure that our single-page application Save The Child can request the data from the external sources and send them the data too. This comes down to two questions:
 
-1. How an HTML Web page can exchange the data with external data sources?
+1. How can an HTML Web page exchange the data with external data sources?
 2. What format to use for presenting the application data?
 
 While there could be different answers to these questions, we'll be using AJAX techniques as an answer to the first question and JSON data format as an answer to the second one. We'll start this chapter with explaining why AJAX and JSON are appropriate choice for the Save The Child Web application and many others.
 
-=== Why AJAX
+=== What's AJAX
 
-If a user points her Web browser to one URL and then changes it to another, the new request will be sent to the new URL, and the new page will arrive and will be rendered by the browser. The URL may have been changed not because the user decided to go to visit a different Web site, but simply because the user selected a menu item that resulted in bringing a new Web page from the same domain. This was pretty much the only way Web sites were designed in the 90th. 
+In the early days of the Internet, every new page, whether on the same or separate web site, required a new request and response to the web server. This, in turn, would re-render the entire contents of the new page. If a user points her Web browser to one URL and then changes it to another, the new request will be sent to the new URL, and the new page will arrive and will be rendered by the browser. The URL may have been changed not because the user decided to go to visit a different Web site, but simply because the user selected a menu item that resulted in bringing a new Web page from the same domain. This was pretty much the only way to design Web sites in the 90th. 
 
 Back in 1999, Microsoft decided to create a Web version of Outlook - their popular eMail application. Their goal was to be able to modify the Input folder as the new emails arrive, but without refreshing the entire content of the Web page. They created an ActiveX control called `XMLHTTP` that lived inside Internet Explorer 5 and could make requests to the remote servers receiving data without the need to refresh the entire Web page. Such a Web Outlook client would would make periodic requests to the mail server, and if the new mail arrived the application would insert the new row on the top of the Inbox by direct change of the DOM object from JavaScript. 
 
-In early 2000th, other Web browsers adopted this model and implemented their own versions of `XMLHTTPRequest`. Its Working Draft 6 is http://www.w3.org/TR/XMLHttpRequest/[published by W3C].  Google created their famous email client GMail and Map Web applications.  In 2005 Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, the last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn't sound as good as AJAX. 
+In early 2000th, other Web browsers adopted this model and implemented their own versions of `XMLHTTPRequest`. Its Working Draft 6 is http://www.w3.org/TR/XMLHttpRequest/[published by W3C].  Google created their famous email client GMail and Map Web applications.  In 2005 Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, the last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and currently is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn't sound as good as AJAX. 
 
 Visit the http://www.google.com/finance[Google Finance] or http://finance.yahoo.com/[Yahoo! Finance] Web pages when the stock market is open, and you'll see how the price quotes or other financial indicators are changing while the most of the content remains the same. This gives an illusion of the server pushing the data to your Web client. But most likely, it not a data push but rather periodic _polling_ of the server's data using AJAX. In the modern Web applications we expect to see more of the real server side data push using HTML5 WebSockets API, which is described in details in Chapter 9 of this book. 
 
 
-=== Why JSON
+=== What's JSON
 
 http://www.json.org/js.html[JSON] stands for JavaScript Object Notation. It's a more compact than XML way to represent the data. Besides, all modern Web Browsers understand and can parse JSON data. After learning the JavaScript object literals in Chapter 1, you'll see that the presenting the data in JSON notation is almost the same as writing JavaScript object literals. 
 
@@ -29,8 +29,6 @@ http://www.json.org/js.html[JSON] stands for JavaScript Object Notation. It's a 
 [[FIG4-1]]
 .Anatomy of a Web application
 image::images/fig_04_01.png[]
-
-Back in the 90th, if a Web application would need some JavaScript code or data from the server, Web developers would wrap it into an HTML `<iFrame>` element and send it to the client, which would use the the https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/eval[`eval()`] function to execute it. Today, there is no need to do this if you just want to send the data - format it as a JSON object and use the JSON parser. 
 
 When a Web page is loaded the user doesn't know (and doesn't have to know) that the page content was brought from several servers that can be located thousands miles apart. More often than not, when the user enters the URL requesting an HTML document, the server side code can engage several servers to bring all the data requested by the user. Some of the data are retrieved by making calls to one or more Web Services. The legacy Web services were build using SOAP + XML, but  majority of today's Web services are build using lighter http://en.wikipedia.org/wiki/Representational_state_transfer[_RESTful architecture_], and JSON has become a de facto standard data exchange format of the REST Web services. 
 
@@ -63,9 +61,9 @@ Let's try to implement AJAX techniques by implementing a data retrieval. The pro
 
 *  Assign the a handler to the `onreadystatechange` attribute to process server's response.
 
-*  Make a request to the data source by calling `send()`. 
+*  Make a non-blocking request to the data source by calling `send()`. 
 
-*  In your handler function process the response when it arrives from the server.
+*  In your handler function process the response when it arrives from the server. This is were  _asynchronous_ came from - the handler can be invoked at any time whenever the server prepares the response.
 
 *  Modify the DOM elements based on the received data, if need be.
 
@@ -131,9 +129,11 @@ xhr.onreadystatechange = function(){
 };
 ----
 
-First the code should check the http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP status code] received from server. W3C splits the HTTP codes into groups. The codes numbered as 1xx are informational, 2xx are successful codes, 3xx are about redirections, 4xx represent bad requests (like infamous 404 for Not Found), and 5xx for server errors. That's why the above code fragment checks for all 2xx codes and 304 - the data was not modified and taken from cache. 
+One note about the third line of the code above. Here we're checking the http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP status code] received from server. W3C splits the HTTP codes into groups. The codes numbered as 1xx are informational, 2xx are successful codes, 3xx are about redirections, 4xx represent bad requests (like infamous 404 for Not Found), and 5xx for server errors. That's why the above code fragment checks for all 2xx codes and 304 - the data was not modified and taken from cache. 
 
-NOTE: If your application needs to post the data to the server, you need to open the connection to the server with the `POST` parameter. You'll also need to set the HTTP header attribute `Content-type` to either `multipart/form-data` for large-size binary data or to  `application/x-www-form-urlencoded` (for forms and small-size alphanumeric data).  Then prepare the data object and invoke the method `send()`:
+[NOTE]
+===============================
+If your application needs to post the data to the server, you need to open the connection to the server with the `POST` parameter. You'll also need to set the HTTP header attribute `Content-type` to either `multipart/form-data` for large-size binary data or to  `application/x-www-form-urlencoded` (for forms and small-size alphanumeric data).  Then prepare the data object and invoke the method `send()`:
 
 [source, javascript]
 ----
@@ -144,6 +144,7 @@ xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 ...
 xhr.send(data);
 ----
+===============================
 
 ==== AJAX: Good and Bad 
 
@@ -153,7 +154,7 @@ On the bad side, with AJAX the user loses the functionality of the browser's Bac
 
 TIP: Using HTML5 History API (see Chapter 1) will help you in teaching the old dog (the browser's Back button) new tricks.
 
-AJAX applications are subject to _the same origin policy_ (the same protocol, host name, and port) allowing `XMLHttpRequest` make HTTP requests only to the domains where the Web application was loaded from. 
+AJAX applications are subject to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Same_origin_policy_for_JavaScript[_the same origin policy_] (the same protocol, host name, and port) allowing `XMLHttpRequest` make HTTP requests only to the domains where the Web application was loaded from. It's a security measure to limit the ability of JavaScript code to interact with resources that arrive to the Web browser from a different Web server.
 
 TIP: W3C has published a working draft of https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control[Cross-Origin Resource Sharing] (CORS) - a mechanism to enable client-side cross-origin requests.
 
@@ -175,7 +176,7 @@ To see the first example where we are using AJAX in our Save The Child applicati
 ----
 
 
-The resulting Save The Child page will look the same as the last sample from the previous chapter, but the Countries and States dropdowns are now populated be the data located in these files. Later in this chapter in the section on JSON we'll replace this HTML file with its JSON version. These are the first three lines (out of 241) from the file countries.html:
+The resulting Save The Child page will look the same as the last sample from the previous chapter, but the Countries and States dropdowns are now populated be the data located in these files(later in this chapter in the section on JSON we'll replace this HTML file with its JSON version). These are the first three lines (out of 241) from the file countries.html:
 
 [source, html]
 ----
@@ -184,7 +185,7 @@ The resulting Save The Child page will look the same as the last sample from the
 <option value="Afghanistan">Afghanistan</option>
 ----
 
-The JavaScript code that reads countries and states from file and populates the dropdowns comes next. The content of these files is assigned to the `innerHTML` attribute of the given HTML `<select>` element. 
+The JavaScript code that reads countries and states from file (text and HTML markup) and populates the dropdowns comes next. The content of these files is assigned to the `innerHTML` attribute of the given HTML `<select>` element. 
 
 [source, javascript]
 ----
@@ -261,7 +262,7 @@ In any client-server application one of the important decisions to be made is ab
 
 Sending the data in XML form addresses the readability and validation issues, but it's very verbose. Every data element has to be surrounded by an opening and closing tag describing the data. Converting the XML data to/from JavaScript object requires special parsers, and you'd need to use one of the JavaScript libraries for cross-browser compatibility.
 
-In today's Web, JSON became the most popular data format. It's not as verbose as XML, and JSON's notation is almost the same as JavaScript object literals. It's easily readable by humans, and every ECMAScript 5 compliant browser includes a native JSON object: `window.JSON`. Even though the JSON formatted data look like JavaScript object literals, JSON is language independent. Here's an example of the data in the JSON format:
+Douglas Crockford popularized new data format, which is known as JSON. In today's Web JSON became the most popular data format. It's not as verbose as XML, and JSON's notation is almost the same as JavaScript object literals. It's easily readable by humans, and every ECMAScript 5 compliant browser includes a native JSON object: `window.JSON`. Even though the JSON formatted data look like JavaScript object literals, JSON is language independent. Here's an example of the data in the JSON format:
 
 [source, javascript]
 ----
@@ -307,7 +308,7 @@ Usually, JSON-related articles and blogs are quick to remind you about the evil 
 
 Protecting your application code from being infected by means of `eval()` can be done outside of your application code. Replacing HTTP with secure HTTPS protocol helps a lot in this regard. Some Web applications  eliminate the possibility of cross-origin scripting by routing all requests to third-party data sources via proxying such requests through your trusted servers. But proxying all requests through your server may present scalability issues - imagine if thousands of concurrent users will be routed through your server - so do some serious load testing before making this architectural decision.
 
-TIP: There are several JSON tools useful for developers. To make sure that your JSON data is valid and properly formatted use using http://jsonlint.com/[JSONLint]. If you paste an ugly one-line JSON data JSLint will reformat it into a readable form. There is also an add-on JSONView, available both for https://addons.mozilla.org/en-US/firefox/addon/jsonview/[Firefox] and for https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc[Chrome] browsers.  With JSONView the JSON objects are displayed in a pretty formatted collapsible format. If there are errors in the JSON document they will be reported. At the time of this writing Chrome's version of JSONView does a better job in  reporting errors.
+TIP: There are several JSON tools useful for developers. To make sure that your JSON data is valid and properly formatted use http://jsonlint.com/[JSONLint]. If you paste an ugly one-line JSON data JSLint will reformat it into a readable form. There is also an add-on JSONView, available both for https://addons.mozilla.org/en-US/firefox/addon/jsonview/[Firefox] and for https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc[Chrome] browsers.  With JSONView the JSON objects are displayed in a pretty formatted collapsible format. If there are errors in the JSON document they will be reported. At the time of this writing Chrome's version of JSONView does a better job in  reporting errors.
 
 
 ==== Populating States and Countries from JSON Files
@@ -370,6 +371,8 @@ function loadData(dataUrl, rootElement, target) {
 loadData('data/us-states.json', 'usstateslist', statesList);
 loadData('data/countries.json', 'countrieslist', counriesList);
 ----
+
+In the above example we called the method `XMLHttpRequest.overrideMimeType()` to ensure that the data will be treated by the browser as JSON even if the server won't report them as such.  
 
 ==== Arrays in JSON
 
@@ -506,7 +509,9 @@ loadData(dataUrl);
 
 TIP: Some older Web browsers may bring up a File Download popup window when the content type of the server's response is set to "application/json". Try to use the MIME type "text/html" instead, if you ran into this issue. 
 
-Large-scale Web applications could be integrated with some content management systems (CMS), which can be supplying content such as charity events, sales promotions, et al.  CMS servers can be introduced into the architecture of a Web application to separate the work on preparing the content from the application delivering it as shown in <<FIG4-4>> depicting a diagram of a with a Web application integrated with the CMS server. 
+==== JSON in CMS 
+
+Large-scale Web applications could be integrated with some Content Management Systems (CMS), which can be supplying content such as charity events, sales promotions, et al.  CMS servers can be introduced into the architecture of a Web application to separate the work on preparing the content from the application delivering it as shown in <<FIG4-4>> depicting a diagram of a with a Web application integrated with the CMS server. 
 
 [[FIG4-4]]
 .CMS in the picture 
@@ -514,7 +519,7 @@ image::images/fig_04_04.png[]
 
 The content contributors and editors prepare the information on the charities and donation campaigns using a separate application, not the Save The Child page. The CMS server and the Web application server www.savesickchild.org may be located in the same or separate data centers. The server-side code of the Save The Child is making a call to a CMS server whenever the site visitor is requesting the information about charity events. If you get to pick a CMS for your future Web application make sure it offers data feed in JSON format. 
 
-Some time ago one of the authors of this book was helping Mercedes Benz USA in development of their consumer facing Web application where people could search, review and configure their next car. <<FIG4-5>> shows a snapshot taken from the mbusa.com. Three rectangular areas at the bottom were created by the Web designers to display today's deals and promotions. The up-to-date content for these areas was retrieved from a CMS server when the user visited mbusa.com. 
+Some time ago one of the authors of this book were helping Mercedes Benz USA in development of their consumer facing Web application where people could search, review and configure their next car. <<FIG4-5>> shows a snapshot taken from the mbusa.com. Three rectangular areas at the bottom were created by the Web designers to display today's deals and promotions. The up-to-date content for these areas (in a JSON format) was retrieved from a CMS server when the user visited mbusa.com. 
 
 [[FIG4-5]]
 .Current Mercedes deals from CMS 
@@ -583,9 +588,11 @@ Web browsers support the gzipping too, and your application can set `Content-Eco
 
 Let's consider yet another use case for JSON in Save The Child. We want to display charts with statistics about the donations.  By now, our application look not exactly as the original mockup from <<FIG3-2>>, but it's pretty close. There is an empty space in the left to the maps, and the charts showing donation statistics can fit right in. Now we need to decide how to draw the charts using nothing, but HTML5 elements. Note that we are not talking about displaying static images using the `<img>` element - the goal is to draw the images dynamically in the client's code. You can accomplish this goal using HTML5 elements `<canvas>` or `<svg>`. 
 
-The http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides a bitmap canvas, where your  scripts which can draw graphs, game graphics, or other visual images on the fly without using any plugins like Flash Player or Silverlight. To put it simple, the `<canvas>` defines a rectangular area that consists of pixels, where your code can draw. Keep in mind that the DOM object can't peek inside the canvas and access specific pixels. So if you are planning to create an area with dynamically changed graphics you might want to consider using `<svg>`. 
+The http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides a bitmap canvas, where your  scripts which can draw graphs, game graphics, or other visual images on the fly without using any plugins like Flash Player or Silverlight. To put it simple, the `<canvas>` defines a rectangular area that consists of pixels, where you can draw. Keep in mind that the DOM object can't peek inside the canvas and access specific pixels. So if you are planning to create an area with dynamically changed graphics you might want to consider using `<svg>`. 
 
 The http://www.w3.org/TR/SVG11/[`<svg>` element] supports Scalable Vector Graphics (SVG), which is the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images et al. 
+
+==== Adding Chart With Canvas Element
 
 Let's review some code fragments from the Aptana's project-12-canvas-pie-chart-json. The HTML section defines `<canvas>` of 260x240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your canvas element so your JavaScript code can access it.
 
@@ -646,11 +653,11 @@ The data to be used for drawing a pie chart in our canvas are stored in the file
 }
 ----
 
-Loading of the the charddata.json is done using AJAX techniques as explained earlier. Although in our example we're loading the chart immediately when the Save Sick Chile loads, the following code could be invoked only when the user requests to see the charts by clicking on some menu item on the page.
+Loading of the the charddata.json is done using AJAX techniques as explained earlier. Although in our example we're loading the chart immediately when the Save The Child loads, the following code could be invoked only when the user requests to see the charts by clicking on some menu item on the page.
 
 [source, javascript]
 ----
-function loadData(dataUrl, canvas) {
+function getData(dataUrl, canvas) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', dataUrl, true);
 
@@ -662,8 +669,6 @@ function loadData(dataUrl, canvas) {
 
   			var chartData = JSON.parse(jsonData).ChartData;       // <1>  
  
-  			var data = [];                                        
-  			var labels = [];
 
   			drawPieChart(canvas, chartData, 50, 50, 49);       // <2>
   			
@@ -743,6 +748,9 @@ function drawPieChart (canvas, chartData, centerX, centerY, pieRadius) {
 <3>	The color scheme is just a set of colors to be used for painting each slice (sector) of the pie.
 
 <4> The for-loop paints one sector on each iteration. This code draws lines, arcs, rectangles, and adds text to the canvas. Describing the details of each method of the context object is out of scope of this book, but you can find the details of the context API in the http://www.w3.org/TR/2dcontext/[W3C documentation] available online.
+
+
+==== Adding Chart With SVG
 
 What if we want to make this chart dynamic and reflect the changes in donations every 5 minutes? If you're using `<canvas>`, you'll need to redraw each and every pixel of our canvas with the pie.	With SVG, each element of the drawing would be the DOM element so we could have redraw only those elements that have changed. If with canvas your script draws using pixels, the SVG drawings are done with vectors. 
 
@@ -872,7 +880,7 @@ TIP: SVG supports animations and transformation effects, while canvas doesn't.
 
 === What is JSONP
 
-JSONP is a technique used in to relax the cross-origin restrictions in cases when a Web page was loaded from the domain abc.com and needs JSON-formatted data from another domain xyz.com.  With JSONP, instead of sending plain JSON data, the server wraps them up into a JavaScript function and then sends it to the Web browser for execution as a callback. The Web page that was originated from abc.com may send the request `http://xyz.com?callback=myDataHandler` technically requesting the server xyz.com to invoke the JavaScript callback named `myDataHandler`. This URL is a regular HTTP GET request, which may have other parameters too so you can send some data to the server too.
+Imagine that a Web page was loaded from the domain abc.com, and it need JSON formatted data from another domain (xyz.com). As mentioned earlier, AJAX has cross-origin restrictions, which prevent this. JSONP is a technique used in to relax the cross-origin restrictions.  With JSONP, instead of sending plain JSON data, the server wraps them up into a JavaScript function and then sends it to the Web browser for execution as a callback. The Web page that was originated from abc.com may send the request `http://xyz.com?callback=myDataHandler` technically requesting the server xyz.com to invoke the JavaScript callback named `myDataHandler`. This URL is a regular HTTP GET request, which may have other parameters too so you can send some data to the server too.
 
 The server will send to the browser the JavaScript function that may look as follow:
 
@@ -891,7 +899,11 @@ If all you need is just to retrieve the data from a different domain on page jus
 
 `<script src="http://xyz.com?callback=myDataHandler">` 
 
-But what if you need to dynamically make such requests periodically (e.g. get all twits with a hashtag `#savisickchild` by sending an HTTP GET using Twitter API at `http://search.twitter.com/search.json?q=savesickchild&rpp=5&include_entities=true&with_twitter_user_id=true&result_type=mixed`)? You may also need to make requests to a different server when the user selected a certain option on your Web page. You can achieve this by dynamically adding a `<script>` tag to the DOM object from your JavaScript code. Whenever the browser sees the new `<script>` element it executes it. Such script injection can be done like this:
+But what if you need to dynamically make such requests periodically (e.g. get all twits with a hashtag `#savisickchild` by sending an HTTP GET using Twitter API at `http://search.twitter.com/search.json?q=savesickchild&rpp=5&include_entities=true&with_twitter_user_id=true&result_type=mixed`)? You add a change handler to the option that is called and passes or grabs the value needed.
+
+[NOTE]
+===========
+You can dynamically add a `<script>` tag to the DOM object from your JavaScript code. Whenever the browser sees the new `<script>` element it executes it. Such script injection can be done like this:
 
 [source, javascript]
 ----
@@ -909,7 +921,7 @@ myScriptTag.src = "http://xyz.com?city=Boston&callback=myDataHandler";
 Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com is intercepted and replaced by a malicious code. But it's not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data. 
 
 If you decide to use JSONP don't forget about error handling. Most likely you'll be using one of the JavaScript frameworks and they usually offer a standard mechanism for JSONP error handling, dealing with poorly formatted JSON responses, and recovery in cases of network failure. One of such libraries is called https://github.com/jaubourg/jquery-jsonp[jQuery-JSONP].
-
+===========
 
 ==== Beer and JSONP
 
@@ -985,8 +997,8 @@ image::images/fig_04_08.png[]
 
 As a training exercise, try to replace the data retrieval from the beer Web service with adding the data feed from Twitter based on certain hash tags. See if you can find the place in the Save The Child Web page to display (and periodically update) this Twitter stream. 
 
-TIP: http://www.json-generator.com[json-generator.com] is a handy Web site that can generate a JSON or JSONP file based on your template. You can use this service to test AJAX queries - the generated JSON can be saved on this server to help in testing of your Web application. 
+TIP: http://www.json-generator.com[json-generator.com] is a handy Web site that can generate a file with a JSON or JSONP content based on your template. You can use this service to test AJAX queries - the generated JSON can be saved on this server to help in testing of your Web application. 
 
 === Summary
 
-In this chapter you've learned about using AJAX as a means of communications of your Web browser with the servers. AJAX also deserves a credit for making the JavaScript language popular again by showing a practical way of creating single-page Web applications. Over the years JSON became the standard way of exchanging the data on the Web. The current version of the Save The Child application cleanly separates the code from the data, and you know how to update the content of the Web page without the need to re-retrieve the entire page from the server. In the next chapter you'll get familiar with the test-driven way of developing Web applications with JavaScript.
+In this chapter you've learned about using AJAX as a means of communications of your Web browser with the servers. AJAX also deserves a credit for making the JavaScript language popular again by showing a practical way of creating single-page Web applications. Over the years JSON became the standard way of exchanging the data on the Web. The current version of the Save The Child application cleanly separates the code from the data, and you know how to update the content of the Web page without the need to re-retrieve the entire page from the server. In the next chapter you'll get familiar with the more productive way of developing Web applications with the library called jQuery.
