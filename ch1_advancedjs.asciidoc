@@ -45,13 +45,15 @@ JavaScript is an interpreted language that arrives to the Web browser as text. T
 
 === JavaScript Variables
 
-JavaScript is a weakly typed language hence the developers don’t have a luxury of strong compiler's help that Java or C# developers enjoy. This is easily explainable. Imagine that if in Java or C# instead of declaring variables of specific data types everything would be of type `Object`, and you could assign to it any value – a string, a number, or a custom object `Person`. This would substantially complicate the ability of the compiler to weed out all possible errors. You don’t need to declare variables in JavaScript – just assign a value and the JavaScript engine will figure out the proper type during the execution of your code.For example, the variable named `girlfriend` will have a data type of `String`:
+JavaScript is a weakly typed language hence the developers don’t have a luxury of strong compiler's help that Java or C# developers enjoy.  For those unfamiliar with weakly typed languages, let us  explain. Imagine that if in Java or C# instead of declaring variables of specific data types everything would be of type `Object`, and you could assign to it any value – a string, a number, or a custom object `Person`. This would substantially complicate the ability of the compiler to weed out all possible errors. You don’t need to declare variables in JavaScript – just assign a value and the JavaScript engine will figure out the proper type during the execution of your code.For example, the variable named `girlfriend` will have a data type of `String`:
 
 ----
 girlfriendName=“Mary”;
 ----
 
-Since I haven’t used the keyword +var+ in front of +girlfriend+, this variable will have the global scope. Variables declared with +var+ inside functions are local. Consider the following function declaration:
+Since we haven’t used the keyword `var` in front of `girlfriend`, this variable will have the global scope, which is a big no-no. Creating your global variables in an Web application that often includes multiple libraries from different vendors can easily create situations when the variable's value has been accidentally replaced by someone else's code. Besides, if the application uses concurrent execution (read about Web Workers in Chapter 2) using global variable can lead to race conditions. Later in this chapter you'll see how to limit the scope of application's variables to avoid polluting global space.
+
+Variables declared with the `var` keyword inside functions are have local scope and are not visible from outside of the function. Consider the following function declaration:
 
 [source,javascript]
 ----
@@ -76,7 +78,7 @@ If you are coming from the Java background, the chances are that you are familia
 
 Oracle's IDE http://wiki.netbeans.org/HTML5[NetBeans 7.3] and above support HTML5 and JavaScript development and includes JavaScript debugger that allows your code to connect to the Web browser, while debugging inside the IDE. If you prefer Microsoft technologies, they offer excellent JavaScript support in Visual Studio 2012.
 
-In this book we'll use an Eclipse-based http://aptana.com[Aptana Studio 3 IDE]. Aptana Studio is available free of charge.  Aptana Studio comes with embedded Web Server so you can test your JavaScript code without the need to start any additional software. In this chapter we’ll use Aptana Studio IDE to illustrate the features of JavaScript, and in the next chapter you'll be working with a number of Aptana projects that will lead you through the development of the first version of our Save Sick Child Web application.
+In this book we'll be use more than one IDE. We'll start with an Eclipse-based http://aptana.com[Aptana Studio 3 IDE]. Aptana Studio is available free of charge.  Aptana Studio comes with embedded Web Server so you can test your JavaScript code without the need to start any additional software. In this chapter we’ll use Aptana Studio IDE to illustrate the features of JavaScript, and in the next chapter you'll be working with a number of Aptana projects that will lead you through the development of the first version of our Save The Child Web application.
 
 For the real world development we recommend using commercial http://www.jetbrains.com/webstorm[IDE WebStorm] from JetBrains. In addition to smart context sensitive help, auto-complete, and syntax
 highlighting it offers HTML5 templates, and the code coverage feature that identifies the code fragment that haven't been tested. All of the editors and IDEs listed here are either available for free or are priced in the area of $60 USD. Try them all and pick the one that best fits your coding habits.
@@ -107,14 +109,14 @@ TIP: If you have your index.html open in Aptana's editor, you can simply press t
 .Running MyFirstProject
 image::images/fig_02_03.jpg[]
 
-To configure the Web Browser that Aptana should open by default, open its Preferences window and select the Web browser of your choice under the General section. Many examples in this chapter use the Firefox with installed add-on Firebug, so start with making Firefox your default browser.  
+To configure the Web Browser that Aptana should open by default, open its Preferences window and select the Web browser of your choice under the General section. The authors of this book use mainly Google Chrome browser, but in this book we'll be giving using Firefox as well just to show you that developers have a choice too. Many examples in this chapter use the Firefox with installed add-on Firebug, so start with making Firefox your default browser in Aptana.  
 
 TIP: you can find various HTML5 boilerplate projects on the Web that can be used as a starting point of your project. You don't have to select the Aptana's HTML5 boilerplate if it doesn't fit your needs. For example, you can download a bare minimum boilerplate http://projects.craftedpixelz.co.uk/shibui/[Shibui]
 or more comprehensive http://html5boilerplate.com/[HTML5 Boilerplate]. Just download and unzip such a boilerplate project into your Aptana's workspace and start adding your code, styles, and other resources.
 
 === Adding JavaScript to HTML
 
-Software developers either directly include the  JavaScript code to the HTML document by placing it between the tags `<script>` and `</script>` or include a reference to the external location of the code (e.g. a local file name or a URL) in the `src` attribute of the `<script>` tag. We usually place the `<script>`tags at the end of HTML file. The reason is simple - your JavaScript code may be manipulating with HTML elements, and you want them to exist by the time the script runs. The other way to ensure that the code will run only after the Web page has loaded is by catching window's `load` event, and you'll see such example later in this chapter in the section on browser's events. Some JavaScript frameworks may have their own approach to dealing with HTML content and in Chapter 7 you'll see that the main HTML file of the Web application written with Ext JS framework has `<script>` tags followed by the empty `<body>` tags. But let's keep things simple for now.
+Software developers either directly include the  JavaScript code to the HTML document by placing it between the tags `<script>` and `</script>` or include a reference to the external location of the code (e.g. a local file name or a URL) in the `src` attribute of the `<script>` tag. We usually place the `<script>`tags at the end of HTML file. The reason is simple - your JavaScript code may be manipulating with HTML elements, and you want them to exist by the time the script runs. The other way to ensure that the code will run only after the Web page has loaded is by catching window's `load` event (you'll see such example later in this chapter in the section on browser's events). Some JavaScript frameworks may have their own approach to dealing with HTML content and in Chapter 7 you'll see that the main HTML file of the Web application written with Ext JS framework has `<script>` tags followed by the empty `<body>` tags. But let's keep things simple for now.
 
 Add the following fragment at the very end (right above the closing `</body>` tag) of the new_file.html from <<FIG2-2>>.
 
@@ -192,7 +194,7 @@ TIP: For more information about debugging JavaScript refer to the code samples i
 
 === JavaScript Functions. Gentle Introduction
 
-JavaScript can be called an object-oriented language cause it allows an object to inherit existing  functionality from another object, and you can encapsulate the data and restrict the data access. It's done not as simple as in classical object-oriented languages, but it's possible.  Now comes the chicken or the egg dilemma. What should be explained first - functions or objects? Understanding of objects is needed for some of the function code samples and visa versa. We'll start with simple function use cases, but will be switching to objects as needed.
+JavaScript can be called an object-oriented language cause it allows an object to inherit existing  functionality from another object, and you can encapsulate the data and restrict the data access. It's done not as simple as in classical object-oriented languages, but it's possible.  Now comes the chicken or the egg dilemma. What should be explained first - the syntax of functions or creation of objects? Understanding of objects is needed for some of the function code samples and visa versa. We'll start with simple function use cases, but will be switching to objects as needed.
 
 Many of the readers can have experience with object-oriented languages like Java or C#, where classes can include _methods_ implementing required functionality. Then these methods can be invoked with or without instantiation of the objects. If a JavaScript object includes functions they are called _methods_. But JavaScript functions don't have to belong to an object. You can just declare a function and invoke it. Just like this:
 
@@ -513,7 +515,7 @@ Let's set a breakpoint inside the method `marryMe()` by clicking in the Firebug'
 .Firebug's Script panel at a breakpoint
 image::images/fig_02_09.jpg[]
 
-On the top of the left panel you'll see usual for debuggers curved arrows (Step Into, Step Over, Step Out) as well as triangular button to continue code execution. The right panel depicts the information related to `this` and global `Window` objects. In <<FIG2-9>> `this` represents the instance of the +Person+ object represented by the variable +p1+ (Steven Smith). To see the content of the object, received by the method `marryMe()` you can add the watch variable by clicking on the text "New watch expression..." and entering `person` - the name of the parameter of `marryMe()`. <<FIG2-10>> shows the watch variable `person` (Julia Roberts) that was used during the invocation of the method `marryMe()`.
+On the top of the left panel you'll see standard  debugger buttons with curved arrows (Step Into, Step Over, Step Out) as well as triangular button to continue code execution. The right panel depicts the information related to `this` and global `Window` objects. In <<FIG2-9>> `this` represents the instance of the +Person+ object represented by the variable +p1+ (Steven Smith). To see the content of the object, received by the method `marryMe()` you can add the watch variable by clicking on the text "New watch expression..." and entering `person` - the name of the parameter of `marryMe()`. <<FIG2-10>> shows the watch variable `person` (Julia Roberts) that was used during the invocation of the method `marryMe()`.
 
 [[FIG2-10]]
 .Firebug's Script panel at a breakpoint
@@ -654,7 +656,7 @@ console.log("The number of Employee's dependents " + emp2.dependents); // <3>
 
 To try it hands-on, open the file WhoIsYourDaddy.html (it's included in book code samples) in Aptana. Just for a change, this time we'll use Google Chrome Developer Tools by opening the menu View | Developer | Developer Tools. Set the breakpoint at the last line of the JavaScript, refresh the Web page content, and add the watch expressions for the variables `p`, `emp`, and `emp2`. When the JavaScript code engine runs into `emp2.dependents` it tries to find this property in property on the `Employee` object. If not found, the engine checks all the objects in the prototypal chain (in our case it'll find it in the object `p`) all the way up to the `Object` if need be.
 
-TIP: If you need to do some programmatic manipulations with only those properties that are defined on the specific object (not in its ancestors) do the check with the method `hasOwnProperty()`. 
+TIP: If you need to do some programmatic manipulations with only those properties that are defined on the specific object (not in its ancestors in the prototyal chain) do the check with the method https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty[`hasOwnProperty()`]. 
 
 [[FIG2-13]]
 .The instance-specific `__proto__` variable  
@@ -1333,7 +1335,7 @@ console.log("You tax is " + yourTaxIs);  // <4>
 
 First, the closure is returned to the caller of `prepareTaxes()`, and when the closure will be invoked it'll remember the values defined in its outer context. After looking at this code you may say that there is nothing declared in the closure's outside context! There is - by the time when the closure is created the value of the `studentDeductionAmount` will be known.	
 
-TIP: Check the quality of your code with the help of the JavaScript code quality tool http://www.jslint.com/[JSLint]. 
+TIP: Check the quality of your code with the help of the JavaScript code quality tools like http://www.jslint.com/[JSLint] or http://www.jshint.com/[JSHint]. 
 
 ==== Closures as callbacks	
 
@@ -1378,7 +1380,7 @@ The last line of the above example calls `taxHandler(200)`, which creates a clos
 
 === Mixins
 
-The need to extend capabilities of objects can be fulfilled by inheritance, but this is not the only way of adding behavior to objects. In this section you'll see an example of something that would not be possible in the object-oriented languages like Java or C#, which don't support multiple inheritance. JavaScript allows taking a piece of code and _mix it into any object_ regardless of what its inheritance chain is. _Mixin_ is a code fragment that an object can borrow if need be. 
+The need to extend capabilities of objects can be fulfilled by inheritance, but this is not the only way of adding behavior to objects. In this section you'll see an example of something that would not be possible in the object-oriented languages like Java or C#, which don't support multiple inheritance. JavaScript allows taking a piece of code and _mix it into any object_ regardless of what its inheritance chain is. _Mixin_ is a reusable code fragment that an object can borrow without the need to use inheritance. We'll illustrate this concept by example. 
 
 In the next code fragment we'll define a function expression and will assign it to a variable named `Tax`. This is a closure that includes the function `calcTax()` that knows the values of `income` and `state`.  There is also an independent mixin `TaxMixin` with a couple of functions `mafiaSpecial()` and `drugCartelSpecial()`. We want to blend in this mixin into `Tax`. After this is is done, the Tax object will have its original functionality,i.e. `calcTax()`, as well as a new "mafia and drug cartel flavors": 
 
@@ -1491,16 +1493,7 @@ The `window` object has a number of useful properties like `cookie`, `location`,
 .Firebug's representation of DOM
 image::images/fig_02_20.jpg[]
 
-.Single Page Applications
-******************
-Have you ever seen a monitor of a trader working for a Wall Street firm? Actually, they usually have three or four large monitors, but let's just look at one of them. Imagine a busy screen with lots and lots constantly changing data grouped in dedicated areas of the window. This screen shows the constantly changing prices from financial markets, the trader can place orders to buy or sell products, and notifications on completed trades are also coming to the same screen. If this is would be a Web application it would live in the same Web page. No menus to open another windows. 
-
-The price of Apple share was $590.45 just a second ago and now it's $590.60. How can this be done technically? Here's one of the possibilities: every second an AJAX is being made to the remote server providing current stock prices and the JavaScript code finds in the DOM the HTML element responsible for rendering the price and then modifies its value with the latest price.
-
-Have you seen a Web page showing an input box of Google's Gmail? It looks like a table with a list of rows representing the sender, subject, and the date of when each email arrived. All of a sudden you see a new row in bold on top of the list - the new email came in. How was this done technically? A new object(s) was created and inserted into a DOM tree. No page changes, no needs for the user to refresh the browser's page - an undercover AJAX call gets the data and JavaScript changes the DOM. The content of DOM changed - the user sees an updated value.    
-******************
-
- Below are some of the methods that exist on the `document` object:
+Below are some of the methods that exist on the `document` object:
 
 * `document.write(text)` – adds the specifies text to the DOM. Careless using of the method `write()` can result in unpredictable results if after changing the DOM the HTML content is still arriving.
 
@@ -1617,7 +1610,7 @@ http://www.w3.org/Style/CSS/current-work[http://www.w3.org/Style/CSS/current-wor
 
 TIP: You can find CSS tutorial as well as tons of other learning resources at http://www.webplatform.org/[webplatform.org].
 
-You can include CSS into a Web page by linking to separate files using the HTML tag `<link>`, or by in-lining the styles with the tag `<style>`, or using the `style` attribute. For example, if CSS is located in the file `mystyles.css` in
+You can include CSS into a Web page by linking to separate files using the HTML tag `<link>`, or by in-lining the styles with the tag `<style>`, or using the `style` attribute in HTML element (not recommended). For example, if CSS is located in the file `mystyles.css` in
 the folder css add the following tag to HTML:
 
 [source,html]
@@ -1637,8 +1630,7 @@ Placing the `@import` attribute inside the `<style>` tag allows to include style
 </style>
 ----
 
-What’s the best way of including CSS in HTML? Keeping CSS in multiple files separately from HTML and JavaScript makes the code more readable and reusable. On the other hand, if your Web site has
-consists of many files, the Web browser will have to make multiple round trips to your server just to load all resources required by the HTML document, which can worsen the responsiveness of your Web application.Usually all files are merged before deploying Web application in QA or production servers.  
+What’s the best way of including CSS in HTML? We recommend using CSS files. Keeping CSS in files separately from HTML and JavaScript makes the code more readable and reusable. You may argue that if your Web site consists of many files, the Web browser will have to make multiple round trips to your server just to load all resources required by the HTML document, which can worsen the responsiveness of your Web application. But usually all files are merged into one before deploying Web application in QA or production servers.  
 ****************
 
 HTML documents are often prettyfied by using CSS class selectors, and you can switch them  programmatically with JavaScript.  Imagine that a `<style>` section has the following definition of two class selectors `badStyle` and `niceStile`:
@@ -1711,7 +1703,7 @@ The next example will illustrate adding a new element to the DOM. On click of a 
 </html>
 ---- 
 
-TIP: Some HTML elements like `<div>` or <span> have contain other elements (children), and if you need to change their content use their property `innerHTML`. For example, to delete the entire content of the document body just do this: `document.body.innerHTML=""`. 
+TIP: Some HTML elements like `<div>` or <span>  contain other elements (children), and if you need to change their content use their property `innerHTML`. For example, to delete the entire content of the document body just do this: `document.body.innerHTML=""`. You can also use the method `appendChild()` as shown in the code sample above.
 
 If you run this example and click on the button "Show me" you'll see an image of the employee of the month added to the `<body>` section of the HTML document as shown on <<FIG2-23>>.
 
@@ -1865,7 +1857,7 @@ TIP: The Microsoft's Web browsers Internet Explorer 8 and below didn't implement
 
 This chapter was covering the JavaScript language constructs that any professional Web developer should know. A smaller portion of this chapter was illustrating how to combine JavaScript, HTML, and CSS. There are lots of online resources and books that cover just the HTML markup and CSS, and you'll definitely need to spend more time mastering details of the Web tools like Firebug or Google Developer Tools. 
 
-Software developers who are coming from strongly-typed compiled languages may have a feeling that their productivity drops with JavaScript. We can recommend several medications for this. FIrst, get familiar with the language called CoffeeScript. As a respected Java developer James Ward put it, "CoffeeScript is a way to write JavaScript". This language is very similar to JavaScript and is very easy to learn if you understand the JavaScript syntax, it supports classes and is compiled into JavaScript. Visit http://coffeescript.org/[coffescript.org] to see the CoffeeScript code snippets and their equivalents in JavaScript.
+Software developers who are coming from strongly-typed compiled languages may have a feeling that their productivity drops with JavaScript. We can recommend several medications for this. FIrst, get familiar with the language called CoffeeScript. As a respected Java developer James Ward put it, "CoffeeScript is _the_ way to write JavaScript". This language is very similar to JavaScript and is very easy to learn if you understand the JavaScript syntax, it supports classes and is compiled into JavaScript. Visit http://coffeescript.org/[coffescript.org] to see the CoffeeScript code snippets and their equivalents in JavaScript.
 
 Another interesting language to learn is Microsoft's TypeScript (it's an open source project). This language is also an extension of JavaScript with added classes, interfaces and inheritance. If also gets compiled into JavaScript and allows developers write strongly-typed code. TypeScript increases productivity of developers because it helps identify lots of error related with incorrect types during the compilation phase.  TypeScript implements many constructs from EcmaScript 6 and can be serve as an example of the JavaScript of the future.
 
@@ -1873,5 +1865,5 @@ Probably the most interesting new programming language is Google's http://www.da
 
 JetBrains' WebStorm IDE supports Coffeescript, Dart, and Typescript. 
 
-Starting from the next chapter we'll be working on the Save Sick Child application, which will help you in better understanding of how these ingredients of HTML5 work together and compliment each other.
+Starting from the next chapter we'll be working on the Save The Child application, which will help you in better understanding of how these ingredients of HTML5 work together and compliment each other.
 
