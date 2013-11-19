@@ -1,20 +1,24 @@
 == Introducing jQuery Library
+
 Up till now we've been using HTML, JavaScript, and CSS to create the Save The Child Web application. In the real world, developers try to be more productive by using JavaScript libraries.
 
-There are libraries like http://jqueryui.com/[jQuery Core] that substantially minimizes the amount of manual coding while programming core functionality of a Web application. The http://knockoutjs.com/[knockoutJS] library offers declarative binding of the data (model) and UI. The jQuery UI library offers widgets, animations, advanced effects. The http://requirejs.org/[RequireJS] library allows to modularize HTML5 application. There are also hundreds of micro libraries that can do just one thing and can be used ala cart (visit http://microjs.com[microjs.com] for details).
+There are libraries like http://jqueryui.com/[jQuery Core] that substantially minimizes the amount of manual coding while programming core functionality of a Web application. The http://knockoutjs.com/[knockoutJS] library offers declarative binding of the data (model) and UI. The jQuery UI library offers widgets, animations, advanced effects. The http://requirejs.org/[RequireJS] library is a module loader that allows to modularize HTML5 applications. There are also hundreds of micro libraries that can do just one thing and can be used ala cart (visit http://microjs.com[microjs.com] for details).
 
 Libraries are different from frameworks, which we discuss in Chapter 6. While frameworks force you to organize your code a certain way, a library simply offers your components that allow you to write less code.
 
-This chapter is about the JavaScript library  http://jquery.com/[jQuery] or to be more precise, JQuery Core. More than 60% of top Web sites use jQuery (visit http://trends.builtwith.com/javascript/top[http://trends.builtwith.com/javascript/top] for the current statistics). jQuery is simple to use and doesn't require you to dramatically change the way you program for the Web. jQuery offers you a helping hand with the tasks that most of the Web developers need to deal with, for example, finding and manipulating DOM elements, processing browser's events, and dealing with browser incompatibility. Since jQuery is an extensible framework, lots and lots of plugins were created by developers from around the world, and all of them are available for free. If you can't find the plugin that fits your need you can create one yourself.
+This chapter is about the JavaScript library  http://jquery.com/[jQuery] or to be more precise, JQuery Core. More than 60% of top Web sites use jQuery (visit http://trends.builtwith.com/javascript/top[http://trends.builtwith.com/javascript/top] for the current statistics). jQuery is simple to use and doesn't require you to dramatically change the way you program for the Web. jQuery offers you a helping hand with the tasks that most of the Web developers need to deal with, for example, finding and manipulating DOM elements, processing browser's events, and dealing with browser incompatibility. Since jQuery is an extensible library, lots and lots of plugins were created by developers from around the world, and all of them are available for free. If you can't find the plugin that fits your need you can create one yourself.
 
 NOTE: jQuery UI library is a "close relative" of jQuery Core. It's a set of user interface interactions, effects, widgets, and themes built on top of the jQuery. You can find in jQuery UI such widgets as Datepicker, Accordion, Slider, Tabs, Autocomplete and more. jQuery UI will also help you with adding to your Web page various interactions (e.g. drag and drop)  and effects (e.g. adding CSS classes or animations). jQuery UI is built on top of jQuery Core library and can't be used independently. jQuery UI is covered in the http://shop.oreilly.com/product/0636920023159.do[O'Reilly book "jQuery UI"].
 
-This chapter is not a detailed jQuery primer - there are jQuery books and http://api.jquery.com/[the online API Documentation] that provide a comprehensive explanation of jQuery. But we'll give you just enough of the information to  understand how jQuery can be used. In the section Working on Save The Child we'll review the code of several versions of this application highlighting the benefits of using jQuery library.  
 
-=== jQuery Intro
+NOTE: jQuery Mobile is yet another library built on top of jQuery Core. But this one is geared to creating mobile applications. We'll cover it in detail in Chapter 13 of this book.
+
+This chapter is not a detailed jQuery Core primer - there are jQuery books and http://api.jquery.com/[the online API Documentation] that provide a comprehensive explanation of jQuery. But we'll give you just enough of the information to  understand how jQuery can be used. In the section Working on Save The Child we'll review the code of several versions of this application highlighting the benefits of using jQuery library.  
+
+=== Getting Started With jQuery
 
 
-At the time of this writing the current version of jQuery is 1.9.1 You can download one of two distributions of jQuery library. The gzipped minified version of jQuery weighs 33Kb (it's 93Kb if unzipped), and this is all you need unless you are planning to develop jQuery plugins, in which case get a larger development version - it's about 270Kb. We've downloaded it from jquery.com and included it in the `<script>` tag in our HTML code samples so you can run them even if the Internet connection is not available. 
+At the time of this writing you can download either jQuery version 1.9 or jQuery 2.0 (the latter doesn't support Internet Explorer 6, 7, and 8). You can download one of two distributions of jQuery library. The gzipped minified version of jQuery weighs 33Kb (it's 93Kb if unzipped), and this is all you need unless you are planning to develop jQuery plugins, in which case get a larger development version - it's about 270Kb. We've downloaded jQuery from jquery.com and included it in the `<script>` tag in our HTML code samples so you can run them even if the Internet connection is not available. 
 
 But instead of deploying jQuery framework on your servers as a part of your application, you should use a common Content Delivery Network (CDN) URL in your HTML as shown below. Since jQuery is an extremely popular library, many Web sites use it. If more than one Web page would get it from the same CDN, the Web browser would cache it locally and reuse it rather than downloading a separate copy from different servers for every Web application that uses jQuery. The http://jquery.com/download/[download page of jquery.com] offers three CDN: Google, Microsoft, and MediaTemple. For example, if you don't need to use HTTPS protocol with your application the MediaTemple's CDN suffice:
 
@@ -36,9 +40,9 @@ You can provide a fallback URL by adding one extra line that will load jQuery fr
 
 WARNING: You may find code samples that use the URL http://code.jquery.com/jquery-latest.min.js to download the latest version of jQuery. But keep in mind that by doing this you may run into a situation when some of the API of jQuery has been changed or deprecated. For example, jQuery 2.0 http://blog.jquery.com/2012/07/01/jquery-1-9-and-2-0-tldr-edition/[will not support] Internet Explorer 6, 7, and 8 and automatically switching to the latest version may result in malfunctioning of your application. We recommend using the specific version that has been tested with your application.
 
-After covering the basics of jQuery Core, we are going to continue reviewing the code of a series of Aptana projects representing same old Save The Child application, but this  using jQuery. We won't add any new functionality to this application - we want to show that the developers can be more productive in achieving the same result.
+After covering the basics of jQuery Core, we are going to continue reviewing the code of a series of Aptana projects representing same old Save The Child application, but this time using jQuery. Other than adding the validation to the Donate form and using an image slider this application remains the same in the previous chapter - we just want to show that the developers can be more productive in achieving the same result.
 
-Some people will say that anyone who knows HTML can easily learn jQuery, but this is not so. Understanding of JavaScript is required. If you've read and understood the content from Chapter 1 - you're ready to learn jQuery.  The jQuery programming starts with with invoking the jQuery constructor named `jQuery()`. But people are using the shorter version of this constructor that's represented by a $ sign: `$()`. This `$` property is the only object that jQuery will create in the global namespace. Everything else will be encapsulated inside the `$` object.  
+Some people will say that anyone who knows HTML can easily learn jQuery, but this is not so. Understanding of JavaScript is required. If you've read and understood the content from Chapter 1 - you're ready to learn jQuery.  Programming with  jQuery components starts with with invoking the jQuery constructor named `jQuery()`. But people are using the shorter version of this constructor that's represented by a $ sign: `$()`. This `$` property is the only object that jQuery will create in the global namespace. Everything else will be encapsulated inside the `$` object.  
 
 ****
 
@@ -64,8 +68,7 @@ Also, if you need to get an access to a DOM object more than once, save the refe
 
 ==== Hello World
 
-
-The "Hello World" program is always a good start to learn any new software, and we'll go this route too. The following code sample uses jQuery to display a Web page that reads "Hello World!". 
+The "Hello World" program is always a good start to learn any new software, and we'll go this route too. The following code sample uses jQuery to display a Web page that reads "Hello World!". Note the functions that start with the `$` sign - they are all from jQuery library. 
 
 [source, html]
 ----
@@ -90,11 +93,11 @@ The "Hello World" program is always a good start to learn any new software, and 
 
 <1> If the script passes a function as an argument to jQuery, such a function is called when the DOM object is ready - the jQuery's `ready()` function gets invoked . Keep in mind that it's not the same as invoking a function handler `window.onload`, which is called after all windows resources (not just the DOM object) are completely  loaded (read more in the jQuery Events section). 
 
-<2> If the script passes a String to jQuery, such Strolling is being treated as a CSS selector, and jQuery tries to find the matching collection of HTML elements (it'll return the reference to just one `<body>` in the Hello World script). This line also demonstrates the method chaining - the `append()` method is called on the object returned by `$("body")`. 
+<2> If the script passes a String to jQuery, such String is being treated as a CSS selector, and jQuery tries to find the matching collection of HTML elements (it'll return the reference to just one `<body>` in the Hello World script). This line also demonstrates the method chaining - the `append()` method is called on the object returned by `$("body")`. 
 
 === Selectors and Filters	
 
-Probably the most frequently used routine in a JavaScript code that's part of the HTML page is finding DOM elements and making some manipulations with them, and this is where the jQuery's power is. Finding HTML elements based on the CSS selectors is very easy and concise. You can specify one or more selectors in the same query. Below is a code snippet with a number of random samples of selectors. Going through this code and reading comments will help you to understand how to use jQuery selectors.
+Probably the most frequently used routine in a JavaScript code that's part of the HTML page is finding DOM elements and making some manipulations with them, and this is where the jQuery's power is. Finding HTML elements based on the CSS selectors is very easy and concise. You can specify one or more selectors in the same query. Below is a code snippet with a number of random samples of selectors. Going through this code and reading comments will help you to understand how to use jQuery selectors (note that with jQuery you can write one selector for multiple ID's, which is not allowed in the pure JavaScript's `getElementById()`).
 
 [source, javascript]
 ----
@@ -104,7 +107,7 @@ $(".donate-button"); // find the elements with the class donate-button
 $("#login-link")  // find the elements with id=login-link
 
 // find elements with id=map-container and id=video-container 
-$("#map-container #video-container"); 
+$("#map-container, #video-container"); 
 
 // Find an HTML input element that has a value attribute of 200
 $('input[value="200"]');
@@ -123,9 +126,11 @@ $('label.donation-heading');
 $('input[value="200"]').next().text("two hundred");
 
 ----
-TIP: If jQuery returns a set of elements that match the selector's expression, you can access its elements using array notation: `var theSecondDiv = $('div')[1]`. If you want to iterate through the entire set use jQuery method http://api.jquery.com/each/[`$(selector).each()`]. For example, if you want to perform some function on each paragraph of an HTML document, you can do it a follows: `$("p").each(function(){...})`. 
+TIP: If jQuery returns a set of elements that match the selector's expression, you can access its elements using array notation: `var theSecondDiv = $('div')[1]`. If you want to iterate through the entire set use jQuery method http://api.jquery.com/each/[`$(selector).each()`]. For example, if you want to perform some function on each paragraph of an HTML document, you can do it a follows: `$("p").each(function(){...}). 
 
-There is a handy online site http://jsfiddle.net/[JSFiddle] for performing quick testing of code fragments of HTML, CSS, JavaScript, and popular frameworks. This Web page has a sidebar of the left and four large panels on the right. Three of these panels are for entering or copy/pasting: HTML, CSS, and JavaScript, and the forth panel is for showing the results of applying this code (see <<FIG5-1>>).
+=== Testing jQuery Code with JSFiddle
+
+There is a handy online site http://jsfiddle.net/[JSFiddle] for performing quick testing of the code fragments of HTML, CSS, JavaScript, and popular frameworks. This Web page has a sidebar of the left and four large panels on the right. Three of these panels are for entering or copy/pasting: HTML, CSS, and JavaScript, and the forth panel is for showing the results of applying this code (see <<FIG5-1>>).
 
 [[FIG5-1]]
 .Testing jQuery using JSFiddle 
@@ -136,11 +141,13 @@ Copy/paste the fragments from the HTML and CSS written for the Donate section of
 
 TIP: If you chained a method, e.g. an event handler, to the HTML element returned by a selector, your can use `$(this)` from inside such a handler to get a reference to this HTML element.
 
+=== Filtering Elements
+
 If jQuery selector returns a number of HTML elements, you can further narrow down this collection by applying so-called filters.jQuery has such filters as `eq()`, `has()`, `first()` and more.
 
 For example, applying the selector `$('label');`to the Donate section HTML fragment shown in <<FIG5-1>> would return a set of HTML elements `<label>`. Say we want to change the background of the label "20" to be red. This is the third label in the HTML from <<FIG5-1>>, and the `eq(n)` filter selects the element at the zero-based index `n` within the matched set.
 
-You can apply this filter using the following syntax: `$('label:eq(2)');`. But jQuery documentation suggest to use the syntax `$('label').eq(2);` http://api.jquery.com/eq-selector/[for better performance].
+You can apply this filter using the following syntax: `$('label:eq(2)');`. But jQuery documentation suggests using the syntax `$('label').eq(2);` http://api.jquery.com/eq-selector/[for better performance].
 
 Using method chaining we'll apply the filter  `eq(2)` to the set of lables returned by the selector `$('label')` and then and then change the styling of the remaining HTML element(s) using the `css()` method that can do all CSS manipulations. This is how the entire expression will look like:
 
@@ -167,11 +174,12 @@ Visit jQuery API documentation for the complete list of http://api.jquery.com/ca
 
 TIP: If you need to display data in a grid-like form, consider using a JavaScript grid called https://github.com/mleibman/SlickGrid[SlickGrid].
 
-=== Events
+=== Handling Events
 
-Adding events processing with jQuery is simple, and your code will be following the same pattern: find the element in DOM using selector or filter, and then attach the appropriate function that handles the event. We'll show you a handful of code sample of how to do it, but you can find the description of all methods that deal with events in the http://api.jquery.com/category/events/[jQuery API documentation]. 
+Adding events processing with jQuery is simple. Your code will follow the same pattern: find the element in DOM using selector or filter, and then attach the appropriate function that handles the event. We'll show you a handful of code samples of how to do it, but you can find the description of all methods that deal with events in the http://api.jquery.com/category/events/[jQuery API documentation]. 
 
-Our Hello World example used a short version of passing the handler function to the `ready()` function:
+There are a couple of ways of passing the handler function to be executed as callback when a particular event is dispatched.  For example, Our Hello World code used passes a handler function to the `ready` event:
+
 `$(function());`
 
 This is the same as using the following syntax:
