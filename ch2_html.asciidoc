@@ -1,15 +1,17 @@
 :toc:
 :toclevels: 4
 
-== Selected HTML5 APIs
+[[appendix_b]]
+[appendix]
+= Appendix B. Selected HTML5 APIs
 
-This chapter is a brief review of selected HTML5 APIs. HTML5 is just a commonly used term for a combination of HTML, JavaScript, CSS, and several new APIs that appeared during the last several years. Five years ago people were using the term _Web 2.0_ to define modern looking applications. These days HTML5 is almost a household name, and we'll go along with it. But HTML5 is about the same old development in JavaScript plus latest advances in HTML and CSS.
+This appendix is a brief review of selected HTML5 APIs. HTML5 is just a commonly used term for a combination of HTML, JavaScript, CSS, and several new APIs that appeared during the last several years. Five years ago people were using the term _Web 2.0_ to define modern looking applications. These days HTML5 is almost a household name, and we'll go along with it. But HTML5 is about the same old development in JavaScript plus latest advances in HTML and CSS.
 
-This chapter differs from all others because it includes a little less code, and is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, Application Cache, IndexedDB, localStorage, Web Workers, and History API. 
+This appendix is more of an overview of selected APIs that are included in HTML5 specification, namely Web Storage, Application Cache, IndexedDB, localStorage, Web Workers, and History API. 
 
-NOTE: To understand code samples included in this chapter you have to be familiar with JavaScript and some monitoring tools like Chrome Developer Tools. We assume that you are familiar with the materials covered in Chapter 1.
+NOTE: To understand code samples included in this appendix you have to be familiar with JavaScript and some monitoring tools like Chrome Developer Tools. We assume that you are familiar with the materials covered in Appendix A.
 
-=== Does your Browser Support HTML5?
+== Does your Browser Support HTML5?
 
 The majority of the modern Web browsers already support the current version of http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers[HTML5 specification], which will become a W3C standard in 2014. The question is if the users of your Web application have a modern browser installed on their device? There are two groups of users that will stick to the outdated browsers for some time:
 
@@ -34,9 +36,9 @@ http://net.tutsplus.com/tutorials/html-css-techniques/the-official-guide-to-html
 screencast by Paul Irish], a co-creator of HTML5 Boilerplate. You can also read the current version of the
 https://github.com/h5bp/html5-boilerplate/blob/v4.0.0/doc/usage.md[Getting started with HTML5 Boilerplate] on Github.
 
-=== Handling Differences in Browsers
+== Handling Differences in Browsers
 
-This chapter is about selected HTML APIs that we find important to understand in Web applications. But before using any of the API's listed here you want to check if the versions of the Web browsers you have to user support these APIs. The Web site http://caniuse.com[http://caniuse.com] will give you the up-to-date information about all major browsers and their versions that do (or don't) support the API in question. For example, to see which browsers support Worker API visit http://caniuse.com/#search=Worker[caniuse.com].  
+This appendix is about selected HTML APIs that we find important to understand in Web applications. But before using any of the API's listed here you want to check if the versions of the Web browsers you have to user support these APIs. The Web site http://caniuse.com[http://caniuse.com] will give you the up-to-date information about all major browsers and their versions that do (or don't) support the API in question. For example, to see which browsers support Worker API visit http://caniuse.com/#search=Worker[caniuse.com].  
 
 It's a good practice to include in your code a line that tests if a specific API is supported. For example, if the following if-statement returns false, the Web Worker is not supported and the code should fallback to a single-threaded processing mode:
 
@@ -50,7 +52,7 @@ if (window.Worker) {
 }
 ----
 
-In Chapter 3 you'll learn about the feature-detection tool _Modernizr_ that allows to programmatically check if any particular HTML5 API is supported by the browser being used.
+In Chapter 1 you'll learn about the feature-detection tool _Modernizr_ that allows to programmatically check if any particular HTML5 API is supported by the browser being used.
 
 [source, javascript]
 ----
@@ -60,11 +62,11 @@ if (Modernizr.Worker) {
 )
 ----
 
-=== HTML5 Web Messaging API
+== HTML5 Web Messaging API
 
 http://www.w3.org/TR/webmessaging/[HTML5 Web Messaging] allows you to arrange for communication between different Web pages of the same Web application. More officially, it's about "communicating between browsing contexts in HTML documents". Web messaging also allows you to work around the "same domain" policy that would result in security error if a browser's page A has one origin (the combination of URL scheme, host name and port, e.g. http://myserver.com:8080) and tries to access property of a page B that was downloaded from another origin. But with messaging API windows downloaded from different origins can send messages to each other.
 
-==== Sending and Receiving Messages
+=== Sending and Receiving Messages
 
 The API is pretty straightforward: if a script in the page `WindowA` has a reference to `WindowB` where you want to send a message, invoke the following method:
 
@@ -90,7 +92,7 @@ function myEventHandler(event){
 
 //The window-receiver can reject messages from untrusted origins. The event's property `origin` contains the scheme, host name and the port of the message sender (not the full URI). A simple statement like `if event.origin == 'http://mytrusteddomain:8080'` will ensure that only the messages arrived from the trusted origin are processed.
 
-==== Communicating with an iFrame
+=== Communicating with an iFrame
 
 Let's consider an example where an HTML Window creates an iFrame and needs to communicate with it. In particular, the iFrame will notify the main window that it has loaded, and the main window will acknowledge receiving of this message.  
 
@@ -220,7 +222,7 @@ The code of the myFrame.html comes next. This frame contains two buttons Buy and
 
 If you need to build a UI of the application from reusable components, applying messaging techniques allows you to create loosely coupled components. Say you've created a window for a financial trader. This window receives the data push from the server showing the latest stock prices. When a trader likes the price he may click on the Buy or Sell button to initiate a trade. The order to trade can be is implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
 
-==== Applying the Mediator Design Pattern
+=== Applying the Mediator Design Pattern
 
 Three years ago O'Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we've described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending-receiving events from the _mediator_ object.  The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can't be underestimated. 
 
@@ -232,15 +234,15 @@ image::images/fig_01_02.png[]
 
 The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending-receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some portal that's used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it's easy to reuse the existing code in such a dashboard.
 
-You'll see a more advanced example of the inter-component communication techniques that uses  _Mediator Design Pattern_ in <<mediator_section,corresponding section>> of Chapter 7 of this book.
+You'll see a more advanced example of the inter-component communication techniques that uses  _Mediator Design Pattern_ in <<mediator_section,corresponding section>> of Chapter 5 of this book.
 
 .HTML5 Forms
 *********
-While this chapter is about selected HTML APIs, we've should briefly bring your attention to  improvements in the HTML5 `<form>` tag too.
+While this appendix is about selected HTML APIs, we've should briefly bring your attention to  improvements in the HTML5 `<form>` tag too.
 
 It's hard to imagine an enterprise Web application that is not using forms. At the very minimum the Contact Us form has to be there. A login view is yet another example of the HTML form that almost every enterprise application needs. People fill out billing and shipping forms, they answer long questionnaires while purchasing insurance policies online. HTML5 includes some very useful additions that simplify working with forms. 
 
-We'll start with the prompts. Showing the hints or prompts right inside the input field will save you some screen space. HTML5 has a special attribute `placeholder`. The text placed in this attribute will be shown inside the field until it gets the focus - then the text disappears. You'll see the use of placeholder attribute in Chapter 3 in the logging part of our sample application.
+We'll start with the prompts. Showing the hints or prompts right inside the input field will save you some screen space. HTML5 has a special attribute `placeholder`. The text placed in this attribute will be shown inside the field until it gets the focus - then the text disappears. You'll see the use of placeholder attribute in Chapter 1 in the logging part of our sample application.
 
 [source, html]
 ----
@@ -280,7 +282,7 @@ The `pattern` attribute allows you to write a regular expression that ensures th
 TIP: If you're not familiar with regular expressions, watch the presentation https://www.youtube.com/watch?v=EkluES9Rvak#at=15[Demistifying Regular Expressions]  made by Lea Verou at O'Reilly Fluent conference -  it's a good primer on this topic.
 *********
 
-=== Web Workers API
+== Web Workers API
 
 When you start a Web Browser or any other application on your computer or other device, you start _a task_ or _a process_. _A thread_ is a lighter process within another process. While JavaScript doesn't support multi-threaded mode, HTML5 has a way to run a script as a separate thread in background. 
 
@@ -291,7 +293,7 @@ Imagine an HTML5 game where a click on the button has to do some major recalcula
 In other words, use Web workers when you want to be able to run multiple parallel _threads of execution_ within the same task. 
 On a multi-processor computer parallel threads can run on different CPU’s.On a single-processor computer, threads will take turn in getting _slices_ of CPU's time. Since switching CPU cycles between threads happens fast, the user won’t notice tiny delays in each thread’s execution getting a feeling of smooth interaction.
 
-==== Creating and Communicating with Workers
+=== Creating and Communicating with Workers
 
 HTML5 offers http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers[a solution] for multi-threaded execution of a script with the help of the `Worker` object. To start a separate thread of execution you'll need to create an instance of a `Worker` object passing it the name of the file with the script to run in a separate thread, for example:
 
@@ -361,7 +363,7 @@ mySpellChecker.onerror = function(event){
 };
 ----
 
-==== Dedicated and Shared Workers
+=== Dedicated and Shared Workers
 
 If a window's script creates a worker thread for its own use, we call it _a dedicated worker_.  A window creates an event listener, which gets the messages from the worker. On the other hand, the worker can have a listener too to react to the events received from its creator.   
 
@@ -405,15 +407,15 @@ mySpellChecker.terminate();
 
 // TIP: Using JavaScript `apply()` you can pass the name of the method to call along with its arguments.
 
-TIP: Since the script running inside the `Worker` thread doesn't have access to the browser's UI components, you can't debug such scripts by printing messages onto browser's console with `console.log()`. In the previous chapter we've used Firefox browser for development, but now we'll illustrate how to use Chrome Browser Developer Tools, which includes the http://blog.chromium.org/2012/04/debugging-web-workers-with-chrome.html[_Workers_ panel] that can be used for debugging the code that's launched in worker threads. You'll see multiple examples of using Chrome Developers Tools going forward.   
+TIP: Since the script running inside the `Worker` thread doesn't have access to the browser's UI components, you can't debug such scripts by printing messages onto browser's console with `console.log()`. In <<appendix_a, Appendix A>> we've used Firefox browser for development, but now we'll illustrate how to use Chrome Browser Developer Tools, which includes the http://blog.chromium.org/2012/04/debugging-web-workers-with-chrome.html[_Workers_ panel] that can be used for debugging the code that's launched in worker threads. You'll see multiple examples of using Chrome Developers Tools going forward.   
 
 To get a more detailed coverage of Web Workers, read the O'Reilly book by Ido Green titled "Web Workers".
 
 TIP: When the user switches to another page in a browser and the current Web page loses focus you may want to stop running some processes that would unnecessary use CPU cycles. To catch this moment use the https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Using_the_Page_Visibility_API[Page Visibility API].  
 
-=== WebSockets API
+== WebSockets API
 
-For many years Web applications were associated with HTTP as the main protocol for communication between Web browsers and servers. HTTP is a request-response based protocol that adds hundreds of additional bytes to the application data being sent between browsers and the servers. WebSocket is not a request-response, but a bi-directional full-duplex socket-based protocol, which adds only a couple of bytes (literally) to the application data . WebSockets can become a future replacement for HTTP, but Web applications that require the near-real-time communications (e.g. financial trading applications, online games or auctions) can benefit from this protocol today.  Authors of this book believe that WebSocket API is so important, that we dedicated the entire Chapter 9 of this book to this API. In this section we'll just introduce this API very briefly.
+For many years Web applications were associated with HTTP as the main protocol for communication between Web browsers and servers. HTTP is a request-response based protocol that adds hundreds of additional bytes to the application data being sent between browsers and the servers. WebSocket is not a request-response, but a bi-directional full-duplex socket-based protocol, which adds only a couple of bytes (literally) to the application data . WebSockets can become a future replacement for HTTP, but Web applications that require the near-real-time communications (e.g. financial trading applications, online games or auctions) can benefit from this protocol today.  Authors of this book believe that WebSocket API is so important, that we dedicated the entire Chapter 8 of this book to this API. In this section we'll just introduce this API very briefly.
 
 This is how the WebSockets workflow  goes:
 
@@ -427,13 +429,13 @@ This is how the WebSockets workflow  goes:
 
 * Both the server and the client can initiate disconnects too.
 
-This is a very short description of what WebSocket API is about. We encourage you to read Chapter 9 and find the use of this great API in one of your projects.
+This is a very short description of what WebSocket API is about. We encourage you to read Chapter 8   and find the use of this great API in one of your projects.
 
-=== Offline Web Applications
+== Offline Web Applications
 
 The common misconception about Web applications is that they are useless if there is no connection to the Internet. Everyone knows that native application can be written in a way that they have everything they need installed on your device's data storage - both the application code and the data storage.  With HTML5, Web applications can be designed to be functional even when the user's device is disconnected. The offline version of a Web application may not offer full functionality, but certain functions can still be available. 
 
-==== Prerequisites for developing Offline Web Applications 
+=== Prerequisites for developing Offline Web Applications 
 
 To be useful in a disconnected mode, HTML-based application needs to have access to some local storage on the device, in which case the data entered by the user in the HTML windows can be saved locally with further synchronization with the server when connection becomes available. Think of a salesman of a pharmaceutical visiting medical offices trying to sell new pills. What if connection is not available at certain point? She can still use her tablet demonstrate the marketing materials and more importantly, collect some data about this visit and save them locally. When the Internet connection becomes  available again, the Web application should support automatic or manual data synchronization so the information about the salesman activity will be stored in a central database.
 
@@ -447,7 +449,7 @@ The business logic that supports the client's offline functionality should be de
 
 It's a good idea to create a data layer in your JavaScript code that will be responsible for all data communications. If the Internet connection is available, the data layer will be making  requests to the server, otherwise it'll get the data from the local storage. 
 
-==== Application Cache API
+=== Application Cache API
 
 First of all, application's cache is not related to the Web browser's cache. It's main reason for existence is to allow creating applications that can run even if there is no Internet connection available. The user will still go to her browser and enter the URL, but the trick is that the browser will load some previously saved Web pages from the local _application cache_. So even if the user is not online, the application will start anyway. 
 
@@ -479,7 +481,7 @@ The Web server must serve the manifest file with a MIME type "text/cache-manifes
 On each subsequent application load the browser makes a request to the server and retrieves the manifest file to see if it has been updated, in which case it reloads all previously cached files. It's a responsibility of Web developers to modify manifest on the server if any of the cacheable resources changed. 
 
 
-==== Is Your Application Offline?
+=== Is Your Application Offline?
 
 Web browsers have a `boolean` property `window.navigator.onLine`, which should be used to check if there is no connection to the Internet. The HTML5 specification states that _"The navigator.onLine attribute must return false if the user agent will not contact the network when the user follows links or when a script requests a remote page (or knows that such an attempt would fail), and must return true otherwise."_ Unfortunately, major Web browsers deal with this property differently so you need to do a thorough testing to see if it works as expected with the browser you care about. 
 
@@ -499,10 +501,10 @@ window.addEventListener("online", function(e) {
 
 You can also add the `onoffline` and `ononline` event handlers to the `<body>` tag of your HTML page or to the `document` object. Again, test the support of these event in your browsers.
 
-What if the browser's support of the offline/online events is still not stable? In this you'll have to write your own script that will periodically make an AJAX call (see Chapter 4) trying to connect to a remote server that's always up and running, e.g. google.com. If this request fails, it's a good indication that your application is disconnected from the Internet.
+What if the browser's support of the offline/online events is still not stable? In this you'll have to write your own script that will periodically make an AJAX call (see Chapter 2) trying to connect to a remote server that's always up and running, e.g. google.com. If this request fails, it's a good indication that your application is disconnected from the Internet.
 
 
-==== Options for Storing Data Locally 
+=== Options for Storing Data Locally 
 
 In the past, Web browsers could only store their own cache and application's cookies on the user's computer. 
 
@@ -522,13 +524,13 @@ NOTE: To get the current status visit caniuse.com and search for the API you're 
 
 IMPORTANT: Although Web browsers send cookies to the Web server, they  don't send there the data saved in a local storage. The saved data is used only on the user's device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.
 
-==== Web Storage Specification APIs
+=== Web Storage Specification APIs
 
 With `window.localStorage` or `window.sessionStorage` (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. Both objects implement the `Storage` interface. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with `window.localStorage` will survive while the data saved via `window.sessionStorage` won't.
 
 Another distinction is that the data from `window.localStorage` is available for any page loaded from the same origin as the page that saved the data.  In case of `window.sessionStorage`, the data is available only to the window or a browser's tab that saved it.  
 
-===== localStorage API
+==== localStorage API
 
 Saving the application state is the main use of the local storage. Coming back to a use case with the pharmaceutical salesman, in the offline mode you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for example:
 
@@ -548,7 +550,7 @@ var contact = localStorage.getItem('contactPerson');
 var notes = localStorage.getItem('notes');
 ----
 
-This code sample are pretty simple as they store single values. In the real life scenarios we often need to store multiple objects. What it our salesperson has visited several medical offices and needs to save the information about all these visits in the Web Store?  For each visit we can create a key-value combination, where a _key_ will include the unique id (e.g. office ID), and the _value_ will be a JavaScript object (e.g. Visit) turned into a JSON-formatted string (see Chapter 4 for details) using `JSON.stringify()`. 
+This code sample are pretty simple as they store single values. In the real life scenarios we often need to store multiple objects. What it our salesperson has visited several medical offices and needs to save the information about all these visits in the Web Store?  For each visit we can create a key-value combination, where a _key_ will include the unique id (e.g. office ID), and the _value_ will be a JavaScript object (e.g. Visit) turned into a JSON-formatted string (see Chapter 2  for details) using `JSON.stringify()`. 
 
 The following code sample illustrates how to store and retrieve the custom `Visit` objects. Each visit to a medical office is represented by on instance of the `Visit` object. To keep the code simple, we've have not included there any HTML components - its JavaScript functions get invoked and print their output on the browser's console.  
 
@@ -658,7 +660,7 @@ TIP: If you are interested in intercepting the moments when the content of local
 TIP: Another good example of a use case when  `locaStorage` becomes handy is when the user is booking air tickets using more than one browser's tab.
 
 
-===== sessionStorage API
+==== sessionStorage API
 
 The `sessionStorage` life is short - it's only available for a Web page while the browser stays open. If the user decides to refresh the page, the `sessionStorage` will survive, but opening a page in a new browser's tab or window will create a new `sessionStorage` object. Working with the session storage is pretty straightforward, for example 
 
@@ -675,7 +677,7 @@ Chrome Developer Tools include the tab Resources that allows browsing the local 
 .Browsing local storage in Chrome Developer Tools 
 image::images/fig_01_00.png[]
 
-===== localStorage and sessionStorage Commonalities 
+==== localStorage and sessionStorage Commonalities 
 
 Both `localStorage` and `sessionStorage` are subject to the same-origin policy, meaning that saved data will be available only for the Web pages that came from the same host, port and via the same protocol.
 
@@ -688,7 +690,7 @@ There is no actual limits for the size of local storage, but the browsers usuall
 Even if the user's browser allows increasing this setting (e.g. via _about:config_ URL in Firefox), access to such data may be slow. Consider using http://www.w3.org/TR/FileAPI/[File API] or IndexedDB that will be introduced in the in the next section. 
 
 
-==== Introduction to IndexedDB
+=== Introduction to IndexedDB
 
 http://www.w3.org/TR/IndexedDB/[Indexed Database API] (a.k.a. IndexedDB) is a solution based on the NoSql database. Like with the `Storage` interface, IndexedDB stores data as key-value pairs, but it also offers  transactional handling of objects. IndexedDB creates indexes of the stored objects for fast retrieval.
 With Web Storage you can only store strings, and we had to do these tricks with JSON `stingify()` and `parse()` to give some structure to these strings. With IndexedDB you can directly store and index regular JavaScript objects. 
@@ -697,9 +699,9 @@ IndexedDB allows you to accesses data asynchronously, so there won't be UI freez
 
 The users will have a feeling that the application is pretty responsive, which wouldn't be the case if you'll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy. 
 
-TIP: In the future Web browsers may implement https://developer.mozilla.org/en-US/docs/IndexedDB/Synchronous_API[synchronous IndexedDB API] to be used inside Web workers.
+TIP: In the future, Web browsers may implement https://developer.mozilla.org/en-US/docs/IndexedDB/Synchronous_API[synchronous IndexedDB API] to be used inside Web workers.
 
-Since not every browser supports IndexedDB yet, you can use Modernizr (see Chapter 3) to detect if your browsers supports it. If it does, you still may need to account for the fact that browser vendors name the IndexedDB related object differently. Hence to be on the safe side, at the top of your script include the statements to account for the prefixed vendor-specific implementations of `indexedDB` and related objects:
+Since not every browser supports IndexedDB yet, you can use Modernizr (see Chapter 1) to detect if your browsers supports it. If it does, you still may need to account for the fact that browser vendors name the IndexedDB related object differently. Hence to be on the safe side, at the top of your script include the statements to account for the prefixed vendor-specific implementations of `indexedDB` and related objects:
 
 [source, javascript]
 ----
@@ -756,7 +758,7 @@ request.onupgradeneeded = function(event){  // <4>
 
 TIP: There are several scenarios to consider while deciding if you need to use the `autoIncrement` property with the store key or not. Kristof Degrave described the article http://www.kristofdegrave.be/2012/02/indexed-db-to-provide-key-or-not-to.html[Indexed DB: To provide a key or not to provide a key.     
 
-===== Object Stores and Versioning
+==== Object Stores and Versioning
 
 In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the _new version_ of the database. With IndexedDB it works differently. Each database has a version, and when the new version of the database (e.g. Medical_DB) is created, the `onupgradeneeded` is dispatched, which is where object store(s) are created. But if you already had object stores in the older version of the database, and they don't need to be changed - there is no need to re-create them.
 
@@ -806,7 +808,7 @@ To remove the existing database, call the method `indexedDB.deleteDatabase()`. T
 
 WARNING: IndexedDB doesn't offer a secure way of storing data. Anyone who has access to the user's computer can get a hold of the data stored in IndexedDB. Do not store any sensitive data locally. Always use secure "https" protocol with your Web application.  
 
-===== Transactions
+==== Transactions
 
 Transaction is a logical unit of work. Executing several database operation in one transaction guarantees that the changes will be committed to the database only if all operations finished successfully. If at least one of the operations fails, the entire transaction will be rolled back (undone). IndexDB supports three transaction modes: `readonly`, `readwrite`, and `versionchange`. 
 
@@ -818,7 +820,7 @@ When a transaction is created, you should assign listeners to its `complete`, `e
 
 Typically, you should open the database and in the `onsuccess` handler create a transaction. Then open a transaction by calling the method `objectStore()` and perform data manipulations. In the next section you'll see how to add objects to an object store using transactions.
 
-===== Modyfying the Object Store Data
+==== Modyfying the Object Store Data
 
 The following code snippet creates the transaction that allows updates of the store `Visits` (you could create a transaction for more than one store) and add two visit object by invoking the method `add()`:
 
@@ -883,7 +885,7 @@ var deleteRequest = visitsStore.delete(1);
 
 TIP: You can browse the data from your IndexedDB database in Chrome Developer Tools under the tab Resources (see <<FIG1-0>>).
 
-===== Retrieving the Data 
+==== Retrieving the Data 
 
 IndexedDB doesn't support SQL. You'll be using cursors to iterate through the object store. First, you open the transaction. Then you open invoke `openCursor()` on the object store. While opening the cursor you can specify optional parameters like the range of object keys you'd like to iterate and the direction of the cursor movement: `IDBCursor.PREV` or `IDBCursor.NEXT`. If none of the parameters is specified, the cursor will iterate all objects in the store in the ascending order. The following code snippet iterates through all Visit objects printing just contact names.
 
@@ -936,7 +938,7 @@ If you need to fetch just one specific record, restrict the selected range to on
 contactNameIndex.openCursor(IDBKeyRange.only("Mary Lou");
 ----
 
-===== Runninng the Sample code
+==== Runninng the Sample code
 
 Let's bring together all of the above code snippets into one runnable HTML file. While doing this, we'll be watching the script execution in Chrome Developer Tools panel. We'll do it in two steps. The first version of this file will create a database of a newer version than the one that currently exists on the user's device. Here's the code that creates the database Medical_DB with an empty object store Visits:
 
@@ -1109,7 +1111,7 @@ image::images/fig_01_06.png[]
 
 This concludes our brief introduction to IndexedDB. Those of you who have experience in working with relational databases may find the querying capabilities of IndexedDB rather limited comparing to powerful relational databases like Oracle or MySQL. On the other hand, IndexedDB is pretty flexible - it allows you to store and look up any JavaScript objects without worrying about creating a database schema first. At the time of this writing there are no books dedicated to IndexedDB. For up to date information refer to https://developer.mozilla.org/en-US/docs/IndexedDB[IndexedDB online documentation] at Mozilla Developer Network. 
 
-=== History API
+== History API
 
 To put is simple, http://www.w3.org/TR/html5/browsers.html#the-history-interface[History API] is about ensuring that the Back/Forward  buttons on the browser toolbar can be controlled programmatically. Each Web browser has the `window.history` object. The History API is not new to HTML5. The `history` object has been around for many years, with methods like `back()`, `forward()`, and `go()`. But HTML5 adds new methods `pushState()` and `replaceState()`, which allow to modify the browser's address bar without reloading the Web page. 
 
@@ -1119,7 +1121,7 @@ The perfect user would always navigate your application using the menus and cont
 
 TIP: Not writing any code that would process clicks on the Back and Forward buttons is the easiest way to frustrate your users.
 
-==== Modifying the Browser's History with pushState()
+=== Modifying the Browser's History with pushState()
 
 Imagine you have a customer-management application that has a URL http://myapp.com.  The user clicked on the menu item Get Customers, which made an AJAX call loading the customers. You can programmatically change the URL on the browser's address line to be http://myapp.com/customers without asking the Web browser to make a request to  this URL. You do this by invoking the `pushState()` method. 
 
@@ -1192,7 +1194,7 @@ image::images/fig_01_11.png[]
 Using the `replaceState()` you can technically "change the history". We are talking about the browser's history, of course.
 
 
-==== Processing the popstate Event
+=== Processing the popstate Event
 
 But changing the URL when the user clicks on the Back or Forward button is just the half of the job to be done. The content of the page has to be refreshed accordingly. The browser dispatches the event `window.popstate` whenever the browser's navigation history changes either on initial page load, as a result of clicking on the Back/Forward buttons, or by invoking `history.back()` or `history.forward()`. 
 
@@ -1216,7 +1218,7 @@ TIP: If you'll run into a browser that doesn't support HTML5 History API, consid
 
 .Custom Data Attributes
 *****
-We've included this sidebar in the chapter on HTML5 APIs, even though it's not API. But this chapter is about HTML and we just didn't want to miss this  important feature of the HTML5 specification - you can add to any HTML tag any number of http://bit.ly/9Udecy[custom non-visible attributes] as long as they start with `data-` and have at least one character after the hyphen. For example, this is absolutely legal in HTML5:
+We've included this sidebar in this appendix, even though it's not API. But we're talking about HTML here and don't want to miss this important feature of the HTML5 specification - you can add to any HTML tag any number of http://bit.ly/9Udecy[custom non-visible attributes] as long as they start with `data-` and have at least one character after the hyphen. For example, this is absolutely legal in HTML5:
 
 [source, html]
 ----
@@ -1227,14 +1229,14 @@ We've included this sidebar in the chapter on HTML5 APIs, even though it's not A
 </ol> 
 ----
 
-Behind the scenes, a custom framework can find all elements that have the `data-phone` attribute and generate some additional code for processing of the provided phone number. If this example doesn't impress you, wait till Chapter 12, where you'll learn how to use jQuery Mobile. The creators of this library use these `data-` attributes in a very smart way.
+Behind the scenes, a custom framework can find all elements that have the `data-phone` attribute and generate some additional code for processing of the provided phone number. If this example doesn't impress you, wait till Chapter 10, where you'll learn how to use jQuery Mobile. The creators of this library use these `data-` attributes in a very smart way.
 *****
 
-=== Summary
+== Summary
 
-In this chapter you've got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0? Google used to offer a nice solution:  http://www.google.com/chromeframe[Google Chrome Frame], which was a plugin for Internet Explorer.
+In this appendix you've got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0? Google used to offer a nice solution:  http://www.google.com/chromeframe[Google Chrome Frame], which was a plugin for Internet Explorer.
 
-The users had to install Ghrome Frame on their machines, and Web developers just needed to add the following line to their Web pages:
+The users had to install Chrome Frame on their machines, and Web developers just needed to add the following line to their Web pages:
 
 [source, html]
 ----
@@ -1242,6 +1244,4 @@ The users had to install Ghrome Frame on their machines, and Web developers just
 ----
 
 After that the Web page rendering would be done by Chrome Frame while your Web application would run in Internet Explorer. Unfortunately, Google decided not to support the Chrome project as of January 2014. They are recommending to prompt the user of your application to upgrade the Web browser, which may not be something that the users will be willing to do. But let's hope for the best. 
-
-In this chapter we've briefly reviewed a number of useful HTML5 APIs, but we're not done yet. In Chapter 3 you'll learn how to use HTML5 GeoLocation API - our sample Save The Child application will include Google maps. Also,  Chapter 9 is completely devoted to working with WebSocket API - you'll see how to add an auction to you Web application.
   
