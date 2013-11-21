@@ -1,6 +1,6 @@
 == Introducing jQuery Library
 
-Up till now we've been using HTML, JavaScript, and CSS to create the Save The Child Web application. In the real world, developers try to be more productive by using JavaScript libraries.
+Up till now we've been using HTML, plain JavaScript, and CSS to create the Save The Child Web application. In the real world, developers try to be more productive by using JavaScript libraries.
 
 There are libraries like http://jqueryui.com/[jQuery Core] that substantially minimizes the amount of manual coding while programming core functionality of a Web application. The http://knockoutjs.com/[knockoutJS] library offers declarative binding of the data (model) and UI. The jQuery UI library offers widgets, animations, advanced effects. The http://requirejs.org/[RequireJS] library is a module loader that allows to modularize HTML5 applications. There are also hundreds of micro libraries that can do just one thing and can be used ala cart (visit http://microjs.com[microjs.com] for details).
 
@@ -8,7 +8,7 @@ Libraries are different from frameworks, which we discuss in Chapter 6. While fr
 
 This chapter is about the JavaScript library  http://jquery.com/[jQuery] or to be more precise, JQuery Core. More than 60% of top Web sites use jQuery (visit http://trends.builtwith.com/javascript/top[http://trends.builtwith.com/javascript/top] for the current statistics). jQuery is simple to use and doesn't require you to dramatically change the way you program for the Web. jQuery offers you a helping hand with the tasks that most of the Web developers need to deal with, for example, finding and manipulating DOM elements, processing browser's events, and dealing with browser incompatibility. Since jQuery is an extensible library, lots and lots of plugins were created by developers from around the world, and all of them are available for free. If you can't find the plugin that fits your need you can create one yourself.
 
-NOTE: jQuery UI library is a "close relative" of jQuery Core. It's a set of user interface interactions, effects, widgets, and themes built on top of the jQuery. You can find in jQuery UI such widgets as Datepicker, Accordion, Slider, Tabs, Autocomplete and more. jQuery UI will also help you with adding to your Web page various interactions (e.g. drag and drop)  and effects (e.g. adding CSS classes or animations). jQuery UI is built on top of jQuery Core library and can't be used independently. jQuery UI is covered in the http://shop.oreilly.com/product/0636920023159.do[O'Reilly book "jQuery UI"].
+NOTE: jQuery UI library is a "close relative" of jQuery Core. It's a set of user interface interactions, effects, widgets, and themes built on top of the jQuery. You can find in jQuery UI such widgets as Datepicker, Accordion, Slider, Tabs, Autocomplete and more. jQuery UI will also help you with adding to your Web page various interactions (e.g. drag and drop) and effects, e.g. adding CSS classes or animations (the jQuery Core also has some effects). jQuery UI is built on top of jQuery Core library and can't be used independently. jQuery UI is covered in the http://shop.oreilly.com/product/0636920023159.do[O'Reilly book "jQuery UI"].
 
 
 NOTE: jQuery Mobile is yet another library built on top of jQuery Core. But this one is geared to creating mobile applications. We'll cover it in detail in Chapter 13 of this book.
@@ -38,7 +38,7 @@ You can provide a fallback URL by adding one extra line that will load jQuery fr
 </script>
 ----
 
-WARNING: You may find code samples that use the URL http://code.jquery.com/jquery-latest.min.js to download the latest version of jQuery. But keep in mind that by doing this you may run into a situation when some of the API of jQuery has been changed or deprecated. For example, jQuery 2.0 http://blog.jquery.com/2012/07/01/jquery-1-9-and-2-0-tldr-edition/[will not support] Internet Explorer 6, 7, and 8 and automatically switching to the latest version may result in malfunctioning of your application. We recommend using the specific version that has been tested with your application.
+WARNING: You may find code samples that use the URL http://code.jquery.com/jquery-latest.min.js to download the latest version of jQuery. But keep in mind that by doing this you may run into a situation when some of the API of jQuery has been changed or deprecated. For example, jQuery 2.0 http://blog.jquery.com/2012/07/01/jquery-1-9-and-2-0-tldr-edition/[stopped support] Internet Explorer 6, 7, and 8 and automatically switching to the latest version may result in malfunctioning of your application. We recommend using the specific version that has been tested with your application.
 
 After covering the basics of jQuery Core, we are going to continue reviewing the code of a series of Aptana projects representing same old Save The Child application, but this time using jQuery. Other than adding the validation to the Donate form and using an image slider this application remains the same in the previous chapter - we just want to show that the developers can be more productive in achieving the same result.
 
@@ -61,10 +61,9 @@ As you remember, JavaScript functions do not require you to invoke them with exa
 
 You'll need to get used to yet another feature of jQuery - method chaining. Each function returns an object, and you don't have to declare a variable to hold this object. You can just write something like `funcA().funcB();` This means that the method `funcB()` will be called on the object, returned by the `funcA()`. 
 
-WARNING: While method chaining is often presented as a great feature allowing to do more with less typing, 
-it may complicate debugging of your code. Imagine that `funcA()` returned null for whatever reason. The entire chain (the `funcB()` in our example) that was attached to `funcA()` won't be working properly, and you'll need to unchain these methods to find the problem.
+WARNING: While method chaining is often presented as a great feature allowing to do more with less typing, it may complicate debugging of your code. Imagine that `funcA()` returned null for whatever reason. The entire chain (the `funcB()` in our example) that was attached to `funcA()` won't be working properly, and you may need to unchain these methods to find the problem.
 
-Also, if you need to get an access to a DOM object more than once, save the reference in a variable and reuse it rather than invoking the same selector method in several chains. 
+Also, if you need to get an access to a DOM object more than once, save the reference in a variable and reuse it rather than invoking the same selector method in several chains - it can improve the performance of your Web page. 
 
 ==== Hello World
 
@@ -170,6 +169,8 @@ If you display data in HTML table, you may want to change the background color o
 $('tr').filter(":even").css('background-color', 'grey');
 ----
 
+Usually, you'd be doing this to interactively change the background colors. You can also alternate background colors by using straight CSS selectors `p:nth-child(odd)` and `p:nth-child(even)`.
+
 Visit jQuery API documentation for the complete list of http://api.jquery.com/category/selectors/[selectors] and http://api.jquery.com/category/traversing/filtering/[traversing filters]. 
 
 TIP: If you need to display data in a grid-like form, consider using a JavaScript grid called https://github.com/mleibman/SlickGrid[SlickGrid].
@@ -204,9 +205,9 @@ $("h1").click(function(event){
 })
 ----
 
-If you'd like to process double-clicks - replace the `click()` invocation with `dblclick()`. jQuery has handlers for about a dozen mouse events, which are wrapper methods to the corresponding JavaScript events that are dispatched when mouse entering or leaving the area, the mouse pointer goes up/down, or the focus moves in or out of an input field. The shorthand methods `click()` and `dblclick()` (and several others) internally use the method `on()`, which you can and should use in your code too.  
+If you'd like to process double-clicks - replace the `click()` invocation with `dblclick()`. jQuery has handlers for about a dozen mouse events, which are wrapper methods to the corresponding JavaScript events that are dispatched when mouse entering or leaving the area, the mouse pointer goes up/down, or the focus moves in or out of an input field. The shorthand methods `click()` and `dblclick()` (and several others) internally use the method `on()`, which you can and should use in your code too (it works during the bubbling phase of the event).  
 
-==== Binding Events With The Method on()
+==== Attaching Events Handlers and Elements With the Method on()
 
 The event methods can be attached just by passing a handler function as it was done in the above examples, or to process the event or by using the `on()` method, which allows you to specify the native event name and the event handler as its arguments. In the section Working on Save The Child you'll see lots of examples, where the `on()` method is used. The one liner below assigns the function handler named `showLoginForm` to the `click` event of the element with the id `login-link`. The following code snippets includes the commented out pure-JavaScript version of the code (see project-02-login in Chapter 3) that has the same functionality:
 
@@ -224,13 +225,13 @@ The `on()` method allows you to assign the same handler function to more than on
 The method `off()` is used for removing the event handler and the event won't be processed anymore. For example, if you want to turn off the login link's ability to process `click` event, simply write this:
 
 [source, javascript]
-----	
+----	 
 	$('#login-link').off('click', showLoginForm);
 ----
 
-==== Delegated Events
+==== Delegating Events
 
-The method `on()` can be called with passing an optional selector as an argument. Since we haven't used it in the example from the previous section, the event was triggered only when reached the element with an id `login-link`. Now imagine an HTML container that has child elements, e.g. a calculator implemented as a `<div id="calculator">` containing buttons. The following code would assign a click handler *to each* button stlyled with a class `.digitButton`:
+The method `on()` can be called with passing an optional selector as an argument. Since we haven't used selectors in the example from the previous section, the event was triggered only when reached the element with an id `login-link`. Now imagine an HTML container that has child elements, e.g. a calculator implemented as a `<div id="calculator">` containing buttons. The following code would assign a click handler *to each* button styled with a class `.digitButton`:
 
 [source, javascript]
 ----
@@ -244,7 +245,7 @@ But instead of assigning an event handler to each button, you can assign an even
 $("div#calculator").on("click", ".digitButton",function(){...});
 ----
 
-When the button is clicked, the event bubbles up and reaches the container's level, whose click handler will do the processing. The work on processing clicks for digit buttons is delegated to the container. 
+When the button is clicked, the event bubbles up and reaches the container's level, whose click handler will do the processing (jQuery doesn't support capturing phase of events). The work on processing clicks for digit buttons is delegated to the container. 
 
 Another good use case for delegating event processing to a container is a financial application that displays the data in an HTML table containing hundreds of rows. Instead of assigning event hundreds event handlers (one per table row), assign one to the table. There is one extra benefit to using delegation in this case - if the application can dynamically add new rows to this table (say, the order execution data), there is no need to explicitly assign event handlers to them - the container will do the processing for both old and new rows.
 
@@ -254,7 +255,7 @@ NOTE: Starting from jQuery 1.7, the method `on()` is a recommended replacement o
 
 ****
 
-The method `on()` allows passing the data to the function handler. 
+The method `on()` allows passing the data to the function handler (see http://api.jquery.com/on/[jQuery documentation] for details). 
 
 You are also allowed to assign different handlers to different events in on invocation of `on()`. The following code snippet from project-11-jQuery-canvas-pie-chart-json assigns handlers to `focus` and `blur` events:
 
@@ -271,7 +272,9 @@ $('#customAmount').on({
 
 Making AJAX requests to the server is also easier with jQuery than with pure JavaScript. All the complexity of http://api.jquery.com/jQuery.ajax/[`$.ajax()`] method is hidden from the developers. This method spares JavaScript developers from writing the code with multiple browser-specific ways of instantiating the `XMLHttpRequest` object. By invoking `ajax()` you can exchange the data with the server and load the JavaScript code. In its simplest form, this method takes just the URL of the remote resource to which the request is sent. Such invocation will use global defaults that should have been set in advance by invoking the method http://api.jquery.com/jQuery.ajaxSetup/[`ajaxSetup()`]. 
 
-But you can combine specifying parameters of the AJAX call and making the `ajax()` call. Just provide as an argument a configuration object that defines the URL, the function handlers for success and failures, and some other parameters like a function to call right before the AJAX request (`beforeSend`) or caching instructions for the browser (`cache`). Spend some time getting familiar with all different configuration parameters that you can use with the jQuery method `ajax()`. A sample  template for calling jQuery `ajax()` may look as shown below.
+But you can combine specifying parameters of the AJAX call and making the `ajax()` call. Just provide as an argument a configuration object that defines the URL, the function handlers for success and failures, and some other parameters like a function to call right before the AJAX request (`beforeSend`) or caching instructions for the browser (`cache`). 
+
+Spend some time getting familiar with all different configuration parameters that you can use with the jQuery method `ajax()`. Here's a sample template for calling jQuery `ajax()`:
 
 [source, javascript]
 ----
@@ -280,15 +283,40 @@ $.ajax({
  		type: 'GET',
  		dataType: 'json'
 	}).done(function (data) {...})
-	  .fail(function (jqXHR, textStatus) {...
-	});
+	  .fail(function (jqXHR, textStatus) {...});
 ----
 
-This example takes a JavaScript object that defines three properties: the URL, the type of the request,  and the expected data type. Using chaining, you can attach the methods `done()` and `fail()`, which have to specify the function handlers to be invoked in case of success and failure respectively. Don't forget about the asynchronous nature of  AJAX calls, which means that the `ajax()` method  will be finished before the `done()` or `fail()` callbacks will be invoked. You may attach another  _promised callback_ method `always()` that will be invoked regardless of if the `ajax()` call succeeds or fails. The http://api.jquery.com/jQuery.ajax/#jqXHR[jqXHR] is a jQuery wrapper for the browser's  `XMLHttpRequest` object.   
+This example takes a JavaScript object that defines three properties: the URL, the type of the request,  and the expected data type. Using chaining, you can attach the methods `done()` and `fail()`, which have to specify the function handlers to be invoked in case of success and failure respectively. The http://api.jquery.com/jQuery.ajax/#jqXHR[jqXHR] is a jQuery wrapper for the browser's  `XMLHttpRequest` object.
 
-To support chaining of asynchronous callbacks (`done()`, `fail()`, `always()`) that don't need to be called right away - they wait for the result - the method `ajax()` returns so called Deferred object that places these callbacks in a queue to be called later. As a matter of fact, the callback `fail()` may never be called. 
+Don't forget about the asynchronous nature of  AJAX calls, which means that the `ajax()` method  will be finished before the `done()` or `fail()` callbacks will be invoked. You may attach another  _promised callback_ method `always()` that will be invoked regardless of if the `ajax()` call succeeds or fails. 
 
-If you'll specify JSON as a value of the `dataType` property, the result will be parsed automatically by jQuery - there is no need to call `JSON.parse()` as it was done in Chapter 4. Even though the jQuery object has a utility  method `parseJSON()`, you don't have to invoke it to process return of the `ajax()` call.
+[NOTE]
+************
+An alternative to having a `fail()` handler for each ajax request is setting the global error handling routine. Consider doing this for some serious HTTP failures like 403 (access forbidden)  or errors with codes 5xx. For example:
+
+[source, javascript]
+----
+$(function() {
+  $.ajaxSetup({
+      error: function(jqXHR, exception) {
+        if (jqXHR.status == 404) {
+            alert('Requested resource not found. [404]');
+        } else if (jqXHR.status == 500) {
+            alert('Internal Server Error [500].');
+        } else if (exception === 'parsererror') {
+            alert('JSON parsing failed.');
+        } else {
+            alert('Got This Error:\n' + jqXHR.responseText);
+        }
+      }
+  });
+});
+----
+************
+
+If you need to chain asynchronous callbacks (`done()`, `fail()`, `always()`) that don't need to be called right away (they wait for the result) the method `ajax()` returns http://api.jquery.com/category/deferred-object/[`Deferred`] object. It places these callbacks in a queue to be called later. As a matter of fact, the callback `fail()` may never be called if no errors occurred. 
+
+If you specify JSON as a value of the `dataType` property, the result will be parsed automatically by jQuery - there is no need to call `JSON.parse()` as it was done in Chapter 4. Even though the jQuery object has a utility  method `parseJSON()`, you don't have to invoke it to process return of the `ajax()` call.
 
 In the above example the type of the AJAX request was `GET`. But you can use `POST` too. In this case you'll need to prepare valid JSON data to be sent to the server. In this case the configuration object that you provide as an argument to the method `ajax()` has to include the property `data` containing valid JSON.
 
@@ -302,8 +330,6 @@ The method http://api.jquery.com/load/[`load()`] makes an AJAX call from an HTML
 ----
  $('#counriesList').load('data/countries.html', function(response, status, xhr){...});
 ----
-
-TIP: You can use the function `load()` to load SVG images asynchronously.
 
 The global method http://api.jquery.com/jQuery.get/[`get()`] allows you to specifically issue an HTTP `GET` request. Similarly to the `ajax()` invocation, you can chain the `done(),` `fail()`, and `always()` methods to `get()`, for example: 
 
@@ -340,16 +366,20 @@ $('form').submit(function() {
   return false;
 }); 
 
+TIP: Returning `false` from a jQuery event handler is the same as calling on the `jQuery.Event` object both `preventDefault()` and `stopPropagation()`. In pure JavaScript returning `false` doesn't stop propagation (try to run http://jsfiddle.net/APQk6/[this fiddle]). 
+
 Later in this chapter in the section Submitting Donate Form you'll see a code that uses `serialize()` method.
 
 
 === Save The Child With jQuery
 
-In this section we'll review code samples from several Aptana projects that are jQuery re-writes of the corresponding pure-JavaScript projects from Chapters 3 and 4. We are not going to add any new functionality - the goal is to demonstrate how jQuery allows you to achieve the same results with writing less code. 
+In this section we'll review code samples from several Aptana projects that are jQuery re-writes of the corresponding pure-JavaScript projects from Chapters 3 and 4. We are not going to add any new functionality - the goal is to demonstrate how jQuery allows you to achieve the same results while writing less code. You'll also see how it can save you time by handling browser incompatibility for common uses (like AJAX).
 
 ==== Login and Donate
 
-For example, the file main.js from project-02-jQuery-Login is 33% less in size than project-02-login. jQuery is brief. For example, the next code shows how six lines of code in JavaScript can be replaced with one - the jQuery function `toggle()` will toggle the visibility of `login-link`, `login-form`, and `login-submit`.
+For example, the file main.js from project-02-jQuery-Login is 33% less in size than project-02-login written in pure JavaScript. jQuery allows your programs to be brief. For example, the next code shows how six lines of code in JavaScript can be replaced with one - the jQuery function `toggle()` will toggle the visibility of `login-link`, `login-form`, and `login-submit`. 
+
+Note. The total size of your jQuery application is not necessarily smaller comparing the pure JavaScript one because it includes the code of jQuery library.
 
 [source, javascript]
 ----
@@ -509,7 +539,7 @@ If you want to see the difference, first run the Aptana's project-02-01-jQuery-m
 
 ==== HTML States and Countries With jQuery AJAX
 
-The Aptana project project-03-jQuery-donation-ajax-html illustrates retrieving the HTML data about the states and countries using jQuery method `load()`. Here's the fragment from main.js that makes two `load()` calls. The second call purposely misspells the name of the file 
+The Aptana project project-03-jQuery-donation-ajax-html illustrates retrieving the HTML data about the states and countries using jQuery method `load()`. Here's the fragment from main.js that makes two `load()` calls. The second call purposely misspells the name of the file to generate error.
 
 [source, javascript]
 ----
@@ -532,7 +562,7 @@ function loadData(dataUrl, target, selectionPrompt) {
 
 var statePrompt = 
          '<option value="" selected="selected"> - State - </option>';
-loadData('data/us-states.html', $('#state'), Prompt);
+loadData('data/us-states.html', $('#state'), statePrompt);
 
 var countryPrompt = 
          '<option value="" selected="selected"> - Country - </option>';
@@ -624,7 +654,7 @@ image::images/fig_05_04.png[]
 
 ==== Submitting Donate Form
 
-Our Save The Child application submits the donation form to Paypal.com. The file index.html from Aptana's project project-04-jQuery-donation-ajax-json contains the form with `id="donate-form"`. The fragment of this form is shown below.  
+Our Save The Child application should be able to  submit the donation form to Paypal.com. The file index.html from Aptana's project project-04-jQuery-donation-ajax-json contains the form with `id="donate-form"`. The fragment of this form is shown below.  
 
 [source, html]
 ----
@@ -663,6 +693,8 @@ Our Save The Child application submits the donation form to Paypal.com. The file
 </form>
 ----
 
+===== Manual Form Serialization
+
 If you simply want to submit this form to the URL listed in its `action` property when the user clicks on the button submit, there is nothing else to be done. This already works and Paypal's login page opens up in the browser. But if you wanted to seamlessly integrate your page with Paypal or any other third-party service, a preferred way is not to send the user to the third-party Web site, but do it without leaving your Web application.  We won't be implementing such integration with Paypal here, but technically it would be possible to pass the user's credentials and bank information to charge the donor of Save The Child without even opening the Paypal Web page in the browser. To do this, you'd need to submit the form using AJAX and Paypal API with processing the results of this transaction using the standardAJAX techniques.    
 
 To post the form to a specified URL using jQuery AJAX we'll serialize the data from the form on `submit` event. The code fragment from main.js finds the form with ID `donate-form` and chains to it the `submit()` method passing to it a callback that will prepare the data and make an AJAX call. You may use the method `submit()` instead of attaching an event handler to process clicks on the button donate - the method `submit()` will be invoked not only on the Submit button click event, but when the user presses the Enter key while the cursor is in one of the form's input fields.
@@ -674,7 +706,7 @@ $('#donate-form').submit(function() {
   console.log("The Donation form is serialized:" + formData);
   // Make an AJAX call here and pass the data to the server
     
-  return false;
+  return false;  // stop event propagation
 });
 ----
 
@@ -714,7 +746,7 @@ queryString = $('form[name="_xclick"]')                     // <3>
 
 <3> Find the form named '_xclick', apply the filter to select only the hidden input fields and serialize them	
 
-We've prepared for you one more Aptana project illustrating manual serialization of the Donation form. It's called project-15-jQuery-serialize-form. The main.js in this project suppresses the default processing of the form submit event and sends the form to a server side PHP script that simply echoes the data received from the server. The file demo.php is shown next. It's located in the same directory where the index.html is. 
+We've prepared for you one more Aptana project illustrating manual serialization of the Donation form. It's called project-15-jQuery-serialize-form. The main.js in this project suppresses the default processing of the form submit event and sends the form to a server side PHP script. For the purposes of our example, we will use a common technique of creating a server-side echo script that simply returns the data received from the server. Typically, in the enterprise IT shops the server-side development is done by a separate team, and having a dummy server will allow front-end developers lower dependency on the readiness of the server with the real data feed. The file demo.php is shown next. It's located in the same directory where the index.html is. 
 
 [source, php]
 ----
@@ -740,7 +772,7 @@ exit();
 ?>
 ----
 
-The process of integration with the payment system using https://www.x.com/content/introducing-adaptive-payments[Paypal API] is out of this book's scope, but at least we can identify the place to do it - you'd need to replace the `echo` statement with the code making requests to Paypal or any other payment system. The fragment from the main.js that shows how to make a request to the demo.php comes next.
+The process of integration with the payment system using https://www.x.com/content/introducing-adaptive-payments[Paypal API] is out of this book's scope, but at least we can identify the place to do it - it's typically done on the server-side. In this chapter's example it's a server-side PHP script, but it can be a Java, .Net, Python or any other server. You'd need to replace the `echo` statement with the code making requests to Paypal or any other payment system. The fragment from the main.js that shows how to make a request to the demo.php comes next.
 
 [source, javascript]
 ----
@@ -792,7 +824,7 @@ function submitSerializedData(event) {
 
 .Installing the XAMPP server with PHP support
 *****************************************************
-To see this PHP script in action, it has to be deployed in any Web server that supports PHP. For example, you can install on your computer the XAMPP package from the http://www.apachefriends.org/en/xampp.html[ Apache Friends web site], which includes Apache Web Server that supports PHP, FTP, preconfigured MYSQL database server(we are not going to use it). The installation process is very simple - just go through the short instructions on the Apache Friends website that are applicable for your OS. Start the XAMPP Control application and click on the button Start next to the label Apache. By default, Apache server starts on the port 80, so entering *http://localhost* will open the XAMPP welcome page. 
+The above example uses a server-side PHP script to echo data sent to it. If you'd like to see this script in action so you can test that the client and server can communicate, deployed this script in any Web server that supports PHP. For example, you can install on your computer the XAMPP package from the http://www.apachefriends.org/en/xampp.html[ Apache Friends web site], which includes Apache Web Server that supports PHP, FTP, preconfigured MYSQL database server(we are not going to use it). The installation process is very simple - just go through the short instructions on the Apache Friends website that are applicable for your OS. Start the XAMPP Control application and click on the button Start next to the label Apache. By default, Apache server starts on the port 80, so entering *http://localhost* will open the XAMPP welcome page. 
 
 TIP: If you use MAC OS X, you may need to kill the pre-installed Apache server by using the *sudo apachectl stop* command.
 
@@ -829,7 +861,7 @@ TIP: If you'll open Aptana's view Project Explorer, you'll be able to browse loc
 
 .Configuring Aptana IDE to use Apache Web Server
 ************************************************
-As your Web projects become more complex, you may want to configure Aptana to use an external Web server, e.g. Apache Web Server that you just installed as a part of XAMPP instead of working with its own embedded Web server. 
+As your Web projects become more complex, you may want to configure Aptana to use an external Web server, e.g. Apache Web Server that you just installed as a part of XAMPP instead of working with its own embedded Web server to remove the dependency on any particular IDE. 
 
 TIP: If you are using MAC OS X, it comes with pre-installed Apache Web server. Just open Settings, Sharing and select the Internet Sharing checkbox. The directory Sites is the document root directory of this Web server. 
 
@@ -865,7 +897,7 @@ After you've configured hello.html to run under an external Web server, you shou
 ************************************************
 
 
-=== Plugins 
+=== jQuery Plugins 
 
 jQuery plugins are reusable components that know how to do a certain thing, for example validate a form or display images as a slide show. There are thousands of third-party jQuery plugins available in the http://plugins.jquery.com/[jQuery Plugin Registry]. Below are some of the useful plugins:
 
@@ -878,8 +910,7 @@ jQuery plugins are reusable components that know how to do a certain thing, for 
 * https://github.com/filamentgroup/responsive-carousel/[Responsive Carousel] - a slider to display images in a carousel fashion
 * http://www.oesmith.co.uk/morris.js/[morris.js] - a plugin for charting
 * http://www.welancers.com/jquery-map-marker-plugin/[Map Marker] - puts multiple markers on maps using Google MAP API V3.
-
-TIP: The https://github.com/tuupola/jquery_lazyload[Lazy Load plugin] delays loading of images, which are outside of viewports.
+* The https://github.com/tuupola/jquery_lazyload[Lazy Load plugin] delays loading of images, which are outside of viewports.
 
 The chances are that you will be able to find a plugin written by someone that fits your needs. jQuery plugins are usually freely available and their source code is plain JavaScript, so you can tweak it a litlle too if need be.  
 
@@ -905,6 +936,8 @@ The file main.js includes the code to validate the Donation form. The validation
 * the HTML element to be used for displaying errors
 * the name of the CSS class to style the error messages
 * the validation rules
+
+WARNING: Validating data only on the client side is not sufficient. It's a good idea to warn the user about data issues without sending the data to the server. But ensure that the data was not corrupted/modified while traveling to the server re-validate them on the server side too. Besides, a malicious user can access your server without using your Web application. Doing server-side validation is a must.
 
 The code fragment below displays error messages in the HTML element `<div id="validationSummary"></div>`  that's placed above the form in index.html. The Validator plugin provides the number of invalid form entries by invoking `validator.numberOfInvalids()`, and our code displays this number unless it's equal to zero. 
 
@@ -975,7 +1008,7 @@ TIP: Before including a jQuery plugin to your application spend some time testin
 
 ==== Adding Image Slider
 
-Pretty often you need to add a rotation of the images feature to a Web page. The Save The Child page, for example, could rotate the images of the kids saved by the donors. To give you yet another illustration of using jQuery plugin, we've created the project called project-16-jQuery slider, where we integrated the jQuery plugin called Responsive Carousel.  The file index.html of this project includes the CSS styles and the JavaScript code plugin as follows:
+Pretty often you need to add a rotation of the images feature to a Web page. The Save The Child page, for example, could rotate the images of the kids saved by the donors. To give you yet another illustration of using jQuery plugin, we've created the project called project-16-jQuery slider, where we integrated the jQuery plugin called https://github.com/filamentgroup/responsive-carousel[Responsive Carousel].  The file index.html of this project includes the CSS styles and the JavaScript code plugin as follows:
 
 [source, html]
 ----
@@ -988,9 +1021,7 @@ Pretty often you need to add a rotation of the images feature to a Web page. The
 <script src="js/plugins/responsive-carousel/responsive-carousel.flip.js"></script>
 ----
 
-We ran into issue as this version of the Resonsive Carousel plugin was using the method `live()` that was deprecated in jQuery 1.7 and removed in jQuery 1.9. After consulting with the http://jquery.com/upgrade-guide/1.9/[jQuery Core 1.9 Upgrade Guide] we've replaced all the occurrences of `live()` with `on()` right inside the file responsive-carousel.min.js, and the plugin started working fine.
-
-Run Aptana project-16-jQuery and you'll see rotating how three plain slides rotate as shown on <<FIG5-8>>. The HTML part of the container includes the three slides as follows. 
+Run Aptana project-16-jQuery and you'll see how three plain slides rotate as shown on <<FIG5-8>>. The HTML part of the container includes the three slides as follows. 
 
 [source, html]
 ----
@@ -1028,6 +1059,8 @@ $(function() {
 });
 ----
 
+TIP: To see code samples of using Responsive Carousel (including popular auto-playing slide shows) visit the Web page http://filamentgroup.github.io/responsive-carousel/test/functional/[Responsive Carousel variations].
+
 The Validator and Responsive Carousel clearly demonstrate that jQuery plugins can save you some serious time of writing code to implement some commonly required features. It's great that the members of the jQuery community from around the world share their creations with other developers. If you can't find a plugin that fits your needs or have specific custom logic that needs to be used or reused in your application.  Should you decide to write a plugin on your own, refer to the http://docs.jquery.com/Plugins/Authoring[Plugins/Authoring] document.
 
 
@@ -1035,6 +1068,10 @@ The Validator and Responsive Carousel clearly demonstrate that jQuery plugins ca
 
 In this chapter you became familiar with the jQuery Core library, which became the de-facto standard library in millions Web applications. Its simplicity and extensibility via the mechanism of plugins made it a must have in almost every Web page. Even if your organization standardizes decides on a more complex and feature-rich JavaScript framework, the chances are that you may find a handy jQuery plugin that will complement "the main" framework and made it into the code of your application. There is nothing wrong with this and you shouldn't be in the position of "either jQuery or XYZ" - most likely they can coexist. 
 
-We can recommend one of such frameworks that will compement your jQuery code is http://twitter.github.io/bootstrap/[Twitter's Bootstrap]. Bootstrap can quickly make the UI of your desktop or mobile application look stylish. Bootstrap is https://github.com/popular/starred[the most popular framework] on GitHub.
+We can recommend one of the small frameworks that  will complement your jQuery code is http://twitter.github.io/bootstrap/[Twitter's Bootstrap]. Bootstrap can quickly make the UI of your desktop or mobile application look stylish. Bootstrap is https://github.com/popular/starred[the most popular framework] on GitHub.
 
-In Chapter 12 you'll learn how to use jQuery Mobile library - an API on top of jQuery code that allows building UI for mobile devices.
+Chapter 9 on test-driven development will show you how to test jQuery applications. In this chapter  we've re-written the pure JavaScript application for the illustration purposes. But if this would be a real-world project to convert the Save The Child application from JavaScript to jQuery, having tests even for the JavaScript version of the application would have helped to verify that everything transitioned to jQuery successfully.
+
+In Chapter 13 you'll learn how to use jQuery Mobile library - an API on top of jQuery code that allows building UI for mobile devices.
+
+Now that we've covered JavaScript, HTML5 APIs, AJAX, JSON, and jQuery library, we're going to the meat of the book: frameworks, productibity tools,  and strategies for making your application enterprise-ready.
