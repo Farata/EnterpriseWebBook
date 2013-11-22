@@ -17,7 +17,8 @@ Next, we'd like to highlight the a handful of productivity tools that authors of
 
 * Yeoman is a collection of code-generation tools and best practices. 
 
-In addition to the above tools that can be used with various JavaScript frameworks, we'll introduce you to Clear Toolkit for Ext JS, which is a code generator created and open sourced by our company, Farata Systems. With Clear Toolkit you'll be able to quickly start the project that utilizes Ext JS framework for the front-end development and Java on the server side.
+
+In addition to the above tools that can be used with various JavaScript frameworks, we'll introduce you to Clear Toolkit for Ext JS, which include the code generator Clear Data Builder - it's created and open sourced by our company, Farata Systems. With Clear Toolkit you'll be able to quickly start the project that utilizes Ext JS framework for the front-end development and Java on the server side.
 
 === Node.js, V8, and NPM
 
@@ -374,12 +375,78 @@ Such enterprise applications are known as _CRUD applications_ because they perfo
 
 IMPORTANT: Familiarity with core Java concepts like classes, constructors, getters and setters, and annotations is required for understanding of the materials of this section.
 
-The phrase _to be more productive_ means to write less code while producing the results faster. This is what CDB is for, and you'll see it helps you to integrate the client side with the back end using the RPC style and how to implements data pagination for your application.
+The phrase _to be more productive_ means to write less code while producing the results faster. This is what CDB is for, and you'll see it helps you to integrate the client side with the back end using the RPC style and how to implements data pagination for your application. To be more productive, you need to have the proper tools installed and we'll cover this next.
+
+==== Setting Up Eclipse IDE
+
+In this chapter we'll use not WebStorm, but Eclipse IDE because CDB works as an Eclipse plugin and you'll see how JavaScript and Java can live in the same IDE. Although Eclipse is not the best IDE for JavaScript developers, we'll need it to demonstrate the application generation using Java and CDB. Besides, Sencha offers Eclipse plugin (not covered in the book) for those who purchased a license of Sencha Complete. 
+
+We'll use the version "Eclipse IDE for Java EE developers", which is the most popular IDE among enterprise Java developers. It's available free of charge at http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable to start this IDE.  
+
+===== Apache Tomcat
+
+In the Chapter 3 we used a XAMPP server that was running PHP scripts. Since this chapter will include server-side code written in Java, we'll use http://tomcat.apache.org[Apache Tomcat], which is one of the http://w3techs.com/technologies/details/ws-tomcat/all/all[popular] servers used by Java developers for deploying Web applications. Besides being a Web Server, Tomcat also contains Java Servlet container that will be used later in this chapter in the section "Generating CRUD applications". But for most examples we'll use Tomcat as a Web server where Ext JS code will be deployed. 
+
+Get the latest version of Apache Tomcat from the Download section at http://tomcat.apache.org. At the time of this writing Tomcat 7 is the latest producation-quality build, so download the zip file with the Tomcat's Binary Distributions (Core). Unzip the file in the directory of your choice.
+
+Even though you can start Tomcat from a separate command window, the  more productive way is to configure Tomcat right in the Eclipse IDE. This will allow to deploy your applications, and start/stop Tomcat without the need to leave Eclipse. 
+To add a server to Eclipse, open Eclipse Java EE perspective (menu Window | Open Perspective ), select the menu  File | New | Other | Server |Server | Apache | Tomcat v7.0 Server, select your Tomcat installation directory and press Finish. If you don’t see Tomcat 7 in the list of Apache servers, click on “Download additional server adapters”.
+
+You'll see the Tomcat entry in the Eclipse Project Explorer. Go to Eclipse menu Windows | Show View and open the Servers view. Start Tomcat using the right-click menu.
+
+TIP: By default, Eclipse IDE keeps all required server configuration and deployment files in its own hidden directory. To see where exactly they are located in your computer, just double-click on the name of Tomcat in the Server view. The server path field contains the path. Keep in mind that while Tomcat documentation defines _webapps_ as a default deployment directory, Eclipse uses _wtpwebapps_ directory instead. If you prefer to deploy your Eclipse projects under your original Tomcat installation path, select the option Use Tomcat Installation.  
+
+In the next section you'll learn how to create Dynamic Web Projects in Eclipse, where you'll need to specify the Target Runtime for deployment of your Web applications. This newly installed and configured Tomcat server will serve as a deployment target for our sample projects. 
+
+===== Dynamic Web Projects and Ext JS
+
+Eclipse for Java EE developers comes with http://www.eclipse.org/webtools/[Web Tools Platform] that simplifies development of Web applications by allowing you to create so-called Dynamic Web Project. This is an Eclipse pre-configured project that already knows where its Java server located and deployment to the server is greatly simplified. Sample projects from this chapter will be   specifically created for deployment under Apache Tomcat server. 
+
+To create such a project select Eclipse menu File | New | Other | Web | Dynamic Web Project. It'll pop up a window similar to <<FIG6-4>>. Note that the Target Runtime is Apache Tomcat v7.0 that we've configured in the previous section. 
+
+[[FIG6-4]]
+.Creating Dynamic Web Project in Eclipse
+image::images/fig_06_04.png[image]
+
+Upon creation, this project will include several directories, and one of them will be called _WebContent_. This directory it serves as a document root of the Web server in Eclipse Dymamic Web Projects . This is the place to put your index.html and one of possible places to keep the Ext JS framework.Create a subdirectory _ext_ under _WebContent_ and copy there all files from the Ext JS distribution. The _app_ directory should also go under _WebContent_.
+
+Unfortunately, Eclipse IDE is infamous for slow indexing of JavaScript files, and given the fact that Ext JS has hundreds of JavaScript files, your work may be interrupted by Eclipse trying to unnecessary re-validate these files. Developers of Sencha Eclipse plugin decided to solve this problem by creating a special type library file (ext.ser) supporting code assistance in Eclipse. This solution will work until some of the Ext JS API changes, after that Sencha should update the type library file. 
+
+If you don't have Sencha Eclipse plugin, there is a couple of solutions to this problem (we'll use the first one). 
+
+1. Exclude from Eclipse build the following Ext JS directories: ext, build, and packages. 
+
+2. Don't copy the Ext JS framework into your Eclipse project. Keep it in the place known for Tomcat, and configure as a loadable module.
+
+To implement the first solution, right click on the properties of your project and select JavaScript | Include Path. Then switch to the Source tab, expand the project's Web content and press the buttons Edit and then Add. One by one add the ext, build, and packages as exclusion patterns (add the slash at the end) as shown in <<Fig6-5>>
+    
+[[FIG6-5]]
+.Solution 1: Excluding folders in Eclipse
+image::images/fig_06_05.png[image]
+
+For the second solution, you'll need to add your Ext JS folder as a static Tomcat module. Double-click at the Tomcat name in the Servers view and then click on the bottom tab Modules. Then Click on Add External Web Module. In the popup window find the folder where your Ext JS is (in my computer it's inside the Library folder as in <<Fig6-6>>) and give it a name (e.g. /extjs-4.2). Now Tomcat will know that on each start it has to load year another static Web module known as /extjs-4.2. If you're interested in details of such deployment, open up the file server.xml located in your Eclipse workspace in the hidden directory _.metadata/.plugins/org.eclipse.wst.server.core/tmp0/conf_.
+
+To ensure that you did everything right, just enter in your browser the URL http://localhost:8080/extjs-4.2, and you should see the  welcome screen of Ext JS.
+
+[[FIG6-6]]
+.Solution 2: Adding Ext JS to Tomcat as a static module 
+image::images/fig_06_06.png[image]
+
+In both of these solutions you'll lose the Ext JS context sensitive help, but at least you will eliminate the long pauses caused by Eclipse internal indexing processes. Again, developing ExtJS code in WebStorm IDE or IntelliJ IDEA IDEs would spare you from all these issues because these IDE's are smart enough to produce context-sensitive help from an external JavaScript library.   
+
+In this section we brought together three pieces of software: Eclipse IDE, Apache Tomcat server, and Ext JS framework.  Let's bring one more program to the mix: Sencha CMD. We already went through the initial code generation of Ext JS applications. If you already have a Dynamic Web Project in Eclipse workspace, run Sencha CMD specifying the _WebContent_ directory of your project as the output folder, where the generated project will reside. For example, if the name of your Dynamic Web Project is hello2, the Sencha CMD command can look as follows:
+
+_sencha -sdk /Library/ext-4.2 generate app HelloWorld /Users/yfain11/myEclipseWorkspace/hello2/WebContent_
+
+
+
+
+
 
 
 ==== Ext JS MVC Application Scaffolding 
 
-In this part we'll cover the following topics:
+In this section we'll cover the following topics:
 
 - What is Clear Toolkit for Ext JS 
 - How to create an Ext JS MVC front end for a Java-based project
