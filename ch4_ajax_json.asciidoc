@@ -23,7 +23,7 @@ Visit the http://www.google.com/finance[Google Finance] or http://finance.yahoo.
 http://www.json.org/js.html[JSON] stands for JavaScript Object Notation. It's a more compact than XML way to represent the data. Besides, all modern Web Browsers understand and can parse JSON data. After learning the JavaScript object literals in Chapter 1, you'll see that the presenting the data in JSON notation is almost the same as writing JavaScript object literals. 
 
 
-<<FIG4-1>> depicts a high level view of a typical Web application. All of the code samples from Chapter 1 and Chapter 3 were where written in HTML, JavaScript and CSS. in this chapter will add to the mix the `XMLHttpRequest` object that will send and receive the JSON content wrapped into `HTTPRequest` and `HTTPResponse` objects.
+<<FIG4-1>> depicts a high level view of a typical Web application. All of the code samples from Chapter 1 (and in Appendixes) were where written in HTML, JavaScript and CSS. In this chapter will add to the mix the `XMLHttpRequest` object that will send and receive the JSON content wrapped into `HTTPRequest` and `HTTPResponse` objects.
 
 
 [[FIG4-1]]
@@ -32,22 +32,18 @@ image::images/fig_04_01.png[]
 
 When a Web page is loaded the user doesn't know (and doesn't have to know) that the page content was brought from several servers that can be located thousands miles apart. More often than not, when the user enters the URL requesting an HTML document, the server side code can engage several servers to bring all the data requested by the user. Some of the data are retrieved by making calls to one or more Web Services. The legacy Web services were build using SOAP + XML, but  majority of today's Web services are build using lighter http://en.wikipedia.org/wiki/Representational_state_transfer[_RESTful architecture_], and JSON has become a de facto standard data exchange format of the REST Web services. 
 
-
 === How AJAX Works
 
-Imagine a single-page application that needs some data to refreshed in real time. For example, our Save The Child application includes an online auction where people can bid and purchase some goods as a part of a charity event. If John from New York placed a bid on certain auction item, and some time later Mary from Chicago placed the higher bid on the same item, we want to make sure that John knows about it immediately, in real time.  This means that the server-side software that received Mary's bid has to push this data to all users who expressed their interest in the same item. 
+Imagine a single-page application that needs some data to refreshed in real time. For example, our Save The Child application includes an online auction where people can bid and purchase some goods as a part of a charity event. If John from New York placed a bid on certain auction item, and some time later Mary from Chicago placed the higher bid on the same item, we want to make sure that John knows about it immediately, in real time.  This means that the server-side software that received Mary's bid has to push this data to all users who expressed their interest in the same item.
 
-But the server has to send and the browser has to modify only the new price while the rest of the content of the Web page should remain the same. You can implement behavior using AJAX. But first, the bad news:
-you can't implement the real-time server side push with AJAX. You can only emulate this behavior by using polling techniques, when the `XMLHttpRequest` object sits inside your JavaScript code and periodically sends HTTP requests to the server asking if there were any changes in bids since the last request. 
+But the server has to send and the browser has to modify only the new price while the rest of the content of the Web page should remain the same. You can implement behavior using AJAX. But first, the bad news: you can't implement the real-time server side push with AJAX. You can only emulate this behavior by using polling techniques, when the `XMLHttpRequest` object sits inside your JavaScript code and periodically sends HTTP requests to the server asking if there were any changes in bids since the last request. 
 
 If, for instance, the last request was made at 10:20:00AM, the new bid was placed at 10:20:02AM, and the application makes a new request (and updates the browser's window) at 10:20:25AM, this means that the user will be notified about the price change with a three second delay. AJAX is still request-response based way of getting the server's data, and strictly speaking, doesn't offer a real real-time updates. Some people use the term _near real time_ notifications.
 
 Another bad news is that AJAX uses HTTP protocol for the data communication, which means that a substantial overhead in the form of `HTTPResponse` header will be added to the new price, and it can be as large as several hundred bytes. This is still better than sending the entire page to the Web browser, but HTTP adds a hefty overhead. 
 
 ****
-
-NOTE: We'll implement such an auction in Chapter 9 using a lot more efficient protocol called WebSockets, which supports a real-time data push and adds only several extra bytes to the data load. 
-
+NOTE: We'll implement such an auction in Chapter 8 using a lot more efficient protocol called WebSockets, which supports a real-time data push and adds only several extra bytes to the data load. 
 ****
 
 ==== Retrieving Data From the Server
@@ -68,7 +64,7 @@ Let's try to implement AJAX techniques by implementing a data retrieval. The pro
 *  Modify the DOM elements based on the received data, if need be.
 
 
-In most of the books on AJAX you'll see browser-specific ways of instantiating the `XMLHttpRequest` object (a.k.a. XHR). Most likely you'll be developing your application using some JavaScript framework and all browser specifics in instantiating of the `XMLHttpRequest` will be hidden from you. Chapters 6 and 7 include such examples, but let's stick to the standard JavaScript way implemented by all modern browsers: 
+In most of the books on AJAX you'll see browser-specific ways of instantiating the `XMLHttpRequest` object (a.k.a. XHR). Most likely you'll be developing your application using some JavaScript library or a framework and all browser specifics in instantiating of the `XMLHttpRequest` will be hidden from you. Chapters 3 and 4 include such examples, but let's stick to the standard JavaScript way implemented by all modern browsers: 
 
 `var xhr = new XMLHttpRequest();`
 
@@ -76,7 +72,7 @@ The next step is to initialize a request by invoking the method `open()`. You ne
 
 `xhr.open('GET', dataUrl);`
 
-TIP: Always use HTTPS ptotocol if you need to send the user id and password. Using secure HTTP should be your preferred protocol in general (read more in Chapter 10).
+TIP: Always use HTTPS protocol if you need to send the user id and password. Using secure HTTP should be your preferred protocol in general (read more in Chapter 9).
 
 XHR has an attribute `readyState`, and as soon as it changes the callback function assigned to the `onreadystatechange` will be invoked. This callback should contain your application specific code to analyze the response and process it accordingly. Assigning such a callback is pretty simple:
 
@@ -161,7 +157,7 @@ TIP: W3C has published a working draft of https://developer.mozilla.org/en-US/do
 
 ==== Populating States and Countries from HTML Files
 
-To see the first example where we are using AJAX in our Save The Child application run the Aptana's project-04-1-donation-ajax-html, where we've removed the hard-coded data about countries and states from HTML and saved them in two separate files: data/us-states.html and data/countries.html. In this project the file index.html has two empty comboboxes (`<select>` elements):
+To see the first example where we are using AJAX in our Save The Child application run the project-01-donation-ajax-html, where we've removed the hard-coded data about countries and states from HTML and saved them in two separate files: data/us-states.html and data/countries.html. In this project the file index.html has two empty comboboxes (`<select>` elements):
 
 [source, html]
 ----
@@ -225,7 +221,7 @@ else {
                      xhr.status + "</p>";
 }
 
-This code uses the CSS selector `error` that will show the error message on the red background. you can find it in the file styles.css in Aptana's project-04-3-donation-error-ajax-html. It looks like this:
+This code uses the CSS selector `error` that will show the error message on the red background. you can find it in the file styles.css in the project-02-donation-error-ajax-html. It looks like this:
 
 [source, css]
 ----
@@ -313,7 +309,7 @@ TIP: There are several JSON tools useful for developers. To make sure that your 
 
 ==== Populating States and Countries from JSON Files
 
-Earlier in this chapter you've seen an example of populating states and countries in the donate form from HTML files. Now you'll see how to retrieve the JSON data by making an AJAX call. Running Aptana's project project-04-2-donation-ajax-json reads the countries and states from the files countries.json and us_states.json respectively. The beginning of the file countries.json is shown below:
+Earlier in this chapter you've seen an example of populating states and countries in the donate form from HTML files. Now you'll see how to retrieve the JSON data by making an AJAX call. Open in the Web browser the project-04-2-donation-ajax-json - it reads the countries and states from the files countries.json and us_states.json respectively. The beginning of the file countries.json is shown below:
 
 [source, javascript]
 ----
@@ -410,13 +406,11 @@ var customerJson = '{"fname":"Alex",
                     }';
 ----
 
-
-
 ==== Loading Charity Events using AJAX and JSON
 
-The last example in Chapter 3 was about displaying various charity events on the Google map using multiple markers. But the data about these events were hard-coded in HTML file. After getting familiar with AJAX and JSON it should not be too difficult to create a separate file with the information about charities in JSON format and load them using `XMLHTTPRequest` object.
+The last example in Chapter 1 was about displaying various charity events on the Google map using multiple markers. But the data about these events were hard-coded in HTML file. After getting familiar with AJAX and JSON it should not be too difficult to create a separate file with the information about charities in JSON format and load them using `XMLHTTPRequest` object.
 
-The next version of Save The Child is a modified version of the application that displayed Google map with multiple markers from Chapter 3. But this time we'll load the information about the charity events from the file campaigndata.json shown next.
+The next version of Save The Child is a modified version of the application that displayed Google map with multiple markers from Chapter 1. But this time we'll load the information about the charity events from the file campaigndata.json shown next.
 
 [source, javascript]
 ----
@@ -455,13 +449,13 @@ The next version of Save The Child is a modified version of the application that
 }
 ----
 
-Run the Aptana's project-11-maps-json-data and you'll see the map with the markers for each of the events loaded from the file campaigndata.json (see <<FIG4-03>>). Click on the marker to see an overlay with the event details. 
+Run the project-03-maps-json-data and you'll see the map with the markers for each of the events loaded from the file campaigndata.json (see <<FIG4-03>>). Click on the marker to see an overlay with the event details. 
 
 [[FIG4-03]]
 .Markers built from JSON data
 image::images/fig_04_03.png[]
 
-Note that this JSON file contains the object `campaigns`, which includes the array of objects `items` representing charity events. `XMLHttpRequest` object loads the data and the `JSON` parses it assigning the `campaigns` object to the variable `campaignsData` that is used in showCampaignsInfo() with Google Maps API (we've omitted the mapping part for brevity). 
+Note that this JSON file contains the object `campaigns`, which includes the array of objects `items` representing charity events. `XMLHttpRequest` object loads the data and the `JSON` parses it assigning the `campaigns` object to the variable `campaignsData` that is used in `showCampaignsInfo()` with Google Maps API (we've omitted the mapping part for brevity). 
 
 [source, javascript]
 ----
@@ -594,7 +588,7 @@ The http://www.w3.org/TR/SVG11/[`<svg>` element] supports Scalable Vector Graphi
 
 ==== Adding Chart With Canvas Element
 
-Let's review some code fragments from the Aptana's project-12-canvas-pie-chart-json. The HTML section defines `<canvas>` of 260x240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your canvas element so your JavaScript code can access it.
+Let's review some code fragments from project-04-canvas-pie-chart-json. The HTML section defines `<canvas>` of 260x240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your canvas element so your JavaScript code can access it.
 
 [source, html]
 ----
@@ -607,7 +601,7 @@ Let's review some code fragments from the Aptana's project-12-canvas-pie-chart-j
 </div>
 ----
 
-Run the project-12-canvas-pie-chart-json, and you'll see the chart with donation statistics by city as in <<FIG4-6>>. We haven't style our `<canvas>` element, but we could've added a background color, the border and other bells and whistles if required.
+Run the project-04-canvas-pie-chart-json, and you'll see the chart with donation statistics by city as in <<FIG4-6>>. We haven't style our `<canvas>` element, but we could've added a background color, the border and other bells and whistles if required.
 
 [[FIG4-6]]
 .Adding a chart 
@@ -686,7 +680,7 @@ function getData(dataUrl, canvas) {
 loadData('data/chartdata.json', document.getElementById("canvas"));
 ----
 
-<1> Parse JSON and create the ChartData Javascript object.
+<1> Parse JSON and create the `ChartData` Javascript object.
 
 <2> Pass the data to the `drawPieChart()` function that will draw the pie in the `canvas` element with the center coordinates x=50 and y=50 pixels. The top left corner of the canvas has coordinates (0,0). The radius of the pie will be 49 pixels. The code of the function that draws the pie on the canvas goes next.
 
@@ -769,7 +763,7 @@ To implement the same donation statistics pie with the `<svg>` element, you'd ne
 </div>
 ----
 
-Running the Aptana's project-13-svg-pie-chart-json would show you pretty much the same pie as it uses the file chartdata.json with the same content, but the pie was produced differently. The code of the new version of the `drawPieChart()` is shown below. We won't discuss all the details of the drawing with SVG, but will highlight the a couple of important lines of code that illustrate the difference between drawing on `<canvas>` vs. `<svg>`.  
+Running the project-05-svg-pie-chart-json would show you pretty much the same pie as it uses the file chartdata.json with the same content, but the pie was produced differently. The code of the new version of the `drawPieChart()` is shown below. We won't discuss all the details of the drawing with SVG, but will highlight the a couple of important lines of code that illustrate the difference between drawing on `<canvas>` vs. `<svg>`.  
 
 [source, javascript]
 ----
@@ -863,7 +857,7 @@ function drawPieChart(chartContaner, chartData, centerX, centerY,
 <1> Create the `<svg:path>` HTML element, which is the most important SVG element for drawing basic shapes.. It includes a series of commands that produce the required drawing. For example, _M 10 10_ means _movo to the coordinate 10,10_ and _L 20 30_ means _draw the line to the coordinate 20,30_. 
 
 <2> Fill the details of the `<svg:path>` element to draw the pie sector. 
-Run the Aptana's project-13-svg-pie-chart-json to see the Save The Child page, then right-click on the pie chart and select Inspect Element (this is the name of the menu item in Firefox). <<FIG4-7>> shows the resulting content of our `<svg>` element. As you can see, it's not pixel based but a set of XML-like commands that drew the content of the chart. If you'll run the previous version of our application (project-12-canvas-pie-chart-json) and right-click on the chart, you will be able to save it as an image, but won't see the internals of the `<canvas>` element.
+Run the project-05-svg-pie-chart-json to see the Save The Child page, then right-click on the pie chart and select Inspect Element (this is the name of the menu item in Firefox). <<FIG4-7>> shows the resulting content of our `<svg>` element. As you can see, it's not pixel based but a set of XML-like commands that drew the content of the chart. If you'll run the previous version of our application (project-04-canvas-pie-chart-json) and right-click on the chart, you will be able to save it as an image, but won't see the internals of the `<canvas>` element.
 
 <3> Adding the internal elements of the chart container to the DOM - path, bullets and text. These elements can be modified if needed without redrawing the entire content of the container.	
 
