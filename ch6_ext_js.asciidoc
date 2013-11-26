@@ -5,7 +5,7 @@
 
 The content of this part justifies having the word Enterprise on this book's cover. 
 
-In Chapter 4 you'll learn how to use rich and feature complete frameworks -  Ext JS from Sencha. While using this framework may be an overkill for a small Web site, it's pretty popular in the enterprise World, where rich-looking UI is required. Besides learning how to work with this framework, you'll build a new version of the Save The Child application in Ext JS. In http://savesickchild.org:8080/ssc-extjs/[this version] we'll introduce an interactive chart (a popular feature for enterprise dashboards) and a data grid (any enterprise app uses grids).
+In Chapter 4 you'll learn how to use rich and feature complete frameworks -  Ext JS from Sencha. While using this framework may be an overkill for a small Web site, it's pretty popular in the enterprise world, where rich-looking UI is required. Besides learning how to work with this framework, you'll build a new version of the Save The Child application in Ext JS. In http://savesickchild.org:8080/ssc-extjs/[this version] we'll introduce an interactive chart (a popular feature for enterprise dashboards) and a data grid (any enterprise app uses grids).
 
 Chapter 5 is a review of productivity tools used by enterprise developers (NPM, Grunt, Bower,Yeoman, CDB). It's about build tools, code generators, and managing dependencies (a typical enterprise application uses carious software that need to work in harmony).
 
@@ -256,10 +256,7 @@ Later in this chapter we'll use Sencha CMD tool again in the section "Building P
 
 TIP: Sencha CMD 3.1 comes with embedded Jetty 8.1.7 Web server. Open the Terminal or command window and run the following command to serve your Web application on port 8080 (can be another port): _sencha fs web -port8080 start -map /path/to/app/docrootdir_.
 
-
-
 If your organization is developing Web applications with Ext JS without using Sencha CMD - it's a mistake. Sencha CMD is a very useful code generator and optimizer that also enforces the MVC principles of application design.
-
 
 
 ==== Which Ext JS Distribution to Use?
@@ -807,23 +804,102 @@ In the next section you'll see Ext JS layouts in action while working on the Sav
 
 === Developing Save The Child With Ext JS
 
-In this section we'll do a code walk-through of the Ext JS version of our Save The Child application. We've prepared two separate Eclipse projects SSC_Top_ExJS.zip contains the code required to render the top portion of the UI, and SSC_Complete_ExtJS.zip contains the complete version. To test these applications in Eclipse, you need to have it configured with Tomcat as described earlier in the section "Configuring Eclipse project with Apache Tomcat and Ext JS".  
+In this section we'll do a code walk-through of the Ext JS version of our Save The Child application. Ext JS framework is often used in the enterprise applications that communicate with Java-based server-side. The most popular IDE among Java enterprise developers is called Eclipse. That's why we decided to switch from WebStorm to Eclipse IDE for some time. Apache Tomcat is one of the most popular servers among Java developers. 
 
-==== Save The Child: The Top Portion
+We've prepared two separate Eclipse projects:
 
-Then select Eclipse menu File | Import | General | Existing projects into workspace and press the button Next. Then select the option Select archive file and press browse to find SSC_Top_ExJS.zip on your disk. This will import the entire Dynamic Web Project, and most likely you'll see one error in the Problems view indicating that the target runtime with so-and-so name is not defined. This may happen because the name of the Tomcat configuration in your Eclipse is different from the one in the file SSC_Top_ExJS.zip. 
+* SSC_Top_ExJS contains the code required to render the top portion of the UI
 
-To fix this issue right-click on the project name and select the menu Properties | Targeted runtimes. Then uncheck the Tomcat name that was imported from our archive and check the name of your Tomcat configuration. This action will make the project SSC_Top_ExtJS deployable under your Tomcat server. Right-click on the server name in the Servers view and select Add and Remove menu item. You'll see a popup window similar to <<FIG6-1-SSC>>, which depicts a state when the project SSC_Top_ExtJS is configured (deployed), but SSC_Complete_ExtJS isn't yet.
+* SSC_Complete_ExtJS contains the complete version. 
+
+To test these applications in Eclipse, you need to install its version titled "Eclipse IDE for Java EE developers" and configure it with Apache Tomcat as described below. 
+
+Note: If you are not planning to work with Java servers, you can continue using WebStorm IDE. Just open in WebStorm the WebContent directory from the above project (as you did in the previous chapters) and open the index.html file in the browser. WebStorm will run these Web application using its internal Web server.
+
+TIP: To make WebStorm work faster, exclude directories _ext, packages, build, and WEB-INF_ from the project (hit the icon with a wrench image on the toolbar and select the Directories and the Excluded). This way WebStorm won't be indexing these directories.
+
+
+==== Setting Up Eclipse IDE and Apache Tomcat
+
+Although Eclipse is not the best IDE for JavaScript developers, but besides being a super popular IDE among Java developers, we'll need it to demonstrate the HTML/Java application generation in the next chapter. 
+
+TIP: Sencha offers Eclipse plugin (not covered in the book) for those who purchased a license of Sencha Complete. 
+
+We'll use the version "Eclipse IDE for Java EE developers". It's available free of charge at http://www.eclipse.org/downloads/[Eclipse Downloads site]. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable to start this IDE.  
+
+===== Apache Tomcat
+
+In Chapter 3 we used a XAMPP server that was running PHP scripts. Since this chapter will include server-side code written in Java, we'll use http://tomcat.apache.org[Apache Tomcat], which is one of the http://w3techs.com/technologies/details/ws-tomcat/all/all[popular] servers used by Java developers for deploying Web applications. Besides being a Web Server, Tomcat also contains Java Servlet container that will be used later in the next chapter in the section "Generating CRUD applications". But for most examples we'll use Tomcat as a Web server where Ext JS code will be deployed. 
+
+Get the latest version of Apache Tomcat from the Download section at http://tomcat.apache.org. At the time of this writing Tomcat 7 is the latest producation-quality build, so download the zip file with the Tomcat's Binary Distributions (Core). Unzip the file in the directory of your choice.
+
+Even though you can start Tomcat from a separate command window, the  more productive way is to configure Tomcat right in the Eclipse IDE. This will allow to deploy your applications, and start/stop Tomcat without the need to leave Eclipse. 
+To add a server to Eclipse, open Eclipse Java EE perspective (menu Window | Open Perspective ), select the menu  File | New | Other | Server |Server | Apache | Tomcat v7.0 Server, select your Tomcat installation directory and press Finish. If you don’t see Tomcat 7 in the list of Apache servers, click on “Download additional server adapters”.
+
+You'll see the Tomcat entry in the Eclipse Project Explorer. Go to Eclipse menu Windows | Show View and open the Servers view. Start Tomcat using the right-click menu.
+
+TIP: By default, Eclipse IDE keeps all required server configuration and deployment files in its own hidden directory. To see where exactly they are located in your computer, just double-click on the name of Tomcat in the Server view. The server path field contains the path. Keep in mind that while Tomcat documentation defines _webapps_ as a default deployment directory, Eclipse uses _wtpwebapps_ directory instead. If you prefer to deploy your Eclipse projects under your original Tomcat installation path, select the option Use Tomcat Installation.  
+
+In the next section you'll learn how to create Dynamic Web Projects in Eclipse, where you'll need to specify the Target Runtime for deployment of your Web applications. This newly installed and configured Tomcat server will serve as a deployment target for our sample projects. 
+
+===== Dynamic Web Projects and Ext JS
+
+Eclipse for Java EE developers comes with http://www.eclipse.org/webtools/[Web Tools Platform] that simplifies development of Web applications by allowing you to create so-called Dynamic Web Project. This is an Eclipse pre-configured project that already knows where its Java server located and deployment to the server is greatly simplified. Sample projects from this chapter will be   specifically created for deployment under Apache Tomcat server. 
+
+To create such a project select Eclipse menu File | New | Other | Web | Dynamic Web Project. It'll pop up a window similar to <<FIG6-4>>. Note that the Target Runtime is Apache Tomcat v7.0 that we've configured in the previous section. 
+
+[[FIG6-4]]
+.Creating Dynamic Web Project in Eclipse
+image::fig_06_04.png[image]
+
+Upon creation, this project will include several directories, and one of them will be called _WebContent_. This directory it serves as a document root of the Web server in Eclipse Dymamic Web Projects . This is the place to put your index.html and one of possible places to keep the Ext JS framework.Create a subdirectory _ext_ under _WebContent_ and copy there all files from the Ext JS distribution. The _app_ directory should also go under _WebContent_.
+
+Unfortunately, Eclipse IDE is infamous for slow indexing of JavaScript files, and given the fact that Ext JS has hundreds of JavaScript files, your work may be interrupted by Eclipse trying to unnecessary re-validate these files. Developers of Sencha Eclipse plugin decided to solve this problem by creating a special type library file (ext.ser) supporting code assistance in Eclipse. This solution will work until some of the Ext JS API changes, after that Sencha should update the type library file. 
+
+If you don't have Sencha Eclipse plugin, there is a couple of solutions to this problem (we'll use the first one). 
+
+1. Exclude from Eclipse build the following Ext JS directories: ext, build, and packages. 
+
+2. Don't copy the Ext JS framework into your Eclipse project. Keep it in the place known for Tomcat, and configure as a loadable module.
+
+To implement the first solution, right click on the properties of your project and select JavaScript | Include Path. Then switch to the Source tab, expand the project's Web content and press the buttons Edit and then Add. One by one add the ext, build, and packages as exclusion patterns (add the slash at the end) as shown in <<Fig6-5>>
+    
+[[FIG6-5]]
+.Solution 1: Excluding folders in Eclipse
+image::fig_06_05.png[image]
+
+For the second solution, you'll need to add your Ext JS folder as a static Tomcat module. Double-click at the Tomcat name in the Servers view and then click on the bottom tab Modules. Then Click on Add External Web Module. In the popup window find the folder where your Ext JS is (in my computer it's inside the Library folder as in <<Fig6-6>>) and give it a name (e.g. /extjs-4.2). Now Tomcat will know that on each start it has to load year another static Web module known as /extjs-4.2. If you're interested in details of such deployment, open up the file server.xml located in your Eclipse workspace in the hidden directory _.metadata/.plugins/org.eclipse.wst.server.core/tmp0/conf_.
+
+To ensure that you did everything right, just enter in your browser the URL http://localhost:8080/extjs-4.2, and you should see the  welcome screen of Ext JS.
+
+[[FIG6-6]]
+.Solution 2: Adding Ext JS to Tomcat as a static module 
+image::fig_06_06.png[image]
+
+In both of these solutions you'll lose the Ext JS context sensitive help, but at least you will eliminate the long pauses caused by Eclipse internal indexing processes. Developing with ExtJS in WebStorm IDE or IntelliJ IDEA IDEs would spare you from all these issues because these IDE's are smart enough to produce context-sensitive help from an external JavaScript library.   
+
+Note: If you decided to stick to WebStorm IDE, you can skip Eclipse-related instructions below and just open in browser index.html located in the WebContent directory of the SSC_Top_ExtJS project. In any case the browser will render the page that looks as in <<FIG6-2-SSC>> below.
+
+In this section we brought together three pieces of software: Eclipse IDE, Apache Tomcat server, and Ext JS framework.  Let's bring one more program to the mix: Sencha CMD. We already went through the initial code generation of Ext JS applications. If you already have a Dynamic Web Project in Eclipse workspace, run Sencha CMD specifying the _WebContent_ directory of your project as the output folder, where the generated project will reside. For example, if the name of your Dynamic Web Project is hello2, the Sencha CMD command can look as follows:
+
+_sencha -sdk /Library/ext-4.2 generate app HelloWorld /Users/yfain11/myEclipseWorkspace/hello2/WebContent_
+
+
+==== Save The Child: The Top Portion of UI
+
+To run the top portion of the UI, Select Eclipse menu File | Import | General | Existing projects into workspace and press the button Next. Then select the option _Select root directory_ and press browse to find SSC_Top_ExJS on your disk. This will import the entire Dynamic Web Project, and most likely you'll see one error in the Problems view indicating that the target runtime with so-and-so name is not defined. This may happen because the name of the Tomcat configuration in your Eclipse is different from the one in the directory SSC_Top_ExJS.
+
+To fix this issue, right-click on the project name and select the menu Properties | Targeted runtimes. Then uncheck the Tomcat name that was imported from our archive and check the name of your Tomcat configuration. This action will make the project SSC_Top_ExtJS deployable under your Tomcat server. Right-click on the server name in the Servers view and select Add and Remove menu item. You'll see a popup window similar to <<FIG6-1-SSC>>, which depicts a state when the project SSC_Top_ExtJS is configured (deployed), but SSC_Complete_ExtJS isn't yet.
 
 [[FIG6-1-SSC]]
 .Deploying Dynamic Web Project
 image::images/fig_06_01_SSC.png[image]
 
-Right-click on the project name SSC_Top_ExtJS, select the menu Run as | Run on server. Eclipse may offer to restart the server - accept it, and you'll see the top portion of the Save The Child application running in the internal browser of Eclipse as shown on <<FIG6-2-SSC>>. 
+Right-click on the project name SSC_Top_ExtJS, select the menu Run as | Run on server. Eclipse may offer to restart the server - accept it, and you'll see the top portion of the Save The Child application running in the internal browser of Eclipse that will look as shown on <<FIG6-2-SSC>>. 
 You can either configure Eclipse to use your system browser or just enter the URL http://localhost:8080/SSC_Top_ExtJS/ in the browser of your choice - the Web page will look the same.
 
 [[FIG6-2-SSC]]
-.Running the SSC_Top_ExtJS in Eclipse
+.Running the SSC_Top_ExtJS
 image::images/fig_06_02_SSC.png[image]
 
 TIP: Apache Tomcat runs on the port 8080 by default. If you want to change the port number, double-click on the Tomcat name in the Servers view and change the port there.
@@ -833,8 +909,6 @@ It's time for a code review. The initial application was generated by Sencha CMD
 [[FIG6-3-SSC]]
 .Controller, views and images of SSC_Top_ExtJS
 image::images/fig_06_03_SSC.png[image]
-
-TIP: To make WebStorm work faster, exclude directories _ext, packages, build, and WEB-INF_ from the project (hit the icon with a wrench image on the toolbar and select the Directories and the Excluded). This way WebStorm won't be indexing these directories.
 
 The app.js is pretty short - it just declares SSC as the application name, views and controllers. By adding the property `autoCreateViewport: true` we requested the application to automatically load the main window, which must be called Viewport.js and located in the view directory.
 
@@ -1007,7 +1081,6 @@ The width of _0.5, 980, 0.5_ means to give the middle column 980 pixels and shar
 Note: There is another way to lay out this screen using Horizontal Box `hbox` with the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.layout.container.HBox-cfg-pack[`pack` configuration property], but we decided to keep the column layout for illustration purposes.
 
 TIP: Consider using http://www.sencha.com/learn/getting-started-with-ext-designer/[Ext Designer] for creating layouts in the wysiwyg mode.  
-
 .SASS and CSS
 **************
 Take a look at the project structure shown at <<FIG6-5-SSC>> - it has sass directory, which contains several files with styles: DonateForm.scss, Header.scss, and Viewport.scss. Note that the file name extension is not _css_, but _scss_ - it's Syntactically Awesome Stylesheets (SASS). The content of the Viewport.css is shown below. In particular, if you've been wondering where are located the image of the boy and the background flowers - there are right there.
@@ -1201,7 +1274,7 @@ Ext.define('SSC.view.DonateForm', {
 
 <1> `DonateForm` depends on several classes listed in the `requires` property. The Ext JS will check to see if these classes are present in memory, and if not, the loader will load all dependencies first, and only after the DonateForm class.
 
-<2> Our `DonateForm` uses horizontal box (`hbox`) layout, which means that certain components or containers will be laid out next to each other horizontally. But which ones? The children of the container located in the `items[]` arrays hence they are the once that will be laid out horisontally in this case. But the above code contains several of `items[]` arrays with different level of nesting. How quickly find those that belong to the topmost container `DonateForm`? This is the case that clearly shows that having a good IDE can be of great help.
+<2> Our `DonateForm` uses horizontal box (`hbox`) layout, which means that certain components or containers will be laid out next to each other horizontally. But which ones? The children of the container located in the `items[]` arrays hence they are the once that will be laid out horizontally in this case. But the above code contains several of `items[]` arrays with different level of nesting. How quickly find those that belong to the topmost container `DonateForm`? This is the case that clearly shows that having a good IDE can be of great help.
 +
 <<FIG6-6-SSC>> shows a snapshot from the WebStorm IDE illustrating how can you find the matching elements in the long listings. The top level `items[]` arrays starts from line 23 and we see that the first element to be laid out by in `hbox` has the xtype: `container`, which in turn has some children. If you'll move the blinking cursor of the WebStorm editor right after the firs open curly brace in line 23, you'll see a thin blue vertical line that goes down to line 60. This is where the first object literal ends.
 +
@@ -1229,7 +1302,7 @@ On the next runs these numbers will drop to about 30 requests and 1.7Mb transfer
 
 ==== Completing Save The Child
 
-In this section we'll review the code supporting the lower half of the Save The Child UI, which you should import into Eclipse IDE from the file SSC_Complete_ExtJS.zip.  
+In this section we'll review the code supporting the lower half of the Save The Child UI, which you should import into Eclipse IDE from the directory  SSC_Complete_ExtJS.  
 
 [[FIG6-8-SSC]]
 .Save The Child with live charts 
@@ -1237,7 +1310,7 @@ image::images/fig_06_08_SSC.png[image]
 
 If you see the target runtime error, read the beginning of the section "Save The Child: The Top Portion" for the cure. Stop the Tomcat server if running, and deploy the SSC_Complete_ExtJS under Tomcat server in the Servers view (the right-click menu, Add and Remove...).  Start Tomcat in Eclipse, right-click on the project and run it on the server. It'll open up a Web browser pointing at http://localhost:8080/SSC_Complete_ExtJS showing the window similar to the one depicted on <<FIG6-8-SSC>>.
 
-This version has some additions comparing to the previous ones. Notice the bottom left panel with charts. First of all, the charts are placed inside the panel with tabs: Charts and Table. The same data can be rendered either as a chart or as a grid. Second, the charts became live thanks to ExtJS. We took snapshot of the Window shown in <<FIG6-8-SSC>> while hovering the mouse over the pie slice representing New York, and the slice has extended from the pie showing a tooltip.
+This version has some additions comparing to the previous ones. Notice the bottom left panel with charts. First of all, the charts are placed inside the panel with tabs: Charts and Table. The same data can be rendered either as a chart or as a grid. Second, the charts became live thanks to ExtJS. We took a snapshot of the Window shown in <<FIG6-8-SSC>> while hovering the mouse over the pie slice representing New York, and the slice has extended from the pie showing a tooltip.
 
 The SSC_Complete_ExtJS has more Ext JS classes comparing to SSC_Top_ExtJS.  You can see more views on <<FIG6-9-SSC>>. Besides, we've added two classes Donors.js and Campaigns.js to serve as data stores for the panels with charts and maps. 
 
