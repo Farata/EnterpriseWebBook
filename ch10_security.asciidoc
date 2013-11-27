@@ -15,62 +15,77 @@ On a similar note, your organization created _network security_ with a firewall 
 
 WARNING: Don't assume that your Web application is secure if it's deployed behind the firewall. As long as there are opened ports that allow external users accessing your Web application, you need to invest into the _application security_ too.
 
-The letter "s" in https means _secure_. Technically, https creates a secure channel over insecure Internet connection. In the past, only the Web pages that dealt with logins, payments or obviously sensitive data would use URL's starting with https. Today, more and more Web pages use https and rightly so, because it forces Web browsers to use Secure Socket Layer (SSL) or its successor Transport Layer Security (TSL) protocol for encrypting all the data (including request and response headers) that travel between the connected Internet resources. The O'Reilly book "High Performance Browser Networking" by Ilya Grigorik  contains http://chimera.labs.oreilly.com/books/1230000000545/ch04.html[a chapter] with detailed coverage of the TSL protocol. 
+The letter "s" in https means _secure_. Technically, https creates a secure channel over insecure Internet connection. In the past, only the Web pages that dealt with logins, payments or obviously sensitive data would use URL's starting with https. Today, more and more Web pages use https and rightly so, because it forces Web browsers to use Secure Socket Layer (SSL) or its successor Transport Layer Security (TLS) protocol for encrypting all the data (including request and response headers) that travel between the connected Internet resources. The O'Reilly book "High Performance Browser Networking" by Ilya Grigorik  contains http://chimera.labs.oreilly.com/books/1230000000545/ch04.html[a chapter] with detailed coverage of the TLS protocol. 
 
+The organization that runs a Web server creates the  public key certificate that has to be signed by a trusted certificate authority (otherwise browsers will display invalid certificate warnings). The authority certifies that the holder of the certificate is a valid operator of the Web server.  SSL/TLS layers authenticate the servers using these certificates to ensure that the browser's request is being processed by the proper server and not by some hacker's site.
 
-The organization that runs a Web server creates the  public key certificate that has to be signed by a trusted certificate authority (otherwise browsers will display invalid certificate warnings). The authority certifies that the holder of the certificate is a valid operator of the Web server.  SSL/TSL layers authenticate the servers using these certificates to ensure that the browser's request is being processed by the proper server and not by some hacker's site.
-
-When the client connects to the server via https, they select the cipher (an encryption-decryption algorithm) they both support.
+When the client connects to the server via https, the client offers to the server a list of supported ciphers (authentication-encryption-decryption algorithms). The server replies with the sipher they both support.
 
 TIP: The annual http://www.blackhat.com/[Black Hat] computer security conference is dedicated to the information security. This conference is attended by both hackers and security professionals.
 
-If https is clearly more secure than http, why not every Web site uses only https communications? Since https encrypts all the messages that travel between the client's browser and the server, such communications are a slower comparing to http-based. But this little slowness won't be noticeable in  most Web applications, while the benefits of using https are huge.
+If https is clearly more secure than http, why not every Web site uses only https communications? Since https encrypts all the messages that travel between the client's browser and the server, such communications are a slower and need more CPU power comparing to http-based. But this little slowness won't be noticeable in most Web applications (unless thousands of concurrent users hit the Web server), while the benefits of using https are huge.
 
 When entering any sensitive or private information in someone's Web application always pay attention to the URL to make sure that it uses https protocol.
 
-As a Web developer, you should always use the https protocol to prevent an attacker from stealing the user's session id. There are rumors that National Security Agency has broken SSL encryption algorithm, but this is not the reason for your application not using https.
+As a Web developer, you should always use the https protocol to prevent an attacker from stealing the user's session id. The fact that the National Security Agency has broken SSL encryption algorithm is not the reason for your application for not using https.
 
 
 === Authentication and Passwords
 
 _Authentication_ is an ability to confirm that the user is who he claims to be. The fact the the user has provided a valid id/password combination proves that he is known to the Web application. That's all. 
 
-Specifying the correct user id/password combination may not be enough for some of the Web application. Banks often ask for additional information like what's your pet's name or a favorite movie. 
+Specifying the correct user id/password combination may not be enough for some of the Web application. Banks often ask for additional information like "What's your pet's name?" or "What's your favorite movie? 
 
-If you ever worked for a large corporation, you know that they often use the RSA Secure ID (a.k.a. RSA hard token), which is a device with random-generated combination of digits. This combination changes every minute or so and has to be entered as a part of the authentication process. Beside physical devices there are programs (soft tokens) that perform user authentication in a similar way. 
+If you ever worked for a large corporation, you know that they often use the RSA Secure ID (a.k.a. RSA hard token), which is a physical device with random-generated combination of digits. This combination changes every minute or so and has to be entered as a part of the authentication process. Beside physical devices there are programs (soft tokens) that perform user authentication in a similar way.
+Many financial institutions, social networks, and  large Web portals support 2-factor verification -  besides asking for a user ID and password, they send you either an email, voice mail, or text message with a code that you'll need to use after entering the right id/password combination.
 
 To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who successfully passed a special background check are entered into the system used in the passport control checkpoints. On the borders the applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the _authenticated_ person can pass the border without waiting in long lines.
 
-Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user's computer are very inexpensive. In some of the Manhattan's apartment buildings you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to bws-request@nist.gov with _subscribe_ as the subject. 
+Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user's computer are very inexpensive. Apple's iPhone 5S unlocks the phone based on the fingerprint of its owner. In some apartment buildings you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to bws-request@nist.gov with _subscribe_ as the subject. 
 
 ==== Basic and Digest Authentication 
 
 HTTP protocol defines two types of authentication: http://en.wikipedia.org/wiki/Basic_access_authentication[Basic] and http://en.wikipedia.org/wiki/Digest_access_authentication[Digest]. All modern web browsers support them, but basic authentication uses base64 encoding and no encryption, which means it should be used only with https protocol. 
 
-If a Web server administrator configures certain resources to require basic user authentication  when a Web browser requests such protected resource, the server sends the HTTP response containing HTTP status code 401 - _Unauthorized_ and _WWW-Authenticate: Basic_. The browser pops up the login dialog box. The user enters the ID/password, which are turned into an encoded _userID:password_ string and sent to the server as a part of HTTP header. Basic authentication provides no confidentiality because it doesn't encrypt the transmitted credentials. Cookies are not used here.
+A Web server administrator can configure certain resources to require basic user authentication.  If a Web browser requests such protected resource while the user didn't login to the site, the Web server (not your application) sends the HTTP response containing HTTP status code 401 - _Unauthorized_ and _WWW-Authenticate: Basic_. The browser pops up the login dialog box. The user enters the ID/password, which are turned into an encoded _userID:password_ string and sent to the server as a part of HTTP header. Basic authentication provides no confidentiality because it doesn't encrypt the transmitted credentials. Cookies are not used here.
 
-With the digest authentication, the server also responds with 401 with _WWW-Authenticate: Digest_ plus additional data so the Web browser can apply a  hash function to the password. Then the browser sends encrypted password to the server. Digest authentication is more secure than the basic one, but it's still less secure than authentication that uses public keys or Kerberos authentication protocol. 
+With digest authentication, the server also responds with 401 (_WWW-Authenticate: Digest_). However, it also sends additional data which allows the Web Browser to apply a hash function to the password. Then the browser sends encrypted password to the server. Digest authentication is more secure than the basic one, but it's still less secure than authentication that uses public keys or Kerberos authentication protocol. 
+
+TIP: The HTTP status code 403 (_Forbidden_) differs from 401. While 401 means that the user needs to login to access the resource, 403 means that the user is authenticated, but his security level is not high enough to see the data. For example, not every user role is authorized to see the Web page with salary report.
 
 ==== Single Sign-on and Social Networks Logins
 
-Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement a single sign-on (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, if the user signs out from one of these applications, terminates his access to all of them. 
+Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement a single sign-on (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, if the user signs out from one of these applications, terminates his access to all of them. SSO solutions makes authentication totally transparent to your application.
 
-Typically, user's credentials are verified by making a call to a corporate LDAP server, and then a single sign-on software (e.g. Oracle Enterprise Single Sign-On, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO) enters the  application passwords automatically. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).
+Typically, when the user logs on to your application, the logon process is intercepted and handled by pre-configured single sign-on software (e.g. Oracle Enterprise Single Sign-On, CA SiteMinder, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO). The SSO infrastructure verifies user's credentials by making a call to a corporate LDAP server and creates a user's session.
+Usually a Web server is configured with some Web agent, which will add the user's credential to the HTTP header, which your application can fetch.
+
+The future access to the protected Web application is provided automatically (by the SSO server)without even displaying a logon window as long as the user's session is active. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).
 
 In the consumer-oriented Internet space single (or reduced) sign-on solutions become more and more popular. For example, some Web applications allow reusing your Twitter or Facebook credentials (provided that you've logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegate authentication procedures to Facebook, Twitter and other authorization services. 
 
 Back in 2010, Facebook has introduced their https://www.facebook.com/pages/Single-sign-on/108568432501463#[SSO solution] that helps millions of people log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking the user to enter credentials, your application can show the button "Login with FaceBook". 
 
-FaceBook has published JavaScript API that allows implementing FaceBook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit online documentation on https://developers.facebook.com/docs/facebook-login/[FaceBook Login API].
+Facebook has published JavaScript API that allows implementing FaceBook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit online documentation on https://developers.facebook.com/docs/facebook-login/[FaceBook Login API].
 
-If you prefer your application to have the button "Login with Twitter", refer to the Sign in with Twitter API https://dev.twitter.com/docs/auth/sign-twitter[documentation].
+In addition to Facebook other popular social networks offer SSO: 
 
-LinkedIn is a popular social network for professionals. It also offers API to create the button "Sign in with LinkedIn". For details visit LinkedIn http://developer.linkedin.com/javascript[online documentation] for developers.
+* If you prefer your application to have the button "Login with Twitter", refer to the Sign in with Twitter API https://dev.twitter.com/docs/auth/sign-twitter[documentation].
 
-Google also offers the authentication API. Details about their client library for JavaScript are published https://developers.google.com/api-client-library/javascript/features/authentication[online]. For implementing SSO with Google, visit  https://developers.google.com/commerce/wallet/online/sso[this Web page].
+* LinkedIn is a popular social network for professionals. It also offers API to create the button "Sign in with LinkedIn". For details visit LinkedIn http://developer.linkedin.com/javascript[online documentation] for developers.
+
+* Google also offers the authentication API. Details about their client library for JavaScript are published https://developers.google.com/api-client-library/javascript/features/authentication[online]. For implementing SSO with Google, visit  https://developers.google.com/commerce/wallet/online/sso[this Web page].
+
+* Mozilla offers a new way to sign-in using any of your existing email addresses using http://www.mozilla.org/en-US/persona/[Persona]. 
+
+NOTE: In most of today's enterprise contexts, your organization would not want you to use social networking logins. But some enterprises started to integrate their applications with social networks so SSO via social networks will become more and more popular.  
+
+==== Dealing With Passwords
 
 It might sound obvious, but we'll still remind you  that the Web client should never send passwords in clear text. Use http://en.wikipedia.org/wiki/Secure_Hash_Algorithm[Secure Hash Algorithms] (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters (brute-forcing attack), it'll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker's work more difficult too. 
 Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client's computer. Then, on each subsequent request to the server Web browser will place the session if in the HTTP request object and send it along with each request. So technically, user's identity is  always available at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource. 
+
+TIP: Salted hashes increase security by adding _salt_ - a randomly generated data that's concatenated with the password and then processed by a hash function. 
 
 Have you ever wondered why Automated Teller Machines (ATM) often ask you to enter PIN more then once? Say, you've deposited a check and then want to see  the balance.on your account. After the check deposit has been completed your ATM session was invalidated to protect the careless users who may rush out from the bank in a hurry as soon as the transaction is finished. Otherwise the next person by the ATM could have requested a cash withdrawal from your bank account. 
 
@@ -88,24 +103,27 @@ A simple use case where row-level security is really useful is a salary report. 
 
 Authorization is usually linked with the user's session. HTTP is stateless protocol, so if a user retrieves a Web page from a Web server, and then goes to another Web page, this second page does not know what has been shown or selected on the first one. For example, in case of an online store the user adds an item to the shopping cart and moves to another page to continue shopping. To preserve the data needed to more than one Web pages (e.g. the content of the shopping cart) the server-side code must implement session tracking. The session information can be passed all the way down to the database level when need be.
 
+NOTE: Session tracking is controlled by the servers. If you'd like to get familiar with session tracking option in greater details, consult the product documentation for the server or technology being used with your Web application. For example, if you use Java, you can read Oracle's documentation for their http://docs.oracle.com/cd/E13222_01/wls/docs103/webapp/sessions.html[WebLogic server] that describes the option on session management.
+
 === What's OAuth
 
-If the application A needs to access the application B, e.g. the user's Facebook account for authentication and authorization, the app A may ask the user's ID and password for the app B. This is not the right approach, because it gives the app A the complete  access to the user's account in app B. But the only thing the app A needed was to authenticate the user. Besides, the app A now knows the user's password to app B in clear text. There was a need for a mechanism to give a limited access to third party applications.
+Most likely you ran into the web applications that offer you to share your actions via social networks. 
+For example, you just made a donation and want to share this information via social networks. If, say a charity application needs to access the application the user's Facebook account for authentication and authorization, the charity app may ask the user's ID and password for the Facebook. This is not the right approach, because the charity app gets the user's Facebook id/pwd in clear text plus it gives the charity app complete access to the user's account in Facebook. But the charity app only needed to authenticate the Facebook user. There was a need for a mechanism to give a _limited access_ to third party applications.
 
-http://oauth.net/[OAuth] is "An open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications".
+http://oauth.net/[OAuth] became such a mechanism. Oauth is "An open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications".
 Its http://tools.ietf.org/html/rfc6749[current draft specification] provides the following definition:
 
 _The OAuth 2.0 authorization framework enables a third-party application to obtain limited access to an HTTP service, either on behalf of a resource owner by orchestrating an approval interaction between the resource owner and the HTTP service, or by allowing the third-party application to obtain access on its own behalf._
 
-OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of token with limited privileges and for a limited time. 
+OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook, the former would get a limited privilege - just to post a message on Facebook on the user's behalf. 
 
-NOTE: Any communications with OAuth 2.0 servers are made through the https connections.
+Any communications with OAuth 2.0 servers are made through the https connections. Below are the main actors of the OAuth workflow:
 
-The user who wants to use some service is called _resource owner_.
+* The user who wants to use some service is called _resource owner_.
 
-The application that tries to authenticate the resource owner is called _the client_. This is an application that offers the buttons like "Login with FaceBook".
+* The application that tries to authenticate the resource owner is called _the client_. This is an application that offers the buttons like "Login with FaceBook", "Login with Twitter" and the likes.
 
-The _resource server_ is a server that has implemented OAuth API for the client. Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth 2.0  implementations visit http://oauth.net/2[oauth.net/2]. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation. 
+* The _resource server_ is a server that has implemented OAuth API for the client. Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth 2.0  implementations visit http://oauth.net/2[oauth.net/2]. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation. 
 
 .Using Facebook with OAuth
 *******
@@ -126,11 +144,11 @@ https://www.owasp.org[ Open Web Application Security Project (OWASP)] is an open
 .Top 10 security risks circa 2013
 image::images/fig_10_01.png[]
 
-This Web site allows you to drill down on each of the items from this list, see the illustration of the selected security vulnerability and recommendations on how to prevent it. You can also download this list as a http://owasptop10.googlecode.com/files/OWASP%20Top%2010%20-%202013.pdf[PDF document]. Let's review  some of the top 10 security threats.
+This Web site allows you to drill down on each of the items from this list, see the illustration of the selected security vulnerability and recommendations on how to prevent it. You can also download this list as a http://owasptop10.googlecode.com/files/OWASP%20Top%2010%20-%202013.pdf[PDF document]. Let's review a couple of the top 10 security threats: injection and cross-site scripting.
 
 ==== Injection
 
-If a bad guy will be able to _inject_ a piece of code that will run inside your Web application, such code can steal or damage the data from your Web application. In the world of compiled libraries and executables injecting malicious code would be a rather difficult task. But if an application uses interpreted languages (e.g. JavaScript or clear text SQL) the task of injecting malicious code becomes a lot easier than you might think. Let's look at a typical example of SQL injection.
+If a bad guy will be able to _inject_ a piece of code that will run inside your Web application, such code can steal or damage the data from this  application. In the world of compiled libraries and executables injecting malicious code would be a rather difficult task. But if an application uses interpreted languages (e.g. JavaScript or clear text SQL) the task of injecting malicious code becomes a lot easier than you might think. Let's look at a typical example of SQL injection.
 
 Say your application can search for data based on some keywords the user enters into a text input field. For example, to find all donors in the city of New York the user will enter the following: 
 
@@ -152,7 +170,9 @@ In the ideal world the client-side code should not even send the non-validated d
 
 ==== Cross-Site Scripting
 
-Cross-site scripting (XSS) - the user of your Web application receive some unwanted code fragments from a malicious server that reaches the user via the site that a person visited (hence cross-site). This can happen in three ways: 
+Cross-site scripting (XSS) - the user of your Web application receive some unwanted code fragments from a malicious server that reaches the user via the site that a person visited (hence cross-site).
+Single-page AJAX-based applications makes lots of under-the-hood requests to the servers, which increases the attack surface comparing to traditional legacy Web sites that would be downloading Web pages a lot less frequently.  
+XSS can happen in three ways: 
 
 * Reflected (a.k.a. phishing) - the Web page contains a link that seems valid, but when the user clicks on it, the user's browser receives and executes the the script created by the attacker.
 
@@ -180,21 +200,28 @@ NOTE: While we've been working on the section describing Apple's developers cert
 
 IMPORTANT: One of the OWASP guides is titled https://www.owasp.org/index.php/Web_Application_Penetration_Testing[Web Application Penetration Testing]. In about 350 pages it explains the methodology of testing a Web application for each vulnerability. OWASP defines _penetration test_ as a method of evaluating the security of a computer systems by simulating an attack. Hundreds of security experts from around the world have contributed to this guide. Running penetration tests should become a part of your development process, and the sooner you start running them the better.
 
-=== Some Application Security Considerations 
-
-In this section we'll share with you our experience of dealing with security while creating a company that sells software as service. Four years ago we've founded a startup that automates certain workflows for insurance agents. In addition to developing the application we had to set up the data centers and take care of security issues too. 
+=== Regulatory Compliance and Enterprise Security 
 
 So far in this chapter we've been discussing security vulnerabilities from the technical perspective. But there is another aspect that can't be ignored - the regulatory compliance of the business you automate.
 
-For example, our customers are insurance agencies and carriers. We charge for our services, and our customers pay using credit cards using our application. This opens up a totally different category of security concerns. Where the credit card numbers are stored? What if they get stolen? How secure is the payment portion of your application? How the card holder's data is protected? Is there a firewall protecting customer's data? How the data is encrypted?
+During the last four years the authors of this book  develop, deploy, support, and market the software that automates certain workflows for insurance agents. We serve more several hundreds of insurance agencies and more than 100K agents.  In this section we'll share with you our real-world experience of dealing with security while running our company, which sells software as service.  In addition to developing the application we had to set up the data centers and take care of security issues too. 
+
+Our customers are insurance agencies and carriers. We charge for our services, and our customers pay using credit cards using our application. This opens up a totally different category of security concerns:
+
+* Where the credit card numbers are stored?
+* What if they get stolen?
+* How secure is the payment portion of your application? 
+* How the card holder's data is protected?
+* Is there a firewall protecting customer's data?
+* How the data is encrypted?
  
 One of the first questions our perspective customers ask if our application is _PCI compliant_. They won't work with us until they review the _application-level security_ implemented in our system. As per the http://www.pcicomplianceguide.org/pci-basics.php[PCI Compliance Guide], "the Payment Card Industry Data Security Standard is used by all card brands to assure the security of the data gathered while an employee is making a transaction at a bank or participating vendor".
-
-Pretty often our perspective customers send us a questionnaire to see if our security measures are compliant with their requirements. In some cases this document can include as many as 300 questions.
 
 If your application stores PCI data, authenticating via FaceBook, Google or a similar OAuth service won't be an option. The users will be required to authenticate themselves by entering long passwords containing combinations of letters, numbers and special characters.
 
 Even if you are not dealing with the credit card information, there are other areas where the application data must be protected. Take the human resources application - social security numbers (unique ID's of the USA residents) of employees must be encrypted.
+
+Pretty often our perspective customers send us a questionnaire to see if our security measures are compliant with their requirements. In some cases this document can include as many as 300 questions.
 
 You may want to implement different levels of security depending on what devices is being used to access your application - a public computer, an internal corporate computer, iPad or an Android tablet. If a desktop user forgot his password, you may implement a recovery mechanism that send an email to the user and expects to receive a certain  response from him. If the user holds a smartphone, the application can send a text message to his device.
 
@@ -210,7 +237,7 @@ Here's another topic to consider: multiple data centers when each one runs a clu
 
 An external computer (e.g. Nginx server) can perform token-based authentication, but inside the system the token is used only when the access to protected resources is required. For example, when the application need to process a payment, it doesn't need to know any credit card details - it just uses the token to authorize the transaction of the  previously authenticated user. 
 
-This grab bag of security considerations mentioned in this section is not a complete list of security-related issues that your IT organization needs to take care of. Our message to you is simple: "Take security very seriously if you are planning to develop deploy, and run a production-grade  enterprise Web application".
+This grab bag of security considerations mentioned in this section is not a complete list of security-related issues that your IT organization needs to take care of. If you work for a large enterprise on the Intranet applications, these security issues may not sound as overly important. But as soon as your Web application starts serving external Internet users, someone has to worry about potential security holes that were not in the picture for internal applications. Our message to you is simple: "Take security very seriously if you are planning to develop deploy, and run a production-grade  enterprise Web application".
 
 === Summary
 
