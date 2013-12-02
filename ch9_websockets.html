@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="generator" content="Asciidoctor 0.1.4">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upgrading HTTP to WebSocket</title>
+<title>Upgrading HTTP To WebSocket</title>
 <style>
 @import url(http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css);
 @import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic);
@@ -570,7 +570,7 @@ p.tableblock.header { color: #6d6e71; }
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_upgrading_http_to_websocket">Upgrading HTTP to WebSocket</a></li>
+<li><a href="#_upgrading_http_to_websocket">Upgrading HTTP To WebSocket</a></li>
 <li>
 <ul class="sectlevel2">
 <li><a href="#_near_real_time_applications_with_http">Near Real Time Applications With HTTP</a></li>
@@ -595,7 +595,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_atmosphere">Atmosphere</a></li>
 </ul>
 </li>
-<li><a href="#_when_use_websocket">When Use WebSocket</a></li>
+<li><a href="#_application_level_messages_format_considerations">Application-level Messages Format Considerations</a></li>
 <li>
 <ul class="sectlevel3">
 <li><a href="#_csv">CSV</a></li>
@@ -621,16 +621,44 @@ p.tableblock.header { color: #6d6e71; }
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_upgrading_http_to_websocket">Upgrading HTTP to WebSocket</h2>
+<h2 id="_upgrading_http_to_websocket">Upgrading HTTP To WebSocket</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This chapter is about upgrading from the HTTP protocol to a more responsive HTML5 WebSocket. It starts with a brief overview of the existing legacy Web networking, and then you&#8217;ll learn why and how to use HTML5&#8217;s Server-Sent Events (SSE) and WebSockets.</p>
+<p>This chapter is about upgrading from the HTTP protocol to a more responsive HTML5 WebSocket. It starts with a brief overview of the existing legacy Web networking, and then you&#8217;ll learn why and how to use WebSockets.</p>
 </div>
 <div class="paragraph">
-<p>The new version of our Save The Child application will include the online auction utilizing WebSocket, and you&#8217;ll see an example of using Server-Sent Events for broadcasting the up-to-the-minute donation information. The goal is to let you see the advantages of changing the way of client-server communications on the Web. You&#8217;ll clearly see the advantages of WebSocket over a regular HTTP by monitoring the network traffic with such tools as Wireshark and Google Chrome Developer Tools.</p>
+<p>We&#8217;re going to show that WebSocket protocol has literally no overhead compared to HTTP.  You might be consider to use WebSocket for developing the following types of applications:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Live trading/auctions/sports notifications.</p>
+</li>
+<li>
+<p>Live collaborative writing.</p>
+</li>
+<li>
+<p>Controlling medical equipment over the web.</p>
+</li>
+<li>
+<p>Chat applications.</p>
+</li>
+<li>
+<p>Multi-player online games.</p>
+</li>
+<li>
+<p>Real-time updates in social streams.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>All the server-side functionality supporting this chapter is written in Java, using Java API for WebSocket <a href="http://java.net/projects/tyrus">reference implementation</a>, which will be the part of upcoming Java EE 7 specification. We are using the <a href="http://dlc.sun.com.edgesuite.net/glassfish/4.0/promoted/">latest available build of the Glassfish Application Server</a>. If you don&#8217;t know Java, just treat this server-side setup as a service that supports WebSocket protocol. For Java developers interested in diving into the server-side, we&#8217;ll provide the source code and brief comments as a part of the code samples that come with this book.</p>
+<p>For the next version of Save The Child application we&#8217;re going to use WebSocket to implement an online auction communication layer. The goal is to let individuals and businesses purchase hand-made crafts and arts made by children. All proceeds will go to help The Children.</p>
+</div>
+<div class="paragraph">
+<p>The goal is to let you see the advantages of changing the way of client-server communications on the Web. You&#8217;ll clearly see the advantages of WebSocket over a regular HTTP by monitoring the network traffic with such tools as Wireshark and Google Chrome Developer Tools.</p>
+</div>
+<div class="paragraph">
+<p>All the server-side functionality supporting this chapter is written in Java, using Java API for WebSocket <a href="http://java.net/projects/tyrus">reference implementation</a>, which is a part of Java EE 7 specification. We are using the <a href="http://dlc.sun.com.edgesuite.net/glassfish/4.0/release/">latest release of the Glassfish Application Server</a>. If you don&#8217;t know Java, just treat this server-side setup as a service that supports WebSocket protocol. For Java developers interested in diving into the server-side, we&#8217;ll provide the source code and brief comments as a part of the code samples that come with this book.</p>
 </div>
 <div class="paragraph">
 <p>We&#8217;ll show and compare the server-side data push done with Server-Sent Events and WebSocket. Also you&#8217;ll see a brief overview of popular existing frameworks that can streamline your WebSocket application development.</p>
@@ -638,12 +666,15 @@ p.tableblock.header { color: #6d6e71; }
 <div class="sect2">
 <h3 id="_near_real_time_applications_with_http">Near Real Time Applications With HTTP</h3>
 <div class="paragraph">
-<p>The HTTP protocol is the lingua franca of today&#8217;s Web  applications, where client-server communications are based on the request-response paradigm. On the low level, Web browsers establish a TCP/IP connection for each HTTP session. Currently there are 3 basic options that developers use for the browser-server communication: polling, long polling, and streaming. These options are hacks on the top of a half-duplex (a one way street) HTTP protocol to simulate real-time behavior. By <em>real-time</em> we mean the ability to react to some event as it happens. Lets discuss each of them.</p>
+<p>The HTTP protocol is the lingua franca of today&#8217;s Web  applications, where client-server communications are based on the request-response paradigm. On the low level, Web browsers establish a TCP/IP connection for each HTTP session. Currently there are 3 basic options that developers use for the browser-server communication: polling, long polling, and streaming. These options are hacks on the top of a half-duplex (a one way street) HTTP protocol to simulate real-time behavior. (By <em>real-time</em> we mean the ability to react to some event as it happens. Lets discuss each of them).</p>
 </div>
 <div class="sect3">
 <h4 id="_polling">Polling</h4>
 <div class="paragraph">
-<p>With <em>polling</em>, your client code sends requests to the server after based on some pre-configured interval (e.g. using JavaScript <code>setInterval()</code> function). Some of the server&#8217;s responses will be empty, if the requested data is not ready yet as illustrated in <a href="#FIG9-1">Polling</a>. For example, if you&#8217;re running an online auctions and sends the request to see the updated bids, you won&#8217;t receive any data back unless someone placed a new bid. Visualize a child seating on back seat of your car and asking every minute, "Have we arrived yet?" . And you&#8217;re politely replying, "Not just yet" - this is similar to an empty server response. There is no valuable payload for this kid, but she&#8217;s still receiving some "metadata". HTTP polling may result in receiving verbose HTTP response headers bearing no data load, let alone destructing the driver (think the server) from performing other responsibilities.</p>
+<p>With <em>polling</em>, your client code sends requests to the server after based on some pre-configured interval (e.g. using JavaScript <code>setInterval()</code> function). Some of the server&#8217;s responses will be empty, if the requested data is not ready yet as illustrated in <a href="#FIG9-1">Polling</a>. For example, if you&#8217;re running an online auctions and sends the request to see the updated bids, you won&#8217;t receive any data back unless someone placed a new bid.</p>
+</div>
+<div class="paragraph">
+<p>Visualize a child seating on back seat of your car and asking every minute, "Have we arrived yet?" . And you&#8217;re politely replying, "Not just yet" - this is similar to an empty server response. There is no valuable payload for this kid, but she&#8217;s still receiving some "metadata". HTTP polling may result in receiving verbose HTTP response headers bearing no data load, let alone distracting the driver (think the server) from performing other responsibilities.</p>
 </div>
 <div id="FIG9-1" class="paragraph">
 <div class="title">Polling</div>
@@ -656,10 +687,10 @@ p.tableblock.header { color: #6d6e71; }
 <p><em>Long polling</em> (see <a href="#FIG9-2">Long Polling</a> ) starts similarly to polling: the client sends the HTTP request to the server. But in this case instead of sending an empty response back, the server waits till the data for the client becomes available. If the requested information is not available within the specified time interval, the server sends an empty response to the client, closes, and re-establishes the connection.</p>
 </div>
 <div class="paragraph">
-<p>We&#8217;ll give you one more analogy to compare polling and long polling. Imagine a party at the top floor of a building equipped with a smart elevator that goes up every minute and opens the door just in case if one of the guests wants to go down to smoke a cigarette. If no one enters the elevator, it goes to the ground level and in 60 seconds goes up again. This is the polling scenario. But if this elevator would go up, and waited till someone would actually decide to go down, then we could call it a long polling mode.</p>
+<p>We&#8217;ll give you one more analogy to compare polling and long polling. Imagine a party at the top floor of a building equipped with a smart elevator that goes up every minute and opens the door just in case if one of the guests wants to go down to smoke a cigarette. If no one enters the elevator, it goes to the ground level and in 60 seconds goes up again. This is the polling scenario. But if this elevator would go up, and waited till someone would actually decide to go down (or got tired of waiting), then we could call it a long polling mode.</p>
 </div>
 <div class="paragraph">
-<p>From the HTTP specification perspective this hack is legit: the long polling mode may seem as if we deal with the slow-responding server. That is why this technique also referred as <em>Hanging GET</em>. If you see an online auction that automatically modifies the prices as people bid on items it looks as if the server pushes the data to you. But the chances are, this functionality was implemented using long polling, which is not a real server-side data push, but its emulation.</p>
+<p>From the HTTP specification perspective described trick is legitimate: the long polling mode may seem as if we deal with the slow-responding server. That is why this technique also referred as <em>Hanging GET</em>. If you see an online auction that automatically modifies the prices as people bid on items it looks as if the server pushes the data to you. But the chances are, this functionality was implemented using long polling, which is not a real server-side data push, but its emulation.</p>
 </div>
 <div id="FIG9-2" class="paragraph">
 <div class="title">Long Polling</div>
@@ -669,7 +700,7 @@ p.tableblock.header { color: #6d6e71; }
 <div class="sect3">
 <h4 id="_http_streaming">HTTP Streaming</h4>
 <div class="paragraph">
-<p>The client sends the request for data. As soon as the server gets the data ready, it starts streaming (adding more and more data to the response object) without closing the connections. The server pushes the data to the client pretending that the response never ends <a href="#FIG9-3">HTTP Streaming</a>. For example, requesting a video from Youtube.com results in streaming data (frame after frame) without closing the HTTP connection.</p>
+<p>The client sends the request for data. As soon as the server gets the data ready, it starts streaming (adding more and more data to the response object) without closing the connections. The server pushes the data to the client pretending that the response never ends. For example, requesting a video from Youtube.com results in streaming data (frame after frame) without closing the HTTP connection.</p>
 </div>
 <div id="FIG9-3" class="paragraph">
 <div class="title">HTTP Streaming</div>
@@ -687,24 +718,25 @@ p.tableblock.header { color: #6d6e71; }
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">var myEventSource = (function(){
+<pre class="highlight"><code class="javascript language-javascript">var myEventSource = (function() {
     'use strict';
     var eventSource;
     if ( !! window.EventSource) {
-        eventSource = new EventSource('http://localhost:8080/donate_web/api/donations/events'); <i class="conum" data-value="1"></i><b>(1)</b>
+        eventSource =
+            new EventSource('http://localhost:8080/donate_web/api/donations/events'); <i class="conum" data-value="1"></i><b>(1)</b>
     } else {
         // notify use that her browser doesn't support SSE
     }
 
-    eventSource.addEventListener('open', function(e) { <i class="conum" data-value="2"></i><b>(2)</b>
+    eventSource.addEventListener('open', function() { <i class="conum" data-value="2"></i><b>(2)</b>
         // Connection was opened.
     }, false);
 
-    eventSource.addEventListener('create', function(e) { <i class="conum" data-value="3"></i><b>(3)</b>
+    eventSource.addEventListener('create', function() { <i class="conum" data-value="3"></i><b>(3)</b>
         // do something with data
     }, false);
 
-    eventSource.addEventListener('update', function(e) { <i class="conum" data-value="4"></i><b>(4)</b>
+    eventSource.addEventListener('update', function() { <i class="conum" data-value="4"></i><b>(4)</b>
         // do something with data
     }, false);
 
@@ -743,13 +775,16 @@ p.tableblock.header { color: #6d6e71; }
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">source.onmessage(function(e){
+<pre class="highlight"><code class="javascript language-javascript">eventSource.onmessage(function(e){
     // process the content of e.data here
 });</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>SSE is a good technique for the use cases when the client doesn&#8217;t need to send the data to the server. In the above example the server sends two types of custom events <code>create</code> and <code>update</code> to notify subscribed clients about updated donation data so the active clients can monitor the fund-raising process. You can create as many custom events as needed by the application.</p>
+<p>SSE is a good technique for the use cases when the client doesn&#8217;t need to send the data to the server. A good illustration of such server might be Facebook&#8217;s New Feed Page. A server can automatically update the client with new data without client&#8217;s request.</p>
+</div>
+<div class="paragraph">
+<p>In the above example the server sends two types of custom events <code>create</code> and <code>update</code> to notify subscribed clients about updated donation data so the active clients can monitor the fund-raising process. You can create as many custom events as needed by the application.</p>
 </div>
 <div class="paragraph">
 <p>The server sends events as text messages that start with <code>data:</code> and end with a pair of new line characters, for example:</p>
@@ -780,7 +815,7 @@ p.tableblock.header { color: #6d6e71; }
 </div>
 </div>
 <div class="paragraph">
-<p>WebSocket is a bi-directional full-duplex socket-based protocol. According to <a href="http://tools.ietf.org/html/rfc6455">RFC 6455</a>  - the Internet Engineering Task Force (IETF) standard document - the goal of WebSocket technology is to provide a mechanism for Web applications that need two-way communications with servers. This technology doesn&#8217;t rely on HTTP hacks or on opening multiple connections using <code>XMLHttpRequest</code> or <code>&lt;iframe&gt;</code> and long polling. The idea behind WebSocket is not overly complicated:</p>
+<p>WebSocket is a bi-directional full-duplex frame-based protocol. According to <a href="http://tools.ietf.org/html/rfc6455">RFC 6455</a>  - the Internet Engineering Task Force (IETF) standard document - the goal of WebSocket technology is to provide a mechanism for Web applications that need two-way communications with servers. This technology doesn&#8217;t rely on HTTP hacks or on opening multiple connections using <code>XMLHttpRequest</code> or <code>&lt;iframe&gt;</code> and long polling. The idea behind WebSocket is not overly complicated:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -931,7 +966,22 @@ interface WebSocket : EventTarget {
 <div class="sect4">
 <h5 id="HANDSHAKE">WebSocket Handshake</h5>
 <div class="paragraph">
-<p>Any network communications that use WebSocket protocol start with an opening handshake. The handshake upgrades the connection from HTTP to the WebSocket protocol. It&#8217;s an upgrade to a message-based communications. We will discuss messages (a.k.a. frames) later in this chapter. Why upgrade from HTTP instead of starting with the TCP as a protocol in the first place? The reason is that the WebSocket operates on the same ports (80 and 443) as HTTP and HTTPS do. It&#8217;s an important advantage that the browser&#8217;s requests are routed through the same ports because arbitrary socket connections may not be allowed by the enterprise firewalls for security reasons. Also, many corporate networks only allow certain outgoing ports. And HTTP/HTTPS ports are usually included in so called <em>white lists</em>.</p>
+<p>Any network communications that use WebSocket protocol start with an opening "handshake". This handshake upgrades the connection from HTTP to the WebSocket protocol. It&#8217;s an upgrade of HTTP protocol to a message-based communications. (We will discuss messages (a.k.a. frames) later in this chapter)</p>
+</div>
+<div class="paragraph">
+<p>Why upgrade from HTTP instead of starting with the TCP as a protocol in the first place? The reason is that the WebSocket operates on the same ports (80 and 443) as HTTP and HTTPS do. It&#8217;s an important advantage that the browser&#8217;s requests are routed through the same ports because arbitrary socket connections may not be allowed by the enterprise firewalls for security reasons. Also, many corporate networks only allow certain outgoing ports. And HTTP/HTTPS ports are usually included in so called <em>white lists</em>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You learn more about TCP in the chapter "Building Blocks of TCP" and more about HTTP in Part III of <a href="#igrigorik"><em>High Performance Browser Networking</em></a>.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>The protocol upgrade is initiated by the client request, which also transmits a special key with the upgrade request. The server processes this request and sends back a confirmation for the upgrade. This ensures that a WebSocket connection can be established only with an endpoint that support WebSocket. Here is what the handshake can look like in the client&#8217;s request:</p>
@@ -1010,8 +1060,8 @@ A client can have as any WebSocket connections with the server as needed.  But s
 <div class="sect4">
 <h5 id="FRAMES">The WebSocket Frame Anatomy</h5>
 <div class="paragraph">
-<p>The WebSocket handshake is the first step to switching to the message framing protocol, which will be layered over TCP. In this section we&#8217;re going to explore how the WebSocket data transfer works. The WebSocket is not a stream based protocol like TCP - it&#8217;s message based. The difference is that with TCP a program sends stream of bytes, which has to have a specific indication that the data transfer ends.
-The WebSocket specification makes it easier because it puts a frame around every chunk of data, and the size of the frame is known. JavaScript can easily handle these frames on the client because each frame arrives packaged in the event object. But the server side has to work a little harder as it needs to wrap each piece of data into a frame before sending it to the client. A frame can look like this:</p>
+<p>The WebSocket handshake is the first step to switching to the message framing protocol, which will be layered over TCP. In this section we&#8217;re going to explore how the WebSocket data transfer works. The WebSocket is not a stream based protocol like TCP - it&#8217;s message based. With TCP a program sends stream of bytes, which has to have a specific indication that the data transfer ends.
+The WebSocket specification simplifies this by putting a frame around every chunk of data, and the size of the frame is known. JavaScript can easily handle these frames on the client because each frame arrives packaged in the event object. But the server side has to work a little harder as it needs to wrap each piece of data into a frame before sending it to the client. A frame can look like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1139,7 +1189,7 @@ The client must mask all the frames being sent to the server. The server must cl
 <div class="sect4">
 <h5 id="_the_heartbeats">The Heartbeats</h5>
 <div class="paragraph">
-<p>Properly design distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so called <em>heartbeats</em> - a small messages that simply ask the other party, "Are you there?". For example, proxy servers and content-filtering hardware can terminate idle connections or the server could simply go down. If a client doesn&#8217;t send any requests, say for 20 seconds, but the server went down, the client will know about it only when it does the next <code>send()</code>. Heartbeats will keep the connection alive to ensure that it won&#8217;t look idling. In the WebSocket jargon heartbeats are implemented with <em>ping and pong</em> . The browser sends the <em>ping</em> opcode <code>0x9</code> at any time to ask the other side to <em>pong</em> back (the opcode <code>0xA</code>).</p>
+<p>Properly design distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so called <em>heartbeats</em> - a small messages that simply ask the other party, "Are you there?". For example, proxy servers and content-filtering hardware can terminate idle connections or the server could simply go down. If a client doesn&#8217;t send any requests, say for 20 seconds, but the server went down, the client will know about it only when it does the next <code>send()</code>. Heartbeats will keep the connection alive to ensure that it won&#8217;t look idling. In the WebSocket jargon heartbeats are implemented with <em>ping and pong</em> frames. The browser sends the <em>ping</em> opcode <code>0x9</code> at any time to ask the other side to <em>pong</em> back (the opcode <code>0xA</code>).</p>
 </div>
 <div class="paragraph">
 <p>The Web browser can ping the server when required, but a pong may be sent at server&#8217;s discretion. If the  endpoint receives a ping frame before responding the the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (can be up to 125 bytes) and pong must have identical data in its message body.</p>
@@ -1327,40 +1377,12 @@ WebSockets can be used not only in for the Web, but in any applications that use
 </div>
 </div>
 <div class="sect2">
-<h3 id="_when_use_websocket">When Use WebSocket</h3>
+<h3 id="_application_level_messages_format_considerations">Application-level Messages Format Considerations</h3>
 <div class="paragraph">
-<p>Since WebSocket protocol has literally no overhead it should be considered for the following types of applications:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Live trading/auctions/sports notifications</p>
-</li>
-<li>
-<p>Live collaborative writing</p>
-</li>
-<li>
-<p>Controlling medical equipment over the web</p>
-</li>
-<li>
-<p>Chat applications</p>
-</li>
-<li>
-<p>Multi-player online games</p>
-</li>
-<li>
-<p>Real-time updates in social streams</p>
-</li>
-</ul>
+<p>While WebSocket is a great solution for a real-time data transmission over the web, it has the downside too: the WebSocket specification defines only the protocol for transporting frames, but it doesn&#8217;t include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let&#8217;s discuss our options from protocol modeling perspective.</p>
 </div>
 <div class="paragraph">
-<p>For the next version of Save The Child application we&#8217;re going to use WebSocket to implement an online auction communication layer. The goal is to let individuals and businesses purchase hand-made crafts and arts made by children. All proceeds will go to help The Children.</p>
-</div>
-<div class="paragraph">
-<p>Having said that WebSocket protocol is a great solution, it has the downside too: the WebSocket specification defines only the protocol for transporting frames, but it doesn&#8217;t include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let&#8217;s discuss our options from protocol modeling perspective.</p>
-</div>
-<div class="paragraph">
-<p>Selecting a message format for your application&#8217;s data communications is important. The most common text formats are CSV, XML, and JSON. They are easy to generate, parse, and are widely supported by many frameworks in the most development platforms. While XML and JSON allow you to represent the data in a hierarchical and easily readable by humans form, they create a lot of overhead by wrapping up each data element into additional text identifiers. Sending such additional textual information requires extra bandwidth and may need additional string-to-type conversion on both the client and server&#8217;s application code. The binary format is an alternative way of sending data. Let&#8217;s discuss the pros and cons of these message formats.</p>
+<p>Selecting a message format for your application&#8217;s data communications is important. The most common text formats are CSV, XML, and JSON. They are easy to generate, parse, and are widely supported by many frameworks in the most development platforms. While XML and JSON allow you to represent the data in a hierarchical and easily readable by humans form, they create a lot of overhead by wrapping up each data element into additional text identifiers. Sending such additional textual information requires extra bandwidth and may need additional string-to-type conversion on both the client and server&#8217;s application code. Let&#8217;s discuss the pros and cons of these message formats.</p>
 </div>
 <div class="sect3">
 <h4 id="_csv">CSV</h4>
@@ -1394,7 +1416,7 @@ WebSockets can be used not only in for the Web, but in any applications that use
 <div class="sect3">
 <h4 id="_xml">XML</h4>
 <div class="paragraph">
-<p>XML stands for Extensible Markup Language, and it nicely represents any hierarchal data structures.</p>
+<p>XML nicely represents any hierarchal data structures.</p>
 </div>
 <div class="paragraph">
 <p>Pros:</p>
@@ -1435,13 +1457,13 @@ WebSockets can be used not only in for the Web, but in any applications that use
 <div class="sect3">
 <h4 id="_json">JSON</h4>
 <div class="paragraph">
-<p>As explained in Chapter 4, JSON stands for JavaScript Object Notation, and it&#8217;s a way of representing structured data, which can be encoded and decoded by all Web browsers. JSON is widely accepted by the Web community as a popular way of the data serialization.</p>
+<p>As explained in Chapter 2, JSON stands for JavaScript Object Notation, and it&#8217;s a way of representing structured data, which can be encoded and decoded by all Web browsers. JSON is widely accepted by the Web community as a popular way of the data serialization. As stated earlier, it&#8217;s a more compact than XML way to represent the data and all modern Web Browsers understand and can parse JSON data.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_google_protocol_buffers">Google Protocol Buffers</h4>
 <div class="paragraph">
-<p>Google Protocol Buffers is a language and platform-neutral extensible mechanism for structured data serialization. Once defined how you want your data to be structured, you can use special generated source code to easily write and read your structured data to and from a variety of data streams.</p>
+<p>Google Protocol Buffers is a language and platform-neutral extensible mechanism for structured data serialization. Once defined how you want your data to be structured, you can use special generated source code to easily write and read your structured data to and from a variety of data streams. Developers can use the same schemas across <a href="https://code.google.com/p/protobuf/wiki/ThirdPartyAddOns">diverse environments</a>.</p>
 </div>
 <div class="paragraph">
 <p>A developer needs to specify how the serializable information has to be structured by defining the protocol buffer message types in the <code>.proto</code> files. Each protocol buffer message is a small logical record of information, containing a series of the name/value pairs. This protocol buffer message file is language agnostic. The <code>protoc</code> utility compiles <code>proto</code> files and produces language specific artifacts, e.g. <code>.java</code>, <code>.js</code>, etc files.</p>
@@ -1586,7 +1608,7 @@ message Donor{                                              <i class="conum" dat
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-The author of this book use <a href="http://nginx.com/">NGINX</a>, a hugely popular load balancer and proxy server to serve static resources (e.g. images and text files), balance the load between Java servers, and for SSL offloading (turning Web browser&#8217;s HTTPS requests into HTTP). NGINX uses a very small number threads to support thousands concurrent users as opposed to traditional Web servers that use one worker thread per connection. Recently NGINX started supporting WebSockets protocol.
+The author of this book use <a href="http://nginx.com/">NGINX</a>, a hugely popular load balancer and proxy and HTTP server to serve static resources (e.g. images and text files), balance the load between Java servers, and for SSL offloading (turning Web browser&#8217;s HTTPS requests into HTTP). NGINX uses a very small number threads to support thousands concurrent users as opposed to traditional Web servers that use one worker thread per connection. Recently NGINX started supporting WebSockets protocol.
 </td>
 </tr>
 </table>
@@ -1604,7 +1626,7 @@ The author of this book use <a href="http://nginx.com/">NGINX</a>, a hugely popu
 <p>In this chapter we continue to use RequireJS (see Chapter 7) as a framework for modularization. Using RequireJS, we&#8217;re going to lazy load some modules if and only if they get requested by the user.</p>
 </div>
 <div class="paragraph">
-<p>This book is about development of the user interface and client side of the Web applications hence we&#8217;re not going to cover all the details of server side implementation, but will make our server side code available for download. We&#8217;ll keep our server up and running so you can test the UI by visiting <a href="http://savesickchild.org:8080/project-16-websocket-auction/">http://savesickchild.org:8080/project-16-websocket-auction/</a>, but our main goal in this section is to show you how you can exchange the auction data with the server and process them on the client side using WebSocket. We&#8217;ll use the Java application server GlassFish 4, which is a reference implementation of the latest Java EE 7 specification.</p>
+<p>This book is about development of the user interface and client side of the Web applications hence we&#8217;re not going to cover all the details of server side implementation, but will make our server side code available for download. We&#8217;ll keep our server up and running so you can test the UI by visiting <a href="http://savesickchild.org:8080/websocket-auction/">http://savesickchild.org:8080/websocket-auction/</a>, but our main goal in this section is to show you how you can exchange the auction data with the server and process them on the client side using WebSocket. We&#8217;ll use the Java application server GlassFish 4, which is a reference implementation of Java EE 7 specification.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1619,7 +1641,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 </table>
 </div>
 <div class="paragraph">
-<p>In Chapter 6 you had a chance to see how a Web application can be sliced into several modules using Require.js framework.  We&#8217;ll take this project as a base and will create a new one: project-16-websocket-auction adding to it the new modules supporting the auction.</p>
+<p>In Chapter 7 you had a chance to see how a Web application can be sliced into several modules using Require.js framework.  We&#8217;ll take this project as a base and will create a new one: project-16-websocket-auction adding to it the new modules supporting the auction.</p>
 </div>
 <div class="listingblock">
 <div class="title">Way To Give module (<code>js/modules/way-to-give.js</code>)</div>
@@ -1768,24 +1790,24 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript"> if(window.WebSocket) {
-   webSocket = new WebSocket("ws://savesickchild.org:8080/project-16-websocket-auction//child-auction/auction");
+<pre class="highlight"><code class="javascript language-javascript"> if (window.WebSocket) {
+   webSocket = new WebSocket("ws://localhost:8080/child-auction/auction");
    webSocket.onopen = function() {
-     console.log("connection open...");         <i class="conum" data-value="1"></i><b>(1)</b>
+     console.log("connection open..."); <i class="conum" data-value="1"></i><b>(1)</b>
      getAuctionsList();
    };
    webSocket.onclose = function(closeEvent) {
-      // notify user that connection was closed
+     // notify user that connection was closed
      console.log("close code " + closeEvent.code);
    };
    webSocket.onmessage = function(messageEvent) {
      console.log("data from server: " + messageEvent.data);
-     if(typeof messageEvent.data === "string") {
+     if (typeof messageEvent.data === "string") {
        handleMessage(messageEvent.data);
      }
    };
-   return webSocket.onerror = function() {
-    // notify user about connection error
+   webSocket.onerror = function() {
+     // notify user about connection error
      console.log("websocket error");
    };
  }</code></pre>
@@ -1802,13 +1824,18 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">var getAuctionsList = function() {
-        var auctionListMessage = new AuctionMessage("AUCTIONS_LIST", 'gime', "-1"); <i class="conum" data-value="1"></i><b>(1)</b>
-        if(webSocket.readyState === 1) {        <i class="conum" data-value="2"></i><b>(2)</b>
-            webSocket.send(auctionMessage.toJson());
-        } else {
-            return console.log("offline");
-        }
-    };</code></pre>
+    'use strict';
+    var auctionListMessage = {
+        type: 'AUCTIONS_LIST',
+        data: 'gime',
+        auctionId: '-1'
+    };  <i class="conum" data-value="1"></i><b>(1)</b>
+    if (webSocket.readyState === 1) { <i class="conum" data-value="2"></i><b>(2)</b>
+        webSocket.send(JSON.stringify(auctionListMessage));
+    } else {
+        console.log('offline');
+    }
+};</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -1824,7 +1851,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 </table>
 </div>
 <div class="paragraph">
-<p>The user can select the auction lot from the combo box and see its images. <a href="#FIG9-12">The console logs incoming message contains list of auction items.</a> shows what&#8217;s displayed on the console, while <a href="#FIG9-13">Using Network feature of Dev Tools we can monitor WebSocket frames.</a> and <a href="#FIG9-14">[FIG9-14]</a> show the content of the Network tab for both images.</p>
+<p>The user can select the auction lot from the combo box and see its images. <a href="#FIG9-12">The console logs incoming message contains list of auction items.</a> shows what&#8217;s displayed on the console, while <a href="#FIG9-13">Using Network feature of Dev Tools we can monitor WebSocket frames.</a> and <a href="#FIG9-14">The buyer can choose another item to bit for.</a> show the content of the Network tab for both images.</p>
 </div>
 <div id="FIG9-12" class="imageblock">
 <div class="content">
@@ -1842,17 +1869,18 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_14.png" alt="fig 09 14">
 </div>
+<div class="title">Figure 6. The buyer can choose another item to bit for.</div>
 </div>
 <div class="sect3">
 <h4 id="_monitor_the_websocket_traffic_with_chrome_developers_tools">Monitor the WebSocket traffic with Chrome Developers Tools</h4>
 <div class="paragraph">
-<p>Let&#8217;s review the practical use of the theory described in the <a href="#HANDSHAKE">WebSocket Handshake</a> section earlier.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <a href="#FIG9-4">Initial WebSocket handshake in Chrome DevTools</a>. This can be viewed in the Network tab after selecting the path of the <code>WebSocket</code> endpoint on the left panel.</p>
+<p>Let&#8217;s review the practical use of the theory described in the <a href="#HANDSHAKE">WebSocket Handshake</a> section earlier.  With the help of Chrome Developer Tools you can monitor the information about the initial handshake <a href="#FIG9-4">Initial WebSocket handshake in Chrome DevTools</a>. Monitoring WebSocket traffic in Chrome Developers Tools is, in some ways, not that different from monitoring HTTP requests. This can be viewed in the Network tab after selecting the path of the <code>WebSocket</code> endpoint on the left panel.</p>
 </div>
 <div id="FIG9-4" class="imageblock">
 <div class="content">
 <img src="./images/fig_09_04.png" alt="fig 09 04">
 </div>
-<div class="title">Figure 6. Initial WebSocket handshake in Chrome DevTools</div>
+<div class="title">Figure 7. Initial WebSocket handshake in Chrome DevTools</div>
 </div>
 <div class="paragraph">
 <p>You can also click on <code>WebSocket</code> at the bottom-right to show only the <code>WebSocket</code> endpoints. Click on <code>Frames</code> in the right panel to view the actual frames being exchanged between the client and server. <a href="#FIG9-5">Monitoring WebSocket frames in Chrome Developer Tools</a>. The white colored rows represent incoming data, and the green (or gray on paper) rows - outgoing.</p>
@@ -1861,7 +1889,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_05.png" alt="fig 09 05">
 </div>
-<div class="title">Figure 7. Monitoring WebSocket frames in Chrome Developer Tools</div>
+<div class="title">Figure 8. Monitoring WebSocket frames in Chrome Developer Tools</div>
 </div>
 <div class="paragraph">
 <p>For more gore details you can navigate your Google Chrome to the secret URL - <code>chrome://net-internals</code>, which is a very useful URL showing a lot of additional information (see <a href="#FIG9-6">Details of initial handshake in Chrome Net Internals</a> and <a href="#FIG9-7">Details of the socket connection</a> ). You can find documentation about net-internal in <a href="http://www.chromium.org/developers/design-documents/network-stack/view-net-internals">Chromium Design Documents</a></p>
@@ -1870,13 +1898,13 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_06.png" alt="fig 09 06">
 </div>
-<div class="title">Figure 8. Details of initial handshake in Chrome Net Internals</div>
+<div class="title">Figure 9. Details of initial handshake in Chrome Net Internals</div>
 </div>
 <div id="FIG9-7" class="imageblock">
 <div class="content">
 <img src="./images/fig_09_07.png" alt="fig 09 07">
 </div>
-<div class="title">Figure 9. Details of the socket connection</div>
+<div class="title">Figure 10. Details of the socket connection</div>
 </div>
 <div class="paragraph">
 <p>Google Developer Tools show just the length of the data. But <code>chrome://net-internals</code> shows the actual size of the WebSocket frame too. <a href="#FIG9-8">Dev tools and net-internals side by side</a> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of the frame is slightly different from the size of the payload. There are few more bytes for the frame header. Moreover, all outgoing messages will be masked by the browser (see the note in the <a href="#FRAMES">The WebSocket Frame Anatomy</a> section). This frame&#8217;s mask is going to be transferred to the server as a part of the frame itself, which creates additional 32 bits (4 bytes) overhead.</p>
@@ -1885,7 +1913,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_08.png" alt="fig 09 08">
 </div>
-<div class="title">Figure 10. Dev tools and net-internals side by side</div>
+<div class="title">Figure 11. Dev tools and net-internals side by side</div>
 </div>
 </div>
 <div class="sect3">
@@ -1897,7 +1925,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_15.png" alt="fig 09 15">
 </div>
-<div class="title">Figure 11. Wireshark application main view</div>
+<div class="title">Figure 12. Wireshark application main view</div>
 </div>
 <div class="paragraph">
 <p>Wireshark captures all network activity. Set up the filter to see only the data you are interested in. We want to capture HTTP and TCP traffic on the port <code>8080</code> because our WebSocket server (Oracle&#8217;s GlassFish) runs on this port <a href="#FIG9-16">Filter setup</a>. Enter <code>http &amp;&amp; (tcp.dstport==8080)</code> in the filter text box and click Apply.</p>
@@ -1906,7 +1934,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_16.png" alt="fig 09 16">
 </div>
-<div class="title">Figure 12. Filter setup</div>
+<div class="title">Figure 13. Filter setup</div>
 </div>
 <div class="paragraph">
 <p>Now the Wireshark is ready to sniff at the traffic of our application. You can start the auction session and place bids. After you&#8217;re done with the auction you can return to the Wireshark window and analyze what we got. You can see the initial handshake (<code>GET</code> request on <a href="#FIG9-17">The <code>GET</code> request for protocol upgrade</a> and the <code>Upgrade</code> response on <a href="#FIG9-18">The <code>GET</code> response with protocol upgrade</a>).</p>
@@ -1915,13 +1943,13 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_17.png" alt="fig 09 17">
 </div>
-<div class="title">Figure 13. The <code>GET</code> request for protocol upgrade</div>
+<div class="title">Figure 14. The <code>GET</code> request for protocol upgrade</div>
 </div>
 <div id="FIG9-18" class="imageblock">
 <div class="content">
 <img src="./images/fig_09_18.png" alt="fig 09 18">
 </div>
-<div class="title">Figure 14. The <code>GET</code> response with protocol upgrade</div>
+<div class="title">Figure 15. The <code>GET</code> response with protocol upgrade</div>
 </div>
 <div class="paragraph">
 <p>After the successful connection upgrade, Wireshark captured the <code>http-alt</code> stream (this is how it reports the Websocket&#8217;s traffic) on the 8080 port. Right click on this row and select <code>Follow TCP Stream</code> <a href="#FIG9-19">The <code>GET</code> response with protocol upgrade</a>.</p>
@@ -1930,7 +1958,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_19.png" alt="fig 09 19">
 </div>
-<div class="title">Figure 15. The <code>GET</code> response with protocol upgrade</div>
+<div class="title">Figure 16. The <code>GET</code> response with protocol upgrade</div>
 </div>
 <div class="paragraph">
 <p>On the next screen you can see the details of WebSocket frame <a href="#FIG9-20">WebSocket frame</a>. We took this screenshot right after the auction application started. You can see here the data with the list of available auctions. The outgoing data is marked with <em>red</em> color and the incoming data is shown in <em>blue</em>.</p>
@@ -1939,7 +1967,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_20.png" alt="fig 09 20">
 </div>
-<div class="title">Figure 16. WebSocket frame</div>
+<div class="title">Figure 17. WebSocket frame</div>
 </div>
 <div class="paragraph">
 <p>The screenshot <a href="#FIG9-21">Entire auction conversation</a> was taken  after the auction has been closed. You can see here the entire data that were sent over the WebSocket connection.</p>
@@ -1948,7 +1976,7 @@ Authors of this book are Java developers and we have recorded a screencast (see 
 <div class="content">
 <img src="./images/fig_09_21.png" alt="fig 09 21">
 </div>
-<div class="title">Figure 17. Entire auction conversation</div>
+<div class="title">Figure 18. Entire auction conversation</div>
 </div>
 </div>
 <div class="sect3">
@@ -2162,13 +2190,20 @@ As soon as the handshake completes successfully, the server side code that imple
 <div class="paragraph">
 <p>As a side benefit, you&#8217;ve learned how to use the network monitoring capabilities of Google Chrome Developer Tools and Wireshark application by sniffing the WebSocket traffic. You can&#8217;t underestimate the importance of monitoring tools, which are the best friends of Web developers.</p>
 </div>
+<div class="ulist bibliography">
+<ul class="bibliography">
+<li>
+<p><a id="igrigorik"></a>[igrigorik] Ilya Grigorik. <em>High Performance Browser Networking</em> 2013 p.13</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-11-26 08:18:25 EST
+Last updated 2013-12-02 07:24:31 EST
 </div>
 </div>
 </body>
