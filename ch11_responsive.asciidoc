@@ -63,12 +63,23 @@ There is a number of Web sites that were built using responsive design. Visit th
 2. http://mashable.com/[Mashable]
 3. http://cafeevoke.com/[Cafe Evoke]
 4. http://www.fork-cms.com/[Fork CMS]
-5. http://forefathersgroup.com/[Forefathers]
+5. http://mediaqueri.es/[a lot more examples]
 
 
-Note that each of these Web pages displays the content on the desktop in three different layouts (often in three imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet or a large smartphone mode (usually two columns layout), and then to the phone mode layout (the one column layout). 
+Note that each of these Web pages displays the content on the desktop in three different layouts (often in three, four, six, or twelve imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet or a large smartphone mode (usually two columns layout), and then to the phone mode layout (the one column layout). 
 
-This sounds like a great solution, but keep in mind that your users will be downloading unnecessary bytes - the entire CSS file that includes all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what's necessary for a particular device category.
+This sounds like a great solution, but if you put all your media queries in the same CSS files, your users will be downloading unnecessary bytes - the entire CSS file that includes all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what's necessary for a particular device category.
+
+You can have several CSS files for different devices. Include these files using the media attributes. But Web browsers are not smart enough to selectively download only those CSS that are needed. For example, the following HTML will load both CSS files on any user's device:
+
+[source, html]
+----
+<link media="only screen and (max-width: 480px)" href="css/smartphone.css"rel="stylesheet">
+
+<link media="only screen and (max-width: 768px)" href="css/tablet.css"rel="stylesheet">
+----
+
+TIP: Using the `Window.matchMedia` attribute may allow you to http://christianheilmann.com/2012/12/19/conditional-loading-of-resources-with-mediaqueries/[conditionally load] CSS in JavaScript. 
 
 NOTE: Consider combining Responsive Design on the client with some device-specific components (a.k.a. http://www.lukew.com/ff/entry.asp?1392[RESS]) optimization on the server.
 
@@ -156,7 +167,7 @@ If need be, you can ask Jerry to create mockups for the real devices with the wi
 
 === CSS Media Queries
 
-First, let's see the CSS media queries in action, and then we'll explain how this magic was done. Run the project titled Responsive_basic_media_queries, and it'll look as in <<FIG11-8>>. This is a desktop version for the desktops (or some tablets in the landscape mode). The section chart, map, and video divide the window into three imaginary columns.
+First, let's see the CSS media queries in action, and then we'll explain how this magic was done. Run the project titled Responsive_basic_media_queries, and it'll look as in <<FIG11-8>>. This is a version for the desktops (or some tablets in the landscape mode). The section chart, map, and video divide the window into three imaginary columns. 
 
 [[FIG11-8]]
 .The desktop layout implemented
@@ -724,7 +735,10 @@ TIP: In some cases you may need to use a mix of fluid and fixed layouts, for exa
 
 Spend some time analyzing the content of index.html and styles.css files from the project named Responsive Fluid Grid. Try to modify the values in CSS and see how your changes affect the behavior of the fluid grid.In the next section we'll apply these techniques to our Save The Child application.
 
-TIP: There are several responsive frameworks that offer CSS, typography and some JavaScript to jump start the development of the UI of a Web application. The http://foundation.zurb.com/[Foundation 4] framework promotes mobile first design and includes the flexible grid. Consider using Twitter's framework called http://twbs.github.io/bootstrap/[Bootstrap], which has lots of greatly styled http://twbs.github.io/bootstrap/components/[components] and also supports fluid grid system. 
+TIP: There are several responsive frameworks that offer CSS, typography and some JavaScript to jump start the development of the UI of a Web application. The http://foundation.zurb.com/[Foundation 4] framework promotes mobile first design and includes the flexible grid. Consider using Twitter's framework called http://twbs.github.io/bootstrap/[Bootstrap], which has lots of greatly styled http://twbs.github.io/bootstrap/components/[components] and also supports fluid grid system.
+http://www.getskeleton.com/[The Skeleton] is a collection of CSS files, which includes a scalable grid. 
+
+TIP: If you're developing a responsive web site, get the business user's feedback fast. There is a great Web site http://responsinator.com[Responsinator.com] that allows you see how the Web application will look like in different viewports - various smartphones, tablets and desktops. Just send the URL of the current version of your application to your business user and ask him or her to copy paste this URL to the text field on the top left corner of responsinator.com. The users will be able to test your Web application using at least a dozen different viewports like iPhone 3 - 5, small and large Android phones, Kindle, iPad, Nexus et al.
 
 === Making Save The Child Responsive
 
@@ -999,7 +1013,7 @@ function windowResizeHandler() {
 
 Whenever the size changes, it invokes the function `drawPieChart()` that recalculates the width of the SVG container (it uses the `clientWidth` property of the `HTMLElement` ) and re-draws the chart accordingly.
 
-TIP: Consider storing images in the https://developers.google.com/speed/webp/[WebP format], which is a lossless format, and WebP images are about 25% less in sizethan PNG or JPEG images. Your application needs to check first if the user's Web browser support WebP format, otherwise images in more traditional formats should be rendered. The other choice is to use http://thumborize.me/[Tumbor imaging service] that can automatically serve WebP images to the browsers that support this format. 
+TIP: Consider storing images in the https://developers.google.com/speed/webp/[WebP format], which is a lossless format, and WebP images are about 25% less in size than PNG or JPEG images. Your application needs to check first if the user's Web browser support WebP format, otherwise images in more traditional formats should be rendered. The other choice is to use http://thumborize.me/[Tumbor imaging service] that can automatically serve WebP images to the browsers that support this format. 
 
 The video is flexible too, and it's done a lot simpler. We do not specify the fixed size of the video, but use a CSS property `width` instructing the browser to allocate the 100% of the available container's width.The height of the video must be  be automatically calculated to keep the proportional size. 
 
@@ -1042,7 +1056,7 @@ Another technique is to have a CDN that caches and serves images of different si
 
 Responsive Web design is not a silver bullet that allows using a single code base for all desktop and mobile versions of your HTML5 Web application. RWD can be the right approach for developing Web sites that mainly publish information. It's not likely that you can create a complex single-code-base Web application that works well on Android, iPhone, and desktop browsers. 
  
-Responsive design has yet another drawback:  unnecessary CSS will be loaded to the user's device. This consideration is especially important for mobile devices operating on 3G or slower networks (unless you'll find a way to lazy load them). 
+Responsive design may result in unnecessary CSS loaded to the user's device. This consideration is especially important for mobile devices operating on 3G or slower networks (unless you'll find a way to lazy load them). 
 
 Responsive design can still can be a practical business solution when the form factor is relatively low (which enterprise can mandate), e.g. if your target group of user operate specific models of iOS and Android devices. 
 
