@@ -710,15 +710,61 @@ p.tableblock.header { color: #6d6e71; }
 <p><a href="http://www.fork-cms.com/">Fork CMS</a></p>
 </li>
 <li>
-<p><a href="http://forefathersgroup.com/">Forefathers</a></p>
+<p><a href="http://mediaqueri.es/">a lot more examples</a></p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>Note that each of these Web pages displays the content on the desktop in three different layouts (often in three imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet or a large smartphone mode (usually two columns layout), and then to the phone mode layout (the one column layout).</p>
+<p>Note that each of these Web pages displays the content on the desktop in three different layouts (often in three, four, six, or twelve imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet or a large smartphone mode (usually two columns layout), and then to the phone mode layout (the one column layout).</p>
 </div>
 <div class="paragraph">
-<p>This sounds like a great solution, but keep in mind that your users will be downloading unnecessary bytes - the entire CSS file that includes all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what&#8217;s necessary for a particular device category.</p>
+<p>This sounds like a great solution, but if you put all your media queries in the same CSS files, your users will be downloading unnecessary bytes - the entire CSS file that includes all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what&#8217;s necessary for a particular device category.</p>
+</div>
+<div class="paragraph">
+<p>You can have several CSS files for different devices. Include these files using the media attributes. But Web browsers are not smart enough to selectively download only those CSS that are needed. For example, the following HTML will load both CSS files on any user&#8217;s device:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;link media="only screen and (max-width: 480px)" href="css/smartphone.css"rel="stylesheet"&gt;
+
+&lt;link media="only screen and (max-width: 768px)" href="css/tablet.css"rel="stylesheet"&gt;</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Using the <code>Window.matchMedia</code> attribute may allow you to <a href="http://christianheilmann.com/2012/12/19/conditional-loading-of-resources-with-mediaqueries/">conditionally load</a> CSS in JavaScript.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Consider combining Responsive Design on the client with some device-specific components (a.k.a. <a href="http://www.lukew.com/ff/entry.asp?1392">RESS</a>) optimization on the server.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-important" title="Important"></i>
+</td>
+<td class="content">
+While Responsive Design allows to re-arrange the content based on the screen size, it may not be a good idea to show the same amount of content on desktop and smartphones. Making a Web application look good on mobile devices must involve not only Web designers and developers, but also people who are responsible for content management.
+</td>
+</tr>
+</table>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -870,7 +916,7 @@ Typography can be also considered as one of the pillars of the responsive design
 <div class="sect2">
 <h3 id="_css_media_queries">CSS Media Queries</h3>
 <div class="paragraph">
-<p>First, let&#8217;s see the CSS media queries in action, and then we&#8217;ll explain how this magic was done. Run the project titled Responsive_basic_media_queries, and it&#8217;ll look as in <a href="#FIG11-8">The desktop layout implemented</a>. This is a desktop version for the desktops (or some tablets in the landscape mode). The section chart, map, and video divide the window into three imaginary columns.</p>
+<p>First, let&#8217;s see the CSS media queries in action, and then we&#8217;ll explain how this magic was done. Run the project titled Responsive_basic_media_queries, and it&#8217;ll look as in <a href="#FIG11-8">The desktop layout implemented</a>. This is a version for the desktops (or some tablets in the landscape mode). The section chart, map, and video divide the window into three imaginary columns.</p>
 </div>
 <div id="FIG11-8" class="imageblock">
 <div class="content">
@@ -1139,7 +1185,9 @@ Install an Add-On for Google Chrome called <a href="https://chrome.google.com/we
 <p>How many media queries is too many? It all depends on the Web page you&#8217;re designing. In the sample CSS shown in this section above we&#8217;ve used the breakpoint of 768px to represent the width of the tablet in the portrait mode, and this is fine for the iPad. But several tablets (e.g. 10.1" Samsung Galaxy) have 800px-wide viewport while Microsoft Surface Pro is 1080px wide.</p>
 </div>
 <div class="paragraph">
-<p>There is no general rule as to how many breakpoint is needed for a typical Web page. Let the content of your page (and where it breaks) dictate where you add breakpoints. Just create a simple Lorem Ipsum prototype of your Web site and start changing its size. If you don&#8217;t like how the content looks, you may need to create a breakpoint and define a media query for it. It is recommended to start with designing for the smallest viewports (the "Mobile First" principle). As the viewport width increases you may decide to render more content hence define a new breakpoint.</p>
+<p>There is no general rule as to how many breakpoint is needed for a typical Web page. Let the content of your page (and where it breaks) dictate where you add breakpoints. Just create a simple Lorem Ipsum prototype of your Web site and start changing its size. At a certain point (viewport size) your design starts to break. This is where you need to put your breakpoint and define a media query for it.
+It is recommended to start with designing for the smallest viewports (the "Mobile First" principle). As the viewport width increases you may decide to render more content hence define a new breakpoint.
+Technically this means that the content of your CSS should default to the smaller viewports and only if the screen is larger, apply media queries. Such approach will reduce the CSS handling by the browser of the mobile device (no need to switch from large to smaller layouts).</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1592,6 +1640,7 @@ In some cases you may need to use a mix of fluid and fixed layouts, for example,
 </td>
 <td class="content">
 There are several responsive frameworks that offer CSS, typography and some JavaScript to jump start the development of the UI of a Web application. The <a href="http://foundation.zurb.com/">Foundation 4</a> framework promotes mobile first design and includes the flexible grid. Consider using Twitter&#8217;s framework called <a href="http://twbs.github.io/bootstrap/">Bootstrap</a>, which has lots of greatly styled <a href="http://twbs.github.io/bootstrap/components/">components</a> and also supports fluid grid system.
+<a href="http://www.getskeleton.com/">The Skeleton</a> is a collection of CSS files, which includes a scalable grid.
 </td>
 </tr>
 </table>
@@ -1602,7 +1651,7 @@ There are several responsive frameworks that offer CSS, typography and some Java
 <h3 id="_making_save_the_child_responsive">Making Save The Child Responsive</h3>
 <div class="paragraph">
 <p>First, run any of the previous versions of the Save The Child application to make sure it was not responsive. Just make the browser window narrower, and you won&#8217;t see some of the page content on the right.
-We&#8217;ll make the page responsive gradually - the first version will make the header responsive, then the donation section, and, finally the entire page will become fluid. Run the project named Responsive Header and you&#8217;ll see a page similar to <a href="#FIG11-14">Responsive Header (width 580px+)</a>.</p>
+We&#8217;ll make the page responsive gradually - the first version will make the header responsive, then the donation section, and, finally the entire page will become fluid. Open in the Web browser the file index.html from the project named Responsive Header and you&#8217;ll see a page similar to <a href="#FIG11-14">Responsive Header (width 580px+)</a>.</p>
 </div>
 <div id="FIG11-14" class="imageblock">
 <div class="content">
@@ -1696,13 +1745,13 @@ The styles.css of this project has media queries for different viewport sizes. F
 <div class="title">Figure 17. Responsive Header 2 (width between 480 and 580px )</div>
 </div>
 <div class="paragraph">
-<p>When the width shrinks to 480px, the header looks as in <a href="#FIG11-16">Responsive Header (width below 480px)</a>. Once again, we are not tying the design to the specific device, but rather to a viewport width. The iPhone 4 will render this page using the layout shown at &lt;&lt;&gt;FIG11-16&gt;, but iPhone 5 will use the layout from <a href="#FIG11-15">Responsive Header 2 (width between 480 and 580px )</a>. You can&#8217;t go by a device type.</p>
+<p>When the width of the viewport shrinks below 480px, the header&#8217;s content rearranges and looks as in <a href="#FIG11-16">Responsive Header (viewport&#8217;s width below 480px)</a>. Once again, we are not tying the design to the specific device, but rather to a viewport width. The iPhone 4 will render this page using the layout shown at &lt;&lt;&gt;FIG11-16&gt;, but iPhone 5 will use the layout from <a href="#FIG11-15">Responsive Header 2 (width between 480 and 580px )</a>. You can&#8217;t go by a device type.</p>
 </div>
 <div id="FIG11-16" class="imageblock">
 <div class="content">
 <img src="./images/fig_11_16.png" alt="fig 11 16">
 </div>
-<div class="title">Figure 18. Responsive Header (width below 480px)</div>
+<div class="title">Figure 18. Responsive Header (viewport&#8217;s width below 480px)</div>
 </div>
 <div class="paragraph">
 <p>The next project to try is called Responsive Donation. This version make the donation section fluid. The donation section contains the Lorem Ipsum text and the form, which is revealed when the user clicks the button Donate. First, let&#8217;s look at the HTML. The index.html contains the following fragment (some of the content that irrelevant for layout was removed for better readability):</p>
@@ -1983,6 +2032,18 @@ While using base-64 encoding increases the total size of the image in bytes, it 
 <div class="paragraph">
 <p>Another technique is to have a CDN that caches and serves images of different sizes for different user agents. The very first time when a request is made from a device with an unknown user engine, this first  "unlucky" user will get an image with a low resolution, and then the application makes an AJAX call passing the exact screen parameters for this device. The CDN server resizes the original high-resolution image for this particular user agent, and caches it, so any other users having the same device will get a perfectly-sized image from the get go.</p>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<a href="https://github.com/BBC-News/Imager.js">Imager.js</a> is an alternative solution to the issue of how to handle responsive image loading, created by developers at BBC News. Imager loages the most suitable sized image and does it once.
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1991,7 +2052,7 @@ While using base-64 encoding increases the total size of the image in bytes, it 
 <p>Responsive Web design is not a silver bullet that allows using a single code base for all desktop and mobile versions of your HTML5 Web application. RWD can be the right approach for developing Web sites that mainly publish information. It&#8217;s not likely that you can create a complex single-code-base Web application that works well on Android, iPhone, and desktop browsers.</p>
 </div>
 <div class="paragraph">
-<p>Responsive design has yet another drawback:  unnecessary CSS will be loaded to the user&#8217;s device. This consideration is especially important for mobile devices operating on 3G or slower networks (unless you&#8217;ll find a way to lazy load them).</p>
+<p>Responsive design may result in unnecessary CSS loaded to the user&#8217;s device. This consideration is especially important for mobile devices operating on 3G or slower networks (unless you&#8217;ll find a way to lazy load them).</p>
 </div>
 <div class="paragraph">
 <p>Responsive design can still can be a practical business solution when the form factor is relatively low (which enterprise can mandate), e.g. if your target group of user operate specific models of iOS and Android devices.</p>
@@ -2014,7 +2075,7 @@ While using base-64 encoding increases the total size of the image in bytes, it 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2013-12-02 16:00:02 EST
+Last updated 2013-12-08 10:59:56 EST
 </div>
 </div>
 </body>
