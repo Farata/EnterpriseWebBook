@@ -369,7 +369,9 @@ TIP: Install an Add-On for Google Chrome called https://chrome.google.com/websto
 
 How many media queries is too many? It all depends on the Web page you're designing. In the sample CSS shown in this section above we've used the breakpoint of 768px to represent the width of the tablet in the portrait mode, and this is fine for the iPad. But several tablets (e.g. 10.1" Samsung Galaxy) have 800px-wide viewport while Microsoft Surface Pro is 1080px wide. 
 
-There is no general rule as to how many breakpoint is needed for a typical Web page. Let the content of your page (and where it breaks) dictate where you add breakpoints. Just create a simple Lorem Ipsum prototype of your Web site and start changing its size. If you don't like how the content looks, you may need to create a breakpoint and define a media query for it. It is recommended to start with designing for the smallest viewports (the "Mobile First" principle). As the viewport width increases you may decide to render more content hence define a new breakpoint.
+There is no general rule as to how many breakpoint is needed for a typical Web page. Let the content of your page (and where it breaks) dictate where you add breakpoints. Just create a simple Lorem Ipsum prototype of your Web site and start changing its size. At a certain point (viewport size) your design starts to break. This is where you need to put your breakpoint and define a media query for it. 
+It is recommended to start with designing for the smallest viewports (the "Mobile First" principle). As the viewport width increases you may decide to render more content hence define a new breakpoint.
+Technically this means that the content of your CSS should default to the smaller viewports and only if the screen is larger, apply media queries. Such approach will reduce the CSS handling by the browser of the mobile device (no need to switch from large to smaller layouts).  
 
 TIP: Use Google Chrome Developer Tools to find out the current width of the viewport. Just type in the console `window.innerWidth` and you'll see the width in pixels.
 
@@ -746,7 +748,7 @@ http://www.getskeleton.com/[The Skeleton] is a collection of CSS files, which in
 === Making Save The Child Responsive
 
 First, run any of the previous versions of the Save The Child application to make sure it was not responsive. Just make the browser window narrower, and you won't see some of the page content on the right.
-We'll make the page responsive gradually - the first version will make the header responsive, then the donation section, and, finally the entire page will become fluid. Run the project named Responsive Header and you'll see a page similar to <<FIG11-14>>.  
+We'll make the page responsive gradually - the first version will make the header responsive, then the donation section, and, finally the entire page will become fluid. Open in the Web browser the file index.html from the project named Responsive Header and you'll see a page similar to <<FIG11-14>>.  
 
 [[FIG11-14]]
 .Responsive Header (width 580px+)
@@ -831,10 +833,10 @@ The styles.css of this project has media queries for different viewport sizes. F
 .Responsive Header 2 (width between 480 and 580px )
 image::images/fig_11_15.png[]
 
-When the width shrinks to 480px, the header looks as in <<FIG11-16>>. Once again, we are not tying the design to the specific device, but rather to a viewport width. The iPhone 4 will render this page using the layout shown at <<>FIG11-16>, but iPhone 5 will use the layout from <<FIG11-15>>. You can't go by a device type.
+When the width of the viewport shrinks below 480px, the header's content rearranges and looks as in <<FIG11-16>>. Once again, we are not tying the design to the specific device, but rather to a viewport width. The iPhone 4 will render this page using the layout shown at <<>FIG11-16>, but iPhone 5 will use the layout from <<FIG11-15>>. You can't go by a device type.
 
 [[FIG11-16]]
-.Responsive Header (width below 480px)
+.Responsive Header (viewport's width below 480px)
 image::images/fig_11_16.png[]
 
 The next project to try is called Responsive Donation. This version make the donation section fluid. The donation section contains the Lorem Ipsum text and the form, which is revealed when the user clicks the button Donate. First, let's look at the HTML. The index.html contains the following fragment (some of the content that irrelevant for layout was removed for better readability):
@@ -1054,6 +1056,8 @@ There is a living W3C document titled http://picture.responsiveimages.org/[An HT
 ----
 
 Another technique is to have a CDN that caches and serves images of different sizes for different user agents. The very first time when a request is made from a device with an unknown user engine, this first  "unlucky" user will get an image with a low resolution, and then the application makes an AJAX call passing the exact screen parameters for this device. The CDN server resizes the original high-resolution image for this particular user agent, and caches it, so any other users having the same device will get a perfectly-sized image from the get go.   
+
+TIP: https://github.com/BBC-News/Imager.js[Imager.js] is an alternative solution to the issue of how to handle responsive image loading, created by developers at BBC News. Imager loages the most suitable sized image and does it once.
 
 
 === Summary 
