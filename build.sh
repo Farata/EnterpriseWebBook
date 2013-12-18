@@ -21,12 +21,12 @@ function convert()
             -a stylesheet=stylesheets/colony.css \
             -a linkcss!                          \
             -a icons=font                        \
-            -a source-highlighter=highlightjs    \
+            -a source-highlighter=coderay        \
             -a toc                               \
             -a toc2                              \
             -a toclevels=3                       \
             --compact                            \
-            -D $OUT_DIR                         \
+            -D $OUT_DIR                          \
             $src_file
 }
 
