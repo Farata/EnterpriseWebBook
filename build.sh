@@ -26,7 +26,7 @@ function convert()
             -a toc2                              \
             -a toclevels=3                       \
             --compact                            \
-            -D $OUT_DIR                         \
+            -D $OUT_DIR                          \
             $src_file
 }
 
