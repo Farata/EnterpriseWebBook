@@ -21,7 +21,7 @@ function convert()
             -a stylesheet=stylesheets/colony.css \
             -a linkcss!                          \
             -a icons=font                        \
-            -a source-highlighter=coderay        \
+            -a source-highlighter=highlightjs    \
             -a toc                               \
             -a toc2                              \
             -a toclevels=3                       \
