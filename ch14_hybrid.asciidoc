@@ -32,14 +32,19 @@ While native applications have full access to all APIs of the mobile device (e.g
 
 Mobile Web applications don't require any third-party involvement for the distribution. An enterprise can make them available at any time by simple adding a Download button on the corporate Web site. It's good to have an ability to quickly publish the latest versions Web applications on your own servers without the need to ask for a permission. On the other hand, maintaining the presence on one of the popular app stores is a good channel for getting new customers. 
 
-The publisher of New York magazine is heavily investing into their native application for iPad, but the newer version of their Web application is as engaging as its native pier. If you want a Web application to be discoverable and visible by search engines, Web applications are definitely better than the native ones.
+The publisher of New York magazine is heavily investing into their native application for iPad, but the newer version of their Web application is as engaging as its native peer. If you want a Web application to be discoverable and visible by search engines, Web applications are definitely better than the native ones.
 
 === Hybrid Applications
 
 _Hybrid applications_ promise you to have the best of both worlds. Develop a Web application in HTML/JavaScript, but access the native API of the mobile device via third-party solutions such as http://phonegap.com/[PhoneGap] from Adobe or http://www.appcelerator.com/platform/titanium-platform/[Titanium] from Appcelerator. Let's see what tools are available for creating hybrids. 
 
+==== Cordova and PhoneGap
+
 http://cordova.apache.org/[Cordova] is a library (and a build tool) that serves as a bridge between JavaScript and native API. Cordova started from the code donated by Adobe to Apache Software Foundation. Cordova is an open source platform created for building mobile applications with HTML5, but packaged as native ones. PhoneGap is a brand own by Adobe. Besides the Cordova library it offers developers a remote server, where they can package  their applications for various mobile platforms.
-If the role of Cordova library in the PhoneGap product is not clear to you, think of a similar situation when the same software library is used in different products. For example, the rendering engine Webkit, is used in Chrome and Safari browsers.  Figure <<FIG14-1>> illustrates the interaction of  PhoneGap, Cordova, and a Web application. 
+If the role of Cordova library in the PhoneGap product is not clear to you, think of a similar situation when the same software library is used in different products. For example, the rendering engine Webkit, is used in Chrome and Safari browsers.  
+NOTE: Cordova can be used without PhoneGap. For example, Facebook and Salesforce use Cordova in their mobile SDK. 
+
+Figure <<FIG14-1>> illustrates the interaction of  PhoneGap, Cordova, and a Web application. 
 
 [[FIG14-1]]
 .PhoneGap, Cordova and a Web Application
@@ -57,7 +62,9 @@ TIP: To compare performance of an application that runs in a mobile browser vs _
 
 The UI components of the HTML5 framework of your choice may not look native enough. But the main  selling point is that PhoneGap (and Cordova) allows you to leverage existing HTML/JavaScript developers' skills for all major mobile platforms, and their bridge to native APIs is easy to learn. 
 
-Titanium offers its own set of tools and more extensive API. You'd be writing code in JavaScript (no HTML or CSS) and would need to learn lots of APIs. The compiled and deployed application is a JavaScript code embedded inside Java or Objective-C code plus the JavaScript interpreter plus the platform-specific Titanium API. An important difference between Phonegap and Titanium is that the latter doesn't use any Web view container for rendering. The business logic written in JavaScript is executed by the embedded interpreter, the final UI components are delivered by native to iOS or Android components from Titanium.
+==== Titanium 
+
+Titanium offers its own set of tools and more extensive API. It has no relations to Cordova or PhoneGap. You'd be writing code in JavaScript (no HTML or CSS) and would need to learn lots of APIs. The compiled and deployed application is a JavaScript code embedded inside Java or Objective-C code plus the JavaScript interpreter plus the platform-specific Titanium API. An important difference between Phonegap and Titanium is that the latter doesn't use any Web view container for rendering. The business logic written in JavaScript is executed by the embedded interpreter, the final UI components are delivered by native to iOS or Android components from Titanium.
 
 Titanium UI components can be extended to use native OS interface abilities to their fullest. Some components are cross-platform - Titanium has a compatibility layer, while others are platform-specific. But if you want to learn platform-specific components, you might rather invest time in learning to develop the entire application in the native language and APIs. Besides, as new platform are  introduced, you'll depend on the willingness of the Titanium developers to create a new set of components in a timely fashion.  
 
@@ -109,7 +116,7 @@ After generating the Hello World code with the _phonegap create_ command, you'll
 .CLI-generated project Hello World
 image::images/fig_14_03.png[] 
 
-NOTE: If you'll be using the _create_ command exactly as it shown in the documentation (i.e. 	_phonegap create HelloWorld com.example.hello "Hello World"_), keep in mind that in case of iOS you'll need to create a certificate, which has to be valid for applications packages located under  _com.example_. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
+NOTE: While using the above command _phonegap create HelloWorld com.example.hello "Hello World"_, keep in mind that in case of iOS you'll need to create a certificate, which has to be valid for applications packages located under  _com.example_. For more details see the sidebar "Testing Application on iOS Devices" later in this chapter.
 
 The content of the generated index.html is shown next. It includes several meta tags instructing the browser to use the entire screen of the mobile device without allowing scaling with user's gestures. Then it includes a couple of JavaScript files in the`<script>` tags. 
 
@@ -122,7 +129,7 @@ The content of the generated index.html is shown next. It includes several meta 
      <meta name = "format-detection" content = "telephone=no"/>
      <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width;" />
      <link rel="stylesheet" type="text/css" href="css/index.css" />
-     <title>Hello Cordova</title>
+     <title>Hello World</title>
  </head>
  <body>
      <div class="app">
@@ -140,6 +147,7 @@ The content of the generated index.html is shown next. It includes several meta 
  </body>
 </html>
 ----
+
 
 This HTML file includes the code to load the phonegap.js library and the initialization code from index.js.Then it calls `app.initialize()`. But if you look at <<FIG14-3>> the file phonegap.js is missing. The CLI tool will add it to the project during the next phase of code generation when you'll run the command _phonegap platform add_ to add specific mobile platforms to your project. Let's look at the code of the index.js.
 
@@ -175,9 +183,11 @@ var app = {
 
 <2> The mobile OS sends the `deviceready` event to the PhoneGap application when it's ready to invoke native APIs.
 
-<3> The function `report()` is called from the `deviceready` event handler. It hides the text `.pending <p>` and shows the `.complete <p>` in index.html. Technically, `split('hide')` followed by `join('')` perform the removal of the word _hide_.
+<3> The function `report()` is called from the `deviceready` event handler. It hides the text `.pending <p>` and shows the `.complete <p>` in index.html. Technically, `split('hide')` followed by `join('')` performs the removal of the word _hide_.
 
 It wouldn't be too difficult to prepare such simple HTML and JavaScript files manually, but we prefer using code generators - they are faster and less error prone. 
+
+NOTE: Neither Cordova nor PhoneGap restrict you from using any HTML5 frameworks of your choice.  
 
 .Prerequisites for Local Builds
 *******
@@ -213,7 +223,7 @@ If you want to test your application not in the simulator, but  on the physical 
 
 1. Open a Keychain Access application on your Mac computer and create a certificate request using the menus Keychain Access | Certificate Assistant | Request a Certificate from Certificate Authority. This will create a file with the name extension .certSigningRequest.
 
-2. Log on to Member Center at https://developer.apple.com[developer.apple.com] and create a certificate in there for iOS Development specifying the wildcard (an asterisk) in the Bulk name unless you want to restrict this certificate to be used only with application that start with a certain prefix. During this step you'll need to upload the .certSigningRequest file created in the previous step. 
+2. Log on to Member Center at https://developer.apple.com[developer.apple.com] and create a certificate in there for iOS Development specifying the wildcard (an asterisk) in the Bulk name unless you want to restrict this certificate to be used only with application that start with a certain prefix. During this step you'll need to upload the .certSigningRequest file created in the previous step.
 
 3. After this certificate is created, download this file (its  name ends with .cer), and double-click on it to open in your local keychain. Find it in the list of certificates and expand it - it should include the private key. 
 
@@ -244,9 +254,9 @@ After downloading the bundle, unzip this file, and it'll create a folder with tw
 
 === Using Adobe PhoneGap Build Service
 
-Instead of installing multiple SDKs for different platforms you can use the cloud service https://build.phonegap.com/[Adobe PhoneGap Build], which already has installed and configured all supported SDK's and will do a build of your application for different platforms.
+Instead of installing multiple SDKs for different platforms you can use the cloud service https://build.phonegap.com/[Adobe PhoneGap Build], which already has installed and configured all supported SDK's and will do a build of your application for different platforms. For our example we're going to use iOS build.
 
-Visit build.phonegap.com and sign in with your Adobe or GitHub ID. If your project resides on GitHub, copy its URL to the text field shown on Figure <<FIG14-4-2>>. The other way to do a build is to compress your project's _www_ directory and upload this zip file there.
+Visit https://build.phonegap.com/[build.phonegap.com] and sign in with your Adobe or GitHub ID. If your project resides on GitHub, copy its URL to the text field shown on Figure <<FIG14-4-2>>. The other way to do a build is to compress your project's _www_ directory and upload this zip file there.
 
 NOTE: Starting from PhoneGap 3.0 all code modifications are done in the main _www_ folder of your project. During local rebuilds all the changes get automatically replicated to each installed platfotm's _www_ folder. 
 
@@ -254,7 +264,7 @@ NOTE: Starting from PhoneGap 3.0 all code modifications are done in the main _ww
 .Submitting Application to PhoneGap Build Server
 image::images/fig_14_04_2.png[]
 
-Before zipping up the Hello World's  _www_ directory, open and modify the file config.xml. The generated XML contains a lot of non-related to iOS entries. All of the lines that contain the words _android_ or _blackberry_ should be removed. 
+Before zipping up the Hello World's  _www_ directory, open and modify the file config.xml. The generated XML contains entries for every platform. Since we are doing a build for iOS, we'll remove all the lines that contain the words _android_ or _blackberry_. 
 
 [source, html]
 ----
@@ -329,9 +339,7 @@ To complete the process, deploy the application on your mobile device, which can
 NOTE: Using the PhoneGap Build service is free as long as you're building public applications, which have their source code hosted on a publicly accessible HitHub repository. Our Hello World application is considered to be private because we submitted it to PhoneGap Build in a zip file (note the _private_ tab in Figure <<FIG14-4-2>>). Only one private application at a time can be built with PhoneGap Build for free. For building multiple private applications you'd need to purchase an inexpensive subscription from Adobe. To replace one application with another, click on its name, then press the buttons Settings and then delete this App. 
 
 Phew! This was the longest description of developing and deploying the Hello World application that we've ever written!  We picked the deployment on the Apple's devices, which this the most complicated process among all mobile platforms. And we didn't even cover the process of submission the application in the App Store (you'll read more about it in the next section)! But developing and deploying an application that have to run natively on multiple platforms is expected to be more complicated that deploying an HTML5 application in a Web browser. 
-
-//TIP: Members of PhoneGap community can develop their own plugins for entire community to use. You can find details in this http://phonegap.com/blog/2013/07/15/using-plugins-with-phonegapbuild/[blog of Mike Harris]. 
-
+ 
 TIP: Instead of using the JavaScript function `alert()`, display messages using `navigator.notification.alert()` and PhoneGap will show them using the  native message box of the device. The `Notification` object also supports `confirm()`, `beep()`, and `vibrate()` methods.
 
 //TIP: For current list of available PhoneGap plugins for various mobile platforms visit the github repository at https://github.com/phonegap/phonegap-plugins[https://github.com/phonegap/phonegap-plugins].
