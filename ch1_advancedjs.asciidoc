@@ -69,64 +69,36 @@ The variables `address` and `isMarried` are visible only inside the function `ad
 The variable `isMarried` changes its type from `Boolean` to `String` during the execution of the above script, and JavaScript engine won't complain assuming that the programmer knows what she’s doing. So be ready for the run-time surprises and allocate a lot more time for testing than with programs written in  compiled languages.
 
 
-=== Getting Familiar with Aptana IDE
-
-
-Download and install Aptana Studio 3 from http://aptana.com[http://aptana.com]. Start Aptana IDE, then close its initial tab view by clicking on the little X on the tab. Then customize the color theme of this IDE by clicking the rainbow-colored circle on its toolbar. We usually select the theme called Eclipse. After the first start of Aptana you’ll see the message on the left side that reads ``There are no projects in your workspace. To get started, please create or import an existing one.''
-
-
-If you want to start playing with the code samples that come with this book, click on the button Import Project, select the General | Archive file. Find the zip file you'd like to use, e.g. chapter2.zip, and press Finish. The project from the selected zip file will be imported into the Aptana's _workspace_, which is nothing more than a folder on the disk where the source code will reside. When you work in Aptana IDE you see a set of _views_ (panels). This set is called _perspective_. For Web projects Aptana uses Web perspective, which is indicated at the top right corner. Pressing the icon with a little pus sign at the top right allows to open another perspective with its own set of views.
-
-Let's get started with creating a project from scratch by pressing the button Create Project on the left. You could have also created a new Web Project using the File menu. On the next window you'll need to select a wizard, and we'll be always working with Web Projects throughout this book. The next window will offer you to select a project template - let's stick to the simplest one - Default Project. Name it  MyFirstProject.
-
-To add an HTML file to this project select the project (its name becomes highlighted) and then  select the menu File | New From Template | HTML | HTML5 Template. Aptana will offer you new_file.html the name of this file - no need to change it for now. Just press finish and you'll see a window similar to the one shown on <<FIG2-2>>.
-
-[[FIG2-2]]
-.Aptana IDE with one HTML5 file
-image::images/fig_02_02.jpg[]
-
-Right-click on the new_file.html and select the menu Run as JavaScript Web project. Don't get upset that there is no JavaScript code there yet - we'll add it pretty soon. Aptana starts its built-in Web server that by default runs on the port 8020 (it's configurable in Aptana Preferences). The Web browser opens up and displays the page that looks like the one in <<FIG2-3>>. Aptana has used its default template to generate HTML file. The template can be changed to your liking, and you can read about it in Aptana's documentation at http://bitly.com/LRqRdU[http://bitly.com/LRqRdU].
-
-TIP: If you have your index.html open in Aptana's editor, you can simply press the green triangle on the toolbar and run this file in the Web browser.
-
-
-[[FIG2-3]]
-.Running MyFirstProject
-image::images/fig_02_03.jpg[]
-
-To configure the Web Browser that Aptana should open by default, open its Preferences window and select the Web browser of your choice under the General section. The authors of this book use mainly Google Chrome browser, but in this book we'll be giving using Firefox as well just to show you that developers have a choice too. Many examples in this chapter use the Firefox with installed add-on Firebug, so start with making Firefox your default browser in Aptana.  
-
-TIP: you can find various HTML5 boilerplate projects on the Web that can be used as a starting point of your project. You don't have to select the Aptana's HTML5 boilerplate if it doesn't fit your needs. For example, you can download a bare minimum boilerplate http://projects.craftedpixelz.co.uk/shibui/[Shibui]
-or more comprehensive http://html5boilerplate.com/[HTML5 Boilerplate]. Just download and unzip such a boilerplate project into your Aptana's workspace and start adding your code, styles, and other resources.
-
 === Adding JavaScript to HTML
 
 Software developers either directly include the  JavaScript code to the HTML document by placing it between the tags `<script>` and `</script>` or include a reference to the external location of the code (e.g. a local file name or a URL) in the `src` attribute of the `<script>` tag. We usually place the `<script>`tags at the end of HTML file. The reason is simple - your JavaScript code may be manipulating with HTML elements, and you want them to exist by the time the script runs. The other way to ensure that the code will run only after the Web page has loaded is by catching window's `load` event (you'll see such example later in this chapter in the section on browser's events). Some JavaScript frameworks may have their own approach to dealing with HTML content and in Chapter 4  you'll see that the main HTML file of the Web application written with Ext JS framework has `<script>` tags followed by the empty `<body>` tags. But let's keep things simple for now.
 
-Add the following fragment at the very end (right above the closing `</body>` tag) of the new_file.html from <<FIG2-2>>.
+NOTE: The code samples for this book are included at the location mentioned in the Preface. The authors of this book use WebStorm IDE from JetBrains (see Appendix C for details). 
+
+Create a new HTML file in WebStorm IDE called new_file.html and add the following fragment at the very end (right above the closing `</body>` tag):
 
 [source,html]
 ----
+<h1>Hello World</h1>
+
 <script>
    alert("Hello from JavaScript");
 </script>
 ----
 
-Run the new_file.html in Aptana and you'll see the following output in your Web browser:
+Right-click on the new_file.html in WebStorm, select Open in Browser, and you'll see the following output in your Web browser:
 
 [[FIG2-4]]
 .Running MyFirstProject with JavaScript at the bottom
-image::images/fig_02_04.jpg[]
+image::images/fig_02_04.png[]
 
-Note that the `Alert` popup box is shown on top of the Web page that already rendered all of its HTML components. Now move the above code up to the end of the `<head>` section and re-run new_file.html. The picture is different now - the Alert box is shown before the HTML rendering is complete.
+Note that the `Alert` popup box is shown on top of the Web page that already rendered its HTML component `<h1>`. Now move the above code from the `<body>` up to the end of the `<head>` section and re-open new_file.html. The picture is different now - the Alert box is shown before the HTML rendering is complete (see <<FIG2-5>>).
 
-[[FIG2-5]]
-.Running MyFirstProject with JavaScript at the top
-image::images/fig_02_05.jpg[]
+[[FIG2-5]]   
+.Running HTML with JavaScript in the <head> section
+image::images/fig_02_05.png[]
 
-In this simple example this doesn't cause any malfunctioning of the code, but if our JavaScript would need to manipulate with HTML elements, we'd run into issues of accessing non-existent components. Beside simple `Alert` box, JavaScript has `Confirm` and `Prompt` boxes, which allow asking OK/Cancel type of questions or request some input from the user. 
-
-TIP: In a real life you won't be deploying your projects under Aptana's internal Web server. When you code is tested you can FTP it to a remote server of your choice, e.g. Apache Web Server or IIS. Right-click on your Aptana project and select the menu option Publish. This will allow you to configure the FTP connection to your remote server and publish your working code there as you wish.
+This code sample doesn't cause any malfunctioning of the code, but if our JavaScript would need to manipulate with HTML elements, we'd run into issues of accessing non-existent components. Beside simple `Alert` box, JavaScript has `Confirm` and `Prompt` boxes, which allow asking OK/Cancel type of questions or request some input from the user. 
 
 
 === Debugging JavaScript in Web Browsers
@@ -246,7 +218,6 @@ TIP: The topic "Function declaration vs. function expressions" is one of those f
 === JavaScript Objects. Gentle Introduction
 
 JavaScript objects are simply unordered collections of properties. You can assign new or delete existing properties from the objects during the runtime whenever you please. In classical object oriented languages there are _classes_ and there are _objects_. However JavaScript doesn't have classes.  
-
 
 ****
 
@@ -406,7 +377,7 @@ console.log(greetArray.join(","));
 ----
 
 
-We've briefly covered object literals, and you to start using them. In Chapter 2 you'll be learning about JSON - a popular data format used as replacement for XML in the JavaScript world. Then you'll see how similar are the syntax of JSON and JavaScript object literals. Now we'll spend a little bit of time delving into JavaScript functions, and then - back to objects again. 
+We've briefly covered object literals, and you to start using them. Chapter 2 covers JSON - a popular data format used as replacement for XML in the JavaScript world. You can see there that the syntax of JSON and JavaScript object literals are similar. Now we'll spend a little bit of time delving into JavaScript functions, and then - back to objects again. 
   
 
 ==== Constructor Functions
@@ -468,7 +439,7 @@ p1.marryMe(p2);
 The code above uses the keyword `this` that refers to the object where the code will execute. If you are familiar with the meaning of `this` in Java or C#, it's similar, but not exactly the same, and we'll illustrate it in the section titled "Who's this". The method `marryMe()` of one `Person` object takes an instance of another `Person` object and makes an interesting proposition: "Will you marry me, Julia". 
 
 This time we won't run this code in the Firebug's console, but rather will include it in the HTML file.
-In Aptana, create a new File | New | File, enter marryme.html as the file name and press the button Finish. Don't press the button Next as it'll offer you to select from one of the HTML templates, but this would generate lots of HTML content, which is not needed for our code sample. Just type in the following in the newly created empty file marryme.html.
+In WebStorm, create a new HTML file marryme.html. Modify it to include the JavaScript file marryme.js:
 
 [source, html]
 ----
@@ -488,7 +459,7 @@ In Aptana, create a new File | New | File, enter marryme.html as the file name a
 
 === Debugging JavaScript in Firebug
 
-In Aptana, right-click on the file marryme.html and select the option Run As | JavaScript Web Application. We continue using Firefox as Aptana's default browser, and you'll see it open a new Web page that reads "Making Proposals". Open the Firebug using the View menu of Firefox, refresh the page and switch to the Firebug's tab Script. You'll see the split panel with the JavaScript code from marryme.js on the left.    
+Right-click on the file marryme.html and select Open in Browser. In Firefox and you'll see it open a new Web page that reads "Making Proposals". Open the Firebug using the View menu of Firefox, refresh the page and switch to the Firebug's tab Script. You'll see the split panel with the JavaScript code from marryme.js on the left.    
 
 [[FIG2-8]]
 .Firebug's Script panel 
@@ -506,7 +477,6 @@ On the top of the left panel you'll see standard  debugger buttons with curved a
 .Firebug's Script panel at a breakpoint
 image::images/fig_02_10.jpg[]
 
-
 Now click on the Firebug's Net panel, which shows what goes over the network during communication between the Web browser and Web server. Figure 2-11 shows a screen shot of the Net panel where we clicked on the Headers tab for marryme.html and the Response tab of marryme.js. The code 200 for both files means that they arrived successfully to the browser. It also shows the IP address of the Web server they came from, their sizes, and plenty of other useful information.  Both Script and Net panels of Firebug or any other developers tools are your best friends of any Web developer.   
 
 [[FIG2-11]]
@@ -521,7 +491,6 @@ TIP: You can find a tutorial on using Google Chrome Developer Tools at https://d
 .Notes on Arrays
 ****
 A JavaScript array is a grab bag of any objects. You don't have to specify in advance the number of elements to store, and there is more than one way to create and initialize array instances. The following code samples are self-explanatory.
-
 
 [source, javascript]
 ----
@@ -579,7 +548,7 @@ var mixedArray=[
 
 === Prototypal Inheritance
 
-JavaScript doesn't support classes, at least till the ECMAScript 6 will become a reality. But JavaScript allows you to create objects that inherit properties and methods of other objects. By default, all JavaScript objects are inherited from `Object`. Each JavaScript construction function has a special property called `prototype`, which points at this object's ancestor. If you want to create an inheritance chain where an instances of constructor function `ObjectB` _extends_ `ObjectA` (as in classical object-oriented languages) just write one line of code: `ObjectB.prototype=ObjectA;`.   
+JavaScript doesn't support classes, at least till the ECMAScript 6 will become a reality. But JavaScript allows you to create objects that inherit properties and methods of other objects. By default, all JavaScript objects are inherited from `Object`. Each JavaScript construction function has a special property called `prototype`, which points at this object's ancestor. If you want to create an inheritance chain where an instances of constructor function `ObjectB` _extends_ `ObjectA` (similar to  classical object-oriented languages) write one line of code like `ObjectB.prototype=ObjectA;`.   
 
 [[FIG2-12]]
 .Prototypal Inheritance
@@ -613,23 +582,25 @@ console.log(emp);      // <3>
 <2>	Instantiating Employee
 <3> Printing the object referred by `emp` will output [object Object]. It happens because each object has a method `toString()`, and if you want it to output useful information - override it. You'll see how to do it later in this section.
 
-We want to stress, that the property `prototype` exists on constructor functions. After creating specific instances of such objects you may see that these instances have another property called `proto`. At the time of this writing this property is not a standard yet and won't be supported in some older browsers, bit ECMAScript 6 will make it official. To illustrate the difference between `prototype` and `proto` let's add the following piece of code to the above sample:
+WARNING: The above code results in code duplication as the object referred by the variable `emp` will have a pair of the `name` and a pair of the `title` properties. You'll see how to avoid such duplication a bit later in the section "Avoiding Declaration Redundancy". 
+
+The property `prototype` exists on constructor functions. After creating specific instances of such objects you may see that these instances have another property called `proto`. At the time of this writing this property is not a standard yet and won't be supported in some older browsers, bit ECMAScript 6 will make it official. To illustrate the difference between `prototype` and `proto` let's add the following piece of code to the previous code sample:
 
 [source, javascript]
 ----
 
 //Create an instance of Person and add property dependents 
 var p=new Person();
-p.dependents=1;                                 // <1>
+p.dependents=1;                 // <1>
 
 
 var emp2=new Employee("Joe", "Father");        
 
 //This employee will have property dependents
 
-emp2.__proto__=p;                               // <2> 
+emp2.__proto__=p;               // <2> 
 
-console.log("The number of Employee's dependents " + emp2.dependents); // <3>
+console.log("The number of Employee's dependents " + emp2.dependents);          // <3>
 
 ----
 
@@ -639,9 +610,9 @@ console.log("The number of Employee's dependents " + emp2.dependents); // <3>
 
 <3> The code will properly print 1 as a number of dependents of the `Employee` instance represented by the variable `emp2`.  The variable `emp` from the previous code snippet won't have the property `dependents`.
 
-To try it hands-on, open the file WhoIsYourDaddy.html (it's included in book code samples) in Aptana. Just for a change, this time we'll use Google Chrome Developer Tools by opening the menu View | Developer | Developer Tools. Set the breakpoint at the last line of the JavaScript, refresh the Web page content, and add the watch expressions for the variables `p`, `emp`, and `emp2`. When the JavaScript code engine runs into `emp2.dependents` it tries to find this property in property on the `Employee` object. If not found, the engine checks all the objects in the prototypal chain (in our case it'll find it in the object `p`) all the way up to the `Object` if need be.
+To try it hands-on, open the file WhoIsYourDaddy.html (it's included in book code samples). Just for a change, this time we'll use Google Chrome Developer Tools by opening the browser's menu View | Developer | Developer Tools. Select the tab Sources and expand the panel on the left to select the file WhoIsYourDaddy.js. Set the breakpoint at the last line of the JavaScript, refresh the Web page content, and add the watch expressions (hit the + sign on top right) for the variables `p`, `emp`, and `emp2`. When the JavaScript code engine runs into `emp2.dependents` it tries to find this property in property on the `Employee` object. If not found, the engine checks all the objects in the prototypal chain (in our case it'll find it in the object `p`) all the way up to the `Object` if need be. Examine the values of these variable shown on <<FIG2-13>>. 
 
-TIP: If you need to do some programmatic manipulations with only those properties that are defined on the specific object (not in its ancestors in the prototyal chain) do the check with the method https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty[`hasOwnProperty()`]. 
+TIP: If your program need to work only with those properties that are defined on the specific object (not in its ancestors in the prototyal chain) use  the method https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty[`hasOwnProperty()`]. 
 
 [[FIG2-13]]
 .The instance-specific `__proto__` variable  
@@ -654,7 +625,7 @@ Please note the difference in the content of the variables `__proto__` of the in
 
 Prototypical inheritance allows you to inherit one object from another, but it can lead to issues of redundancy and code duplication. If you take a closer look at the screenshot from <<FIG2-13>> you'll see that the `Person` and `Employee` objects have redundant properties `name` and `title`. We'll deal with this redundancy in the section titled "Call and Apply". But first let's introduce and cure the redundancy in method declarations when the prototypal inheritance is used.
 
-Let's add a method to `addSubordinate()` to the ancestor object `Person` that will populate its array `subordinates`. Who knows, maybe an object `Contractor` (descendant of a `Person`) will need to be added in the future, so the ancestor's method `addSubordinate()` can be reused. First, we'll do it  the wrong way to illustrate the redundancy problem, and then we'll do it right. Consider the following code:
+Let's add a method to `addSubordinate()` to the ancestor object `Person` that will populate its array `subordinates`. Who knows, maybe an object `Contractor` (descendant of a `Person`) will need to be introduced to the application in the future, so the ancestor's method `addSubordinate()` can be reused. *First, we'll do it the wrong way to illustrate the redundancy problem*, and then we'll do it right. Consider the following code:
 
 [source, javascript]
 ----
@@ -668,8 +639,6 @@ function Person(name, title){
 	this.addSubordinate=function (person){
 		this.subordinates.push(person)
 	}
-
-	
 }
 
 // Constructor function Employee
@@ -698,13 +667,13 @@ Let's use Google Chrome Developer Tools profiler to see the sizes of the objects
 .Preparing Breakpoints Take 1.
 image::images/fig_02_14.jpg[]
 
-When the execution of the code will stop at the first breakpoint, we'll switch to the Profiler tab and take the first Heap snapshot.  Upon reaching the second breakpoint we'll take another Heap snapshot. The dropdown at the status bar allows to view the objects allocated between the snapshots 1 and 2. <<FIG2-15>> depicts this view of the profiler. Note that the total size (the Shallow Size column) for the `Person` instances is 132 bytes. `Employee` instances weigh 104 bytes.
+When the execution of the code will stop at the first breakpoint, we'll switch to the Profiler tab and take the first Heap snapshot.  Upon reaching the second breakpoint we'll take another Heap snapshot. The dropdown at the status bar allows to view the objects allocated between the snapshots 1 and 2. <<FIG2-15>> depicts this view of the profiler. Note that the total size (the Shallow Size column) for the `Person` instances is 132 bytes. `Employee` instances _weigh_ 104 bytes.
 
 [[FIG2-15]]
 .Objects allocated between snapshots 1 and 2
 image::images/fig_02_15.jpg[]
 
-Now we'll change the code to declare the method not inside the `Person` constructor function, but on it's prototype - and this is the right way to declare methods in functions to avoid code duplication. 
+Now we'll change the code to declare the method not inside the `Person` constructor function, but on it's prototype - and *this is the right way to declare methods in functions to avoid code duplication*. 
 
 [source, javascript]
 ----
@@ -778,7 +747,7 @@ TIP: In the Ext JS chapter you'll see how this frameworks offers its own class s
 
 ==== Method overriding
 
-Method overriding allows a subclass to replace (_override_) the functionality of a method defined in a superclass. Since JavaScript allows declaring methods on an object as well as on its prototype, overriding a method becomes really simple. The following code sample declares the method `addSubordinate()` on the prototype of the `Person` object, but then the object `p1` overrides this method.
+Method overriding allows a subclass to replace (_override_) the functionality of a method defined in a superclass. Since JavaScript allows declaring methods on an object as well as on its prototype, overriding a method becomes really simple. The following code sample (see the file overriding.js) declares the method `addSubordinate()` on the prototype of the `Person` object, but then the object `p1` overrides this method.
 
 [source, javascript]
 ----
@@ -809,7 +778,7 @@ var p2 == new Person("Mary", "Manager")
 
 ----
 
-Running the above code prints only one line: "I'm in addSubordinate in object [object Object]". This proves that the method `addSubordinate()` on the prototype level is overridden. We can also improve this example a little bit and override the method `toString()` on the `Person`. Just add the following fragment to the prior to instantiating `p1`.
+Running the above code prints only one line: "I'm in addSubordinate in object [object Object]". This proves that the method `addSubordinate()` on the prototype level is overridden. We can also improve this example by overriding the method `toString()` on the `Person` object. Just add the following fragment to the prior to instantiating `p1`.
 
 [source, javascript]
 ----
@@ -826,7 +795,7 @@ You are about to read one of the most confusing sections in this book. The confu
 
 CAUTION: Interestingly enough replacing `this.name` with `name` doesn't generate an error, but rather initializes the variable `name` with an empty string. Although `name` is not an officially reserved JavaScript keyword, there are articles in the blogosphere that don't recommend using the word `name` as a variable name. Keep http://www.javascripter.net/faq/reserved.htm[this list of reserved words] handy to avoid running into an unpredictable behavior.
 
-Let's consider several examples that will illustrate the meaning of `this` variable in JavaScript. The code sample below defines an object `myTaxObject` and calls its method `doTaxes()`. Notice two variables with the same name `taxDeduction` - one of them has global scope and another belongs to `myTaxObject`. This little program was written for mafia and will apply some under the table deduction for the people who belong to Cosa Nostra.
+Let's consider several examples that will illustrate the meaning of `this` variable in JavaScript. The code sample below defines an object `myTaxObject` and calls its method `doTaxes()`. Notice two variables with the same name `taxDeduction` - one of them has global scope and another belongs to `myTaxObject`. This little script is titled ThisMafia.js, and it was written for mafia and will apply some under the table deduction for the people who belong to Cosa Nostra.
 
 [source, javascript]
 ----
@@ -953,7 +922,7 @@ myTaxObject.doTaxes();
 
 ==== Callbacks
 
-Can you live without using `call()` and `apply()`?  Sure you can, but JavaScript allows you to easily create callbacks. The callback mechanism lets you pass the code of one function as a parameter to another function for execution in the latter function's context. This is a very useful feature of the language. Imagine an object with a method `processData()`. Depending on the business logic you can pass to this method (as an argument) different functions that will do actual data processing - these are callbacks.
+Can you program without using `call()` and `apply()`?  Sure you can, but JavaScript allows you to easily create callbacks. The callback mechanism lets you pass the code of one function as a parameter to another function for execution in the latter function's context. This is a very useful feature of the language. Imagine an object with a method `processData()`. Depending on the business logic you can pass to this method (as an argument) different functions that will do actual data processing - these are callbacks.
 
 Another example of callbacks is event handlers. If a user clicks on this button here's the name of the handler function to call:
 
@@ -962,10 +931,9 @@ Another example of callbacks is event handlers. If a user clicks on this button 
 `myButton.addEventListener("click", myFunctionHandler);` 
 ----
 
-It's important to understand that _you don't not immediately call_ the function `myFunctionHandler` here - you are just registering it as the function argumrnt. If the user will click on `myButton` then the code of the callback `myFunctionHandler` will be given to the object `myButton` and will be  invoked in the context of the `myButton` object. The functions `call()` and `apply()` exist exactly for this purpose.  
+It's important to understand that _you don't not immediately call_ the function `myFunctionHandler` here - you are just registering it as the function argument. If the user clicks on `myButton` then the code of the callback `myFunctionHandler` will be given to the object `myButton` and will be  invoked in the context of the `myButton` object. The functions `call()` and `apply()` exist exactly for this purpose.  
 
-Let's consider an example when you need to write a function that will take two arguments: an array containing preliminary tax data and a callback function, which will be applied to each element of this array. The following code sample creates `myTaxObject` that has two properties: `taxDeduction` and the `applyDeduction`. The latter is a method with two parameters: 
-
+Let's consider an example when you need to write a function that will take two arguments: an array containing preliminary tax data and a callback function, which will be applied to each element of this array. The following code sample (Callback.js) creates `myTaxObject` that has two properties: `taxDeduction` and the `applyDeduction`. The latter is a method with two parameters: 
 
 [source, javascript]
 ----
@@ -1113,7 +1081,7 @@ TIP: Function expressions are not being hoisted, but the variables they are assi
 
 Functions as any other objects can have properties. You can attach any properties to a `Function` object and their values can be used by all instances of this object. Static variables in programming languages with the classical inheritance is the closest analogy to function properties in JavaScript. 
 
-Let's consider an example of a constructor function `Tax`. An accounting program can create multiple instances if `Tax` - one per person. Say this program will be used in a Florida neighborhood with predominantly Spanish speaking people. The following code illustrates the case when the method `doTax()` can be called with or without parameters. 
+Let's consider an example of a constructor function `Tax`. An accounting program can create multiple instances if `Tax` - one per person. Say this program will be used in a Florida neighborhood with predominantly Spanish speaking people. The following code (see the file FunctionProperties.js) illustrates the case when the method `doTax()` can be called with or without parameters. 
 
 [source, javascript]
 ----
@@ -1177,7 +1145,6 @@ It's not a very helpful definition, is it? Let's try to give a better one. Imagi
 
 Larry Ullman, gives the following definition in his book "Modern Java Script": "Closure is a function call with memory". We can offer you our version of what a closure is: "Closure is a function call with strings attached". 
 
-
 ==== Why do we Need Closures? 
 
 In classical object-oriented languages you create an object with a certain state and behavior and can pass if to a method of another object for further processing. In JavaScript you can pass even a function to some object's method for further processing. But what if a function also need to remember the state (the values of external variables) of the context where the function was defined?
@@ -1186,7 +1153,7 @@ Think of a closure as a function that remembers  state - it's just a special typ
 
 ===Closures by Example
 
-Now it's time for the explanation of these mysterious definitions, and we'll do it by example. Consider the following code that is yet another example of implementing tax collection functionality.
+Now it's time for the explanation of these mysterious definitions, and we'll do it by example. Consider the following code (see closure1.js) that is yet another example of implementing the tax collection functionality.
 
 [source, javascript]
 ----
@@ -1249,7 +1216,7 @@ TIP: JavaScript doesn't give you an explicit way to mark an variable as private.
 .Closure doTaxes
 image::images/fig_02_19.jpg[]
 
-Let's consider a couple of more cases of returning a closure to the outside world so it can be invoked later. If the previous code sample was exposing the closure by using `this.taxes` notation, the next two examples will simply return the code of the closure using the `return` statement. The code below declares a constructor function `Person`, adds a function `doTaxes()` to its prototype, and finally creates two instances of the `Person` calling the method `doTaxes()` on each of them. 
+Let's consider a couple of more cases of returning a closure to the outside world so it can be invoked later. If the previous code sample was exposing the closure by using `this.taxes` notation, the next two examples will simply return the code of the closure using the `return` statement. The code below declares (see closure3.js) a constructor function `Person`, adds a function `doTaxes()` to its prototype, and finally creates two instances of the `Person` calling the method `doTaxes()` on each of them. 
 
 [source, javascript]
 ----
@@ -1296,7 +1263,7 @@ var result2 == p2.doTaxes(100000);
 
 The calculated taxes in this example are the same as in the previous one: John Smith has to pay $4500, while Tony Soprano only $4000. But we used different technique for exposing the closure. We want to make sure that you didn't overlooked the parentheses at the very end of the function expression for `doTaxes`. These parenthesis force the anonymous function to self-invoke itself, it'll run into a `return` statement and will assign the code of the anonymous inner function that takes parameter `income` to the property `doTaxes`. So when the line `var result1 == p1.doTaxes(100000);` calls the closure the variable `result1` will have the value 4500. Remove these important parentheses, and the value of `result1` is not the tax amount, but the the code of the closure itself - the invocation of the closure is not happening. 
 
-The following code fragment is yet another example of returning the closure that remembers its context.
+The following code fragment (see the file closure2.js) is yet another example of returning the closure that remembers its context.
 
 [source, javascript]
 ----
@@ -1310,7 +1277,7 @@ function prepareTaxes(studentDeductionAmount) {
 
 var doTaxes == prepareTaxes(300);         // <2>
 var yourTaxIs == doTaxes(10000);          // <3> 
-console.log("You tax is " + yourTaxIs);  // <4>
+console.log("Your tax is " + yourTaxIs);  // <4>
 ----
 
 <1> When the function prepareTaxes is called, it immediately hits the `return` statement and returns the code of the closure to the caller.
@@ -1324,11 +1291,11 @@ TIP: Check the quality of your code with the help of the JavaScript code quality
 
 ==== Closures as callbacks	
 
-Let's revisit the code from the section Callbacks above. That code has shown how to pass an arbitrary function to another one and invoke it there using `call()`. But if that version of the function `taxHandler` was not aware of the context it was created in, the version below will. If in classical object-oriented languages you'd need to pass a method that knows about it's context, you'd need to create an instance of an object that contains the method and the required object-level properties, and then you'd be passing this wrapper-object to another object for processing. But since the closure remembers its context anyway, we can just pass a closure as an object. Compare the code below with the code from the Callbacks section.
+Let's revisit the code from the section Callbacks above. That code has shown how to pass an arbitrary function to another one and invoke it there using `call()`. But if that version of the function `taxHandler` was not aware of the context it was created in, the version below will. If in classical object-oriented languages you'd need to pass a method that knows about it's context, you'd need to create an instance of an object that contains the method and the required object-level properties, and then you'd be passing this wrapper-object to another object for processing. But since the closure remembers its context anyway, we can just pass a closure as an object. Compare the code below (see the file callbackWithClosure.js) with the code from the Callbacks section.
 
 [source, javascript]
 ----
-var myTaxObject == {    
+var myTaxObject = {    
 
     // this function takes an array and callback as parameters
     applyDeduction: function(someArray, someCallBackFunction){
@@ -1355,7 +1322,6 @@ var taxHandler == function (taxDeduction){
                 };	
 }
 
-
 // invoking applyDeduction passing an array and callback-closure          
 myTaxObject.applyDeduction(preliminaryTaxes, taxHandler(200));
 ----
@@ -1367,7 +1333,7 @@ The last line of the above example calls `taxHandler(200)`, which creates a clos
 
 The need to extend capabilities of objects can be fulfilled by inheritance, but this is not the only way of adding behavior to objects. In this section you'll see an example of something that would not be possible in the object-oriented languages like Java or C#, which don't support multiple inheritance. JavaScript allows taking a piece of code and _mix it into any object_ regardless of what its inheritance chain is. _Mixin_ is a reusable code fragment that an object can borrow without the need to use inheritance. We'll illustrate this concept by example. 
 
-In the next code fragment we'll define a function expression and will assign it to a variable named `Tax`. This is a closure that includes the function `calcTax()` that knows the values of `income` and `state`.  There is also an independent mixin `TaxMixin` with a couple of functions `mafiaSpecial()` and `drugCartelSpecial()`. We want to blend in this mixin into `Tax`. After this is is done, the Tax object will have its original functionality,i.e. `calcTax()`, as well as a new "mafia and drug cartel flavors": 
+In the next code fragment we'll define a function expression and will assign it to a variable named `Tax`. This is a closure that includes the function `calcTax()` that knows the values of `income` and `state`.  There is also an independent mixin `TaxMixin` with a couple of functions `mafiaSpecial()` and `drugCartelSpecial()`. We want to blend in this mixin into `Tax`. After this is is done, the Tax object will have its original functionality, e.g. `calcTax()`, as well as a new "mafia and drug cartel flavors".The code below is located in the file mixins.js. 
 
 [source, javascript]
 ----
@@ -1586,7 +1552,7 @@ Our function `processNode()` just prints the name of the current node, but you c
 .Traversing the DOM in Firefox
 image::images/fig_02_22.jpg[]
 
-While some of the output is self-explanatory, there is a number of `#text` nodes that you won't find in the code sample above. Unfortunately, Web browsers treat white-spaces in differently - some will ignore them, while others will report them as DOM elements. Accordingly, different browsers insert different number of text nodes in the DOM representing whitespaces found in the HTML document. So you'll be better off using one of the JavaScript frameworks for traversing the DOM cross-browser way. For example, JQuery framework's API for DOM traversing is listed at http://bit.ly/WXj2r2[http://bit.ly/WXj2r2]. 
+While some of the output is self-explanatory, there is a number of `#text` nodes that you won't find in the code sample above. Unfortunately, Web browsers treat white-spaces in differently - some will ignore them, while others will report them as DOM elements. Accordingly, different browsers insert different number of text nodes in the DOM representing whitespaces found in the HTML document. So you'll be better off using one of the JavaScript frameworks for traversing the DOM cross-browser way. For example, jQuery framework's API for DOM traversing is listed at http://bit.ly/WXj2r2[http://bit.ly/WXj2r2]. 
 
 .Styling Web Pages with CSS
 ****************
@@ -1847,4 +1813,4 @@ Software developers who are coming from strongly-typed compiled languages may ha
 Another interesting language to learn is Microsoft's TypeScript (it's an open source project). This language is also an extension of JavaScript with added classes, interfaces and inheritance. If also gets compiled into JavaScript and allows developers write strongly-typed code. TypeScript increases productivity of developers because it helps identify lots of error related with incorrect types during the compilation phase.  TypeScript implements many constructs from EcmaScript 6 and can be serve as an example of the JavaScript of the future.
 
 Probably the most interesting new programming language is Google's http://www.dartlang.org/[Dart]. This is a compiled language with all object-oriented features - classes, objects, abstract classes, inheritance. The compiled code runs inside the VM, and Google supports it in Chrome browser. What about the other browsers? The Web application is deployed as a script that automatically checks if the the browser supports Dart. If it does, the compiled code will be sent to the client, otherwise the Dart code will be automatically compiled into JavaScript, and from the browser perspective nothing but a JavaScrpit engine is required. You can do a server-side programming in Dart too.
-JetBrains' WebStorm, our IDE of choice, supports Coffeescript, Dart, and Typescript. 
+JetBrains WebStorm, our IDE of choice, supports Coffeescript, Dart, and Typescript. 
