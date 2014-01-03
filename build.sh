@@ -27,6 +27,7 @@ function convert()
             -a toclevels=3                       \
             -a toc=right                         \
             -a idprefix!                         \
+            -a idseparator=-                     \
             -a sectanchors                       \
             --compact                            \
             -D $OUT_DIR                          \
@@ -55,7 +56,7 @@ if [ "$1" = "html" ]; then
     makeDir $OUT_DIR
 
     # list all asciidoc files in the DOCS_DIR
-    adoc_files=(./acknowledgements.adoc ./appendix_a_advancedjs.adoc ./appendix_b_html.adoc ./appendix_c_ide.adoc ./ch10_responsive.adoc ./ch11_jquerymobile.adoc ./ch12_senchatouch.adoc ./ch13_hybrid.adoc ./ch1_mockup.adoc ./ch2_ajax_json.adoc ./ch3_jquery.adoc ./ch4_ext_js.adoc ./ch5_tools.adoc ./ch6_large_js_apps.adoc ./ch7_testdriven_js.adoc ./ch8_websockets.adoc ./ch9_security.adoc ./ch_preface.adoc ./Introduction.adoc )
+    adoc_files=(./acknowledgements.asciidoc ./appendix_a_advancedjs.asciidoc ./appendix_b_html.asciidoc ./appendix_c_ide.asciidoc ./ch10_responsive.asciidoc ./ch11_jquerymobile.asciidoc ./ch12_senchatouch.asciidoc ./ch13_hybrid.asciidoc ./ch1_mockup.asciidoc ./ch2_ajax_json.asciidoc ./ch3_jquery.asciidoc ./ch4_ext_js.asciidoc ./ch5_tools.asciidoc ./ch6_large_js_apps.asciidoc ./ch7_testdriven_js.asciidoc ./ch8_websockets.asciidoc ./ch9_security.asciidoc ./ch_preface.asciidoc ./Introduction.asciidoc ./ch_epilogue.asciidoc )
 
     convert `printf "%s " "${adoc_files[@]}" | cut -d " " -f 1-${#adoc_files[@]}`
 
