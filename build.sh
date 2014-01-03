@@ -25,6 +25,9 @@ function convert()
             -a toc                               \
             -a toc2                              \
             -a toclevels=3                       \
+            -a toc=right                         \
+            -a idprefix!                         \
+            -a sectanchors                       \
             --compact                            \
             -D $OUT_DIR                          \
             $src_file
