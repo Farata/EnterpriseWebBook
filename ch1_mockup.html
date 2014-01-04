@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="Asciidoctor 0.1.4">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Your Application</title>
+<style>
+@import url(http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css);
+@import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic);
+/* normalize.css v2.1.1 | MIT License | git.io/normalize */
+/* ========================================================================== HTML5 display definitions ========================================================================== */
+/** Correct `block` display not defined in IE 8/9. */
+article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary { display: block; }
+/** Correct `inline-block` display not defined in IE 8/9. */
+audio, canvas, video { display: inline-block; }
+/** Prevent modern browsers from displaying `audio` without controls. Remove excess height in iOS 5 devices. */
+audio:not([controls]) { display: none; height: 0; }
+/** Address styling not present in IE 8/9. */
+[hidden] { display: none; }
+/* ========================================================================== Base ========================================================================== */
+/** 1. Prevent system color scheme's background color being used in Firefox, IE, and Opera. 2. Prevent system color scheme's text color being used in Firefox, IE, and Opera. 3. Set default font family to sans-serif. 4. Prevent iOS text size adjust after orientation change, without disabling user zoom. */
+html { background: #fff; /* 1 */ color: #000; /* 2 */ font-family: sans-serif; /* 3 */ -ms-text-size-adjust: 100%; /* 4 */ -webkit-text-size-adjust: 100%; /* 4 */ }
+/** Remove default margin. */
+body { margin: 0; }
+/* ========================================================================== Links ========================================================================== */
+/** Address `outline` inconsistency between Chrome and other browsers. */
+a:focus { outline: thin dotted; }
+/** Improve readability when focused and also mouse hovered in all browsers. */
+a:active, a:hover { outline: 0; }
+/* ========================================================================== Typography ========================================================================== */
+/** Address variable `h1` font-size and margin within `section` and `article` contexts in Firefox 4+, Safari 5, and Chrome. */
+h1 { font-size: 2em; margin: 0.67em 0; }
+/** Address styling not present in IE 8/9, Safari 5, and Chrome. */
+abbr[title] { border-bottom: 1px dotted; }
+/** Address style set to `bolder` in Firefox 4+, Safari 5, and Chrome. */
+b, strong { font-weight: bold; }
+/** Address styling not present in Safari 5 and Chrome. */
+dfn { font-style: italic; }
+/** Address differences between Firefox and other browsers. */
+hr { -moz-box-sizing: content-box; box-sizing: content-box; height: 0; }
+/** Address styling not present in IE 8/9. */
+mark { background: #ff0; color: #000; }
+/** Correct font family set oddly in Safari 5 and Chrome. */
+code, kbd, pre, samp { font-family: monospace, serif; font-size: 1em; }
+/** Improve readability of pre-formatted text in all browsers. */
+pre { white-space: pre-wrap; }
+/** Set consistent quote types. */
+q { quotes: "\201C" "\201D" "\2018" "\2019"; }
+/** Address inconsistent and variable font size in all browsers. */
+small { font-size: 80%; }
+/** Prevent `sub` and `sup` affecting `line-height` in all browsers. */
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+/* ========================================================================== Embedded content ========================================================================== */
+/** Remove border when inside `a` element in IE 8/9. */
+img { border: 0; }
+/** Correct overflow displayed oddly in IE 9. */
+svg:not(:root) { overflow: hidden; }
+/* ========================================================================== Figures ========================================================================== */
+/** Address margin not present in IE 8/9 and Safari 5. */
+figure { margin: 0; }
+/* ========================================================================== Forms ========================================================================== */
+/** Define consistent border, margin, and padding. */
+fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+/** 1. Correct `color` not being inherited in IE 8/9. 2. Remove padding so people aren't caught out if they zero out fieldsets. */
+legend { border: 0; /* 1 */ padding: 0; /* 2 */ }
+/** 1. Correct font family not being inherited in all browsers. 2. Correct font size not being inherited in all browsers. 3. Address margins set differently in Firefox 4+, Safari 5, and Chrome. */
+button, input, select, textarea { font-family: inherit; /* 1 */ font-size: 100%; /* 2 */ margin: 0; /* 3 */ }
+/** Address Firefox 4+ setting `line-height` on `input` using `!important` in the UA stylesheet. */
+button, input { line-height: normal; }
+/** Address inconsistent `text-transform` inheritance for `button` and `select`. All other form control elements do not inherit `text-transform` values. Correct `button` style inheritance in Chrome, Safari 5+, and IE 8+. Correct `select` style inheritance in Firefox 4+ and Opera. */
+button, select { text-transform: none; }
+/** 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio` and `video` controls. 2. Correct inability to style clickable `input` types in iOS. 3. Improve usability and consistency of cursor style between image-type `input` and others. */
+button, html input[type="button"], input[type="reset"], input[type="submit"] { -webkit-appearance: button; /* 2 */ cursor: pointer; /* 3 */ }
+/** Re-set default cursor for disabled elements. */
+button[disabled], html input[disabled] { cursor: default; }
+/** 1. Address box sizing set to `content-box` in IE 8/9. 2. Remove excess padding in IE 8/9. */
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; /* 1 */ padding: 0; /* 2 */ }
+/** 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome. 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome (include `-moz` to future-proof). */
+input[type="search"] { -webkit-appearance: textfield; /* 1 */ -moz-box-sizing: content-box; -webkit-box-sizing: content-box; /* 2 */ box-sizing: content-box; }
+/** Remove inner padding and search cancel button in Safari 5 and Chrome on OS X. */
+input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
+/** Remove inner padding and border in Firefox 4+. */
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+/** 1. Remove default vertical scrollbar in IE 8/9. 2. Improve readability and alignment in all browsers. */
+textarea { overflow: auto; /* 1 */ vertical-align: top; /* 2 */ }
+/* ========================================================================== Tables ========================================================================== */
+/** Remove most spacing between table cells. */
+table { border-collapse: collapse; border-spacing: 0; }
+*, *:before, *:after { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+html, body { font-size: 100%; }
+body { background: white; color: #222222; padding: 0; margin: 0; font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif; font-weight: normal; font-style: normal; line-height: 1; position: relative; cursor: auto; }
+a:hover { cursor: pointer; }
+a:focus { outline: none; }
+img, object, embed { max-width: 100%; height: auto; }
+object, embed { height: 100%; }
+img { -ms-interpolation-mode: bicubic; }
+#map_canvas img, #map_canvas embed, #map_canvas object, .map_canvas img, .map_canvas embed, .map_canvas object { max-width: none !important; }
+.left { float: left !important; }
+.right { float: right !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+.text-center { text-align: center !important; }
+.text-justify { text-align: justify !important; }
+.hide { display: none; }
+.antialiased, body { -webkit-font-smoothing: antialiased; }
+img { display: inline-block; vertical-align: middle; }
+textarea { height: auto; min-height: 50px; }
+select { width: 100%; }
+/* Grid HTML Classes */
+.row { width: 100%; margin-left: auto; margin-right: auto; margin-top: 0; margin-bottom: 0; max-width: 62.5em; *zoom: 1; }
+.row:before, .row:after { content: " "; display: table; }
+.row:after { clear: both; }
+.row.collapse .column, .row.collapse .columns { position: relative; padding-left: 0; padding-right: 0; float: left; }
+.row .row { width: auto; margin-left: -0.9375em; margin-right: -0.9375em; margin-top: 0; margin-bottom: 0; max-width: none; *zoom: 1; }
+.row .row:before, .row .row:after { content: " "; display: table; }
+.row .row:after { clear: both; }
+.row .row.collapse { width: auto; margin: 0; max-width: none; *zoom: 1; }
+.row .row.collapse:before, .row .row.collapse:after { content: " "; display: table; }
+.row .row.collapse:after { clear: both; }
+.column, .columns { position: relative; padding-left: 0.9375em; padding-right: 0.9375em; width: 100%; float: left; }
+@media only screen { .column, .columns { position: relative; padding-left: 0.9375em; padding-right: 0.9375em; float: left; }
+  .small-1 { position: relative; width: 8.33333%; }
+  .small-2 { position: relative; width: 16.66667%; }
+  .small-3 { position: relative; width: 25%; }
+  .small-4 { position: relative; width: 33.33333%; }
+  .small-5 { position: relative; width: 41.66667%; }
+  .small-6 { position: relative; width: 50%; }
+  .small-7 { position: relative; width: 58.33333%; }
+  .small-8 { position: relative; width: 66.66667%; }
+  .small-9 { position: relative; width: 75%; }
+  .small-10 { position: relative; width: 83.33333%; }
+  .small-11 { position: relative; width: 91.66667%; }
+  .small-12 { position: relative; width: 100%; }
+  .small-offset-0 { position: relative; margin-left: 0%; }
+  .small-offset-1 { position: relative; margin-left: 8.33333%; }
+  .small-offset-2 { position: relative; margin-left: 16.66667%; }
+  .small-offset-3 { position: relative; margin-left: 25%; }
+  .small-offset-4 { position: relative; margin-left: 33.33333%; }
+  .small-offset-5 { position: relative; margin-left: 41.66667%; }
+  .small-offset-6 { position: relative; margin-left: 50%; }
+  .small-offset-7 { position: relative; margin-left: 58.33333%; }
+  .small-offset-8 { position: relative; margin-left: 66.66667%; }
+  .small-offset-9 { position: relative; margin-left: 75%; }
+  .small-offset-10 { position: relative; margin-left: 83.33333%; }
+  [class*="column"] + [class*="column"]:last-child { float: right; }
+  [class*="column"] + [class*="column"].end { float: left; }
+  .column.small-centered, .columns.small-centered { position: relative; margin-left: auto; margin-right: auto; float: none !important; } }
+/* Styles for screens that are atleast 768px; */
+@media only screen and (min-width: 768px) { .large-1 { position: relative; width: 8.33333%; }
+  .large-2 { position: relative; width: 16.66667%; }
+  .large-3 { position: relative; width: 25%; }
+  .large-4 { position: relative; width: 33.33333%; }
+  .large-5 { position: relative; width: 41.66667%; }
+  .large-6 { position: relative; width: 50%; }
+  .large-7 { position: relative; width: 58.33333%; }
+  .large-8 { position: relative; width: 66.66667%; }
+  .large-9 { position: relative; width: 75%; }
+  .large-10 { position: relative; width: 83.33333%; }
+  .large-11 { position: relative; width: 91.66667%; }
+  .large-12 { position: relative; width: 100%; }
+  .row .large-offset-0 { position: relative; margin-left: 0%; }
+  .row .large-offset-1 { position: relative; margin-left: 8.33333%; }
+  .row .large-offset-2 { position: relative; margin-left: 16.66667%; }
+  .row .large-offset-3 { position: relative; margin-left: 25%; }
+  .row .large-offset-4 { position: relative; margin-left: 33.33333%; }
+  .row .large-offset-5 { position: relative; margin-left: 41.66667%; }
+  .row .large-offset-6 { position: relative; margin-left: 50%; }
+  .row .large-offset-7 { position: relative; margin-left: 58.33333%; }
+  .row .large-offset-8 { position: relative; margin-left: 66.66667%; }
+  .row .large-offset-9 { position: relative; margin-left: 75%; }
+  .row .large-offset-10 { position: relative; margin-left: 83.33333%; }
+  .row .large-offset-11 { position: relative; margin-left: 91.66667%; }
+  .push-1 { position: relative; left: 8.33333%; right: auto; }
+  .pull-1 { position: relative; right: 8.33333%; left: auto; }
+  .push-2 { position: relative; left: 16.66667%; right: auto; }
+  .pull-2 { position: relative; right: 16.66667%; left: auto; }
+  .push-3 { position: relative; left: 25%; right: auto; }
+  .pull-3 { position: relative; right: 25%; left: auto; }
+  .push-4 { position: relative; left: 33.33333%; right: auto; }
+  .pull-4 { position: relative; right: 33.33333%; left: auto; }
+  .push-5 { position: relative; left: 41.66667%; right: auto; }
+  .pull-5 { position: relative; right: 41.66667%; left: auto; }
+  .push-6 { position: relative; left: 50%; right: auto; }
+  .pull-6 { position: relative; right: 50%; left: auto; }
+  .push-7 { position: relative; left: 58.33333%; right: auto; }
+  .pull-7 { position: relative; right: 58.33333%; left: auto; }
+  .push-8 { position: relative; left: 66.66667%; right: auto; }
+  .pull-8 { position: relative; right: 66.66667%; left: auto; }
+  .push-9 { position: relative; left: 75%; right: auto; }
+  .pull-9 { position: relative; right: 75%; left: auto; }
+  .push-10 { position: relative; left: 83.33333%; right: auto; }
+  .pull-10 { position: relative; right: 83.33333%; left: auto; }
+  .push-11 { position: relative; left: 91.66667%; right: auto; }
+  .pull-11 { position: relative; right: 91.66667%; left: auto; }
+  .column.large-centered, .columns.large-centered { position: relative; margin-left: auto; margin-right: auto; float: none !important; }
+  .column.large-uncentered, .columns.large-uncentered { margin-left: 0; margin-right: 0; float: left !important; }
+  .column.large-uncentered.opposite, .columns.large-uncentered.opposite { float: right !important; } }
+/* Image Thumbnails */
+.th { line-height: 0; display: inline-block; border: solid 4px white; -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); -webkit-transition: all 200ms ease-out; -moz-transition: all 200ms ease-out; transition: all 200ms ease-out; }
+.th:hover, .th:focus { -webkit-box-shadow: 0 0 6px 1px rgba(43, 166, 203, 0.5); box-shadow: 0 0 6px 1px rgba(43, 166, 203, 0.5); }
+.th.radius { -webkit-border-radius: 3px; border-radius: 3px; }
+a.th { display: inline-block; }
+button, .button { border-style: solid; border-width: 1px; cursor: pointer; font-family: inherit; font-weight: bold; line-height: 1; margin: 0 0 1.25em; position: relative; text-decoration: none; text-align: center; display: inline-block; padding-top: 0.75em; padding-right: 1.5em; padding-bottom: 0.8125em; padding-left: 1.5em; font-size: 1em; background-color: #2ba6cb; border-color: #2284a1; color: white; }
+button:hover, button:focus, .button:hover, .button:focus { background-color: #2284a1; }
+button:hover, button:focus, .button:hover, .button:focus { color: white; }
+button.secondary, .button.secondary { background-color: #e9e9e9; border-color: #d0d0d0; color: #333333; }
+button.secondary:hover, button.secondary:focus, .button.secondary:hover, .button.secondary:focus { background-color: #d0d0d0; }
+button.secondary:hover, button.secondary:focus, .button.secondary:hover, .button.secondary:focus { color: #333333; }
+button.success, .button.success { background-color: #5da423; border-color: #457a1a; color: white; }
+button.success:hover, button.success:focus, .button.success:hover, .button.success:focus { background-color: #457a1a; }
+button.success:hover, button.success:focus, .button.success:hover, .button.success:focus { color: white; }
+button.alert, .button.alert { background-color: #c60f13; border-color: #970b0e; color: white; }
+button.alert:hover, button.alert:focus, .button.alert:hover, .button.alert:focus { background-color: #970b0e; }
+button.alert:hover, button.alert:focus, .button.alert:hover, .button.alert:focus { color: white; }
+button.large, .button.large { padding-top: 1em; padding-right: 2em; padding-bottom: 1.0625em; padding-left: 2em; font-size: 1.25em; }
+button.small, .button.small { padding-top: 0.5625em; padding-right: 1.125em; padding-bottom: 0.625em; padding-left: 1.125em; font-size: 0.8125em; }
+button.tiny, .button.tiny { padding-top: 0.4375em; padding-right: 0.875em; padding-bottom: 0.5em; padding-left: 0.875em; font-size: 0.6875em; }
+button.expand, .button.expand { padding-right: 0px; padding-left: 0px; width: 100%; }
+button.left-align, .button.left-align { text-align: left; text-indent: 0.75em; }
+button.right-align, .button.right-align { text-align: right; padding-right: 0.75em; }
+button.disabled, button[disabled], .button.disabled, .button[disabled] { background-color: #2ba6cb; border-color: #2284a1; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { background-color: #2284a1; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { color: white; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { background-color: #2ba6cb; }
+button.disabled.secondary, button[disabled].secondary, .button.disabled.secondary, .button[disabled].secondary { background-color: #e9e9e9; border-color: #d0d0d0; color: #333333; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { background-color: #d0d0d0; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { color: #333333; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { background-color: #e9e9e9; }
+button.disabled.success, button[disabled].success, .button.disabled.success, .button[disabled].success { background-color: #5da423; border-color: #457a1a; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { background-color: #457a1a; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { color: white; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { background-color: #5da423; }
+button.disabled.alert, button[disabled].alert, .button.disabled.alert, .button[disabled].alert { background-color: #c60f13; border-color: #970b0e; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { background-color: #970b0e; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { color: white; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { background-color: #c60f13; }
+button, .button { padding-top: 0.8125em; padding-bottom: 0.75em; -webkit-appearance: none; }
+button.tiny, .button.tiny { padding-top: 0.5em; padding-bottom: 0.4375em; -webkit-appearance: none; }
+button.small, .button.small { padding-top: 0.625em; padding-bottom: 0.5625em; -webkit-appearance: none; }
+button.large, .button.large { padding-top: 1.03125em; padding-bottom: 1.03125em; -webkit-appearance: none; }
+@media only screen { button, .button { -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; -webkit-transition: background-color 300ms ease-out; -moz-transition: background-color 300ms ease-out; transition: background-color 300ms ease-out; }
+  button:active, .button:active { -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) inset; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) inset; }
+  button.radius, .button.radius { -webkit-border-radius: 3px; border-radius: 3px; }
+  button.round, .button.round { -webkit-border-radius: 1000px; border-radius: 1000px; } }
+@media only screen and (min-width: 768px) { button, .button { display: inline-block; } }
+p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type p { font-size: 1.21875em; line-height: 1.6; }
+.subheader, #content #toctitle, .admonitionblock td.content > .title, .exampleblock > .title, .imageblock > .title, .videoblock > .title, .listingblock > .title, .literalblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, .sidebarblock > .title, .tableblock > .title, .verseblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title, .tableblock > caption { line-height: 1.4; color: #003b6b; font-weight: 300; margin-top: 0.2em; margin-bottom: 0.5em; }
+/* Typography resets */
+div, dl, dt, dd, ul, ol, li, h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6, pre, form, p, blockquote, th, td { margin: 0; padding: 0; direction: ltr; }
+/* Default Link Styles */
+a { color: #00579e; text-decoration: none; line-height: inherit; }
+a:hover, a:focus { color: #333333; }
+a img { border: none; }
+/* Default paragraph styles */
+p { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-weight: normal; font-size: 1em; line-height: 1.6; margin-bottom: 0.75em; text-rendering: optimizeLegibility; }
+p aside { font-size: 0.875em; line-height: 1.35; font-style: italic; }
+/* Default header styles */
+h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-weight: normal; font-style: normal; color: #7b2d00; text-rendering: optimizeLegibility; margin-top: 0.5em; margin-bottom: 0.5em; line-height: 1.2125em; }
+h1 small, h2 small, h3 small, #toctitle small, .sidebarblock > .content > .title small, h4 small, h5 small, h6 small { font-size: 60%; color: #ff6b15; line-height: 0; }
+h1 { font-size: 2.125em; }
+h2 { font-size: 1.6875em; }
+h3, #toctitle, .sidebarblock > .content > .title { font-size: 1.375em; }
+h4 { font-size: 1.125em; }
+h5 { font-size: 1.125em; }
+h6 { font-size: 1em; }
+hr { border: solid #dddddd; border-width: 1px 0 0; clear: both; margin: 1.25em 0 1.1875em; height: 0; }
+/* Helpful Typography Defaults */
+em, i { font-style: italic; line-height: inherit; }
+strong, b { font-weight: bold; line-height: inherit; }
+small { font-size: 60%; line-height: inherit; }
+code { font-family: Consolas, "Liberation Mono", Courier, monospace; font-weight: bold; color: #003426; }
+/* Lists */
+ul, ol, dl { font-size: 1em; line-height: 1.6; margin-bottom: 0.75em; list-style-position: outside; font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; }
+ul, ol { margin-left: 1.5em; }
+/* Unordered Lists */
+ul li ul, ul li ol { margin-left: 1.25em; margin-bottom: 0; font-size: 1em; /* Override nested font-size change */ }
+ul.square li ul, ul.circle li ul, ul.disc li ul { list-style: inherit; }
+ul.square { list-style-type: square; }
+ul.circle { list-style-type: circle; }
+ul.disc { list-style-type: disc; }
+ul.no-bullet { list-style: none; }
+/* Ordered Lists */
+ol li ul, ol li ol { margin-left: 1.25em; margin-bottom: 0; }
+/* Definition Lists */
+dl dt { margin-bottom: 0.3em; font-weight: bold; }
+dl dd { margin-bottom: 0.75em; }
+/* Abbreviations */
+abbr, acronym { text-transform: uppercase; font-size: 90%; color: black; border-bottom: 1px dotted #dddddd; cursor: help; }
+abbr { text-transform: none; }
+/* Blockquotes */
+blockquote { margin: 0 0 0.75em; padding: 0.5625em 1.25em 0 1.1875em; border-left: 1px solid #dddddd; }
+blockquote cite { display: block; font-size: 0.8125em; color: #e15200; }
+blockquote cite:before { content: "\2014 \0020"; }
+blockquote cite a, blockquote cite a:visited { color: #e15200; }
+blockquote, blockquote p { line-height: 1.6; color: #333333; }
+/* Microformats */
+.vcard { display: inline-block; margin: 0 0 1.25em 0; border: 1px solid #dddddd; padding: 0.625em 0.75em; }
+.vcard li { margin: 0; display: block; }
+.vcard .fn { font-weight: bold; font-size: 0.9375em; }
+.vevent .summary { font-weight: bold; }
+.vevent abbr { cursor: auto; text-decoration: none; font-weight: bold; border: none; padding: 0 0.0625em; }
+@media only screen and (min-width: 768px) { h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { line-height: 1.4; }
+  h1 { font-size: 2.75em; }
+  h2 { font-size: 2.3125em; }
+  h3, #toctitle, .sidebarblock > .content > .title { font-size: 1.6875em; }
+  h4 { font-size: 1.4375em; } }
+/* Print styles.  Inlined to avoid required HTTP connection: www.phpied.com/delay-loading-your-print-css/ Credit to Paul Irish and HTML5 Boilerplate (html5boilerplate.com)
+*/
+.print-only { display: none !important; }
+@media print { * { background: transparent !important; color: #000 !important; /* Black prints faster: h5bp.com/s */ box-shadow: none !important; text-shadow: none !important; }
+  a, a:visited { text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; /* h5bp.com/t */ }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page { margin: 0.5cm; }
+  p, h2, h3, #toctitle, .sidebarblock > .content > .title { orphans: 3; widows: 3; }
+  h2, h3, #toctitle, .sidebarblock > .content > .title { page-break-after: avoid; }
+  .hide-on-print { display: none !important; }
+  .print-only { display: block !important; }
+  .hide-for-print { display: none !important; }
+  .show-for-print { display: inherit !important; } }
+/* Tables */
+table { background: white; margin-bottom: 1.25em; border: solid 1px #d8d8ce; }
+table thead, table tfoot { background: -webkit-linear-gradient(top, #add386, #90b66a); font-weight: bold; }
+table thead tr th, table thead tr td, table tfoot tr th, table tfoot tr td { padding: 0.5em 0.625em 0.625em; font-size: inherit; color: white; text-align: left; }
+table tr th, table tr td { padding: 0.5625em 0.625em; font-size: inherit; color: #6d6e71; }
+table tr.even, table tr.alt, table tr:nth-of-type(even) { background: #edf2f2; }
+table thead tr th, table tfoot tr th, table tbody tr td, table tr td, table tfoot tr td { display: table-cell; line-height: 1.4; }
+a:hover, a:focus { text-decoration: underline; }
+.clearfix:before, .clearfix:after, .float-group:before, .float-group:after { content: " "; display: table; }
+.clearfix:after, .float-group:after { clear: both; }
+*:not(pre) > code { font-size: inherit; padding: 3px 2px 1px 2px; white-space: nowrap; background-color: #eeeeee; border: 1px solid #dddddd; -webkit-border-radius: 0; border-radius: 0; text-shadow: none; }
+pre, pre > code { line-height: 1.6; color: black; font-family: Consolas, "Liberation Mono", Courier, monospace; font-weight: normal; }
+kbd.keyseq { color: #333333; }
+kbd:not(.keyseq) { display: inline-block; color: black; font-size: 0.75em; line-height: 1.4; background-color: #F7F7F7; border: 1px solid #ccc; -webkit-border-radius: 3px; border-radius: 3px; -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset; margin: -0.15em 0.15em 0 0.15em; padding: 0.2em 0.6em 0.2em 0.5em; vertical-align: middle; white-space: nowrap; }
+kbd kbd:first-child { margin-left: 0; }
+kbd kbd:last-child { margin-right: 0; }
+.menuseq, .menu { color: black; }
+#header, #content, #footnotes, #footer { width: 100%; margin-left: auto; margin-right: auto; margin-top: 0; margin-bottom: 0; max-width: 62.5em; *zoom: 1; position: relative; padding-left: 1.5em; padding-right: 1.5em; }
+#header:before, #header:after, #content:before, #content:after, #footnotes:before, #footnotes:after, #footer:before, #footer:after { content: " "; display: table; }
+#header:after, #content:after, #footnotes:after, #footer:after { clear: both; }
+#header { margin-bottom: 2.5em; }
+#header > h1 { color: #7b2d00; font-weight: normal; border-bottom: 1px solid #dddddd; margin-bottom: -28px; padding-bottom: 32px; }
+#header span { color: #333333; }
+#header #revnumber { text-transform: capitalize; }
+#header br { display: none; }
+#header br + span { padding-left: 3px; }
+#header br + span:before { content: "\2013 \0020"; }
+#header br + span.author { padding-left: 0; }
+#header br + span.author:before { content: ", "; }
+#toc { border-bottom: 1px solid #dddddd; padding-bottom: 1.25em; }
+#toc > ul { margin-left: 0.25em; }
+#toc ul.sectlevel0 > li > a { font-style: italic; }
+#toc ul.sectlevel0 ul.sectlevel1 { margin-left: 0; margin-top: 0.5em; margin-bottom: 0.5em; }
+#toc ul { list-style-type: none; }
+#toctitle { color: #003b6b; }
+@media only screen and (min-width: 1280px) { body.toc2 { padding-left: 20em; }
+  #toc.toc2 { position: fixed; width: 20em; left: 0; top: 0; border-right: 1px solid #dddddd; border-bottom: 0; z-index: 1000; padding: 1em; height: 100%; overflow: auto; }
+  #toc.toc2 #toctitle { margin-top: 0; }
+  #toc.toc2 > ul { font-size: .95em; }
+  #toc.toc2 ul ul { margin-left: 0; padding-left: 1.25em; }
+  #toc.toc2 ul.sectlevel0 ul.sectlevel1 { padding-left: 0; margin-top: 0.5em; margin-bottom: 0.5em; }
+  body.toc2.toc-right { padding-left: 0; padding-right: 20em; }
+  body.toc2.toc-right #toc.toc2 { border-right: 0; border-left: 1px solid #dddddd; left: auto; right: 0; } }
+#content #toc { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; border-width: 0; -webkit-border-radius: 0; border-radius: 0; }
+#content #toc > :first-child { margin-top: 0; }
+#content #toc > :last-child { margin-bottom: 0; }
+#content #toc a { text-decoration: none; }
+#content #toctitle { font-weight: bold; font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-size: 1em; padding-left: 0.125em; }
+#footer { max-width: 100%; background-color: none; padding: 1.25em; }
+#footer-text { color: black; line-height: 1.44; }
+.sect1 { padding-bottom: 1.25em; }
+.sect1 + .sect1 { border-top: 1px solid #dddddd; }
+#content h1 > a.anchor, h2 > a.anchor, h3 > a.anchor, #toctitle > a.anchor, .sidebarblock > .content > .title > a.anchor, h4 > a.anchor, h5 > a.anchor, h6 > a.anchor { position: absolute; width: 1em; margin-left: -1em; display: block; text-decoration: none; visibility: hidden; text-align: center; font-weight: normal; }
+#content h1 > a.anchor:before, h2 > a.anchor:before, h3 > a.anchor:before, #toctitle > a.anchor:before, .sidebarblock > .content > .title > a.anchor:before, h4 > a.anchor:before, h5 > a.anchor:before, h6 > a.anchor:before { content: '\00A7'; font-size: .85em; vertical-align: text-top; display: block; margin-top: 0.05em; }
+#content h1:hover > a.anchor, #content h1 > a.anchor:hover, h2:hover > a.anchor, h2 > a.anchor:hover, h3:hover > a.anchor, #toctitle:hover > a.anchor, .sidebarblock > .content > .title:hover > a.anchor, h3 > a.anchor:hover, #toctitle > a.anchor:hover, .sidebarblock > .content > .title > a.anchor:hover, h4:hover > a.anchor, h4 > a.anchor:hover, h5:hover > a.anchor, h5 > a.anchor:hover, h6:hover > a.anchor, h6 > a.anchor:hover { visibility: visible; }
+#content h1 > a.link, h2 > a.link, h3 > a.link, #toctitle > a.link, .sidebarblock > .content > .title > a.link, h4 > a.link, h5 > a.link, h6 > a.link { color: #7b2d00; text-decoration: none; }
+#content h1 > a.link:hover, h2 > a.link:hover, h3 > a.link:hover, #toctitle > a.link:hover, .sidebarblock > .content > .title > a.link:hover, h4 > a.link:hover, h5 > a.link:hover, h6 > a.link:hover { color: #622400; }
+.imageblock, .literalblock, .listingblock, .verseblock, .videoblock { margin-bottom: 1.25em; }
+.admonitionblock td.content > .title, .exampleblock > .title, .imageblock > .title, .videoblock > .title, .listingblock > .title, .literalblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, .sidebarblock > .title, .tableblock > .title, .verseblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title { text-align: left; font-weight: bold; }
+.tableblock > caption { text-align: left; font-weight: bold; white-space: nowrap; overflow: visible; max-width: 0; }
+table.tableblock #preamble > .sectionbody > .paragraph:first-of-type p { font-size: inherit; }
+.admonitionblock > table { border: 0; background: none; width: 100%; }
+.admonitionblock > table td.icon { text-align: center; width: 80px; }
+.admonitionblock > table td.icon img { max-width: none; }
+.admonitionblock > table td.icon .title { font-weight: bold; text-transform: uppercase; }
+.admonitionblock > table td.content { padding-left: 1.125em; padding-right: 1.25em; border-left: 1px solid #dddddd; color: #333333; }
+.admonitionblock > table td.content > :last-child > :last-child { margin-bottom: 0; }
+.exampleblock > .content { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; -webkit-border-radius: 0; border-radius: 0; }
+.exampleblock > .content > :first-child { margin-top: 0; }
+.exampleblock > .content > :last-child { margin-bottom: 0; }
+.exampleblock > .content h1, .exampleblock > .content h2, .exampleblock > .content h3, .exampleblock > .content #toctitle, .sidebarblock.exampleblock > .content > .title, .exampleblock > .content h4, .exampleblock > .content h5, .exampleblock > .content h6, .exampleblock > .content p { color: #333333; }
+.exampleblock > .content h1, .exampleblock > .content h2, .exampleblock > .content h3, .exampleblock > .content #toctitle, .sidebarblock.exampleblock > .content > .title, .exampleblock > .content h4, .exampleblock > .content h5, .exampleblock > .content h6 { line-height: 1; margin-bottom: 0.625em; }
+.exampleblock > .content h1.subheader, .exampleblock > .content h2.subheader, .exampleblock > .content h3.subheader, .exampleblock > .content .subheader#toctitle, .sidebarblock.exampleblock > .content > .subheader.title, .exampleblock > .content h4.subheader, .exampleblock > .content h5.subheader, .exampleblock > .content h6.subheader { line-height: 1.4; }
+.exampleblock.result > .content { -webkit-box-shadow: 0 1px 8px #aaaaaa; box-shadow: 0 1px 8px #aaaaaa; }
+.sidebarblock { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; -webkit-border-radius: 0; border-radius: 0; }
+.sidebarblock > :first-child { margin-top: 0; }
+.sidebarblock > :last-child { margin-bottom: 0; }
+.sidebarblock h1, .sidebarblock h2, .sidebarblock h3, .sidebarblock #toctitle, .sidebarblock > .content > .title, .sidebarblock h4, .sidebarblock h5, .sidebarblock h6, .sidebarblock p { color: #333333; }
+.sidebarblock h1, .sidebarblock h2, .sidebarblock h3, .sidebarblock #toctitle, .sidebarblock > .content > .title, .sidebarblock h4, .sidebarblock h5, .sidebarblock h6 { line-height: 1; margin-bottom: 0.625em; }
+.sidebarblock h1.subheader, .sidebarblock h2.subheader, .sidebarblock h3.subheader, .sidebarblock .subheader#toctitle, .sidebarblock > .content > .subheader.title, .sidebarblock h4.subheader, .sidebarblock h5.subheader, .sidebarblock h6.subheader { line-height: 1.4; }
+.sidebarblock > .content > .title { color: #003b6b; margin-top: 0; line-height: 1.6; }
+.exampleblock > .content > :last-child > :last-child, .exampleblock > .content .olist > ol > li:last-child > :last-child, .exampleblock > .content .ulist > ul > li:last-child > :last-child, .exampleblock > .content .qlist > ol > li:last-child > :last-child, .sidebarblock > .content > :last-child > :last-child, .sidebarblock > .content .olist > ol > li:last-child > :last-child, .sidebarblock > .content .ulist > ul > li:last-child > :last-child, .sidebarblock > .content .qlist > ol > li:last-child > :last-child { margin-bottom: 0; }
+.literalblock > .content pre, .listingblock > .content pre { background: #eeeeee; border-width: 1px; border-style: dashed; border-color: #666666; -webkit-border-radius: 0; border-radius: 0; padding: 1.25em 1.5625em 1.125em 1.5625em; word-wrap: break-word; }
+.literalblock > .content pre.nowrap, .listingblock > .content pre.nowrap { overflow-x: auto; white-space: pre; word-wrap: normal; }
+.literalblock > .content pre > code, .listingblock > .content pre > code { display: block; }
+@media only screen { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.72em; } }
+@media only screen and (min-width: 768px) { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.81em; } }
+@media only screen and (min-width: 1280px) { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.9em; } }
+.listingblock > .content { position: relative; }
+.listingblock:hover code[class*=" language-"]:before { text-transform: uppercase; font-size: 0.9em; color: #999; position: absolute; top: 0.375em; right: 0.375em; }
+.listingblock:hover code.asciidoc:before { content: "asciidoc"; }
+.listingblock:hover code.clojure:before { content: "clojure"; }
+.listingblock:hover code.css:before { content: "css"; }
+.listingblock:hover code.groovy:before { content: "groovy"; }
+.listingblock:hover code.html:before { content: "html"; }
+.listingblock:hover code.java:before { content: "java"; }
+.listingblock:hover code.javascript:before { content: "javascript"; }
+.listingblock:hover code.python:before { content: "python"; }
+.listingblock:hover code.ruby:before { content: "ruby"; }
+.listingblock:hover code.scss:before { content: "scss"; }
+.listingblock:hover code.xml:before { content: "xml"; }
+.listingblock:hover code.yaml:before { content: "yaml"; }
+.listingblock.terminal pre .command:before { content: attr(data-prompt); padding-right: 0.5em; color: #999; }
+.listingblock.terminal pre .command:not([data-prompt]):before { content: '$'; }
+table.pyhltable { border: 0; margin-bottom: 0; }
+table.pyhltable td { vertical-align: top; padding-top: 0; padding-bottom: 0; }
+table.pyhltable td.code { padding-left: .75em; padding-right: 0; }
+.highlight.pygments .lineno, table.pyhltable td:not(.code) { color: #999; padding-left: 0; padding-right: .5em; border-right: 1px solid #dddddd; }
+.highlight.pygments .lineno { display: inline-block; margin-right: .25em; }
+table.pyhltable .linenodiv { background-color: transparent !important; padding-right: 0 !important; }
+.quoteblock { margin: 0 0 0.75em; padding: 0.5625em 1.25em 0 1.1875em; border-left: 1px solid #dddddd; }
+.quoteblock blockquote { margin: 0 0 0.75em 0; padding: 0 0 0.5625em 0; border: 0; }
+.quoteblock blockquote > .paragraph:last-child p { margin-bottom: 0; }
+.quoteblock .attribution { margin-top: -.25em; padding-bottom: 0.5625em; font-size: 0.8125em; color: #e15200; }
+.quoteblock .attribution br { display: none; }
+.quoteblock .attribution cite { display: block; margin-bottom: 0.625em; }
+table thead th, table tfoot th { font-weight: bold; }
+table.tableblock.grid-all { border-collapse: separate; border-spacing: 1px; -webkit-border-radius: 0; border-radius: 0; border-top: 1px solid #dddddd; border-bottom: 1px solid #dddddd; }
+table.tableblock.frame-topbot, table.tableblock.frame-none { border-left: 0; border-right: 0; }
+table.tableblock.frame-sides, table.tableblock.frame-none { border-top: 0; border-bottom: 0; }
+table.tableblock td .paragraph:last-child p, table.tableblock td > p:last-child { margin-bottom: 0; }
+th.tableblock.halign-left, td.tableblock.halign-left { text-align: left; }
+th.tableblock.halign-right, td.tableblock.halign-right { text-align: right; }
+th.tableblock.halign-center, td.tableblock.halign-center { text-align: center; }
+th.tableblock.valign-top, td.tableblock.valign-top { vertical-align: top; }
+th.tableblock.valign-bottom, td.tableblock.valign-bottom { vertical-align: bottom; }
+th.tableblock.valign-middle, td.tableblock.valign-middle { vertical-align: middle; }
+p.tableblock.header { color: white; font-weight: bold; }
+td > div.verse { white-space: pre; }
+ol { margin-left: 1.75em; }
+ul li ol { margin-left: 1.5em; }
+dl dd { margin-left: 1.125em; }
+dl dd:last-child, dl dd:last-child > :last-child { margin-bottom: 0; }
+ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .ulist, .ulist .olist, .olist .ulist { margin-bottom: 0.375em; }
+ul.unstyled, ol.unnumbered, ul.checklist, ul.none { list-style-type: none; }
+ul.unstyled, ol.unnumbered, ul.checklist { margin-left: 0.625em; }
+ul.checklist li > p:first-child > i[class^="icon-check"]:first-child, ul.checklist li > p:first-child > input[type="checkbox"]:first-child { margin-right: 0.25em; }
+ul.checklist li > p:first-child > input[type="checkbox"]:first-child { position: relative; top: 1px; }
+ul.inline { margin: 0 auto 0.375em auto; margin-left: -1.375em; margin-right: 0; padding: 0; list-style: none; overflow: hidden; }
+ul.inline > li { list-style: none; float: left; margin-left: 1.375em; display: block; }
+ul.inline > li > * { display: block; }
+.unstyled dl dt { font-weight: normal; font-style: normal; }
+ol.arabic { list-style-type: decimal; }
+ol.decimal { list-style-type: decimal-leading-zero; }
+ol.loweralpha { list-style-type: lower-alpha; }
+ol.upperalpha { list-style-type: upper-alpha; }
+ol.lowerroman { list-style-type: lower-roman; }
+ol.upperroman { list-style-type: upper-roman; }
+ol.lowergreek { list-style-type: lower-greek; }
+.hdlist > table, .colist > table { border: 0; background: none; }
+.hdlist > table > tbody > tr, .colist > table > tbody > tr { background: none; }
+td.hdlist1 { padding-right: .8em; font-weight: bold; }
+td.hdlist1, td.hdlist2 { vertical-align: top; }
+.literalblock + .colist, .listingblock + .colist { margin-top: -0.5em; }
+.colist > table tr > td:first-of-type { padding: 0 .8em; line-height: 1; }
+.colist > table tr > td:last-of-type { padding: 0.25em 0; }
+.qanda > ol > li > p > em:only-child { color: #004985; }
+.thumb, .th { line-height: 0; display: inline-block; border: solid 4px white; -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); }
+.imageblock.left, .imageblock[style*="float: left"] { margin: 0.25em 0.625em 1.25em 0; }
+.imageblock.right, .imageblock[style*="float: right"] { margin: 0.25em 0 1.25em 0.625em; }
+.imageblock > .title { margin-bottom: 0; }
+.imageblock.thumb, .imageblock.th { border-width: 6px; }
+.imageblock.thumb > .title, .imageblock.th > .title { padding: 0 0.125em; }
+.image.left, .image.right { margin-top: 0.25em; margin-bottom: 0.25em; display: inline-block; line-height: 0; }
+.image.left { margin-right: 0.625em; }
+.image.right { margin-left: 0.625em; }
+a.image { text-decoration: none; }
+span.footnote, span.footnoteref { vertical-align: super; font-size: 0.875em; }
+span.footnote a, span.footnoteref a { text-decoration: none; }
+#footnotes { padding-top: 0.75em; padding-bottom: 0.75em; margin-bottom: 0.625em; }
+#footnotes hr { width: 20%; min-width: 6.25em; margin: -.25em 0 .75em 0; border-width: 1px 0 0 0; }
+#footnotes .footnote { padding: 0 0.375em; line-height: 1.3; font-size: 0.875em; margin-left: 1.2em; text-indent: -1.2em; margin-bottom: .2em; }
+#footnotes .footnote a:first-of-type { font-weight: bold; text-decoration: none; }
+#footnotes .footnote:last-of-type { margin-bottom: 0; }
+#content #footnotes { margin-top: -0.625em; margin-bottom: 0; padding: 0.75em 0; }
+.gist .file-data > table { border: none; background: #fff; width: 100%; margin-bottom: 0; }
+.gist .file-data > table td.line-data { width: 99%; }
+div.unbreakable { page-break-inside: avoid; }
+.big { font-size: larger; }
+.small { font-size: smaller; }
+.underline { text-decoration: underline; }
+.overline { text-decoration: overline; }
+.line-through { text-decoration: line-through; }
+.aqua { color: #00bfbf; }
+.aqua-background { background-color: #00fafa; }
+.black { color: black; }
+.black-background { background-color: black; }
+.blue { color: #0000bf; }
+.blue-background { background-color: #0000fa; }
+.fuchsia { color: #bf00bf; }
+.fuchsia-background { background-color: #fa00fa; }
+.gray { color: #606060; }
+.gray-background { background-color: #7d7d7d; }
+.green { color: #006000; }
+.green-background { background-color: #007d00; }
+.lime { color: #00bf00; }
+.lime-background { background-color: #00fa00; }
+.maroon { color: #600000; }
+.maroon-background { background-color: #7d0000; }
+.navy { color: #000060; }
+.navy-background { background-color: #00007d; }
+.olive { color: #606000; }
+.olive-background { background-color: #7d7d00; }
+.purple { color: #600060; }
+.purple-background { background-color: #7d007d; }
+.red { color: #bf0000; }
+.red-background { background-color: #fa0000; }
+.silver { color: #909090; }
+.silver-background { background-color: #bcbcbc; }
+.teal { color: #006060; }
+.teal-background { background-color: #007d7d; }
+.white { color: #bfbfbf; }
+.white-background { background-color: #fafafa; }
+.yellow { color: #bfbf00; }
+.yellow-background { background-color: #fafa00; }
+span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
+.admonitionblock td.icon [class^="icon-"]:before { font-size: 2.5em; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); cursor: default; }
+.admonitionblock td.icon .icon-note:before { content: "\f05a"; color: #00579e; color: #004176; }
+.admonitionblock td.icon .icon-tip:before { content: "\f0eb"; text-shadow: 1px 1px 2px rgba(155, 155, 0, 0.8); color: #111; }
+.admonitionblock td.icon .icon-warning:before { content: "\f071"; color: #bf6900; }
+.admonitionblock td.icon .icon-caution:before { content: "\f06d"; color: #bf3400; }
+.admonitionblock td.icon .icon-important:before { content: "\f06a"; color: #bf0000; }
+.conum { display: inline-block; color: white !important; background-color: black; -webkit-border-radius: 100px; border-radius: 100px; text-align: center; width: 20px; height: 20px; font-size: 12px; font-weight: bold; line-height: 20px; font-family: Arial, sans-serif; font-style: normal; position: relative; top: -2px; letter-spacing: -1px; }
+.conum * { color: white !important; }
+.conum + b { display: none; }
+.conum:after { content: attr(data-value); }
+.conum:not([data-value]):empty { display: none; }
+body { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-size: 16px; color: #111; }
+h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { border-bottom: 1px solid #dddddd; }
+#toctitle { color: #00406F; font-weight: normal; margin-top: 1.5em; }
+.sidebarblock { border-color: #aaa; }
+code { -webkit-border-radius: 4px; border-radius: 4px; }
+p.tableblock.header { color: #6d6e71; }
+</style>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.3/styles/default.min.css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.3/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body class="book toc2 toc-right">
+<div id="header">
+<h1>Building Your Application</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_mocking-up-save-the-child-application">Mocking Up Save The Child Application</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_mobile-first">Mobile First?</a></li>
+<li><a href="#_introducing-balsamiq-mockups">Introducing Balsamiq Mockups</a></li>
+<li><a href="#_the-project-owner-talks-to-a-web-designer">The Project Owner Talks to a Web Designer</a></li>
+<li><a href="#_first-mockups">First Mockups</a></li>
+<li><a href="#_from-mockups-to-a-prototype">From Mockups to a Prototype</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_single-page-applications">Single Page Applications</a></li>
+<li><a href="#_running-code-examples-from-webstorm">Running Code Examples from WebStorm</a></li>
+<li><a href="#_our-first-prototype">Our First Prototype</a></li>
+<li><a href="#_our-main-page-javascript">Our Main Page JavaScript</a></li>
+<li><a href="#_the-footer-section">The Footer section</a></li>
+<li><a href="#_the-donate-section">The Donate Section</a></li>
+</ul>
+</li>
+<li><a href="#_adding-video">Adding Video</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_adding-the-html5-video-element">Adding the HTML5 Video Element</a></li>
+<li><a href="#_embedding-youtube-videos">Embedding YouTube Videos</a></li>
+</ul>
+</li>
+<li><a href="#_adding-geolocation-support">Adding Geolocation Support</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_geolocation-basics">Geolocation Basics</a></li>
+<li><a href="#_integrating-with-google-maps">Integrating with Google Maps</a></li>
+<li><a href="#_browser-features-detection-with-modernizr">Browser Features Detection With Modernizr</a></li>
+<li><a href="#_search-and-multi-markers-with-google-maps">Search and Multi-Markers With Google Maps</a></li>
+</ul>
+</li>
+<li><a href="#_summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This book has three parts. In Part 1 we&#8217;ll start building Web applications. We&#8217;ll be building and re-building a sample application titled Save The Child.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-important" title="Important"></i>
+</td>
+<td class="content">
+We assume that the readers know how to write programs in JavaScript. If you are not familiar with this language, study the materials from <a href="#appendix_a">Appendix A</a> first. You&#8217;ll find a fast paced introduction to JavaScript there.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In Chapter 1 we&#8217;ll start working with a Web designer. We&#8217;ll create a mockup, and will start development in pure JavaScript. By the end of this chapter the first version of this application will be working using hard-coded data.</p>
+</div>
+<div class="paragraph">
+<p>Chapter 2 will show you how to use AJAX techniques to allow Web pages communicate with external data sources without the need to refresh the page. We&#8217;ll also cover JSON - a de facto standard data format when it comes to communication between the Web browsers and servers.</p>
+</div>
+<div class="paragraph">
+<p>Chapter 3 shows how to minimize the amount of manually written JavaScript by introducing popular jQuery library. We&#8217;ll rebuild the Save The Child application with jQuery.</p>
+</div>
+<div class="paragraph">
+<p>After reading of this part you&#8217;ll be ready to immerse into a more heavy-duty tools and frameworks that are being used by enterprise developers.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_mocking-up-save-the-child-application"><a class="anchor" href="#_mocking-up-save-the-child-application"></a>Mocking Up Save The Child Application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let&#8217;s start working on our Web application Save The Child. It&#8217;s going to be a Web application that will contain a form for donations to sick children and embeded video player, will integrate with Google maps, will have charts, and more. The goal is to gradually build all the functionality of this Web application while explaining each step of the way and giving you the reasons why we are building it the way we do. By the end of this chapter we&#8217;ll have the Web design and the first prototype of the Save The Child.</p>
+</div>
+<div class="paragraph">
+<p>The proliferation of mobile devices and Web applications require new skills for development of what was known as boring-looking enterprise applications. In the past, design of the user interface of most of the enterprise applications was done by developers to the best of their artistic abilities: a couple of buttons here, and a grid there on a gray background.  The business users were happy cause they did not see any better. The application allowed to process business data – what else to wish for?  Enterprise business users used to be happy with any UI as long as the application helped them to take care of their business.</p>
+</div>
+<div class="paragraph">
+<p>But today&#8217;s business users are spoiled by nice looking consumer-facing applications, and more often than not new development starts with inviting a Web designer who should create a prototype of the future application.  For example, we’ve seen some excellent (from the UI perspective) functional specifications for boring financial applications made by professional designers.  Business users slowly but surely becoming more demanding in the area of the UI design solutions. The trend is clear: developer’s art does not cut it anymore.</p>
+</div>
+<div class="paragraph">
+<p>In enterprise IT shops that work Web applications the Web design is usually done professional Web designer. The software developers are not overly familiar with the tools that Web designers are using. But to make this book useful even for a smaller shops that can&#8217;t afford professional Web design, we&#8217;ll illustrate the process of design and prototyping of the UI of a Web application.</p>
+</div>
+<div class="paragraph">
+<p>Our Web designer, let&#8217;s call him Jerry, is ready to start working on the <em>mockup</em> (a.k.a. <em>wireframes</em>) - a set of images depicting various views of the future Save The Child application. We expect him to deliver images with comments that would briefly explain what should change in a view if a user will take  certain actions, e.g. clicks on the button. You can also think of a UI of an application as a set of states, and the user’s action result in your application transitioning from one state to the other. As nerds and mathematicians say, the UI of your application is a <a href="http://en.wikipedia.org/wiki/State_machine">finite state machine</a>", which at any given point of time is in one of the finite number of states, for example, in the view state Donate Form or Auction.</p>
+</div>
+<div class="sect2">
+<h3 id="_mobile-first"><a class="anchor" href="#_mobile-first"></a>Mobile First?</h3>
+<div class="paragraph">
+<p>While starting working on the design of a new Web application keep in mind that most likely some users will access it from mobile devices. Will the proposed UI look good on the mobile devices with smaller screens? Some people suggest using so-called "Mobile First" approach, which means that from the very early stages of Web application development you should do the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Ensure that your Web application (design and  layout) looks on smaller screens</p>
+</li>
+<li>
+<p>Differentiate the content to be shown on large vs small screens (start with small screens and enhance for the larger ones)</p>
+</li>
+<li>
+<p>Test your application on the slow (3G-like) networks and minimize the "weight" of the landing page.</p>
+</li>
+<li>
+<p>Decide on using responsive design (see Chapter 12) vs HTML5 mobile framework vs native vs hybrid (see Chapter 15) approach.</p>
+</li>
+<li>
+<p>If you are planning to use geographical location services decide on the API to be used for mobile devices, but don&#8217;t forget about the desktops too.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+The users of iOS and Android devices are used to the fact that they can find the closest restaurant or a gas station based on their current location. Do you know that location feature can be available on the desktops too? Google maps API is just one of the services that can find the location of the user&#8217;s desktop based on its IP address, Wi-Fi router&#8217;s ID or proximity to the cell towers. Zeroing in on your device may not be as precise as with the smartphone&#8217;s GPS, but it may be good enough. So why not plan for adding this feature to all versions of your Web application?  Finding the closest charity event or a The Child can be done knowing an approximate location of your desktop computer.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s consider pointing devices. At the time of this writing, vast majority of the desktop users work with pixel-perfect mouse pointers or track pads. SmartPhone or tablet users work with fingers. One finger touch can cover a square with 100 pixels. The CNN site shows lots of news links located very close to each other on the screen. A finger may cover more than one link, and Android devices offer you a larger popup allowing you to select the link you really wanted to touch. Having the "Mobile first" state of mind doesn&#8217;t mean that CNN would need to keep the larger distance between the links for all the users. But this means that they should foresee the issues or innovate using the features offered by modern mobile devices.</p>
+</div>
+<div class="paragraph">
+<p>In Chapter 10 we&#8217;ll discuss the <em>Responsive Design</em> techniques that allow to create the UI for Web applications that automatically re-allocate the screen content based on the screen size of the user&#8217;s device. Although this chapter is about the desktop version of the Save The Child Web application, its screen will consist of several rectangular areas that can be allocated differently (or even hidden) on smartphones or tablets.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Before writing this book we&#8217;ve discussed how our application should look/work on mobile devices. But strictly speaking, since the work on multiple chapters was done in parralel, this was not a mobile first approach.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Consider reading Chapter 12 now to understand what you will need to deal with to developing Web applications that look good on desktop monitors as well as on mobile screens. Understanding of the responsive design principles will help you in communications with your Web designer.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>One of the constraints that the mobile users have is the relatively slow speed of the mobile Internet. This means that even though your desktop users will use fast LAN connection lines, your Web application has to be modularized and only the minimal number modules has to be loaded initially. Often mobile providers charge the user based on the amount of consumed data too.</p>
+</div>
+<div class="paragraph">
+<p>The chances are slim that the desktop users will lose the Internet connection for a long period of time. On the other hand, the mobile users may stay in the area with no or spotty connection. In this case the mobile first thinking can lead to introducing an offline mode with limited functionality.</p>
+</div>
+<div class="paragraph">
+<p>Thinking upfront of the minimal content to be displayed on a small mobile screens may force you to change the design of the desktop Web pages too. In our sample Save The Child application we need to make sure that there is a space for the Donate button even on the smallest devices.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_introducing-balsamiq-mockups"><a class="anchor" href="#_introducing-balsamiq-mockups"></a>Introducing Balsamiq Mockups</h3>
+<div class="paragraph">
+<p>Visualize a project owner talking to Jerry in a cafeteria, and Jerry is drawing sketches of the future Web site on a napkin. Well, in the 21st Century he’ll use an electronic napkin so to speak - an excellent prototyping tool called <a href="http://balsamiq.com">Balsamiq Mockups</a>. This easy to use program gives you a working area where you create a mockup of your future Web application by dragging and dropping the required UI components from the toolbar onto the image of the Web page (see <a href="#FIG3-1">The working area of Balsamiq Mockups</a>).</p>
+</div>
+<div id="FIG3-1" class="imageblock">
+<div class="content">
+<img src="images/fig_03_01.jpg" alt="image">
+</div>
+<div class="title">Figure 1. The working area of Balsamiq Mockups</div>
+</div>
+<div class="paragraph">
+<p>If you can&#8217;t find the required image in Balsamiq&#8217;s library, add your own by dragging and dropping it onto the top toolbar. For example, the mockup in Chapter 10 uses our images of the iPhone that we&#8217;ve added to Balsamiq assets.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you prefer using free tools, consider using <a href="http://mockflow.com">Mockflow</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>When the prototype is done, it can be saved as an image and sent to the project owner. Another option is to export the Balsamiq project into XML, and if both the project owner and Web designer have Balsamiq installed, they can work on the prototype in collaboration. For example, the designer exports the current states of the project, the owner imports it and makes corrections or comments, then exports it again and sends it back to the designer.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the-project-owner-talks-to-a-web-designer"><a class="anchor" href="#_the-project-owner-talks-to-a-web-designer"></a>The Project Owner Talks to a Web Designer</h3>
+<div class="paragraph">
+<p>During the first meeting Jerry talks to the project owner discussing the required functionality and then creates the UI to be implemented by Web developers. The artifacts produced by the designer vary depending on the qualifications of the designer. This can be a set of images representing different states of the UI with little <em>callouts</em> explaining the navigation of the application. If the Web designer is familiar with HTML and CSS, developers may get a working prototype in the form of HTML and CSS files, and this is exactly what Jerry will create by the end of this chapter.</p>
+</div>
+<div class="paragraph">
+<p>Our project owner said to Jerry: <em>"The Save The Child Web application should allow people to make donations to The Children. The users should be able to find these children by specifying a geographical area on the map. The application should include a video player and display statistics about the donors and recipients. The application should include an online auction with proceeds going to charity. We&#8217;ll start working on the desktop version of this Web first, but your future mockup should include three versions of the UI supporting desktops, tablets, and smartphones"</em>.</p>
+</div>
+<div class="paragraph">
+<p>After the meeting Jerry launched Balsamiq and started to work. He decided that the main window will consist of four areas laid out vertically:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>The header with the logo and several navigation buttons</p>
+</li>
+<li>
+<p>The main area with the Donate support plus the video player</p>
+</li>
+<li>
+<p>The area with the Find Local Kid, statistics, and charts.</p>
+</li>
+<li>
+<p>The footer with several house-holding links plus the icons for Twitter and FaceBook.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_first-mockups"><a class="anchor" href="#_first-mockups"></a>First Mockups</h3>
+<div class="paragraph">
+<p>The first deliverable of our Web designer (see <a href="#FIG3-2">The main view before clicking Donate Now</a> and <a href="#FIG3-3">The main view after clicking Donate Now</a>) depicted two states of the UI: before and after clicking the button Donate Now. The Web designer suggested that on the button click the Video Player would turn into a small button revealing the donation form.</p>
+</div>
+<div id="FIG3-2" class="imageblock">
+<div class="content">
+<img src="images/fig_03_02.png" alt="fig 03 02">
+</div>
+<div class="title">Figure 2. The main view before clicking Donate Now</div>
+</div>
+<div id="FIG3-3" class="imageblock">
+<div class="content">
+<img src="images/fig_03_03.png" alt="fig 03 03">
+</div>
+<div class="title">Figure 3. The main view after clicking Donate Now</div>
+</div>
+<div class="paragraph">
+<p>The project owner suggested that turning the video into a Donate button may not be a the best idea. We shouldn’t forget that the main goal of this application is collecting donation, so they decided to keep the user&#8217;s attention on the Donate area and move the video player to the lower portion of the window.</p>
+</div>
+<div class="paragraph">
+<p>After that they went over the mockups of the authorization routine. The view states in this process can be :
+1. Not Logged On
+2. The Login Form
+3. Wrong ID/Password
+4. Forgot Password
+5. Successfully Logged On</p>
+</div>
+<div class="paragraph">
+<p>The Web designer has created mockups of some of these states as shown on  <a href="#FIG3-4">The user haven&#8217;t clicked on the Login button</a> and <a href="#FIG3-5">The user haven&#8217;t clicked on the Login button</a>.</p>
+</div>
+<div id="FIG3-4" class="imageblock">
+<div class="content">
+<img src="images/fig_03_04.png" alt="fig 03 04">
+</div>
+<div class="title">Figure 4. The user haven&#8217;t clicked on the Login button</div>
+</div>
+<div class="paragraph">
+<p>The latter shows different UI states should the user decide to log in. The project owner reviewed the mockups and return them back to Jerry with some comments. The project owner wanted to make sure that the user doesn&#8217;t have to log on to the application to access the Web site. The process of making donations has to be as easy as possible, and forcing the donor to log on may scare some people away, so the project owner left his comment as shown on <a href="#FIG3-5">The user haven&#8217;t clicked on the Login button</a>.</p>
+</div>
+<div id="FIG3-5" class="imageblock">
+<div class="content">
+<img src="images/fig_03_05.png" alt="fig 03 05">
+</div>
+<div class="title">Figure 5. The user haven&#8217;t clicked on the Login button</div>
+</div>
+<div class="paragraph">
+<p>This is enough of a design for us to build a working prototype of the app and start getting the feedback from business users. In the real world  when a prospective client (including business users from your enterprise) approaches you asking for a project estimate, provide them with the document with a detailed work breakdown and the screenshops made by Balsamiq or a similar tool.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_from-mockups-to-a-prototype"><a class="anchor" href="#_from-mockups-to-a-prototype"></a>From Mockups to a Prototype</h3>
+<div class="paragraph">
+<p>We are lucky - Jerry knows HTML and CSS. He&#8217;s ready to turn the still mockups into the first working prototype. It&#8217;ll use only hard-coded data but the layout of the site will be done in CSS and we’ll use HTML5 markup. We&#8217;ll design this application as a Single-Page Application (SPA).</p>
+</div>
+<div class="sect3">
+<h4 id="_single-page-applications"><a class="anchor" href="#_single-page-applications"></a>Single Page Applications</h4>
+<div class="paragraph">
+<p>A Single Page Web Application (SPA) is an architectural approach that doesn&#8217;t require the user going through multiple pages to navigate the site. The user enters the URL in the browser, which brings the Web page that remains open on the screen until the user stop working with this application. The portion of the user&#8217;s screen may change as the user navigate the application, the new data comes in using the AJAX techniques (see Chapter 2), or the new DOM elements will need to be created during the runtime, but the main page itself doesn&#8217;t gets reloaded. This allows building so-called fat client applications that can remember its state. Besides, most likely your HTML5 application will use some JavaScript framework, which in SPA gets loaded only once when the home page gets created by the browser.</p>
+</div>
+<div class="paragraph">
+<p>Have you ever seen a monitor of a trader working for a Wall Street firm? They usually have three or four large monitors, but let&#8217;s just look at one of them. Imagine a busy screen with lots and lots constantly changing data grouped in dedicated areas of the window. This screen shows the constantly changing prices from financial markets, the trader can place orders to buy or sell products, and notifications on completed trades are also coming to the same screen. If this is would be a Web application it would live in the same Web page. No menus to open another windows.</p>
+</div>
+<div class="paragraph">
+<p>The price of Apple share was $590.45 just a second ago and now it&#8217;s $590.60. How can this be done technically? Here&#8217;s one of the possibilities: every second an AJAX is being made to the remote server providing current stock prices and the JavaScript code finds in the DOM the HTML element responsible for rendering the price and then modifies its value with the latest price.</p>
+</div>
+<div class="paragraph">
+<p>Have you seen a Web page showing an input box of Google&#8217;s Gmail? It looks like a table with a list of rows representing the sender, subject, and the date of when each email arrived. All of a sudden you see a new row in bold on top of the list - the new email came in. How was this done technically? A new object(s) was created and inserted into a DOM tree. No page changes, no needs for the user to refresh the browser&#8217;s page - an undercover AJAX call gets the data and JavaScript changes the DOM. The content of DOM changed - the user sees an updated value.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_running-code-examples-from-webstorm"><a class="anchor" href="#_running-code-examples-from-webstorm"></a>Running Code Examples from WebStorm</h4>
+<div class="paragraph">
+<p>The authors of this book use WebStorm IDE 7 from JetBrains for developing real-world projects. Appendix C explains how to run code samples in WebStorm.</p>
+</div>
+<div class="paragraph">
+<p>This chapter will include lots of code samples illustrating how the UI is gradually being built.  We&#8217;ve created a number small Web applications. Each of them can be run independently. Just download and open in WebStorm (or any other) IDE the directory containing samples from Chapter 1. After that you&#8217;ll be able to run each of these examples by right-clicking on the index.html and selecting <em>Open in Browser</em> menu of WebStorm.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+We assume that the users of our Save The Child application work with the modern versions of Web browsers (two year old or younger). The real world Web developers need to deal with finding workarounds to the unsupported CSS or HTML5 features in the old browsers, but modern IDE generate HTML5 boilerplate code that include large CSS files providing different solutions to older browsers.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>JavaScript frameworks implement workaround for features unsupported by old browsers too, so we don&#8217;t want to clutter the text providing several versions of the code just to make book samples work in outdated browsers. This is especially important when developing Enterprise apps in situations where the majority of users are locked in a particular version of and older Web browser.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_our-first-prototype"><a class="anchor" href="#_our-first-prototype"></a>Our First Prototype</h4>
+<div class="paragraph">
+<p>In this section you&#8217;ll see several projects that show how the static mockup will turn into a working prototype with the help of HTML, CSS, and JavaScript. Jerry, the designer, decided to have four separate areas on the page hence he created the HTML file index.html that has the tag <code>&lt;header&gt;</code> with the navigation tag <code>&lt;nav&gt;</code>, two <code>&lt;div&gt;</code> tags for the middle sections of the page and a <code>&lt;footer&gt;</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+ &lt;head&gt;
+	&lt;meta charset="utf-8"&gt;
+	&lt;title&gt;Save The Child | Home Page&lt;/title&gt;
+	&lt;link rel="stylesheet" href="css/styles.css"&gt;
+ &lt;/head&gt;
+ &lt;body&gt;
+	&lt;div id="main-container"&gt;
+		&lt;header&gt;
+		 &lt;h1&gt;Save The Child&lt;/h1&gt;
+		 &lt;nav&gt;
+		  &lt;ul&gt;
+			&lt;li&gt;
+			  &lt;a href="javascript:void(0)"&gt;Who we are&lt;/a&gt;
+			&lt;/li&gt;
+			&lt;li&gt;
+			  &lt;a href="javascript:void(0)"&gt;What we do&lt;/a&gt;
+			&lt;/li&gt;
+			&lt;li&gt;
+			  &lt;a href="javascript:void(0)"&gt;Way to give&lt;/a&gt;
+			&lt;/li&gt;
+			&lt;li&gt;
+			  &lt;a href="javascript:void(0)"&gt;How we work&lt;/a&gt;
+			&lt;/li&gt;
+		  &lt;/ul&gt;
+		 &lt;/nav&gt;
+		&lt;/header&gt;
+		&lt;div id="main" role="main"&gt;
+			&lt;section&gt;
+			  Donate section and Video Player go here
+			&lt;/section&gt;
+			&lt;section&gt;
+			  Locate The Child, stats and tab folder go here
+			&lt;/section&gt;
+		&lt;/div&gt;
+		&lt;footer&gt;
+			&lt;section id="temp-project-name-container"&gt;
+				&lt;b&gt;project 01&lt;/b&gt;: This is the page footer
+			&lt;/section&gt;
+		&lt;/footer&gt;
+	&lt;/div&gt;
+ &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the above HTML file includes the CSS file shown below using the <code>&lt;link&gt;</code> tag. Since there is no content yet for the navigation links to open, we use the syntax <code>href="javascript:void(0)</code> that allows to create a live link that doesn&#8217;t load any page, which is fine on the prototyping stage.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If reusability is very important for you, avoid using overly specific selectors like <code>id="temp-project-name-container"</code> (or even ID selectors) as they limit reusability.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="css language-css">/* Navigation menu */
+nav {
+	float: right
+}
+nav ul li {
+	list-style: none;
+	float: left;
+}
+nav ul li a {
+	display: block;
+	padding: 7px 12px;
+}
+
+/* Main content
+ #main-container is a wrapper for all page content
+ */
+#main-container {
+	width: 980px;
+	margin: 0 auto;
+}
+div#main {
+	clear: both;
+}
+
+/* Footer */
+footer {
+	/* Set background color just to make the footer standout*/
+	background: #eee;
+	height: 20px;
+}
+footer #temp-project-name-container {
+	float: left;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above CSS controls not only the styles of the page content, but also that sets the page layout. The <code>&lt;nav&gt;</code> section should be pushed to the right. If an unordered list is placed inside the <code>&lt;nav&gt;</code>, it should be left aligned. The width of the HTML container with ID <code>main-container</code> should be 980 pixels, and it has to be automatically centered. The footer will be 20 pixels high and should have a gray background. The first version of our Web page is shown on <a href="#FIG3-6">Working prototype. Take 1: Getting Started</a>. Run index.html from the project-01-get-started.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+In Chapter 10 you&#8217;ll see how to create Web pages with more flexible layouts that don&#8217;t require specifying absolute sizes in pixels.
+</td>
+</tr>
+</table>
+</div>
+<div id="FIG3-6" class="imageblock">
+<div class="content">
+<img src="images/fig_03_06.png" alt="fig 03 06">
+</div>
+<div class="title">Figure 6. Working prototype. Take 1: Getting Started</div>
+</div>
+<div class="paragraph">
+<p>The next version of our prototype is more interesting, and it will contain a lot more code. First of all, the CSS file will become fancier, the layout of the four page sections will properly divide the screen real estate. We&#8217;ll add a Logo and a nicely styled Login button to the top of the page. This version of the code will also introduce some JavaScript supporting user&#8217;s authorization. Run the project-02-login, and you&#8217;ll see a window similar to <a href="#FIG3-7">Working prototype. Take2: Login</a>.</p>
+</div>
+<div id="FIG3-7" class="imageblock">
+<div class="content">
+<img src="images/fig_03_07.png" alt="fig 03 07">
+</div>
+<div class="title">Figure 7. Working prototype. Take2: Login</div>
+</div>
+<div class="paragraph">
+<p>This project has several directories to keep JavaScript, images, CSS, and fonts separately. We&#8217;ll talk about special icon fonts later in this section, but first things first - let&#8217;s take a close look at the HTML code.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+ &lt;head&gt;
+ 	&lt;meta charset="utf-8"&gt;
+ 	&lt;meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"&gt;
+ 	&lt;title&gt;Save The Child&lt;/title&gt;
+ 	&lt;link rel="stylesheet" href="assets/css/styles.css"&gt;
+
+ &lt;/head&gt;
+  &lt;body&gt;
+ 	&lt;div id="main-container"&gt;
+ 	 &lt;header&gt;
+
+ 	  &lt;h1 id="logo"&gt;&lt;a href="javascript:void(0)"&gt;Save The Child&lt;/a&gt;&lt;/h1&gt;
+
+ 	   &lt;nav id="top-nav"&gt;
+ 	  	&lt;ul&gt;
+ 	  	  &lt;li id="login"&gt;
+ 	  	   &lt;div id="authorized"&gt;
+ 	  	    &lt;span class="icon-user authorized-icon"&gt;&lt;/span&gt;
+ 	  	    &lt;span id="user-authorized"&gt;admin&lt;/span&gt;
+ 	  	    &lt;br/&gt;
+ 	  	    &lt;a id="profile-link" href="javascript:void(0);"&gt;profile&lt;/a&gt; |
+ 	  	    &lt;a id="logout-link" href="javascript:void(0);"&gt;logout&lt;/a&gt;
+ 	  	   &lt;/div&gt;
+
+ 	  	   &lt;form id="login-form"&gt;
+ 	  	    &lt;span class="icon-user login-form-icons"&gt;&lt;/span&gt;
+ 	  	    &lt;input id="username" name="username" type="text"
+ 	  	                placeholder="username" autocomplete="off" /&gt;
+ 	  	    &amp;nbsp; &lt;span class="icon-locked login-form-icons"&gt;&lt;/span&gt;
+ 	  	    &lt;input id="password" name="password"
+ 	  	                type="password" placeholder="password"/&gt;
+ 	  	   &lt;/form&gt;
+ 	  	   &lt;a id="login-submit" href="javascript:void(0)"&gt;login &amp;nbsp;
+ 	  	 	        &lt;span class="icon-enter"&gt;&lt;/span&gt; &lt;/a&gt;
+
+			&lt;div id="login-link" class="show-form"&gt;login
+			              &amp;nbsp; &lt;span class="icon-enter"&gt;&lt;/span&gt;&lt;/div&gt;
+
+ 	  	 	&lt;div class="clearfix"&gt;&lt;/div&gt;
+ 	  	 &lt;/li&gt;
+ 	  	 &lt;li id="top-menu-items"&gt;
+ 	  	 	&lt;ul&gt;
+ 	  	 		&lt;li&gt;
+ 	  	 			&lt;a href="javascript:void(0)"&gt;Who We Are&lt;/a&gt;
+ 	  	 		&lt;/li&gt;
+ 	  	 		&lt;li&gt;
+ 	  	 			&lt;a href="javascript:void(0)"&gt;What We Do&lt;/a&gt;
+ 	  	 		&lt;/li&gt;
+ 	  	 		&lt;li&gt;
+ 	  	 			&lt;a href="javascript:void(0)"&gt;Where We Work&lt;/a&gt;
+ 	  	 		&lt;/li&gt;
+ 	  	 		&lt;li&gt;
+ 	  	 			&lt;a href="javascript:void(0)"&gt;Way To Give&lt;/a&gt;
+ 	  	 		&lt;/li&gt;
+ 	  	 	&lt;/ul&gt;
+ 	  	 &lt;/li&gt;
+ 	  	&lt;/ul&gt;
+ 	   &lt;/nav&gt;
+ 	 &lt;/header&gt;
+
+ 	 &lt;div id="main" role="main"&gt;
+ 	 	&lt;section id="main-top-section"&gt;
+ 	 		&lt;br/&gt;
+ 	 		Main content. Top section.
+ 	 	&lt;/section&gt;
+ 	 	&lt;section id="main-bottom-section"&gt;
+ 	 		Main content. Bottom section.
+ 	 	&lt;/section&gt;
+ 	 &lt;/div&gt;
+ 	 &lt;footer&gt;
+ 	 	&lt;section id="temp-project-name-container"&gt;
+ 	 		&lt;b&gt;This is the footer&lt;/b&gt;
+ 	 	&lt;/section&gt;
+ 	 &lt;/footer&gt;
+ 	&lt;/div&gt;
+ 	&lt;script src="assets/js/main.js"&gt;&lt;/script&gt;
+ &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Usually, the logos on multi-page Web sites are clickable - they bring up the home page. That&#8217;s why Jerry placed the anchor tag in the logo section. But we are planning to build a single-page application so having a clickable logo won&#8217;t be needed.</p>
+</div>
+<div class="paragraph">
+<p>Run this project in WebStorm and click on the button Login, and you&#8217;ll see that it reacts. But looking at the login-related <code>&lt;a&gt;</code> tags in the <code>&lt;header&gt;</code> section you&#8217;ll find nothing but <code>href="javascript:void(0)"</code>. So why the button reacts? Read the code in the main.js shown below, and you&#8217;ll find there line <code>loginLink.addEventListener('click', showLoginForm, false);</code> that invokes the callback <code>showLoginForm()</code>. That why the Login button reacts. This seems confusing cause the anchor component was used here just for styling purposes. In this example a better solution  would be to replace the anchor tag <code>&lt;a id="login-link" class="show-form" href="javascript:void(0)"&gt;</code> with another component that doesn&#8217;t make the code confusing, for example <code>&lt;div id="login-link" class="show-form"&gt;</code>.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-important" title="Important"></i>
+</td>
+<td class="content">
+We do not want to build Web applications the old way when a server-side program prepares and sends UI fragments to the client. The server and the client send to each other only the data. If the server is not available, we can use the local storage (the offline mode) or a mockup data one the client.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_our-main-page-javascript"><a class="anchor" href="#_our-main-page-javascript"></a>Our Main Page JavaScript</h4>
+<div class="paragraph">
+<p>Now let&#8217;s examine the JavaScript code located in main.js. This code will self-invoke the anonymous function, which creates an object - encapsulated namespace ssc (short for Save Sick Child). This avoids polluting the global namespace. If we wanted to expose anything from this closure to the global namespace we could have done this via the variable <code>ssc</code> as described in <a href="#appendix_a">Appenix A</a> in  section Closures.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">// global namespace ssc
+var ssc = (function() {
+    // Encapsulated variables
+
+    // Find login section elements                   //  <i class="conum" data-value="1"></i><b>(1)</b>
+	var loginLink = document.getElementById("login-link");
+	var loginForm = document.getElementById("login-form");
+	var loginSubmit = document.getElementById('login-submit');
+	var logoutLink = document.getElementById('logout-link');
+	var profileLink = document.getElementById('profile-link');
+	var authorizedSection = document.getElementById("authorized");
+
+	var userName = document.getElementById('username');
+	var userPassword = document.getElementById('password');
+
+	// Register event listeners                       <i class="conum" data-value="2"></i><b>(2)</b>
+
+	loginLink.addEventListener('click', showLoginForm, false);
+	loginSubmit.addEventListener('click', logIn, false);
+	logoutLink.addEventListener('click', logOut, false);
+	profileLink.addEventListener('click', getProfile, false);
+
+	function showLoginForm() {
+		loginLink.style.display = "none";             <i class="conum" data-value="3"></i><b>(3)</b>
+		loginForm.style.display = "block";
+		loginSubmit.style.display = "block";
+	}
+
+	function showAuthorizedSection() {
+		authorizedSection.style.display = "block";
+		loginForm.style.display = "none";
+		loginSubmit.style.display = "none";
+	}
+
+	function logIn() {
+		//check credentials
+		var userNameValue = userName.value;
+		var userNameValueLength = userName.value.length;
+		var userPasswordValue = userPassword.value;
+		var userPasswordLength = userPassword.value.length;
+
+		if (userNameValueLength == 0 || userPasswordLength == 0) {
+			if (userNameValueLength == 0) {
+				console.log("username can't be empty");
+			}
+			if (userPasswordLength == 0) {
+				console.log("password can't be empty");
+			}
+		} else if (userNameValue != 'admin' ||
+		                          userPasswordValue != '1234') {
+			console.log('username or password is invalid');
+
+		} else if (userNameValue == 'admin' &amp;&amp;
+		                          userPasswordValue == '1234') {
+
+			showAuthorizedSection();                     <i class="conum" data-value="4"></i><b>(4)</b>
+		}
+	}
+
+	function logOut() {
+		userName.value = '';
+		userPassword.value = '';
+		authorizedSection.style.display = "none";
+		loginLink.style.display = "block";
+	}
+
+	function getProfile() {
+		console.log('Profile link clicked');
+	}
+
+})();</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>First query the DOM to get references to login-related HTML elements.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Register event listeners for the clickable login elements.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>To make a DOM element invisible set its <code>style.display="none"</code>. Hide the login button and show the login form having two input fields for entering the user id and the password.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>If the user is <em>admin</em> and the password is <em>1234</em>, hide the <code>loginForm</code> and make the top corner of the page look as in <a href="#FIG3-8">After successful login</a>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+We keep the user ID and password in this code just for the illustration purposes. Never do this in your applications. Authentication has to be done in a secure way on the server side.
+</td>
+</tr>
+</table>
+</div>
+<div id="FIG3-8" class="imageblock">
+<div class="content">
+<img src="images/fig_03_08.png" alt="fig 03 08">
+</div>
+<div class="title">Figure 8. After successful login</div>
+</div>
+<div class="sect4">
+<h5 id="_where-to-put-javascript"><a class="anchor" href="#_where-to-put-javascript"></a>Where to put JavaScript</h5>
+<div class="paragraph">
+<p>We recommend placing the <code>&lt;script&gt;</code> tag with your JavaScript at the end of your HTML file as in our index.html above. If you move the line <code>&lt;script src="js/main.js"&gt;&lt;/script&gt;</code> to the top of the <code>&lt;body&gt;</code> section and re-run index.html the screen will look as in <a href="#FIG3-7">Working prototype. Take2: Login</a>, but clicking on the Login won&#8217;t display the login form as it should. Why? Because registering of the event listeners in the script main.js failed cause the DOM components  (<code>login-link</code>, <code>login-form</code> and others) were not created yet by the time this script was running. Open the Firebug, Chrome Developer Tools, or any other debugging tool and you&#8217;ll see an error on the console that will look similar to the following:</p>
+</div>
+<div class="paragraph">
+<p><em>"TypeError: loginLink is null
+loginLink.addEventListener(<em>click</em>, showLoginForm, false);"</em></p>
+</div>
+<div class="paragraph">
+<p>Of course, in many cases your JavaScript code could have tested if the DOM elements exist before using them, but in this particular sample it&#8217;s just easier to to put the script at the end of the HTML file. Another solution would be to load the JavaScript code located in main.js in a separate handler function that would run only when the window&#8217;s <code>load</code> event is dispatched by the browser indicated that the DOM is ready: <code>window.onload = function() {...}</code>. You&#8217;ll see how to do this in the next version of main.js.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The <code>&lt;script&gt;</code> tag support <code>defer</code> and <code>async</code> attributes that allow to execute external JavaScript files after the parsing of a Web page is complete.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_the-css-of-our-main-page"><a class="anchor" href="#_the-css-of-our-main-page"></a>The CSS of our Main Page</h5>
+<div class="paragraph">
+<p>After reviewing the HTML and JavaScript code let&#8217;s spend a little more time with the CSS that supports the pages shown in <a href="#FIG3-7">Working prototype. Take2: Login</a>. The difference between the screen shots shown in <a href="#FIG3-6">Working prototype. Take 1: Getting Started</a> and <a href="#FIG3-7">Working prototype. Take2: Login</a> is substantial. First, the top left image is nowere to be found in index.html. Open the styles.css file and you&#8217;ll see the line <code>background: url(../img/logo.png) no-repeat;</code> in the <code>header h1#logo</code> section.</p>
+</div>
+<div class="paragraph">
+<p>The page layout is also specified in the file styles.css. In this version the sizes of each section is specified in pixels (px), which won&#8217;t make you page fluid and easily resizable.  For example, the HTML element with <code>id="main-top-section"</code> is styled like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="css language-css">#main-top-section {
+	width: 100%;
+	height: 320px;
+	margin-top: 18px;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Jerry styled the main to section to take the entire width of the browser&#8217;s window and to be 320 pixels tall. If you&#8217;ll keep in mind the "Mobile First" mantra, this may not be the best approach cause 320 pixels mean difference size (in inches) on the displays with different screen density. For example, 320 pixels on the iPhone 5 with retina display will look a lot smaller than 320 pixels on the iPhone 4. You may consider switching from <code>px</code> to <code>em</code> units: 1em is equal to the current font height, 2em means twice the size et al. You can read more about creating scalable style sheets with <em>em</em> units at <a href="http://www.w3.org/WAI/GL/css2em.htm">http://www.w3.org/WAI/GL/css2em.htm</a>.</p>
+</div>
+<div class="paragraph">
+<p>What looks a Login button on <a href="#FIG3-7">Working prototype. Take2: Login</a> is not a button, but a styled <code>div</code> element. Initially it was a clickable anchor <code>&lt;a&gt;</code>, and we&#8217;ve explained this change right after the listing shown index.html above. The CSS fragment supporting the Login button looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">li#login input {
+	width: 122px;
+	padding: 4px;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>border-radius</code> element makes the corners rounded of the HTML element it applied to.  But why we repeat it three times with additional prefixes <code>-moz-</code> and <code>-webkit-</code>? These are so called <em>CSS vendor prefixes</em>, which allow the Web browser vendors to implement experimental CSS properties that haven&#8217;t been standardized yet. For example, <code>-webkit-</code> is the prefix for all WebKit-based browsers: Chrome, Safari, Android, iOS. Microsoft uses <code>-ms-</code> for Internet Explorer, Opera uses <code>-o-</code>.  These prefixes are temporary measures, which make the CSS files heavier than they need to be. The time will come when the CSS3 standard properties will be implemented by all browser vendors and you won&#8217;t need to use these prefixes.</p>
+</div>
+<div class="paragraph">
+<p>As a matter of fact, unless yo uwant this code to work in the very old versions of Firefox, you can remove the line <code>-moz-border-radius: 2px;</code> from our styles.css because Mozilla has implemented the property <code>border-radius</code> in most of their browser . You can find a list of CSS properties with the corresponding vendor prefixes in <a href="http://peter.sh/experiments/vendor-prefixed-css-property-overview/">this list</a> maintained by Peter Beverloo.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the-footer-section"><a class="anchor" href="#_the-footer-section"></a>The Footer section</h4>
+<div class="paragraph">
+<p>The footer section comes next. Run the project called project-03-footer and you&#8217;ll see a new version of the Save The Child page with the bottom portion that looks as in <a href="#FIG3-9">The footer section</a>. The footer section shows several icons linking to Facebook, Google Plus, Twitter, RSS feed, and e-mail.</p>
+</div>
+<div id="FIG3-9" class="imageblock">
+<div class="content">
+<img src="images/fig_03_09.png" alt="fig 03 09">
+</div>
+<div class="title">Figure 9. The footer section</div>
+</div>
+<div class="paragraph">
+<p>The HTML section of our first prototype is shown below. At this point it has a number of <code>&lt;a&gt;</code> tags, which have the dummy references <code>href="javascript:void(0)"</code> that don&#8217;t redirect the user to any of these social sites.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;footer&gt;
+ &lt;section id="temp-project-name-container"&gt;
+	&lt;b&gt;project 03&lt;/b&gt;: Footer Section | Using Icon Fonts
+ &lt;/section&gt;
+ &lt;section id="social-icons"&gt;
+	&lt;a href="javascript:void(0)" title="Our Facebook page"&gt;
+	   &lt;span aria-hidden="true" class="icon-facebook"&gt;&lt;/span&gt;&lt;/a&gt;
+	&lt;a href="javascript:void(0)" title="Our Google Plus page"&gt;
+	   &lt;span aria-hidden="true" class="icon-gplus"&gt;&lt;/span&gt;&lt;/a&gt;
+	&lt;a href="javascript:void(0)" title="Our Twitter"&gt;
+	   &lt;span aria-hidden="true" class="icon-twitter"&gt;&lt;/span&gt;&lt;/a&gt; &amp;nbsp;
+	&lt;a href="javascript:void(0)" title="RSS feed"&gt;
+	   &lt;span aria-hidden="true" class="icon-feed"&gt;&lt;/span&gt;&lt;/a&gt;
+	&lt;a href="javascript:void(0)" title="Email us"&gt;
+	   &lt;span aria-hidden="true" class="icon-mail"&gt;&lt;/span&gt;&lt;/a&gt;
+ &lt;/section&gt;
+&lt;/footer&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each of the above anchors is styled using vector graphics icon fonts that we&#8217;ve selected and downloaded from <a href="http://icomoon.io/app">http://icomoon.io/app</a>. Vector graphics images are being re-drawn using vectors (strokes) as opposed to raster graphics, which is are pre-drawn in certain resolution images. The raster graphics can give you these boxy pixelated images if the size of the image needs to be increased. We use the vector images for our footer section that are treated as fonts. They will look as good as originals on any screen size, besides you can change their properties (e.g. color) as easy as you&#8217;d do with any other font.  The images that you see on <a href="#FIG3-9">The footer section</a> are are located in the fonts directory of the project-03-footer. The IcoMoon web application will generate the fonts for you based on your selection and you&#8217;ll get a sample html file, fonts, and CSS to be used with your application. Our icon fonts section in styles.css will look as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="css language-css">/* Icon Fonts */
+@font-face {
+	font-family: 'icomoon';
+	src:url('../fonts/icomoon.eot');
+	src:url('../fonts/icomoon.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/icomoon.svg#icomoon') format('svg'),
+		url('../fonts/icomoon.woff') format('woff'),
+		url('../fonts/icomoon.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_the-donate-section"><a class="anchor" href="#_the-donate-section"></a>The Donate Section</h4>
+<div class="paragraph">
+<p>The section with the Donate button and the donation form will be located  in the top portion of page right below the navigation area. Initially, the page will open up with the background image of a sick but smiley boy on the right and a large Donate button on the left. The image shown on <a href="#FIG3-10">The initial view of the Donate section</a> is taken from a large collection of photos at <a href="http://www.istockphoto.com/">iStockphoto</a> Web site.  We&#8217;re also using two more background images here: one with the flowers, and the other with the sun and clouds, and you can find the references to these images in the styles.css file. Run the project-04-donation and you&#8217;ll see the new version of or Save The Child page that will look as on <a href="#FIG3-10">The initial view of the Donate section</a>.</p>
+</div>
+<div id="FIG3-10" class="imageblock">
+<div class="content">
+<img src="images/fig_03_10.png" alt="fig 03 10">
+</div>
+<div class="title">Figure 10. The initial view of the Donate section</div>
+</div>
+<div class="paragraph">
+<p>Lorem Ipsum is a dummy text widely used in printing, typesetting, and Web design. It&#8217;s used as a placeholder to indicate the text areas that should be filled with a real content later on. You can read about it at <a href="http://www.lipsum.com/">http://www.lipsum.com</a>. This is how the HTML fragment supporting <a href="#FIG3-10">The initial view of the Donate section</a> looks like (no CSS is shown for brevity).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;div id="donation-address"&gt;
+	&lt;p class="donation-address"&gt;
+		Lorem ipsum dolor sit amet, consectetur e magna aliqua.
+		Nostrud exercitation ullamco laboris nisi ut aliquip ex
+		ea commodo consequat.
+		Duis aute irure dolor in reprehenderit in voluptate velit
+		esse cillum dolore eu fugiat nulla pariatur.
+		Excepteur sint occaecat cupidatat non proident.
+	&lt;/p&gt;
+	&lt;button class="donate-button" id="donate-button"&gt;
+		&lt;span class="donate-button-header"&gt;Donate Now&lt;/span&gt;
+		&lt;br/&gt;
+		&lt;span class="donate-2nd-line"&gt;Children can't wait&lt;/span&gt;
+	&lt;/button&gt;
+
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Clicking the button Donate should reveal the form where the user should be able to enter her name, address and the donation amount. Instead of opening a popup window we&#8217;ll just change the content on the left revealing the form, and move the button Donate to the right. <a href="#FIG3-11">After clicking on Donate button</a> shows how the top portion of our page will look like after the user clicks the Donate button.</p>
+</div>
+<div id="FIG3-11" class="imageblock">
+<div class="content">
+<img src="images/fig_03_11.png" alt="fig 03 11">
+</div>
+<div class="title">Figure 11. After clicking on Donate button</div>
+</div>
+<div class="paragraph">
+<p>The HTML of the donation form shown on <a href="#FIG3-11">After clicking on Donate button</a> is shown below. When the user clicks on the Donate button the content of the form should be sent to PayPal or any other payment processing system.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;div id="donate-form-container"&gt;
+ &lt;h3&gt;Make a donation today&lt;/h3&gt;
+ &lt;form name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post"&gt;
+  &lt;div class="donation-form-section"&gt;
+	&lt;label class="donation-heading"&gt;Please select or enter
+		&lt;br/&gt; donation amount&lt;/label&gt;
+	&lt;input type="radio" name = "amount" id= "d10" value = "10"/&gt;
+	&lt;label for = "d10"&gt;10&lt;/label&gt;
+	&lt;br/&gt;
+	&lt;input type="radio" name = "amount" id = "d20" value="20" /&gt;
+	&lt;label for = "d20"&gt;20&lt;/label&gt;
+	&lt;br/&gt;
+	&lt;input type="radio" name = "amount" id="d50" checked="checked" value="50" /&gt;
+	&lt;label for="d50"&gt;50&lt;/label&gt;
+	&lt;br/&gt;
+	&lt;input type="radio" name = "amount" id="d100" value="100" /&gt;
+	&lt;label for="d100"&gt;100&lt;/label&gt;
+	&lt;br/&gt;
+	&lt;input type="radio" name = "amount" id="d200" value="200" /&gt;
+	&lt;label for="d200"&gt;200&lt;/label&gt;
+	&lt;label class="donation-heading"&gt;Other amount&lt;/label&gt;
+	&lt;input id="customAmount" name="amount" value=""
+	       type="text"  autocomplete="off" /&gt;
+  &lt;/div&gt;
+  &lt;div class="donation-form-section"&gt;
+	&lt;label class="donation-heading"&gt;Donor information&lt;/label&gt;
+	&lt;input type="text" id="full_name" name="full_name"
+	       placeholder="full name *" required&gt;
+	&lt;input type="email" id="email_addr" name="email_addr"
+	       placeholder="email *" required&gt;
+	&lt;input type="text" id="street_address" name="street_address"
+	       placeholder="address"&gt;
+	&lt;input type="text" id="city" name="scty" placeholder="city"&gt;
+	&lt;input type="text" id="zip" name="zip" placeholder="zip/postal code"&gt;
+	&lt;select name="state"&gt;
+		&lt;option value="" selected="selected"&gt; - State - &lt;/option&gt;
+		&lt;option value="AL"&gt;Alabama&lt;/option&gt;
+		&lt;option value="WY"&gt;Wyoming&lt;/option&gt;
+	&lt;/select&gt;
+	&lt;select name="country"&gt;
+		&lt;option value="" selected="selected"&gt; - Country - &lt;/option&gt;
+		&lt;option value="United States"&gt;United States&lt;/option&gt;
+		&lt;option value="Zimbabwe"&gt;Zimbabwe&lt;/option&gt;
+	&lt;/select&gt;
+  &lt;/div&gt;
+
+  &lt;div class="donation-form-section make-payment"&gt;
+	&lt;h4&gt;We accept Paypal payments&lt;/h4&gt;
+	&lt;p&gt;
+		Your payment will processed securely by &lt;b&gt;PayPal&lt;/b&gt;.
+		PayPal employ industry-leading encryption and fraud prevention tools.
+		Your financial information is never divulged to us.
+	&lt;/p&gt;
+
+	&lt;button  type="submit" class="donate-button donate-button-submit"&gt;
+		&lt;span class="donate-button-header"&gt;Donate Now&lt;/span&gt;
+		&lt;br/&gt;
+		&lt;span class="donate-2nd-line"&gt;Children can't wait&lt;/span&gt;
+	&lt;/button&gt;
+	&lt;a id="donate-later-link" href="javascript:void(0);"&gt;I'll donate later
+	&lt;span class="icon-cancel"&gt;&lt;/span&gt;&lt;/a&gt;
+  &lt;/div&gt;
+ &lt;/form&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The JavaScript code supporting the UI transformations related to the button Donate is shown below. It&#8217;s the code snippet from the main.js from project-04-donation. The click on the Donate button invokes the event handler <code>showDonationForm()</code>, which simply hides the <code>&lt;div id="donation-address"&gt;</code> with Lorem Ipsum and displays the donation form: ` &lt;form name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post"&gt;"&gt;<code>. When the form field loses focus or after the user clicked on the Submit button, the data from the form `_xclick</code> must be validated and sent to paypal.com. If the user clicks on "I&#8217;ll donate later", the code hides the form and shows the Lorem Ipsum from the <code>&lt;div id="donation-address"&gt;</code> again.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-important" title="Important"></i>
+</td>
+<td class="content">
+Not including proper form validation is a sign of a rookie developer. This can easily irritate users. Instead of showing error messages like "Please include only numbers in the phone number field" use <a href="http://shop.oreilly.com/product/0636920012337.do">regular expressions</a> to programmatically strip non-digits away.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Two <code>select</code> dropdowns in the code above contain hard-coded values of all states and countries. For brevity, we&#8217;ve listed just a couple of entries in each. In Chapter 2 we&#8217;ll populate these dropdowns using the external data in JSON format.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Don&#8217;t show all the countries in the dropdown unless your application is global. If the majority of the users of your country live in France, display on top of the list France and not Afghanistan (the first country in alphabetical order).
+</td>
+</tr>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_assigning-function-handlers-take-1"><a class="anchor" href="#_assigning-function-handlers-take-1"></a>Assigning Function Handlers. Take 1.</h5>
+<div class="paragraph">
+<p>The next code fragment is an extract of JavaScript file main.js provide by Jerry. This code contains function handlers that process user clicks in the Donate section.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">(function() {
+	var donateBotton = document.getElementById('donate-button');
+	var donationAddress = document.getElementById('donation-address');
+	var customAmount = document.getElementById('customAmount');
+	var donateForm = document.forms['_xclick'];
+	var donateLaterLink = document.getElementById('donate-later-link');
+	var checkedInd = 2;
+
+	function showDonationForm() {
+		donationAddress.style.display = "none";
+		donateFormContainer.style.display = "block";
+	}
+
+    // Register the event listeners
+	donateBotton.addEventListener('click', showDonationForm, false);
+	customAmount.addEventListener('focus', onCustomAmountFocus, false);
+	donateLaterLink.addEventListener('click', donateLater, false);
+	customAmount.addEventListener('blur', onCustomAmountBlur, false);
+
+	// Uncheck selected radio buttons if the custom amount was chosen
+	function onCustomAmountFocus() {
+		for (var i = 0; i &lt; donateForm.length; i++) {
+			if (donateForm[i].type == 'radio') {
+				donateForm[i].onclick = function() {
+					customAmount.value = '';
+				}
+			}
+			if (donateForm[i].type == 'radio' &amp;&amp; donateForm[i].checked) {
+				checkedInd = i;
+				donateForm[i].checked = false;
+			}
+		}
+	}
+
+	function onCustomAmountBlur() {
+		var value = customAmount.value;
+		if (value == '') {
+		    // The user haven't entered other amount
+			donateForm[checkedInd].checked = true;
+		}
+	}
+
+	function donateLater(){
+		donationAddress.style.display = "block";
+		donateFormContainer.style.display = "none";
+	}
+
+})();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code above contains an example of an inefficient code that in a loop assigns a click event handler to each radio button should the user click any radio button after visiting the Other Amount field. This was a Jerry&#8217;s understanding of how to reset the value of the <code>customAmount</code> variable. Jerry was not familiar with the capture phase of the events that can intercept the click event on the radio buttons container&#8217;s level and simply reset the value of <code>customAmount</code> regardless of which specific radio button is clicked.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_assigning-function-handlers-take-2"><a class="anchor" href="#_assigning-function-handlers-take-2"></a>Assigning Function Handlers. Take 2.</h5>
+<div class="paragraph">
+<p>Let&#8217;s improve the code from the previous section. The idea is to intercept the click event during the capture phase (see the DOM Events section in ,<a href="#appendix_a">Appendix A</a>) and if the <code>Event.target</code> is any radio button, perform <code>customAmount.value = '';</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var donateFormContainer = document.getElementById('donate-form-container');
+
+// Intercept any click on the donate form in a capturing phase
+donateFormContainer.addEventListener("click", resetCustomAmount, true);
+function resetCustomAmount(event){
+
+    // reset the customAmount
+	if (event.target.type=="radio"){
+		customAmount.value = '';
+	}
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code of the <code>onCustomAmountFocus()</code> doesn&#8217;t need to assign function handlers to the radio buttons any longer:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">function onCustomAmountFocus() {
+	for (var i = 0; i &lt; donateForm.length; i++) {
+		if (donateForm[i].type == 'radio' &amp;&amp; donateForm[i].checked) {
+			checkedInd = i;
+			donateForm[i].checked = false;
+		}
+	}
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the Donate section we started working with event handlers. You&#8217;ll see many more examples of event processing throughout the book.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_adding-video"><a class="anchor" href="#_adding-video"></a>Adding Video</h3>
+<div class="paragraph">
+<p>In this section we&#8217;ll add a video player to our Save The Child application. The goal is to play a short animation encouraging kids to fight the disease. We&#8217;ve hired a professional animation artist Yuri who has started working on the animation. Meanwhile let&#8217;s take care of embedding the video player showing any sample video file.</p>
+</div>
+<div class="sect3">
+<h4 id="_adding-the-html5-video-element"><a class="anchor" href="#_adding-the-html5-video-element"></a>Adding the HTML5 Video Element</h4>
+<div class="paragraph">
+<p>Let&#8217;s run the project called project-05-html5-video to see the video playing, and after that we&#8217;ll review the code. The new version of the Sick The  Child app should look as in <a href="#FIG3-12">The video player is embeded</a>. The users will see an embedded video player on the right that can play the video located in the assets/media folder of the project project-05-html5-video.</p>
+</div>
+<div id="FIG3-12" class="imageblock">
+<div class="content">
+<img src="images/fig_03_12.png" alt="fig 03 12">
+</div>
+<div class="title">Figure 12. The video player is embeded</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s see how our index.html has changed since its previous version. The bottom part of the main section includes the <code>&lt;video&gt;</code> tag. In the past, the videos in Web pages were played predominantly by the browser&#8217;s Flash Player plugin (even older popular plugins included RealPlayer, MediaPlayer, and QuickTime). For example, you could have used the HTML tag `&lt;embed src="myvideo.swf" height="300" width="300"&gt;`and if the user&#8217;s browser supports Flash Player, that&#8217;s all you needed for basic video play. While there were plenty of open source video players, creation of the enterprise-grade video player for Flash videos became an important skill for some software developers. For example, HBO, an American cable network offers an advanced multi-featured video player embedded into <a href="http://www.hbogo.com">www.hbogo.com</a> for their subscribers.</p>
+</div>
+<div class="paragraph">
+<p>In today&#8217;s world most of the modern mobile Web browsers don&#8217;t support Flash Player, and the video content providers prefer broadcasting videos in formats that are supported by all the browsers and can be embedded into Web page using the standard HTML5 element <code>&lt;video&gt;</code> (see its current working draft is published at <a href="http://www.w3.org/wiki/HTML/Elements/video">http://www.w3.org/wiki/HTML/Elements/video</a>.</p>
+</div>
+<div class="paragraph">
+<p>The following code fragment illustrates how we&#8217;ve embedded the video into the bottom portion of our Web page (index.html). It includes two <code>&lt;source&gt;</code> elements, which allows to provide alternative media resources. If the Web browser supports playing video specified in the first <code>&lt;source&gt;</code> element, it&#8217;ll ignore the other versions of the media. For example, the code below offers two versions of the video file: intro.mp4 (in H.264/MPEG-4 format natively supported by Safari and Internet Explorer) and intro.webm (WebM format for Firefox, Chrome, and Opera).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;section id="main-bottom-section"&gt;
+ &lt;div id="video-container"&gt;
+ 	&lt;video controls poster="assets/media/intro.jpg"
+ 	       width="390px" height="240" preload="metadata"&gt;
+
+ 		&lt;source src="assets/media/intro.mp4" type="video/mp4"&gt;
+ 		&lt;source src="assets/media/intro.webm" type="video/webm"&gt;
+ 		&lt;p&gt;Sorry, your browser doesn't support video&lt;/p&gt;
+ 	&lt;/video&gt;
+
+ 		&lt;h3&gt;Video header goes here&lt;/h3&gt;
+ 		&lt;h5&gt;&lt;a href="javascript:void(0);"&gt;More videos&lt;/a&gt;&lt;/h5&gt;
+ &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The boolean property <code>controls</code> asks the Web browser to display the video player with controls (the play/pause buttons, the full screen mode, et al.) If you wouldn&#8217;t use the property <code>controls</code> your JavaScript could would have to control the playback. The <code>poster</code> property of the <code>&lt;video&gt;</code> tag specifies the image to display as a placeholder for the video - this is the image you see on <a href="#FIG3-12">The video player is embeded</a>. In our case the <code>preload</code> valus is <code>metadata</code>, which means that we want the Web browser to preload just the first frame of the video its metadata. Should we used <code>preload="auto"</code>, the video would start loading in the background as soon as the Web page was loaded unless the user&#8217;s browser doesn&#8217;t allow it (e.g. Safari on iOS) for saving the bandwidth.</p>
+</div>
+<div class="paragraph">
+<p>All major Web browsers released in 2011 and later include their own embedded video players that support the <code>&lt;video&gt;</code> element. It&#8217;s great that your code doesn&#8217;t depend on the support of the Flash Player, but now video players look different depending on which browser the user has.</p>
+</div>
+<div class="paragraph">
+<p>If neither .mp4 nor .webm files can be played, the content in the <code>&lt;p&gt;</code>  tag displays the fallback message "Sorry, your browser doesn&#8217;t support video". If you need to support older Web browsers that don&#8217;t support HTML5 video, but support Flash Player, you can replace this <code>&lt;p&gt;</code> tag with the <code>&lt;object&gt;</code> and <code>&lt;embed&gt;</code> tags that embed another media file that Flash Player understands. Finally, if you believe that some users may have the browsers that support neither the <code>&lt;video&gt;</code> tag nor Flash Player, just add the links to the files listed in the <code>&lt;source&gt;</code> tags right after the closing <code>&lt;/video&gt;</code> tag.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_embedding-youtube-videos"><a class="anchor" href="#_embedding-youtube-videos"></a>Embedding YouTube Videos</h4>
+<div class="paragraph">
+<p>Another way to include videos in your Web application is by uploading them to YouTube first and then embedding if into your Web page. This provides a number of benefits:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The videos are hosted on Google&#8217;s servers and use their bandwidth.</p>
+</li>
+<li>
+<p>The users can either watch the video as a part of your application&#8217;s Web page or, by clicking on the YouTube logo on the status bar of the video player you can continue watching the video from its original YouTube URL.</p>
+</li>
+<li>
+<p>YouTube is streaming videos in the compressed form and the user can watch it as the bytes come in - it doesn&#8217;t require a video to be fully preloaded to the user&#8217;s device.</p>
+</li>
+<li>
+<p>YouTube stores videos in several formats and automatically selects the best one based on the user&#8217;s Web browser (user agent).</p>
+</li>
+<li>
+<p>The HTML code to embed a YouTube video is generated for you by pressing the Share and then Embed link by the video itself.</p>
+</li>
+<li>
+<p>You can enrich your Web application by incorporating extensive video libraries by using the <a href="https://developers.google.com/youtube/v3/">YouTube Data API</a>. You can create fine tuned searches retrieving channels, playlists, videos, manage subscriptions, and authorize user requests.</p>
+</li>
+<li>
+<p>Your users can save the YouTube videos on their local drive using free Web Browsers add-ons like DownloadHelper extension for Firefox or a RealDownloader.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Youtube offers <a href="https://www.youtube.com/html5"> an Opt-In Trial of HTML5 video</a>, which allows the users to request playing most of the videos using HTML 5 video (even those recorded for Flash Player).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Embedding a YouTube video into your HTML page is simple. Find the page with the video on YouTube and press the links Share and Embed located right under the video. Then select the size of your video player and HTTPS encryption if needed (see Chapter 9 on Web security for reasoning). When this is done, copy the generated <code>iFrame</code> section into your page.</p>
+</div>
+<div class="paragraph">
+<p>Open the file index.html in the project-06-YouTube-video and you&#8217;ll see there a code that replaces the <code>&lt;video&gt;</code> tag of the previous project. It should look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;section id="main-bottom-section"&gt;
+ &lt;div id="video-container"&gt;
+  &lt;div id="video-container"&gt;
+  	&lt;iframe src="http://www.youtube.com/embed/VGZcerOhCuo?wmode=transparent&amp;hd=1&amp;vq=hd720"
+  	        frameborder="0" width="390" height="240"&gt;&lt;/iframe&gt;
+
+  	&lt;h3&gt;Video header goes here&lt;/h3&gt;
+  	&lt;h5&gt;&lt;a href="javascript:void(0);"&gt;More videos&lt;/a&gt;&lt;/h5&gt;
+  &lt;/div&gt;
+ &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the initial size of our video player is 390x240 pixels. The <code>&lt;iframe&gt;</code> wraps the URL of the video, which in this example ends with parameters  <code>hd=1</code> and <code>vq=hd720</code>. This is how you can force YouTube to load video in HD quality. Run the project-06-YouTube-video and if shows you a Web page that looks as in <a href="#FIG3-13">The YouTube player is embeded</a>.</p>
+</div>
+<div id="FIG3-13" class="imageblock">
+<div class="content">
+<img src="images/fig_03_13.png" alt="fig 03 13">
+</div>
+<div class="title">Figure 13. The YouTube player is embeded</div>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s do yet another experiment. Enter the URL of our video directly in your Web browser, turn on the Firegug or Developer Tools. We did it in Firebug under Mac OS and selected the Net tab. Then HTML Response looked as in <a href="#FIG3-14">HTTP Response object from YouTube</a>. YouTube recognized that this Web browser is capable of playing Flash content (FLASH_UPGRADE) and picked the QuickTime as a fallback (QUICKTIME_FALLBACK).</p>
+</div>
+<div id="FIG3-14" class="imageblock">
+<div class="content">
+<img src="images/fig_03_14.jpg" alt="fig 03 14">
+</div>
+<div class="title">Figure 14. HTTP Response object from YouTube</div>
+</div>
+<div class="paragraph">
+<p>Our brief introduction to embedding videos in HTML is over. Let' keep adding new features to the Save The Child Web application. This time we&#8217;ll get familiar with the HTML5 Geolocation API.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_adding-geolocation-support"><a class="anchor" href="#_adding-geolocation-support"></a>Adding Geolocation Support</h3>
+<div class="paragraph">
+<p>HTML5 includes the Geolocation API that allows programmatically figure out the latitude and longitude of the user&#8217;s device. Most of the people are accustomed to the non-Web GPS applications in cars or mobile devices that display maps and calculate distances based on the current coordinates of the user&#8217;s device or motor vehicle. But why do we need the Geolocation API in a desktop Web application?</p>
+</div>
+<div class="paragraph">
+<p>The goal of this section is to demonstrate a very practical feature - finding registered The Children based on the user&#8217;s location. This way the users of the Save The Child can find the needy children in a particular geographical area. In this chapter you&#8217;ll just learn the basics of HTML5 GeoLocation API, but we&#8217;ll continue improving the location feature of the Save The Child in the next chapter.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The World Wide Web Consortium has published proposed recommendation of the <a href="http://www.w3.org/TR/geolocation-API/">Geolocation API Specification</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Does your old desktop computer have a GPS hardware? Most likely it doesn&#8217;t. But its location can be calculated with varying degree of accuracy. If your desktop computer is connected to the network it has an IP address or your local Wi-Fi router may have an SSID given by the router vendor or your Internet provider so the location of your desktop computer is not a secret, unless you change the SSID of your Wi-Fi router. Highly populated areas have more Wi-Fi routers and cell towers so the accuracy increases. In any case, properly designed applications must to always ask the user&#8217;s permission to use the current location of her computer or other connected device.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+The GPS signals are not always available. There are various location services that help identifying the position of your device. For example, Google, Apple, Microsoft, Skyhook and other companies use publicly broadcast Wi-Fi data from the wireless access point. Google Location Server uses Media Access Control (MAC) address to identify any device connected to the network.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Every Web Browser has a global object <code>window</code>, which includes the <code>navigator</code> object containing the information about the user&#8217;s browser. If the browser&#8217;s <code>navigator</code> object includes the property <code>geolocation</code>, geolocation services are available. While the Geolocation API allows you to get just a coordinate of your device and report the accuracy of this location, most applications use this information with some user-friendly UI, for example, the mapping software. In this section our goal is to demonstrate the following:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>How to use Geolocation API</p>
+</li>
+<li>
+<p>How to integrate the Geolocation API with Google Maps.</p>
+</li>
+<li>
+<p>How to detect id the Web browser supports geolocation services</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+To respect people&#8217;s privacy, Web browsers will always ask for permission to use Geolocation API unless the user changes the settings one the browser to always allow it.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_geolocation-basics"><a class="anchor" href="#_geolocation-basics"></a>Geolocation Basics</h4>
+<div class="paragraph">
+<p>The next version of our application is called project-07-basic-geolocation., where we simply assume that the Web browser supports the Geolocation. The Save The Child page will get a new container in the middle of the bottom main section, where we are planning to display the map of the current user location. But for now we&#8217;ll show there just the coordinates: latitude, longitude, and the accuracy. Initially, the map container is empty, but we&#8217;ll populate it from the JavaScript code as soon as the position of the computer is located.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;div id="map-container"&gt;
+			​
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The following code snippet from main.js makes a call to the <code>navigator.geolocation</code> object to get the current position of the user&#8217;s computer.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var mapContainer = document.getElementById('map-container');      <i class="conum" data-value="1"></i><b>(1)</b>
+
+function successGeoData(position) {
+	var successMessage = "We found your position!";               <i class="conum" data-value="2"></i><b>(2)</b>
+	successMessage += '\n Latitude = ' + position.coords.latitude;
+	successMessage += '\n Longitude = ' + position.coords.longitude;
+	successMessage += '\n Accuracy = ' + position.coords.accuracy +
+	console.log(successMessage);
+
+	var successMessageHTML = successMessage.replace(/\n/g, '&lt;br /&gt;');
+	var currentContent = mapContainer.innerHTML;
+	mapContainer.innerHTML = currentContent + "&lt;br /&gt;"
+	                                   + successMessageHTML;       <i class="conum" data-value="3"></i><b>(3)</b>
+
+}
+
+function failGeoData(error) {                                       <i class="conum" data-value="4"></i><b>(4)</b>
+	console.log('error code = ' + error.code);
+
+	switch(error.code) {
+		case error.POSITION_UNAVALABLE:
+			errorMessage = "Can't get the location";
+			break;
+		case error.PERMISSION_DENIED:
+			errorMessage = "The user doesn't want to share location";
+			break;
+		case error.TIMEOUT:
+			errorMessage = "Timeout -  Finding location takes too long";
+			break;
+		case error.UNKNOWN_ERROR:
+			errorMessage = "Unknown error: " + error.code;
+			break;
+	}
+	console.log(errorMessage);
+	mapContainer.innerHTML = errorMessage;
+}
+
+if (navigator.geolocation) {
+	var startMessage = 'Your browser supports geolocation API :)';
+	console.log(startMessage);
+	mapContainer.innerHTML = startMessage;
+	console.log('Checking your position...');
+	mapContainer.innerHTML = startMessage + '&lt;br /&gt;Checking your position...';
+
+	navigator.geolocation.getCurrentPosition(successGeoData,
+	   failGeoData,                                            <i class="conum" data-value="5"></i><b>(5)</b>
+	   {maximumAge : 60000,
+		enableHighAccuracy : true,                             <i class="conum" data-value="6"></i><b>(6)</b>
+		timeout : 5000
+	   }
+	);
+
+} else {
+	mapContainer.innerHTML ='Your browser does not support geolocation';
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Get a reference to the DOM element <code>map-container</code> to be used for showing the results.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The function handler to be called in case of the successful discovery of the computer&#8217;s coordinates. If this function will be called it&#8217;ll get a <code>position</code> object as an argument.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Display the retrieved data on the Web page (see <a href="#FIG3-15">The latitude and longitude are displayed</a>).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>This is the error handler callback.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Invoke the method <code>getCurrentPosition()</code> passing it two callback function as arguments (for success and failure) and an object with optional parameters for this invocation.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Optional parameters: accept the cached value if not older than 60 seconds, retrieve the best possible results and don&#8217;t wait for results for more that 5 seconds. You may not always want the best possible results to lower the response time and the power consumption.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If you run the project-07-basic-geolocation, the Browser will show a popup (it can be located under the toolbar) asking you a question similar to "Would you like to share your location with 127.0.01?"  Allow this sharing and you&#8217;ll see a Web page, which will include the information about your computer&#8217;s location similar to <a href="#FIG3-15">The latitude and longitude are displayed</a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you don&#8217;t see the question asking permission to share location, check the privacy settings of your Web browser - most likely you&#8217;ve allowed using your location some time in the past.
+</td>
+</tr>
+</table>
+</div>
+<div id="FIG3-15" class="imageblock">
+<div class="content">
+<img src="images/fig_03_15.png" alt="fig 03 15">
+</div>
+<div class="title">Figure 15. The latitude and longitude are displayed</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you want to monitor the position as it changes (the device is moving) use <code>geolocation.watchPosition()</code>, which implements internal timer and checks the position. To stop monitoring position use <code>geolocation.clearWatch()</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_integrating-with-google-maps"><a class="anchor" href="#_integrating-with-google-maps"></a>Integrating with Google Maps</h4>
+<div class="paragraph">
+<p>Knowing the device coordinates is very important, but let&#8217;s make the location information more presentable by feeding the device coordinates to <a href="https://developers.google.com/maps/">Google Maps API</a>. In this version of Save The Child we&#8217;ll replace the gray rectangle from &lt;&lt;&gt;FIG3-15&gt; with the Google maps container. We want the user to see a familiar map fragment with a pin pointing at the location of her Web browser. To follow our "Show and Tell" style let&#8217;s see it working first. Run the project-08-geolocation-maps and you&#8217;ll see a map with your current location as shown on  <a href="#FIG3-16">Showing your current location</a>.</p>
+</div>
+<div id="FIG3-16" class="imageblock">
+<div class="content">
+<img src="images/fig_03_16.png" alt="fig 03 16">
+</div>
+<div class="title">Figure 16. Showing your current location</div>
+</div>
+<div class="paragraph">
+<p>Now comes the "Tell" part. First of all, take a look at the bottom of the index.html file. It loads Google&#8217;s JavaScript library with their Map API (<code>sensor=false</code> means that we are not using a sensor like GPS locator):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;script src="http://maps.googleapis.com/maps/api/js?sensor=false"&gt;&lt;/script&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the past Google required developed to obtain an API key and include it in the above URL. Although some Google&#8217;s tutorials still mentions the API key, it&#8217;s not a must.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+An alternative way of adding the <code>&lt;script&gt;</code> section to HTML page is by creating a script element. This gives you a flexibility of postponing the decision of which JavaScript to load. For example,
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var myScript=document.createElement("script");
+myScript.src="http://......somelibrary.js";
+document.body.appendChild(myScript);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Our main.js will invoke the function for Google&#8217;s library as needed. The code that finds the location of your device is almost the same as in the section Geolocation Basics. We&#8217;ve replaced the call to with <code>geolocation.watchPosition()</code> so this program can modify the position if your computer, tablet, or a mobile phone is moving. We store the returned value of the <code>watchPosition()</code> in the variable <code>watcherID</code> in case if you decide to stop watching the position of the device by calling <code>clearWatch(watcherID)</code>.  Also, we lowered the value of the <code>maximumAge</code> option so the program will update the UI more frequently, which is important if you are running this program while in motion.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">(function() {
+
+ var locationUI = document.getElementById('location-ui');
+ var locationMap = document.getElementById('location-map');
+ var watcherID;
+
+ function successGeoData(position) {
+   var successMessage = "We found your position!";
+   var latitude = position.coords.latitude;
+
+   var longitude = position.coords.longitude;
+   successMessage += '\n Latitude = ' + latitude;
+   successMessage += '\n Longitude = ' + longitude;
+   successMessage += '\n Accuracy = ' + position.coords.accuracy
+                                      + ' meters';
+   console.log(successMessage);
+
+   // Turn the geolocation position into a LatLng object.
+   var locationCoordinates =
+          new google.maps.LatLng(latitude, longitude);      <i class="conum" data-value="1"></i><b>(1)</b>
+
+   var mapOptions = {
+   	center : locationCoordinates,
+   	zoom : 12,
+   	mapTypeId : google.maps.MapTypeId.ROADMAP,         //  <i class="conum" data-value="2"></i><b>(2)</b>
+   	mapTypeControlOptions : {
+   	  style : google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+   	  position : google.maps.ControlPosition.TOP_RIGHT
+   	}
+   };
+
+   // Create the map
+   var map = new google.maps.Map(locationMap, mapOptions);  <i class="conum" data-value="3"></i><b>(3)</b>
+
+   // set the marker and info window
+   var contentString = '&lt;div id="info-window-content"&gt;' +
+        'We have located you using HTML5 Geolocation.&lt;/div&gt;';
+
+   var infowindow = new google.maps.InfoWindow({            <i class="conum" data-value="4"></i><b>(4)</b>
+   	content : contentString,
+   	maxWidth : 160
+   });
+
+   var marker = new google.maps.Marker({                   //  <i class="conum" data-value="5"></i><b>(5)</b>
+   	position : locationCoordinates,
+   	map : map,
+   	title : "Your current location"
+
+   });
+
+       google.maps.event.addListener(marker, 'click',      <i class="conum" data-value="6"></i><b>(6)</b>
+            function() {
+                infowindow.open(map, marker);
+            }
+       );
+
+       // When the map is loaded show the message and
+       // remove event handler after the first "idle" event
+       google.maps.event.addListenerOnce(map, 'idle', function(){
+   	locationUI.innerHTML = "Your current location";
+   })
+
+ }
+
+  // error handler
+ function failGeoData(error) {
+ 	 clearWatch(watcherID);
+ 	//the error processing code is omitted for brevity
+ }
+
+ if (navigator.geolocation) {
+ 	var startMessage =
+ 	    'Browser supports geolocation API. Checking your location...';
+ 	console.log(startMessage);
+
+ 	var currentContent = locationUI.innerHTML;
+ 	locationUI.innerHTML = currentContent +' '+startMessage;
+
+ 	watcherID = navigator.geolocation.watchPosition(successGeoData,  <i class="conum" data-value="7"></i><b>(7)</b>
+ 	    failGeoData, {
+ 		maximumAge : 1000,
+ 		enableHighAccuracy : true,
+ 		timeout : 5000
+ 	});
+
+ } else {
+ 	console.log('browser does not support geolocation :(');
+ }
+})();
+</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Google API represents a point in geographical coordinates (latitude and longitude) as a <code>LatLng</code> object, which we instantiate here.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The object`google.maps.MapOptions` is an object that allows you to specify various parameters of the map to be created. In particular, the map type can be one of the following: <code>HYBRID, ROADMAP, SATTELITE, TERRAIN</code>. We&#8217;ve chosen the <code>ROADMAP</code>, which displays a normal street map.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The function constructor <code>google.maps.Map</code> takes two arguments: the HTML container where the map has to be rendered and the <code>MapOption</code> as parameters of the map.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Create an overlay box that will show the content describing the location (e.g. a restaurant name) on the map. You can do it programmatically by calling <code>InfoWindow.open()</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Place a marker on the specified position on the map.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Show the overlay box when the use clicks  on the marker on the map.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Invoke the method <code>watchPosition()</code> to find the current position of the user&#8217;s computer.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This is a pretty basic example of the integrating GeoLocation with the mapping software. Google Maps API consists of dozens JavaScript objects and supports various events that allow you to build interactive and engaging Web pages that include maps. Refer to the <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions">Google Maps JavaScript API Reference</a> for the complete list of available parameters (properties) of all objects used in project-08-geolocation-maps and more. In Chapter 2 you&#8217;ll see a more advanced example of using Google maps - we&#8217;ll read the JSON data stream containing coordinates of the children so the donors can find them based on the specified postal code.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+For a great illustration of using Google Maps API look at the <a href="https://www.padmapper.com">PadMapper</a> Web application. We use it for finding rental apartments in Manhattan.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_browser-features-detection-with-modernizr"><a class="anchor" href="#_browser-features-detection-with-modernizr"></a>Browser Features Detection With Modernizr</h4>
+<div class="paragraph">
+<p>Now we&#8217;ll learn how to use the detection features offered by a JavaScript library called <a href="http://modernizr.com/">Modernizr</a>. This is a must have feature detection library that helps your application to figure out if the user&#8217;s browser supports certain HTML5/CSS3 features. Review the code of index.html from the project-08-1-modernizr-geolocation-maps. Note that the index.html includes two <code>&lt;script&gt;</code> sections - the Modernizr&#8217;s JavaScript gets loaded first, while our own main.js is loaded at the end of the <code>&lt;body&gt;</code> section.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
+
+&lt;html class="no-js" lang="en"&gt;
+	&lt;head&gt;
+		&lt;meta charset="utf-8"&gt;
+
+		&lt;title&gt;Save The Child | Home Page&lt;/title&gt;
+		&lt;link rel="stylesheet" href="assets/css/styles.css"&gt;
+
+		&lt;script src="js/libs/modernizr-2.5.3.min.js"&gt;&lt;/script&gt;
+
+	&lt;/head&gt;
+	&lt;body&gt;
+       !--  Most of the HTML markup is omitted for brevity  --!
+
+		&lt;script src="js/main.js"&gt;&lt;/script&gt;
+	&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Modernizr is an open source JavaScript library that helps your script to figure out if the required HTML or CSS features are supported by the user&#8217;s browser. Instead of maintaining complex cross-browser feature matrix to see if, say <code>border-radius</code> is supported in the user&#8217;s version of Firefox, the Modernizer queries the <code>&lt;html&gt;</code> elements to see what&#8217;s supported and what&#8217;s not.</p>
+</div>
+<div class="paragraph">
+<p>Note the following fragment on the top of index.html: <code>&lt;html class="no-js" lang="en"&gt;</code>.  For Modernizr to work, your HTML root element has to include the class named <code>"no-js"</code>. On page load, the Modernizr will replace the <code>no-js</code> class with its extended version that lists all detected features, and those that are not supported will get a prefix <code>no-</code>. Run index.html from project-08-1-modernizr-geolocation-maps in Chrome and you&#8217;ll see using Developer Tools Panel that the values of the <code>class</code> property of the <code>html</code> element are different now, and you can see from <a href="#FIG3-17">Modernizr changed the HTML&#8217;s class property</a>  that our version of Chrome doesn&#8217;t support touch events (<code>no-touch</code>) and flexbox (<code>no-flexbox</code>).</p>
+</div>
+<div id="FIG3-17" class="imageblock">
+<div class="content">
+<img src="images/fig_03_17.png" alt="fig 03 17">
+</div>
+<div class="title">Figure 17. Modernizr changed the HTML&#8217;s class property</div>
+</div>
+<div class="paragraph">
+<p>For example, there is a new way to do page layouts using co called CSS Flexible Box Layout Module. This feature is not widely supported yet, and as you can see from <a href="#FIG3-17">Modernizr changed the HTML&#8217;s class property</a>, our Web browser doesn&#8217;t support it at the time of this writing. If the CSS file of your application will implement two class selectors <code>.flexbox</code> and <code>.no-flexbox</code> then the browsers that support flexible boxes will use the former and the older browsers - the latter.</p>
+</div>
+<div class="paragraph">
+<p>When Modernizr loads it creates a new JavaScript object <code>window.Modernizr</code> with lots of boolean properties indicating if a certain feature is or is not supported. Add the <code>Modernizr</code> object as a Watch Expression in the Chrome Developer Tools panel and see which properties have the <code>false</code> value (see <a href="#FIG3-18">window.Modernizr object</a>).</p>
+</div>
+<div id="FIG3-18" class="imageblock">
+<div class="content">
+<img src="images/fig_03_18.png" alt="fig 03 18">
+</div>
+<div class="title">Figure 18. window.Modernizr object</div>
+</div>
+<div class="paragraph">
+<p>Hence your JavaScript code can test if certain features are supported or not.</p>
+</div>
+<div class="paragraph">
+<p>What if the Modernizer detects that a certain feature is not supported yet by a user&#8217;s older browser? You can include polyfills in your code that replicate the required functionality. You can write such a polyfill on your own or pick one from the collection that is located at <a href="https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills">Modernizr&#8217;s Github repository</a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Addy Osmani published <a href="http://www.dzone.com/links/r/javafx_for_tablets_amp_mobile.html">The Developer&#8217;s Guide To Writing Cross-Browser JavaScript Polyfills</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The Development version of Modernizr weighs 42Kb and can detect lots of features. But you can make it smaller by configuring the detection of only selected features. Just visit <a href="http://modernizr.com/">Modernizr</a> and press the red Production button that will allow to configure the build specifically for your application. For example, if you&#8217;re just interested to detect the HTML5 video support, the size of the generated Modernizr library will be reduced to under 2Kb.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s review the relevant code from project-08-1-modernizr-geolocation-maps that illustrate the use of Modernizr. In particular, Modernizr allows you to load one or the other JavaScript code based on the result of some tests.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Actually, the Modernizr loader internally utilizes a tiny (under 2Kb) resource loader library <a href="http://yepnopejs.com/">yepnope.js</a>, which can load both JavaScript and CSS. This library is integrated in Modernizr, but we just wanted to give a proper recognition to yepnope.js, which can be used as an independent resource loader too.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">(function() {
+
+  Modernizr.load({
+
+  	test: Modernizr.geolocation,
+
+  	yep: ['js/get-native-geo-data.js','https://www.google.com/jsapi'],
+
+  	nope: ['js/get-geo-data-by-ip.js','https://www.google.com/jsapi'],
+
+  	complete : function () {
+  		google.load("maps", "3",
+  		            {other_params: "sensor=false", 'callback':init});
+  	}
+  });
+})();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code above invokes the function <code>load()</code>, which can take different arguments, but our example uses as an argument a specially prepared object with five properties: <code>test, yep, nope, complete</code>. The <code>load()</code> function will test the value of <code>Modernizr.geolocation</code> and if it&#8217;s true, it&#8217;ll load the scripts listed in the <code>yep</code> property. Otherwise it&#8217;ll load the code listed in the <code>nope</code> array. The code in the get-native-geo-data.js gets the user&#8217;s location the same way as it was done earlier in the section Integrating with Google Maps.</p>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s consider the "nope" case. The code of the get-geo-data-by-ip.js has to offer an alternative way of getting the location for the browsers that don&#8217;t support HTML5 Geolocation API. We found the GeoIP JavaScript API offered by <a href="http://www.maxmind.com/">MaxMind, Inc.</a>. Their service returns country, region, city, latitude and longitude, which can serve as a good illustration of how a workaround of a non-supported feature can be implemented. The code in get-geo-data-by-ip.js is very simple for now.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">function init(){
+
+ var locationMap = document.getElementById('location-map');
+ locationMap.innerHTML="Your browser does not support HTML5 geolocation API.";
+
+ // The code to get the location by IP from http://j.maxmind.com/app/geoip.js
+ // will go here. Then we'll pass the latitude and longitude values to
+ // Google Map API for drawing the map.
+
+}
+</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Most likely your browser supports HTML5 geolocation API, and you&#8217;ll see the map created by the script get-native-geo-data.js. But if you want to test a non-supported geolocation (the nope branch)  either try this code in the older browser or change the test condition to look like this: <code>Modernizr.fakegeolocation,</code>.</p>
+</div>
+<div class="paragraph">
+<p>Google has several JavaScript APIs, for example, Maps, Search, Feeds, Earths et al. Any of these APIs can be loaded by  <a href="https://developers.google.com/loader/">Google AJAX Loader</a> <code>google.load()</code>. This is more generic way of loading any APIs comparing to loading maps from <a href="http://maps.googleapis.com/maps/api">http://maps.googleapis.com/maps/api</a> in the previous section on integrating geolocation and maps. The process of loading of the Google code with Google AJAX Loader consists of two steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Load Google&#8217;s  common loader script from <a href="https://www.google.com/jsapi">https://www.google.com/jsapi</a></p>
+</li>
+<li>
+<p>Load the concrete module API specifying its name, version and optional parameters. In our example we are loading the maps API of version 3 passing an object with two properties: <code>sensor=false</code> and the name of the callback function to invoke right after the mapping API completes loading: <code>'callback':init</code>.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you want to test your Web page in the specific old version of a particular Web browser, you can find their distributions at oldapps.com. For example, you can find all the old version of Firefox for <a href="http://mac.oldapps.com/firefox.php">Mac OS</a> and for <a href="http://www.oldapps.com/firefox.php">Windows</a>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_search-and-multi-markers-with-google-maps"><a class="anchor" href="#_search-and-multi-markers-with-google-maps"></a>Search and Multi-Markers With Google Maps</h4>
+<div class="paragraph">
+<p>We&#8217;ve prepared for you a couple of more examples just to showcase the features of Google Maps API. The working examples will be included in the code accompanying the book, and we&#8217;ll provide very brief explanations below.</p>
+</div>
+<div class="paragraph">
+<p>The project-09-map-and-search is an example of address search using Google Maps API. <a href="#FIG3-19">Searching by Address</a> shows a fragment of the Save The Child page after we&#8217;ve entered the address "26 Broadway ny ny" in the search field. You can do a search by city or a zip code too. This can be a useful feature if you&#8217;d want to allow the users search for the children living in a particular geographical area so their donation would be directed to specific people.</p>
+</div>
+<div id="FIG3-19" class="imageblock">
+<div class="content">
+<img src="images/fig_03_19.png" alt="fig 03 19">
+</div>
+<div class="title">Figure 19. Searching by Address</div>
+</div>
+<div class="paragraph">
+<p>Our implementation of the search is shown in the code fragment from main.js. It uses geocoding, which is a process of converting an address into geographic coordinates (latitude and longitude). If the address is found, the code places a marker on the map.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var geocoder = new google.maps.Geocoder();
+
+function getMapByAddress() {
+ var newaddress = document.getElementById('newaddress').value;
+
+ geocoder.geocode(                                    //  <i class="conum" data-value="1"></i><b>(1)</b>
+  {'address' : newaddress,
+  'country' : 'USA'
+  },
+
+  function(results, status) {                       //  <i class="conum" data-value="2"></i><b>(2)</b>
+   console.log('status = ' + status);
+
+   if (status == google.maps.GeocoderStatus.OK) {
+
+  	var latitude = results[0].geometry.location.lat();          <i class="conum" data-value="3"></i><b>(3)</b>
+  	var longitude = results[0].geometry.location.lng();
+
+  	var formattedAddress = results[0].formatted_address;
+  	console.log('latitude = ' + latitude +
+  	            ' longitude = ' +  longitude);
+  	console.log('formatted_address = ' + formattedAddress);
+
+  	var message = '&lt;b&gt;Address&lt;/b&gt;: ' + formattedAddress;
+  	foundInfo.innerHTML = message;
+
+  	var locationCoordinates =
+  	      new google.maps.LatLng(latitude, longitude);         <i class="conum" data-value="4"></i><b>(4)</b>
+  	showMap(locationCoordinates, locationMap);
+
+   } else if (status == google.maps.GeocoderStatus.ZERO_RESULTS) { <i class="conum" data-value="5"></i><b>(5)</b>
+  	console.log('geocode was successful but returned no results. ' +
+  	 'This may occur if the geocode was passed a non-existent ' +
+  	 'address or a latlng in a remote location.');
+
+   } else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+  	console.log('You are over our quota of requests.');
+
+   } else if (status == google.maps.GeocoderStatus.REQUEST_DENIED) {
+  	console.log('Your request was denied, ' +
+  	'generally because of lack of a sensor parameter.');
+
+   } else if (status == google.maps.GeocoderStatus.INVALID_REQUEST) {
+  	console.log('Invalid request. ' +
+  	     'The query (address or latlng) is missing.');
+  }
+ });
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Initiate request to the <code>Gecoder</code> object providing the <code>GeocodeRequest</code> object with the address and a function to process the results. Since the request to the Google server is asynchronous, the function is a callback.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>When the callback will be invoked, it&#8217;ll get an array with results.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Get the latitude and longitude from the result.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Prepare the LatLng object and give it to the mapping API for rendering.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Process errors.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The Geocoding API is simple and free to use until your application reaches a certain number of requests. Refer to <a href="https://developers.google.com/maps/documentation/javascript/geocoding">Google Geocoding API documentation</a> for more details. If your application is getting the <code>OVER_QUERY_LIMIT</code> you ned to contact Google Maps API for Business sales team for information on licensing options.</p>
+</div>
+<div class="sect4">
+<h5 id="_adding-multiple-markers-on-the-map"><a class="anchor" href="#_adding-multiple-markers-on-the-map"></a>Adding Multiple Markers on the Map</h5>
+<div class="paragraph">
+<p>Jerry has yet another idea: show multiple markers on the map reflecting several donation campaigns and charity events that are going on at various locations. If we display  this information on the Save The Child page more people may participate with their donations or other ways. We&#8217;ve just learned how to do an address search on the map, and if the application has an access to the data about charity events, we can display them as the markers on the map. Run the project-10-maps-multi-markers and you&#8217;ll see a map with multiple markers as in <a href="#FIG3-20">Multiple markers on the map</a></p>
+</div>
+<div id="FIG3-20" class="imageblock">
+<div class="content">
+<img src="images/fig_03_20.png" alt="fig 03 20">
+</div>
+<div class="title">Figure 20. Multiple markers on the map</div>
+</div>
+<div class="paragraph">
+<p>The JavaScript fragment below displays the map with multiple markers. In this example the data is hard-coded in the array <code>charityEvents</code>, but in the next chapter we&#8217;ll modify this example and will get the data from a file in a JSON form. The for-loop creates a marker for each of the event listed in the array <code>charityEvents</code>. Each element of this array is also an array containing the name of the city and state, the latitude and longitude, and the title of the charity event. You can have any other attributes of the charity events stored in such an array and display them when the user clicks on a particular marker in an overlay by calling <code>InfoWindow.open()</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">(function() {
+
+  var locationUI = document.getElementById('location-ui');
+  var locationMap = document.getElementById('location-map');
+
+  var charityEvents = [['Chicago, Il', 41.87, -87.62, 'Giving Hand'],
+    ['New York, NY', 40.71, -74.00, 'Lawyers for Children'],
+    ['Dallas, TX', 32.80, -96.76, 'Mothers of Asthmatics '],
+    ['Miami, FL', 25.78, -80.22, 'Friends of Blind Kids'],
+    ['Miami, FL', 25.78, -80.22, 'A Place Called Home'],
+    ['Fargo, ND', 46.87, -96.78, 'Marathon for Survivors']
+  ];
+
+  var mapOptions = {
+  		center : new google.maps.LatLng(46.87, -96.78),
+  		zoom : 3,
+  		mapTypeId : google.maps.MapTypeId.ROADMAP,
+  		mapTypeControlOptions : {
+  			style : google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+  			position : google.maps.ControlPosition.TOP_RIGHT
+  		}
+  	};
+
+  var map = new google.maps.Map(locationMap, mapOptions);
+
+  var infowindow = new google.maps.InfoWindow();
+
+  var marker, i;
+
+  for ( i = 0; i &lt; charityEvents.length; i++) {
+  	marker = new google.maps.Marker({
+  		position : new google.maps.LatLng(charityEvents[i][1],
+  		                                  charityEvents[i][2]),
+  		map : map
+  	});
+
+  	google.maps.event.addListener(marker, 'click', (function(marker, i) {
+  		return function() {
+  		 var content = charityEvents[i][0] + '&lt;br/&gt;' + charityEvents[i][3];
+  		 infowindow.setContent(content);
+  		 infowindow.open(map, marker);
+  		}
+  	})(marker, i));
+
+  	google.maps.event.addListenerOnce(map, 'idle', function(){
+  		locationUI.innerHTML = "Donation campaigns and charity events.";
+  	})
+  }
+
+})();</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h3>
+<div class="paragraph">
+<p>This chapter has described the process of mocking the future Web site on by our Web Designer Jerry, who went a lot further than creating a number of images with short descriptions. Jerry created a working prototype of the Save The Child page. Keep in mind that Jerry and his fellow Web designers like creating good looking Web pages.</p>
+</div>
+<div class="paragraph">
+<p>But us, Web developers, need to worry about other things like making Web pages responsive and light weight. The first thing you need to do after receiving the prototype of your Web application from Jerry is run it through Google Developer Tools or Firebug and measure the total size of the resources being downloaded from the server. If it loads 1Mb or more worth of images, ask Jerry to review the images and minimize their size.</p>
+</div>
+<div class="paragraph">
+<p>The chances are that you don&#8217;t need to download all the JavaScript code at once - we&#8217;ll discuss modularization of large applications in Chapter 6.</p>
+</div>
+<div class="paragraph">
+<p>The next phase of improving this prototype is to remove the hard-coded data from the code and place them into external files. The next chapter will cover the JSON data format and how to fill our single-page application with the data using a set of techniques called AJAX.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2013-12-01 22:30:00 EST
+</div>
+</div>
+</body>
+</html>

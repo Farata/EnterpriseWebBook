@@ -1,0 +1,3205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="Asciidoctor 0.1.4">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Considerations</title>
+<style>
+@import url(http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.0/css/font-awesome.css);
+@import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic);
+/* normalize.css v2.1.1 | MIT License | git.io/normalize */
+/* ========================================================================== HTML5 display definitions ========================================================================== */
+/** Correct `block` display not defined in IE 8/9. */
+article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary { display: block; }
+/** Correct `inline-block` display not defined in IE 8/9. */
+audio, canvas, video { display: inline-block; }
+/** Prevent modern browsers from displaying `audio` without controls. Remove excess height in iOS 5 devices. */
+audio:not([controls]) { display: none; height: 0; }
+/** Address styling not present in IE 8/9. */
+[hidden] { display: none; }
+/* ========================================================================== Base ========================================================================== */
+/** 1. Prevent system color scheme's background color being used in Firefox, IE, and Opera. 2. Prevent system color scheme's text color being used in Firefox, IE, and Opera. 3. Set default font family to sans-serif. 4. Prevent iOS text size adjust after orientation change, without disabling user zoom. */
+html { background: #fff; /* 1 */ color: #000; /* 2 */ font-family: sans-serif; /* 3 */ -ms-text-size-adjust: 100%; /* 4 */ -webkit-text-size-adjust: 100%; /* 4 */ }
+/** Remove default margin. */
+body { margin: 0; }
+/* ========================================================================== Links ========================================================================== */
+/** Address `outline` inconsistency between Chrome and other browsers. */
+a:focus { outline: thin dotted; }
+/** Improve readability when focused and also mouse hovered in all browsers. */
+a:active, a:hover { outline: 0; }
+/* ========================================================================== Typography ========================================================================== */
+/** Address variable `h1` font-size and margin within `section` and `article` contexts in Firefox 4+, Safari 5, and Chrome. */
+h1 { font-size: 2em; margin: 0.67em 0; }
+/** Address styling not present in IE 8/9, Safari 5, and Chrome. */
+abbr[title] { border-bottom: 1px dotted; }
+/** Address style set to `bolder` in Firefox 4+, Safari 5, and Chrome. */
+b, strong { font-weight: bold; }
+/** Address styling not present in Safari 5 and Chrome. */
+dfn { font-style: italic; }
+/** Address differences between Firefox and other browsers. */
+hr { -moz-box-sizing: content-box; box-sizing: content-box; height: 0; }
+/** Address styling not present in IE 8/9. */
+mark { background: #ff0; color: #000; }
+/** Correct font family set oddly in Safari 5 and Chrome. */
+code, kbd, pre, samp { font-family: monospace, serif; font-size: 1em; }
+/** Improve readability of pre-formatted text in all browsers. */
+pre { white-space: pre-wrap; }
+/** Set consistent quote types. */
+q { quotes: "\201C" "\201D" "\2018" "\2019"; }
+/** Address inconsistent and variable font size in all browsers. */
+small { font-size: 80%; }
+/** Prevent `sub` and `sup` affecting `line-height` in all browsers. */
+sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+sup { top: -0.5em; }
+sub { bottom: -0.25em; }
+/* ========================================================================== Embedded content ========================================================================== */
+/** Remove border when inside `a` element in IE 8/9. */
+img { border: 0; }
+/** Correct overflow displayed oddly in IE 9. */
+svg:not(:root) { overflow: hidden; }
+/* ========================================================================== Figures ========================================================================== */
+/** Address margin not present in IE 8/9 and Safari 5. */
+figure { margin: 0; }
+/* ========================================================================== Forms ========================================================================== */
+/** Define consistent border, margin, and padding. */
+fieldset { border: 1px solid #c0c0c0; margin: 0 2px; padding: 0.35em 0.625em 0.75em; }
+/** 1. Correct `color` not being inherited in IE 8/9. 2. Remove padding so people aren't caught out if they zero out fieldsets. */
+legend { border: 0; /* 1 */ padding: 0; /* 2 */ }
+/** 1. Correct font family not being inherited in all browsers. 2. Correct font size not being inherited in all browsers. 3. Address margins set differently in Firefox 4+, Safari 5, and Chrome. */
+button, input, select, textarea { font-family: inherit; /* 1 */ font-size: 100%; /* 2 */ margin: 0; /* 3 */ }
+/** Address Firefox 4+ setting `line-height` on `input` using `!important` in the UA stylesheet. */
+button, input { line-height: normal; }
+/** Address inconsistent `text-transform` inheritance for `button` and `select`. All other form control elements do not inherit `text-transform` values. Correct `button` style inheritance in Chrome, Safari 5+, and IE 8+. Correct `select` style inheritance in Firefox 4+ and Opera. */
+button, select { text-transform: none; }
+/** 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio` and `video` controls. 2. Correct inability to style clickable `input` types in iOS. 3. Improve usability and consistency of cursor style between image-type `input` and others. */
+button, html input[type="button"], input[type="reset"], input[type="submit"] { -webkit-appearance: button; /* 2 */ cursor: pointer; /* 3 */ }
+/** Re-set default cursor for disabled elements. */
+button[disabled], html input[disabled] { cursor: default; }
+/** 1. Address box sizing set to `content-box` in IE 8/9. 2. Remove excess padding in IE 8/9. */
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; /* 1 */ padding: 0; /* 2 */ }
+/** 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome. 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome (include `-moz` to future-proof). */
+input[type="search"] { -webkit-appearance: textfield; /* 1 */ -moz-box-sizing: content-box; -webkit-box-sizing: content-box; /* 2 */ box-sizing: content-box; }
+/** Remove inner padding and search cancel button in Safari 5 and Chrome on OS X. */
+input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
+/** Remove inner padding and border in Firefox 4+. */
+button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
+/** 1. Remove default vertical scrollbar in IE 8/9. 2. Improve readability and alignment in all browsers. */
+textarea { overflow: auto; /* 1 */ vertical-align: top; /* 2 */ }
+/* ========================================================================== Tables ========================================================================== */
+/** Remove most spacing between table cells. */
+table { border-collapse: collapse; border-spacing: 0; }
+*, *:before, *:after { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+html, body { font-size: 100%; }
+body { background: white; color: #222222; padding: 0; margin: 0; font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif; font-weight: normal; font-style: normal; line-height: 1; position: relative; cursor: auto; }
+a:hover { cursor: pointer; }
+a:focus { outline: none; }
+img, object, embed { max-width: 100%; height: auto; }
+object, embed { height: 100%; }
+img { -ms-interpolation-mode: bicubic; }
+#map_canvas img, #map_canvas embed, #map_canvas object, .map_canvas img, .map_canvas embed, .map_canvas object { max-width: none !important; }
+.left { float: left !important; }
+.right { float: right !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+.text-center { text-align: center !important; }
+.text-justify { text-align: justify !important; }
+.hide { display: none; }
+.antialiased, body { -webkit-font-smoothing: antialiased; }
+img { display: inline-block; vertical-align: middle; }
+textarea { height: auto; min-height: 50px; }
+select { width: 100%; }
+/* Grid HTML Classes */
+.row { width: 100%; margin-left: auto; margin-right: auto; margin-top: 0; margin-bottom: 0; max-width: 62.5em; *zoom: 1; }
+.row:before, .row:after { content: " "; display: table; }
+.row:after { clear: both; }
+.row.collapse .column, .row.collapse .columns { position: relative; padding-left: 0; padding-right: 0; float: left; }
+.row .row { width: auto; margin-left: -0.9375em; margin-right: -0.9375em; margin-top: 0; margin-bottom: 0; max-width: none; *zoom: 1; }
+.row .row:before, .row .row:after { content: " "; display: table; }
+.row .row:after { clear: both; }
+.row .row.collapse { width: auto; margin: 0; max-width: none; *zoom: 1; }
+.row .row.collapse:before, .row .row.collapse:after { content: " "; display: table; }
+.row .row.collapse:after { clear: both; }
+.column, .columns { position: relative; padding-left: 0.9375em; padding-right: 0.9375em; width: 100%; float: left; }
+@media only screen { .column, .columns { position: relative; padding-left: 0.9375em; padding-right: 0.9375em; float: left; }
+  .small-1 { position: relative; width: 8.33333%; }
+  .small-2 { position: relative; width: 16.66667%; }
+  .small-3 { position: relative; width: 25%; }
+  .small-4 { position: relative; width: 33.33333%; }
+  .small-5 { position: relative; width: 41.66667%; }
+  .small-6 { position: relative; width: 50%; }
+  .small-7 { position: relative; width: 58.33333%; }
+  .small-8 { position: relative; width: 66.66667%; }
+  .small-9 { position: relative; width: 75%; }
+  .small-10 { position: relative; width: 83.33333%; }
+  .small-11 { position: relative; width: 91.66667%; }
+  .small-12 { position: relative; width: 100%; }
+  .small-offset-0 { position: relative; margin-left: 0%; }
+  .small-offset-1 { position: relative; margin-left: 8.33333%; }
+  .small-offset-2 { position: relative; margin-left: 16.66667%; }
+  .small-offset-3 { position: relative; margin-left: 25%; }
+  .small-offset-4 { position: relative; margin-left: 33.33333%; }
+  .small-offset-5 { position: relative; margin-left: 41.66667%; }
+  .small-offset-6 { position: relative; margin-left: 50%; }
+  .small-offset-7 { position: relative; margin-left: 58.33333%; }
+  .small-offset-8 { position: relative; margin-left: 66.66667%; }
+  .small-offset-9 { position: relative; margin-left: 75%; }
+  .small-offset-10 { position: relative; margin-left: 83.33333%; }
+  [class*="column"] + [class*="column"]:last-child { float: right; }
+  [class*="column"] + [class*="column"].end { float: left; }
+  .column.small-centered, .columns.small-centered { position: relative; margin-left: auto; margin-right: auto; float: none !important; } }
+/* Styles for screens that are atleast 768px; */
+@media only screen and (min-width: 768px) { .large-1 { position: relative; width: 8.33333%; }
+  .large-2 { position: relative; width: 16.66667%; }
+  .large-3 { position: relative; width: 25%; }
+  .large-4 { position: relative; width: 33.33333%; }
+  .large-5 { position: relative; width: 41.66667%; }
+  .large-6 { position: relative; width: 50%; }
+  .large-7 { position: relative; width: 58.33333%; }
+  .large-8 { position: relative; width: 66.66667%; }
+  .large-9 { position: relative; width: 75%; }
+  .large-10 { position: relative; width: 83.33333%; }
+  .large-11 { position: relative; width: 91.66667%; }
+  .large-12 { position: relative; width: 100%; }
+  .row .large-offset-0 { position: relative; margin-left: 0%; }
+  .row .large-offset-1 { position: relative; margin-left: 8.33333%; }
+  .row .large-offset-2 { position: relative; margin-left: 16.66667%; }
+  .row .large-offset-3 { position: relative; margin-left: 25%; }
+  .row .large-offset-4 { position: relative; margin-left: 33.33333%; }
+  .row .large-offset-5 { position: relative; margin-left: 41.66667%; }
+  .row .large-offset-6 { position: relative; margin-left: 50%; }
+  .row .large-offset-7 { position: relative; margin-left: 58.33333%; }
+  .row .large-offset-8 { position: relative; margin-left: 66.66667%; }
+  .row .large-offset-9 { position: relative; margin-left: 75%; }
+  .row .large-offset-10 { position: relative; margin-left: 83.33333%; }
+  .row .large-offset-11 { position: relative; margin-left: 91.66667%; }
+  .push-1 { position: relative; left: 8.33333%; right: auto; }
+  .pull-1 { position: relative; right: 8.33333%; left: auto; }
+  .push-2 { position: relative; left: 16.66667%; right: auto; }
+  .pull-2 { position: relative; right: 16.66667%; left: auto; }
+  .push-3 { position: relative; left: 25%; right: auto; }
+  .pull-3 { position: relative; right: 25%; left: auto; }
+  .push-4 { position: relative; left: 33.33333%; right: auto; }
+  .pull-4 { position: relative; right: 33.33333%; left: auto; }
+  .push-5 { position: relative; left: 41.66667%; right: auto; }
+  .pull-5 { position: relative; right: 41.66667%; left: auto; }
+  .push-6 { position: relative; left: 50%; right: auto; }
+  .pull-6 { position: relative; right: 50%; left: auto; }
+  .push-7 { position: relative; left: 58.33333%; right: auto; }
+  .pull-7 { position: relative; right: 58.33333%; left: auto; }
+  .push-8 { position: relative; left: 66.66667%; right: auto; }
+  .pull-8 { position: relative; right: 66.66667%; left: auto; }
+  .push-9 { position: relative; left: 75%; right: auto; }
+  .pull-9 { position: relative; right: 75%; left: auto; }
+  .push-10 { position: relative; left: 83.33333%; right: auto; }
+  .pull-10 { position: relative; right: 83.33333%; left: auto; }
+  .push-11 { position: relative; left: 91.66667%; right: auto; }
+  .pull-11 { position: relative; right: 91.66667%; left: auto; }
+  .column.large-centered, .columns.large-centered { position: relative; margin-left: auto; margin-right: auto; float: none !important; }
+  .column.large-uncentered, .columns.large-uncentered { margin-left: 0; margin-right: 0; float: left !important; }
+  .column.large-uncentered.opposite, .columns.large-uncentered.opposite { float: right !important; } }
+/* Image Thumbnails */
+.th { line-height: 0; display: inline-block; border: solid 4px white; -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); -webkit-transition: all 200ms ease-out; -moz-transition: all 200ms ease-out; transition: all 200ms ease-out; }
+.th:hover, .th:focus { -webkit-box-shadow: 0 0 6px 1px rgba(43, 166, 203, 0.5); box-shadow: 0 0 6px 1px rgba(43, 166, 203, 0.5); }
+.th.radius { -webkit-border-radius: 3px; border-radius: 3px; }
+a.th { display: inline-block; }
+button, .button { border-style: solid; border-width: 1px; cursor: pointer; font-family: inherit; font-weight: bold; line-height: 1; margin: 0 0 1.25em; position: relative; text-decoration: none; text-align: center; display: inline-block; padding-top: 0.75em; padding-right: 1.5em; padding-bottom: 0.8125em; padding-left: 1.5em; font-size: 1em; background-color: #2ba6cb; border-color: #2284a1; color: white; }
+button:hover, button:focus, .button:hover, .button:focus { background-color: #2284a1; }
+button:hover, button:focus, .button:hover, .button:focus { color: white; }
+button.secondary, .button.secondary { background-color: #e9e9e9; border-color: #d0d0d0; color: #333333; }
+button.secondary:hover, button.secondary:focus, .button.secondary:hover, .button.secondary:focus { background-color: #d0d0d0; }
+button.secondary:hover, button.secondary:focus, .button.secondary:hover, .button.secondary:focus { color: #333333; }
+button.success, .button.success { background-color: #5da423; border-color: #457a1a; color: white; }
+button.success:hover, button.success:focus, .button.success:hover, .button.success:focus { background-color: #457a1a; }
+button.success:hover, button.success:focus, .button.success:hover, .button.success:focus { color: white; }
+button.alert, .button.alert { background-color: #c60f13; border-color: #970b0e; color: white; }
+button.alert:hover, button.alert:focus, .button.alert:hover, .button.alert:focus { background-color: #970b0e; }
+button.alert:hover, button.alert:focus, .button.alert:hover, .button.alert:focus { color: white; }
+button.large, .button.large { padding-top: 1em; padding-right: 2em; padding-bottom: 1.0625em; padding-left: 2em; font-size: 1.25em; }
+button.small, .button.small { padding-top: 0.5625em; padding-right: 1.125em; padding-bottom: 0.625em; padding-left: 1.125em; font-size: 0.8125em; }
+button.tiny, .button.tiny { padding-top: 0.4375em; padding-right: 0.875em; padding-bottom: 0.5em; padding-left: 0.875em; font-size: 0.6875em; }
+button.expand, .button.expand { padding-right: 0px; padding-left: 0px; width: 100%; }
+button.left-align, .button.left-align { text-align: left; text-indent: 0.75em; }
+button.right-align, .button.right-align { text-align: right; padding-right: 0.75em; }
+button.disabled, button[disabled], .button.disabled, .button[disabled] { background-color: #2ba6cb; border-color: #2284a1; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { background-color: #2284a1; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { color: white; }
+button.disabled:hover, button.disabled:focus, button[disabled]:hover, button[disabled]:focus, .button.disabled:hover, .button.disabled:focus, .button[disabled]:hover, .button[disabled]:focus { background-color: #2ba6cb; }
+button.disabled.secondary, button[disabled].secondary, .button.disabled.secondary, .button[disabled].secondary { background-color: #e9e9e9; border-color: #d0d0d0; color: #333333; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { background-color: #d0d0d0; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { color: #333333; }
+button.disabled.secondary:hover, button.disabled.secondary:focus, button[disabled].secondary:hover, button[disabled].secondary:focus, .button.disabled.secondary:hover, .button.disabled.secondary:focus, .button[disabled].secondary:hover, .button[disabled].secondary:focus { background-color: #e9e9e9; }
+button.disabled.success, button[disabled].success, .button.disabled.success, .button[disabled].success { background-color: #5da423; border-color: #457a1a; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { background-color: #457a1a; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { color: white; }
+button.disabled.success:hover, button.disabled.success:focus, button[disabled].success:hover, button[disabled].success:focus, .button.disabled.success:hover, .button.disabled.success:focus, .button[disabled].success:hover, .button[disabled].success:focus { background-color: #5da423; }
+button.disabled.alert, button[disabled].alert, .button.disabled.alert, .button[disabled].alert { background-color: #c60f13; border-color: #970b0e; color: white; cursor: auto; opacity: 0.6; -webkit-box-shadow: none; box-shadow: none; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { background-color: #970b0e; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { color: white; }
+button.disabled.alert:hover, button.disabled.alert:focus, button[disabled].alert:hover, button[disabled].alert:focus, .button.disabled.alert:hover, .button.disabled.alert:focus, .button[disabled].alert:hover, .button[disabled].alert:focus { background-color: #c60f13; }
+button, .button { padding-top: 0.8125em; padding-bottom: 0.75em; -webkit-appearance: none; }
+button.tiny, .button.tiny { padding-top: 0.5em; padding-bottom: 0.4375em; -webkit-appearance: none; }
+button.small, .button.small { padding-top: 0.625em; padding-bottom: 0.5625em; -webkit-appearance: none; }
+button.large, .button.large { padding-top: 1.03125em; padding-bottom: 1.03125em; -webkit-appearance: none; }
+@media only screen { button, .button { -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset; -webkit-transition: background-color 300ms ease-out; -moz-transition: background-color 300ms ease-out; transition: background-color 300ms ease-out; }
+  button:active, .button:active { -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) inset; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2) inset; }
+  button.radius, .button.radius { -webkit-border-radius: 3px; border-radius: 3px; }
+  button.round, .button.round { -webkit-border-radius: 1000px; border-radius: 1000px; } }
+@media only screen and (min-width: 768px) { button, .button { display: inline-block; } }
+p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type p { font-size: 1.21875em; line-height: 1.6; }
+.subheader, #content #toctitle, .admonitionblock td.content > .title, .exampleblock > .title, .imageblock > .title, .videoblock > .title, .listingblock > .title, .literalblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, .sidebarblock > .title, .tableblock > .title, .verseblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title, .tableblock > caption { line-height: 1.4; color: #003b6b; font-weight: 300; margin-top: 0.2em; margin-bottom: 0.5em; }
+/* Typography resets */
+div, dl, dt, dd, ul, ol, li, h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6, pre, form, p, blockquote, th, td { margin: 0; padding: 0; direction: ltr; }
+/* Default Link Styles */
+a { color: #00579e; text-decoration: none; line-height: inherit; }
+a:hover, a:focus { color: #333333; }
+a img { border: none; }
+/* Default paragraph styles */
+p { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-weight: normal; font-size: 1em; line-height: 1.6; margin-bottom: 0.75em; text-rendering: optimizeLegibility; }
+p aside { font-size: 0.875em; line-height: 1.35; font-style: italic; }
+/* Default header styles */
+h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-weight: normal; font-style: normal; color: #7b2d00; text-rendering: optimizeLegibility; margin-top: 0.5em; margin-bottom: 0.5em; line-height: 1.2125em; }
+h1 small, h2 small, h3 small, #toctitle small, .sidebarblock > .content > .title small, h4 small, h5 small, h6 small { font-size: 60%; color: #ff6b15; line-height: 0; }
+h1 { font-size: 2.125em; }
+h2 { font-size: 1.6875em; }
+h3, #toctitle, .sidebarblock > .content > .title { font-size: 1.375em; }
+h4 { font-size: 1.125em; }
+h5 { font-size: 1.125em; }
+h6 { font-size: 1em; }
+hr { border: solid #dddddd; border-width: 1px 0 0; clear: both; margin: 1.25em 0 1.1875em; height: 0; }
+/* Helpful Typography Defaults */
+em, i { font-style: italic; line-height: inherit; }
+strong, b { font-weight: bold; line-height: inherit; }
+small { font-size: 60%; line-height: inherit; }
+code { font-family: Consolas, "Liberation Mono", Courier, monospace; font-weight: bold; color: #003426; }
+/* Lists */
+ul, ol, dl { font-size: 1em; line-height: 1.6; margin-bottom: 0.75em; list-style-position: outside; font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; }
+ul, ol { margin-left: 1.5em; }
+/* Unordered Lists */
+ul li ul, ul li ol { margin-left: 1.25em; margin-bottom: 0; font-size: 1em; /* Override nested font-size change */ }
+ul.square li ul, ul.circle li ul, ul.disc li ul { list-style: inherit; }
+ul.square { list-style-type: square; }
+ul.circle { list-style-type: circle; }
+ul.disc { list-style-type: disc; }
+ul.no-bullet { list-style: none; }
+/* Ordered Lists */
+ol li ul, ol li ol { margin-left: 1.25em; margin-bottom: 0; }
+/* Definition Lists */
+dl dt { margin-bottom: 0.3em; font-weight: bold; }
+dl dd { margin-bottom: 0.75em; }
+/* Abbreviations */
+abbr, acronym { text-transform: uppercase; font-size: 90%; color: black; border-bottom: 1px dotted #dddddd; cursor: help; }
+abbr { text-transform: none; }
+/* Blockquotes */
+blockquote { margin: 0 0 0.75em; padding: 0.5625em 1.25em 0 1.1875em; border-left: 1px solid #dddddd; }
+blockquote cite { display: block; font-size: 0.8125em; color: #e15200; }
+blockquote cite:before { content: "\2014 \0020"; }
+blockquote cite a, blockquote cite a:visited { color: #e15200; }
+blockquote, blockquote p { line-height: 1.6; color: #333333; }
+/* Microformats */
+.vcard { display: inline-block; margin: 0 0 1.25em 0; border: 1px solid #dddddd; padding: 0.625em 0.75em; }
+.vcard li { margin: 0; display: block; }
+.vcard .fn { font-weight: bold; font-size: 0.9375em; }
+.vevent .summary { font-weight: bold; }
+.vevent abbr { cursor: auto; text-decoration: none; font-weight: bold; border: none; padding: 0 0.0625em; }
+@media only screen and (min-width: 768px) { h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { line-height: 1.4; }
+  h1 { font-size: 2.75em; }
+  h2 { font-size: 2.3125em; }
+  h3, #toctitle, .sidebarblock > .content > .title { font-size: 1.6875em; }
+  h4 { font-size: 1.4375em; } }
+/* Print styles.  Inlined to avoid required HTTP connection: www.phpied.com/delay-loading-your-print-css/ Credit to Paul Irish and HTML5 Boilerplate (html5boilerplate.com)
+*/
+.print-only { display: none !important; }
+@media print { * { background: transparent !important; color: #000 !important; /* Black prints faster: h5bp.com/s */ box-shadow: none !important; text-shadow: none !important; }
+  a, a:visited { text-decoration: underline; }
+  a[href]:after { content: " (" attr(href) ")"; }
+  abbr[title]:after { content: " (" attr(title) ")"; }
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after { content: ""; }
+  pre, blockquote { border: 1px solid #999; page-break-inside: avoid; }
+  thead { display: table-header-group; /* h5bp.com/t */ }
+  tr, img { page-break-inside: avoid; }
+  img { max-width: 100% !important; }
+  @page { margin: 0.5cm; }
+  p, h2, h3, #toctitle, .sidebarblock > .content > .title { orphans: 3; widows: 3; }
+  h2, h3, #toctitle, .sidebarblock > .content > .title { page-break-after: avoid; }
+  .hide-on-print { display: none !important; }
+  .print-only { display: block !important; }
+  .hide-for-print { display: none !important; }
+  .show-for-print { display: inherit !important; } }
+/* Tables */
+table { background: white; margin-bottom: 1.25em; border: solid 1px #d8d8ce; }
+table thead, table tfoot { background: -webkit-linear-gradient(top, #add386, #90b66a); font-weight: bold; }
+table thead tr th, table thead tr td, table tfoot tr th, table tfoot tr td { padding: 0.5em 0.625em 0.625em; font-size: inherit; color: white; text-align: left; }
+table tr th, table tr td { padding: 0.5625em 0.625em; font-size: inherit; color: #6d6e71; }
+table tr.even, table tr.alt, table tr:nth-of-type(even) { background: #edf2f2; }
+table thead tr th, table tfoot tr th, table tbody tr td, table tr td, table tfoot tr td { display: table-cell; line-height: 1.4; }
+a:hover, a:focus { text-decoration: underline; }
+.clearfix:before, .clearfix:after, .float-group:before, .float-group:after { content: " "; display: table; }
+.clearfix:after, .float-group:after { clear: both; }
+*:not(pre) > code { font-size: inherit; padding: 3px 2px 1px 2px; white-space: nowrap; background-color: #eeeeee; border: 1px solid #dddddd; -webkit-border-radius: 0; border-radius: 0; text-shadow: none; }
+pre, pre > code { line-height: 1.6; color: black; font-family: Consolas, "Liberation Mono", Courier, monospace; font-weight: normal; }
+kbd.keyseq { color: #333333; }
+kbd:not(.keyseq) { display: inline-block; color: black; font-size: 0.75em; line-height: 1.4; background-color: #F7F7F7; border: 1px solid #ccc; -webkit-border-radius: 3px; border-radius: 3px; -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px white inset; margin: -0.15em 0.15em 0 0.15em; padding: 0.2em 0.6em 0.2em 0.5em; vertical-align: middle; white-space: nowrap; }
+kbd kbd:first-child { margin-left: 0; }
+kbd kbd:last-child { margin-right: 0; }
+.menuseq, .menu { color: black; }
+#header, #content, #footnotes, #footer { width: 100%; margin-left: auto; margin-right: auto; margin-top: 0; margin-bottom: 0; max-width: 62.5em; *zoom: 1; position: relative; padding-left: 1.5em; padding-right: 1.5em; }
+#header:before, #header:after, #content:before, #content:after, #footnotes:before, #footnotes:after, #footer:before, #footer:after { content: " "; display: table; }
+#header:after, #content:after, #footnotes:after, #footer:after { clear: both; }
+#header { margin-bottom: 2.5em; }
+#header > h1 { color: #7b2d00; font-weight: normal; border-bottom: 1px solid #dddddd; margin-bottom: -28px; padding-bottom: 32px; }
+#header span { color: #333333; }
+#header #revnumber { text-transform: capitalize; }
+#header br { display: none; }
+#header br + span { padding-left: 3px; }
+#header br + span:before { content: "\2013 \0020"; }
+#header br + span.author { padding-left: 0; }
+#header br + span.author:before { content: ", "; }
+#toc { border-bottom: 1px solid #dddddd; padding-bottom: 1.25em; }
+#toc > ul { margin-left: 0.25em; }
+#toc ul.sectlevel0 > li > a { font-style: italic; }
+#toc ul.sectlevel0 ul.sectlevel1 { margin-left: 0; margin-top: 0.5em; margin-bottom: 0.5em; }
+#toc ul { list-style-type: none; }
+#toctitle { color: #003b6b; }
+@media only screen and (min-width: 1280px) { body.toc2 { padding-left: 20em; }
+  #toc.toc2 { position: fixed; width: 20em; left: 0; top: 0; border-right: 1px solid #dddddd; border-bottom: 0; z-index: 1000; padding: 1em; height: 100%; overflow: auto; }
+  #toc.toc2 #toctitle { margin-top: 0; }
+  #toc.toc2 > ul { font-size: .95em; }
+  #toc.toc2 ul ul { margin-left: 0; padding-left: 1.25em; }
+  #toc.toc2 ul.sectlevel0 ul.sectlevel1 { padding-left: 0; margin-top: 0.5em; margin-bottom: 0.5em; }
+  body.toc2.toc-right { padding-left: 0; padding-right: 20em; }
+  body.toc2.toc-right #toc.toc2 { border-right: 0; border-left: 1px solid #dddddd; left: auto; right: 0; } }
+#content #toc { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; border-width: 0; -webkit-border-radius: 0; border-radius: 0; }
+#content #toc > :first-child { margin-top: 0; }
+#content #toc > :last-child { margin-bottom: 0; }
+#content #toc a { text-decoration: none; }
+#content #toctitle { font-weight: bold; font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-size: 1em; padding-left: 0.125em; }
+#footer { max-width: 100%; background-color: none; padding: 1.25em; }
+#footer-text { color: black; line-height: 1.44; }
+.sect1 { padding-bottom: 1.25em; }
+.sect1 + .sect1 { border-top: 1px solid #dddddd; }
+#content h1 > a.anchor, h2 > a.anchor, h3 > a.anchor, #toctitle > a.anchor, .sidebarblock > .content > .title > a.anchor, h4 > a.anchor, h5 > a.anchor, h6 > a.anchor { position: absolute; width: 1em; margin-left: -1em; display: block; text-decoration: none; visibility: hidden; text-align: center; font-weight: normal; }
+#content h1 > a.anchor:before, h2 > a.anchor:before, h3 > a.anchor:before, #toctitle > a.anchor:before, .sidebarblock > .content > .title > a.anchor:before, h4 > a.anchor:before, h5 > a.anchor:before, h6 > a.anchor:before { content: '\00A7'; font-size: .85em; vertical-align: text-top; display: block; margin-top: 0.05em; }
+#content h1:hover > a.anchor, #content h1 > a.anchor:hover, h2:hover > a.anchor, h2 > a.anchor:hover, h3:hover > a.anchor, #toctitle:hover > a.anchor, .sidebarblock > .content > .title:hover > a.anchor, h3 > a.anchor:hover, #toctitle > a.anchor:hover, .sidebarblock > .content > .title > a.anchor:hover, h4:hover > a.anchor, h4 > a.anchor:hover, h5:hover > a.anchor, h5 > a.anchor:hover, h6:hover > a.anchor, h6 > a.anchor:hover { visibility: visible; }
+#content h1 > a.link, h2 > a.link, h3 > a.link, #toctitle > a.link, .sidebarblock > .content > .title > a.link, h4 > a.link, h5 > a.link, h6 > a.link { color: #7b2d00; text-decoration: none; }
+#content h1 > a.link:hover, h2 > a.link:hover, h3 > a.link:hover, #toctitle > a.link:hover, .sidebarblock > .content > .title > a.link:hover, h4 > a.link:hover, h5 > a.link:hover, h6 > a.link:hover { color: #622400; }
+.imageblock, .literalblock, .listingblock, .verseblock, .videoblock { margin-bottom: 1.25em; }
+.admonitionblock td.content > .title, .exampleblock > .title, .imageblock > .title, .videoblock > .title, .listingblock > .title, .literalblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, .sidebarblock > .title, .tableblock > .title, .verseblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title { text-align: left; font-weight: bold; }
+.tableblock > caption { text-align: left; font-weight: bold; white-space: nowrap; overflow: visible; max-width: 0; }
+table.tableblock #preamble > .sectionbody > .paragraph:first-of-type p { font-size: inherit; }
+.admonitionblock > table { border: 0; background: none; width: 100%; }
+.admonitionblock > table td.icon { text-align: center; width: 80px; }
+.admonitionblock > table td.icon img { max-width: none; }
+.admonitionblock > table td.icon .title { font-weight: bold; text-transform: uppercase; }
+.admonitionblock > table td.content { padding-left: 1.125em; padding-right: 1.25em; border-left: 1px solid #dddddd; color: #333333; }
+.admonitionblock > table td.content > :last-child > :last-child { margin-bottom: 0; }
+.exampleblock > .content { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; -webkit-border-radius: 0; border-radius: 0; }
+.exampleblock > .content > :first-child { margin-top: 0; }
+.exampleblock > .content > :last-child { margin-bottom: 0; }
+.exampleblock > .content h1, .exampleblock > .content h2, .exampleblock > .content h3, .exampleblock > .content #toctitle, .sidebarblock.exampleblock > .content > .title, .exampleblock > .content h4, .exampleblock > .content h5, .exampleblock > .content h6, .exampleblock > .content p { color: #333333; }
+.exampleblock > .content h1, .exampleblock > .content h2, .exampleblock > .content h3, .exampleblock > .content #toctitle, .sidebarblock.exampleblock > .content > .title, .exampleblock > .content h4, .exampleblock > .content h5, .exampleblock > .content h6 { line-height: 1; margin-bottom: 0.625em; }
+.exampleblock > .content h1.subheader, .exampleblock > .content h2.subheader, .exampleblock > .content h3.subheader, .exampleblock > .content .subheader#toctitle, .sidebarblock.exampleblock > .content > .subheader.title, .exampleblock > .content h4.subheader, .exampleblock > .content h5.subheader, .exampleblock > .content h6.subheader { line-height: 1.4; }
+.exampleblock.result > .content { -webkit-box-shadow: 0 1px 8px #aaaaaa; box-shadow: 0 1px 8px #aaaaaa; }
+.sidebarblock { border-style: solid; border-width: 1px; border-color: #e6e6e6; margin-bottom: 1.25em; padding: 1.25em; background: white; -webkit-border-radius: 0; border-radius: 0; }
+.sidebarblock > :first-child { margin-top: 0; }
+.sidebarblock > :last-child { margin-bottom: 0; }
+.sidebarblock h1, .sidebarblock h2, .sidebarblock h3, .sidebarblock #toctitle, .sidebarblock > .content > .title, .sidebarblock h4, .sidebarblock h5, .sidebarblock h6, .sidebarblock p { color: #333333; }
+.sidebarblock h1, .sidebarblock h2, .sidebarblock h3, .sidebarblock #toctitle, .sidebarblock > .content > .title, .sidebarblock h4, .sidebarblock h5, .sidebarblock h6 { line-height: 1; margin-bottom: 0.625em; }
+.sidebarblock h1.subheader, .sidebarblock h2.subheader, .sidebarblock h3.subheader, .sidebarblock .subheader#toctitle, .sidebarblock > .content > .subheader.title, .sidebarblock h4.subheader, .sidebarblock h5.subheader, .sidebarblock h6.subheader { line-height: 1.4; }
+.sidebarblock > .content > .title { color: #003b6b; margin-top: 0; line-height: 1.6; }
+.exampleblock > .content > :last-child > :last-child, .exampleblock > .content .olist > ol > li:last-child > :last-child, .exampleblock > .content .ulist > ul > li:last-child > :last-child, .exampleblock > .content .qlist > ol > li:last-child > :last-child, .sidebarblock > .content > :last-child > :last-child, .sidebarblock > .content .olist > ol > li:last-child > :last-child, .sidebarblock > .content .ulist > ul > li:last-child > :last-child, .sidebarblock > .content .qlist > ol > li:last-child > :last-child { margin-bottom: 0; }
+.literalblock > .content pre, .listingblock > .content pre { background: #eeeeee; border-width: 1px; border-style: dashed; border-color: #666666; -webkit-border-radius: 0; border-radius: 0; padding: 1.25em 1.5625em 1.125em 1.5625em; word-wrap: break-word; }
+.literalblock > .content pre.nowrap, .listingblock > .content pre.nowrap { overflow-x: auto; white-space: pre; word-wrap: normal; }
+.literalblock > .content pre > code, .listingblock > .content pre > code { display: block; }
+@media only screen { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.72em; } }
+@media only screen and (min-width: 768px) { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.81em; } }
+@media only screen and (min-width: 1280px) { .literalblock > .content pre, .listingblock > .content pre { font-size: 0.9em; } }
+.listingblock > .content { position: relative; }
+.listingblock:hover code[class*=" language-"]:before { text-transform: uppercase; font-size: 0.9em; color: #999; position: absolute; top: 0.375em; right: 0.375em; }
+.listingblock:hover code.asciidoc:before { content: "asciidoc"; }
+.listingblock:hover code.clojure:before { content: "clojure"; }
+.listingblock:hover code.css:before { content: "css"; }
+.listingblock:hover code.groovy:before { content: "groovy"; }
+.listingblock:hover code.html:before { content: "html"; }
+.listingblock:hover code.java:before { content: "java"; }
+.listingblock:hover code.javascript:before { content: "javascript"; }
+.listingblock:hover code.python:before { content: "python"; }
+.listingblock:hover code.ruby:before { content: "ruby"; }
+.listingblock:hover code.scss:before { content: "scss"; }
+.listingblock:hover code.xml:before { content: "xml"; }
+.listingblock:hover code.yaml:before { content: "yaml"; }
+.listingblock.terminal pre .command:before { content: attr(data-prompt); padding-right: 0.5em; color: #999; }
+.listingblock.terminal pre .command:not([data-prompt]):before { content: '$'; }
+table.pyhltable { border: 0; margin-bottom: 0; }
+table.pyhltable td { vertical-align: top; padding-top: 0; padding-bottom: 0; }
+table.pyhltable td.code { padding-left: .75em; padding-right: 0; }
+.highlight.pygments .lineno, table.pyhltable td:not(.code) { color: #999; padding-left: 0; padding-right: .5em; border-right: 1px solid #dddddd; }
+.highlight.pygments .lineno { display: inline-block; margin-right: .25em; }
+table.pyhltable .linenodiv { background-color: transparent !important; padding-right: 0 !important; }
+.quoteblock { margin: 0 0 0.75em; padding: 0.5625em 1.25em 0 1.1875em; border-left: 1px solid #dddddd; }
+.quoteblock blockquote { margin: 0 0 0.75em 0; padding: 0 0 0.5625em 0; border: 0; }
+.quoteblock blockquote > .paragraph:last-child p { margin-bottom: 0; }
+.quoteblock .attribution { margin-top: -.25em; padding-bottom: 0.5625em; font-size: 0.8125em; color: #e15200; }
+.quoteblock .attribution br { display: none; }
+.quoteblock .attribution cite { display: block; margin-bottom: 0.625em; }
+table thead th, table tfoot th { font-weight: bold; }
+table.tableblock.grid-all { border-collapse: separate; border-spacing: 1px; -webkit-border-radius: 0; border-radius: 0; border-top: 1px solid #dddddd; border-bottom: 1px solid #dddddd; }
+table.tableblock.frame-topbot, table.tableblock.frame-none { border-left: 0; border-right: 0; }
+table.tableblock.frame-sides, table.tableblock.frame-none { border-top: 0; border-bottom: 0; }
+table.tableblock td .paragraph:last-child p, table.tableblock td > p:last-child { margin-bottom: 0; }
+th.tableblock.halign-left, td.tableblock.halign-left { text-align: left; }
+th.tableblock.halign-right, td.tableblock.halign-right { text-align: right; }
+th.tableblock.halign-center, td.tableblock.halign-center { text-align: center; }
+th.tableblock.valign-top, td.tableblock.valign-top { vertical-align: top; }
+th.tableblock.valign-bottom, td.tableblock.valign-bottom { vertical-align: bottom; }
+th.tableblock.valign-middle, td.tableblock.valign-middle { vertical-align: middle; }
+p.tableblock.header { color: white; font-weight: bold; }
+td > div.verse { white-space: pre; }
+ol { margin-left: 1.75em; }
+ul li ol { margin-left: 1.5em; }
+dl dd { margin-left: 1.125em; }
+dl dd:last-child, dl dd:last-child > :last-child { margin-bottom: 0; }
+ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .ulist, .ulist .olist, .olist .ulist { margin-bottom: 0.375em; }
+ul.unstyled, ol.unnumbered, ul.checklist, ul.none { list-style-type: none; }
+ul.unstyled, ol.unnumbered, ul.checklist { margin-left: 0.625em; }
+ul.checklist li > p:first-child > i[class^="icon-check"]:first-child, ul.checklist li > p:first-child > input[type="checkbox"]:first-child { margin-right: 0.25em; }
+ul.checklist li > p:first-child > input[type="checkbox"]:first-child { position: relative; top: 1px; }
+ul.inline { margin: 0 auto 0.375em auto; margin-left: -1.375em; margin-right: 0; padding: 0; list-style: none; overflow: hidden; }
+ul.inline > li { list-style: none; float: left; margin-left: 1.375em; display: block; }
+ul.inline > li > * { display: block; }
+.unstyled dl dt { font-weight: normal; font-style: normal; }
+ol.arabic { list-style-type: decimal; }
+ol.decimal { list-style-type: decimal-leading-zero; }
+ol.loweralpha { list-style-type: lower-alpha; }
+ol.upperalpha { list-style-type: upper-alpha; }
+ol.lowerroman { list-style-type: lower-roman; }
+ol.upperroman { list-style-type: upper-roman; }
+ol.lowergreek { list-style-type: lower-greek; }
+.hdlist > table, .colist > table { border: 0; background: none; }
+.hdlist > table > tbody > tr, .colist > table > tbody > tr { background: none; }
+td.hdlist1 { padding-right: .8em; font-weight: bold; }
+td.hdlist1, td.hdlist2 { vertical-align: top; }
+.literalblock + .colist, .listingblock + .colist { margin-top: -0.5em; }
+.colist > table tr > td:first-of-type { padding: 0 .8em; line-height: 1; }
+.colist > table tr > td:last-of-type { padding: 0.25em 0; }
+.qanda > ol > li > p > em:only-child { color: #004985; }
+.thumb, .th { line-height: 0; display: inline-block; border: solid 4px white; -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2); }
+.imageblock.left, .imageblock[style*="float: left"] { margin: 0.25em 0.625em 1.25em 0; }
+.imageblock.right, .imageblock[style*="float: right"] { margin: 0.25em 0 1.25em 0.625em; }
+.imageblock > .title { margin-bottom: 0; }
+.imageblock.thumb, .imageblock.th { border-width: 6px; }
+.imageblock.thumb > .title, .imageblock.th > .title { padding: 0 0.125em; }
+.image.left, .image.right { margin-top: 0.25em; margin-bottom: 0.25em; display: inline-block; line-height: 0; }
+.image.left { margin-right: 0.625em; }
+.image.right { margin-left: 0.625em; }
+a.image { text-decoration: none; }
+span.footnote, span.footnoteref { vertical-align: super; font-size: 0.875em; }
+span.footnote a, span.footnoteref a { text-decoration: none; }
+#footnotes { padding-top: 0.75em; padding-bottom: 0.75em; margin-bottom: 0.625em; }
+#footnotes hr { width: 20%; min-width: 6.25em; margin: -.25em 0 .75em 0; border-width: 1px 0 0 0; }
+#footnotes .footnote { padding: 0 0.375em; line-height: 1.3; font-size: 0.875em; margin-left: 1.2em; text-indent: -1.2em; margin-bottom: .2em; }
+#footnotes .footnote a:first-of-type { font-weight: bold; text-decoration: none; }
+#footnotes .footnote:last-of-type { margin-bottom: 0; }
+#content #footnotes { margin-top: -0.625em; margin-bottom: 0; padding: 0.75em 0; }
+.gist .file-data > table { border: none; background: #fff; width: 100%; margin-bottom: 0; }
+.gist .file-data > table td.line-data { width: 99%; }
+div.unbreakable { page-break-inside: avoid; }
+.big { font-size: larger; }
+.small { font-size: smaller; }
+.underline { text-decoration: underline; }
+.overline { text-decoration: overline; }
+.line-through { text-decoration: line-through; }
+.aqua { color: #00bfbf; }
+.aqua-background { background-color: #00fafa; }
+.black { color: black; }
+.black-background { background-color: black; }
+.blue { color: #0000bf; }
+.blue-background { background-color: #0000fa; }
+.fuchsia { color: #bf00bf; }
+.fuchsia-background { background-color: #fa00fa; }
+.gray { color: #606060; }
+.gray-background { background-color: #7d7d7d; }
+.green { color: #006000; }
+.green-background { background-color: #007d00; }
+.lime { color: #00bf00; }
+.lime-background { background-color: #00fa00; }
+.maroon { color: #600000; }
+.maroon-background { background-color: #7d0000; }
+.navy { color: #000060; }
+.navy-background { background-color: #00007d; }
+.olive { color: #606000; }
+.olive-background { background-color: #7d7d00; }
+.purple { color: #600060; }
+.purple-background { background-color: #7d007d; }
+.red { color: #bf0000; }
+.red-background { background-color: #fa0000; }
+.silver { color: #909090; }
+.silver-background { background-color: #bcbcbc; }
+.teal { color: #006060; }
+.teal-background { background-color: #007d7d; }
+.white { color: #bfbfbf; }
+.white-background { background-color: #fafafa; }
+.yellow { color: #bfbf00; }
+.yellow-background { background-color: #fafa00; }
+span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
+.admonitionblock td.icon [class^="icon-"]:before { font-size: 2.5em; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); cursor: default; }
+.admonitionblock td.icon .icon-note:before { content: "\f05a"; color: #00579e; color: #004176; }
+.admonitionblock td.icon .icon-tip:before { content: "\f0eb"; text-shadow: 1px 1px 2px rgba(155, 155, 0, 0.8); color: #111; }
+.admonitionblock td.icon .icon-warning:before { content: "\f071"; color: #bf6900; }
+.admonitionblock td.icon .icon-caution:before { content: "\f06d"; color: #bf3400; }
+.admonitionblock td.icon .icon-important:before { content: "\f06a"; color: #bf0000; }
+.conum { display: inline-block; color: white !important; background-color: black; -webkit-border-radius: 100px; border-radius: 100px; text-align: center; width: 20px; height: 20px; font-size: 12px; font-weight: bold; line-height: 20px; font-family: Arial, sans-serif; font-style: normal; position: relative; top: -2px; letter-spacing: -1px; }
+.conum * { color: white !important; }
+.conum + b { display: none; }
+.conum:after { content: attr(data-value); }
+.conum:not([data-value]):empty { display: none; }
+body { font-family: "Droid Serif", Georgia, "Times New Roman", Times, serif; font-size: 16px; color: #111; }
+h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6 { border-bottom: 1px solid #dddddd; }
+#toctitle { color: #00406F; font-weight: normal; margin-top: 1.5em; }
+.sidebarblock { border-color: #aaa; }
+code { -webkit-border-radius: 4px; border-radius: 4px; }
+p.tableblock.header { color: #6d6e71; }
+</style>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/3.2.1/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.3/styles/default.min.css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.3/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</head>
+<body class="book toc2 toc-right">
+<div id="header">
+<h1>Enterprise Considerations</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_developing-web-applications-in-ext-js-framework">Developing Web Applications in Ext JS Framework</a></li>
+<li>
+<ul class="sectlevel2">
+<li><a href="#_javascript-frameworks">JavaScript Frameworks</a></li>
+<li><a href="#_what-this-chapter-covers">What This Chapter Covers</a></li>
+<li><a href="#_why-ext-js">Why Ext JS?</a></li>
+<li><a href="#_downloading-and-installing-ext-js">Downloading and Installing Ext JS</a></li>
+<li><a href="#_getting-familiar-with-ext-js-and-tooling">Getting Familiar with Ext JS and Tooling</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_the-first-version-of-hello-world">The First Version of Hello World</a></li>
+<li><a href="#_generating-applications-with-sencha-cmd-tool">Generating Applications With Sencha CMD Tool</a></li>
+<li><a href="#_which-ext-js-distribution-to-use">Which Ext JS Distribution to Use?</a></li>
+<li><a href="#_declaring-loading-and-instantiating-classes">Declaring, Loading and Instantiating Classes</a></li>
+<li><a href="#_mvc-in-ext-js">MVC in Ext JS</a></li>
+<li><a href="#_a-component-s-lifecycle">A Component&#8217;s Lifecycle</a></li>
+<li><a href="#_events">Events</a></li>
+<li><a href="#_layouts">Layouts</a></li>
+</ul>
+</li>
+<li><a href="#_developing-save-the-child-with-ext-js">Developing Save The Child With Ext JS</a></li>
+<li>
+<ul class="sectlevel3">
+<li><a href="#_setting-up-eclipse-ide-and-apache-tomcat">Setting Up Eclipse IDE and Apache Tomcat</a></li>
+<li><a href="#_save-the-child-the-top-portion-of-ui">Save The Child: The Top Portion of UI</a></li>
+<li><a href="#_completing-save-the-child">Completing Save The Child</a></li>
+</ul>
+</li>
+<li><a href="#_summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The content of this part justifies having the word Enterprise on this book&#8217;s cover.</p>
+</div>
+<div class="paragraph">
+<p>In Chapter 4 you&#8217;ll learn how to use rich and feature complete frameworks -  Ext JS from Sencha. While using this framework may be an overkill for a small Web site, it&#8217;s pretty popular in the enterprise world, where rich-looking UI is required. Besides learning how to work with this framework, you&#8217;ll build a new version of the Save The Child application in Ext JS. In <a href="http://savesickchild.org:8080/ssc-extjs/">this version</a> we&#8217;ll introduce an interactive chart (a popular feature for enterprise dashboards) and a data grid (any enterprise app uses grids).</p>
+</div>
+<div class="paragraph">
+<p>Chapter 5 is a review of productivity tools used by enterprise developers (NPM, Grunt, Bower,Yeoman, CDB). It&#8217;s about build tools, code generators, and managing dependencies (a typical enterprise application uses carious software that need to work in harmony).</p>
+</div>
+<div class="paragraph">
+<p>Chapter 6 is dedicated to dealing with issues that any mid-to-large enterprise Web application is facing: how to modularize the application to reduce the load time and make it more responsive. Our sample application Save The Child will be divided into modules with the help of RequireJS framework.</p>
+</div>
+<div class="paragraph">
+<p>Chapter 7 Test-Driven Development (TDD) is a way of writing less buggy applications. TDD was originated in large projects written in such languages as Java, C++, or C#, and now it&#8217;s adopted by HTML5 community. After reviewing how to do TDD in JavaScript, we&#8217;ll show how to introduce testing into the Save The Child application.</p>
+</div>
+<div class="paragraph">
+<p>Chapter 8 is about WebSockets - a new HTML5 API that can be a game changer for enterprise Web applications that need to have as fast communication with the servers as possible (think financial trading applications or online auctions).
+We&#8217;ll show how to add an auction to our sample charity application.</p>
+</div>
+<div class="paragraph">
+<p>Chapter 9 is a brief overview of various Web application security issues. While small Web sites often forget dealing with security vulnerabilities, this subject can&#8217;t be ignored in the enterprise World.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_developing-web-applications-in-ext-js-framework"><a class="anchor" href="#_developing-web-applications-in-ext-js-framework"></a>Developing Web Applications in Ext JS Framework</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the previous chapter you&#8217;ve got familiar with the JavaScript library jQuery. Now we&#8217;ll introduce you to a more complex product - a JavaScript framework <a href="http://www.sencha.com/products/extjs">Ext JS</a> from <a href="http://www.sencha.com">Sencha</a>. This is one of the most feature-complete frameworks available on the market, and you should give it a serious consideration while deciding on the tooling for your next enterprise HTML5 application.</p>
+</div>
+<div class="sect2">
+<h3 id="_javascript-frameworks"><a class="anchor" href="#_javascript-frameworks"></a>JavaScript Frameworks</h3>
+<div class="paragraph">
+<p>The word <em>framework</em> implies that there is some pre-created "software frame", and application developers need to fit their business-specific code inside such a frame. Why someone would want to do this as opposed to having a full freedom in developing your application code the way you want? The reason being that most enterprise projects are developed by teams of software engineers, and having an agreed-upon structure of the application with clear separation of software layers can make the entire process of development more productive.</p>
+</div>
+<div class="paragraph">
+<p>There are JavaScript frameworks that are mainly forcing developers to organize application code in layers implementing the Model-View-Controller design pattern.  There are more than a dozen MVC JavaScript frameworks that are being used by professional developers: <a href="http://backbonejs.org/">Backbone.js</a>, <a href="http://www.sencha.com/products/extjs">ExtJS</a>, <a href="http://angularjs.org/">AngularJS</a>, <a href="http://emberjs.com/">Ember.js</a>, <a href="http://knockoutjs.com/">Knockout</a> just to name a few.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Ext JS also supports MVC, and you can read about it later in this chapter in section titled MVC in Ext JS.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+There is an excellent Web site called <a href="http://todomvc.com/">TodoMVC</a>, which shows the examples of implementing the same application (a Todo list) using various popular frameworks. Studying the source code of this application implemented in several frameworks can help you in selecting the one for your project.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+To keep the size of this book manageable, we were not able to review more of JavaScript frameworks. But if you&#8217;d ask us to name one more great JavaScript framework that didn&#8217;t make it into this book, we would recommend you to learn AngularJS from Google. There are lots of free online resources on AngularJS that Jeff Cunningham has collected all in one place <a href="https://github.com/jmcunningham/AngularJS-Learning">GitHub</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Besides splitting the code into tiers, frameworks may offer a number of pre-fabricated UI components and build tools, and Ext JS is one of such frameworks.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you decide to develop your application with Ext JS, you don&#8217;t need to use jQuery library.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_what-this-chapter-covers"><a class="anchor" href="#_what-this-chapter-covers"></a>What This Chapter Covers</h3>
+<div class="paragraph">
+<p>The title clearly states that this chapter is about Ext JS framework. Providing detailed coverage of Ext JS in on chapter is almost mission impossible because of the vast variety of features this framework offers. Consider this chapter a hands-on overview of Ext JS. The material in this chapter is divided into three parts:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>You&#8217;ll get a high level overview of the Ext JS framework.</p>
+</li>
+<li>
+<p>We&#8217;ll do a code review of a new version of the Save The Child application developed with Ext JS. This is where we want you to spend most of the time in this chapter. Learn while studying commented code. We&#8217;ve also provided multiple links to the relevant product documentation.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_why-ext-js"><a class="anchor" href="#_why-ext-js"></a>Why Ext JS?</h3>
+<div class="paragraph">
+<p>After learning how jQuery library can simplify development of the HTML5 applications you might be wondering, what&#8217;s so good about Ext JS framework that makes it worthwhile for studying. First of all, Core jQuery is just a library of utilities that simplify working with DOM and - you still need to write the Web application using HTML and JavaScript. In addition to it, there are lots and lots of jQuery plugins that include handy widgets to add to your manually created Web site. We just mentioned the frameworks that help better organizing or modularizing your project, but enterprise application may need more. So here comes the Ext JS sales pitch.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Ext JS an HTML5 framework that doesn&#8217;t require you to write HTML. Your single HTML file (index.html) will just include three files in the head section: one  with Ext JS framework, one CSS file, and one <em>app.js</em>, but the <code>&lt;body&gt;</code> section will be empty.</p>
+</li>
+<li>
+<p>Ext JS includes a comprehensive library of JavaScript-based classes that can help you with  pretty much everything you need to develop a Web application (UI components, UI layouts, collections, networking, collections, CSS compiler, packaging tool, and more).</p>
+</li>
+<li>
+<p>Ext JS offers you a way to write object-oriented code, define classes and inheritance in a way that&#8217;s closer to classical inheritance and doesn&#8217;t require the <code>prototype</code> property.</p>
+</li>
+<li>
+<p>Ext JS can jump start your application development by generating the initial code layered according to the Model-View-Controller (MVC) design pattern.</p>
+</li>
+<li>
+<p>Ext JS is a cross-browser framework that promises to automatically take care of all differences in major Web browsers.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>If you just finished reading the jQuery chapter, you&#8217;ll need to switch to a different state of mind. Core jQuery library was light, it didn&#8217;t drastically change the way of developing pure HTML/JavaScript applications. But working with Ext JS framework is a completely different ball game. It&#8217;s not about improving an existing Web page, it&#8217;s about re-writing it from scratch without using HTML.
+Ext JS includes a rich library of UI components, a flexible class system, custom layouts, code generators. But Web browsers understand only HTML, DOM, CSS, and JavaScript. This means that the framework will have to do some extra work in converting the code written using the home-made Ext JS class system into same old HTML objects. Such extra work requires additional processing time, and we&#8217;ll discuss this in the section titled "The Components Lifecycle".</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_downloading-and-installing-ext-js"><a class="anchor" href="#_downloading-and-installing-ext-js"></a>Downloading and Installing Ext JS</h3>
+<div class="paragraph">
+<p>First, you need to know that <em>Ext JS</em> framework can be used for free only for non-commercial projects. To use  Ext JS for enterprise Web development you or your firm has to purchase one of the <a href="http://www.sencha.com/products/extjs/license/">Ext JS licenses</a>. But for studying, you can download the complete commercial version of Ext JS for free for the 45-days evaluation period.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-important" title="Important"></i>
+</td>
+<td class="content">
+The materials presented in this chapter were tested only with the current version of Ext JS framework, which at the time of this writing was 4.2.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After downloading the Ext JS framework, unzip it to any directory of your choice - later on the framework will be copied either in in your project directory (see the Sencha CMD section below) or in the document root of your Web server.</p>
+</div>
+<div class="paragraph">
+<p>After unzipping the Ext JS distribution, you&#8217;ll find a number of files and folders there. There are several JavaScript files containing differently packages Ext JS framework. You&#8217;ll need to pick just one of these files. The files that include the word <em>all</em> in their names contain the entire framework and if you&#8217;ll include one of the following files, all the classes will be loaded to the user&#8217;s browser even though your application may never use most of them.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ext-all.js - minimized version of the source code of Ext JS, which literally looks like one line of 1.4 million characters (it&#8217;s still JavaScript, of course). Most likely you won&#8217;t deploy this file on your production server.</p>
+</li>
+<li>
+<p>ext-all-debug.js - human-readable source code of Ext JS with no comments. If you like to read comments, use ext-all-debug-w-comments.js.</p>
+</li>
+<li>
+<p>ext-all-dev.js - human-readable source code of Ext JS that includes console.log() statements that generates and outputs debugging information in the browser&#8217;s console.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Similarly, there are files that don&#8217;t include <em>all</em> in their names: ext.js, ext-debug.js, and ext-dev.js. These are much smaller files that do not include the entire framework, but rather a minimum set of classes required to start the application. Later on, the additional classes may be lazy-loaded on the as-needed basis.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Typically, you shouldn&#8217;t be using the <em>all</em> files. We recommend you to use the file ext.js and Sencha CMD tool to create a customized version of Ext JS library to be included with your application. You can find more details in the section Sencha CMD later in this chapter.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <em>docs</em> folder contains extensive documentation - just open the file index.html in your browser and start reading and studying.</p>
+</div>
+<div class="paragraph">
+<p>The <em>builds</em> folder includes sandboxed versions of Ext JS in case you need to to use say Ext JS 4.2 along with older versions of this framework. Browsing the <em>builds</em> folder reveals that the Ext JS framework consists of three parts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Ext Core - it&#8217;s a free to use <a href="http://www.sencha.com/products/extcore/">JavaScript library</a> for enhancing Web sites. It supports DOM manipulation with CSS selectors, events and AJAX requests. It also offers a syntax to define and create classes that can extend from each other. The functionality of Ext Core is comparable to Core jQuery.</p>
+</li>
+<li>
+<p>Ext JS - a UI framework that includes a rich library of UI components.</p>
+</li>
+<li>
+<p>The Foundation - a set of useful utilities.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Such code separation allowed creators of Ext JS reuse a large portion of the framework&#8217;s code in the mobile library Sencha Touch, which we&#8217;ll cover in Chapter 12.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Ext JS framework is large so be prepared that your application will weigh at least 1Mb. This is not an issues for enterprise applications that run on fast networks. But if you need to create a small consumer-oriented Web site, you may be better off by just using a lightweight, easy to learn and free jQuery library or one of a dozen of other JavaScript frameworks that either improve organizational structure of your project or offer a set of a la cart components to prettify your HTML5 application. On the other hand, if  you had a chance to develop or use rich Internet applications developed with such frameworks as Microsoft Silverlight or Apache Flex, then you&#8217;ll quickly realize that Ext JS is the closest by functionality, rich set of components and tools.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_getting-familiar-with-ext-js-and-tooling"><a class="anchor" href="#_getting-familiar-with-ext-js-and-tooling"></a>Getting Familiar with Ext JS and Tooling</h3>
+<div class="paragraph">
+<p>This section is not going to be an Ext JS tutorial that gradually explains each and every feature and API of Ext JS. For this we&#8217;d need to write a fat Ext JS book. Sencha publishes multiple online tutorials, documentation and videos, besides there are several current books written by independent authors. In this section chapter you&#8217;ll get an overview of the framework.</p>
+</div>
+<div class="sect3">
+<h4 id="_the-first-version-of-hello-world"><a class="anchor" href="#_the-first-version-of-hello-world"></a>The First Version of Hello World</h4>
+<div class="paragraph">
+<p>Before we&#8217;ll explain how things work in Ext JS, we&#8217;ll develop a Hello World application. But the section where we&#8217;ll review the code of the Save The Child application will serve as a hands-on way of learning the framework. You&#8217;ll read the code fragments followed by brief explanations. You&#8217;ll be able to run and debug this application on your own computer seeing how various components and program layers work in practice. But first things first - let&#8217;s create a couple of versions of Hello World.</p>
+</div>
+<div class="paragraph">
+<p>Create a new directory (e.g. <em>hello1</em>). Inside <em>hello1</em> create a subdirectory named <em>ext</em> and copy there the entire content of your Ext JS installation directory. Create yet another subdirectory <em>app</em> inside <em>hello1</em> - this is where your application JavaScript files will go.</p>
+</div>
+<div class="paragraph">
+<p>At the very minimum, every Ext JS application will contain one HTML and one JavaScript file - usually index.html and app.js. The file index.html will include the references to the CSS and JavaScript code of Ext JS and will include your app.js containing the code of the Hello World application:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;HelloWorld&lt;/title&gt;
+      &lt;link rel="stylesheet" href="ext/resources/ext-all-gray.css"&gt;
+      &lt;script src="ext/ext.js"&gt;&lt;/script&gt;
+      &lt;script src="app/app.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The next comes the content of the app.js that you should place in the <em>app</em> directory of your project. This is how the app.js may look like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.application({
+    launch: function(){
+      alert("Hello World");
+    }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This <code>Ext.application()</code> method gets a <em>configuration object</em> - JavaScript literal - with configured <code>launch</code> method that&#8217;s called automatically when the Web page has completely loaded. In our case it  mandates to launch the anonymous function that displays the "Hello World" message. In Ext JS you&#8217;ll be using such configuration objects a lot.</p>
+</div>
+<div class="paragraph">
+<p>Open the file index.html in your Web browser and you&#8217;ll see this greeting. But this was a plain vanilla Hello World. In the next section we&#8217;ll automate the process of creation of a fancier Hello World (or the initial version of any other application) by using the Sencha Cmd tool.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Configuration Options</div>
+<div class="paragraph">
+<p>In the pre 4.0 versions ofExt JS you&#8217;d be invoking the <code>Ext.onReady()</code> method instead of passing the configuration object with the <code>launch</code> <em>config option</em>.</p>
+</div>
+<div class="paragraph">
+<p>Providing a function argument as a configuration object overrides configurable properties of the current instance of the class. This is different from the class properties, which are defined at the prototype level and changing a value of a property would apply to all instances of the class. When you&#8217;ll be reading Ext JS online documentation for any class, you&#8217;ll see three categories of class elements: Configs, Properties, and Methods. For example, this is how you can create a panel passing configs:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.create('Ext.panel.Panel', {
+    title: 'Hello',
+    width: 200,
+    html: '&lt;p&gt;World!&lt;/p&gt;',
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example we are creating an instance of the panel using a configuration object with three config options: <code>title</code>, <code>width</code>, and <code>html</code>. The values of these properties will be assigned to the corresponding properties of this instance only. For example, the documentation for <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.panel.Panel"><code>Ext.panel.Panel</code></a> lists 116 available configs that you can set on the panel instance.</p>
+</div>
+<div class="paragraph">
+<p>Ext JS classes are organized into packages. For example, the class <code>Panel</code> in the above example is located in the package <code>Ext.panel</code>. You&#8217;ll be using packaging in your applications too. For example, later in the chapter you&#8217;ll see classes from Save The Child and Clear frameworks named as <code>SSC.view.DonateForm</code> or <code>Clear.override.ExtJSOverrider</code>. Such packages should be properly <em>namespaced</em> and <code>SSC</code> and <code>Clear</code> are top-level namespaces here. The next fragment shows how to give a name to your application, and such a given name will serve as a top-level namespace.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.application({
+    name: 'SSC',
+    // more config options can go here
+});</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>In the next section we&#8217;ll automate the process of creating of Hello World application.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_generating-applications-with-sencha-cmd-tool"><a class="anchor" href="#_generating-applications-with-sencha-cmd-tool"></a>Generating Applications With Sencha CMD Tool</h4>
+<div class="paragraph">
+<p>Sencha CMD is a handy command line tool that automates your work starting from scaffolding your application to minimizing, packaging and deploying it.</p>
+</div>
+<div class="paragraph">
+<p>Download Sencha CMD from <a href="http://www.sencha.com/products/sencha-cmd/download">http://www.sencha.com/products/sencha-cmd/download</a>. Run the installer, and when it&#8217;s complete, open the Terminal or Command window and enter the command <strong>sencha</strong> - you should see a prompt with all possible commands and options that CMD understands.</p>
+</div>
+<div class="paragraph">
+<p>For example, to generate the initial project structure for HelloWorld application enter the following command, specifying the absolute path to your ExtJS SDK directory (we keep it in the <em>/Library</em> directory) and to the output folder, where the generated project should reside.</p>
+</div>
+<div class="paragraph">
+<p><em>sencha -sdk /Library/ext-4.2 generate app HelloWorld /Users/yfain11/hello</em></p>
+</div>
+<div class="paragraph">
+<p>After the code generation was complete, you&#8217;ll see the folder <em>hello</em> of the structure shown on the figure <a href="#FIG6-1">CMD-generated project</a>.</p>
+</div>
+<div id="FIG6-1" class="imageblock">
+<div class="content">
+<img src="images/fig_06_01.png" alt="image">
+</div>
+<div class="title">Figure 1. CMD-generated project</div>
+</div>
+<div class="paragraph">
+<p>The generated project is created with the assumption that your application will be built using the MVC paradigm discussed in the section Best Practice:MVC. The JavaScript is located in the <em>app</em> folder, which includes the <em>view</em> subfolder with the visual portion of your application, the <em>controller</em> folder with controller classes, and the <em>model</em> is for data. The <em>ext</em> folder contains multiple distributions of the Ext JS framework. The <em>sass</em> folder is a place for your application&#8217;s CSS files (see the sidebar titled SASS and CSS later in this chapter).</p>
+</div>
+<div class="paragraph">
+<p>The entry point to your application is index.html, which contains the references to the main application file app.js, the Ext JS framework extdev-js, the CSS file bootstrap.css (imports the classic theme), and the supporting script bootstrap.js, which contains the mapping of the long names if the framework and application classes to their shorter names (<em>xtypes</em>). Here&#8217;s how the generated index.html file looks:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;HelloWorld&lt;/title&gt;
+    &lt;!-- &lt;x-compile&gt; --&gt;
+        &lt;!-- &lt;x-bootstrap&gt; --&gt;
+            &lt;link rel="stylesheet" href="bootstrap.css"&gt;
+            &lt;script src="ext/ext-dev.js"&gt;&lt;/script&gt;
+            &lt;script src="bootstrap.js"&gt;&lt;/script&gt;
+        &lt;!-- &lt;/x-bootstrap&gt; --&gt;
+        &lt;script src="app/app.js"&gt;&lt;/script&gt;
+    &lt;!-- &lt;/x-compile&gt; --&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The content of the generated app.js is shown next. This script just calls the method <code>Ext.application()</code> passing as an argument configuration object that specifies the application name, and the names of the classes that play roles of views and controller. We&#8217;ll go into details a bit later, but at this point let&#8217;s concentrate on the big picture.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.application({
+    name: 'HelloWorld',
+
+    views: [
+        'Main',
+        'Viewport'
+    ],
+
+    controllers: [
+        'Main'
+    ],
+
+    autoCreateViewport: true
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, if you&#8217;ll open index.html in your Web browser, you&#8217;ll see our Hello World initial Web page that looks as in <a href="#FIG6-2">The UI of our Sencha CMD-generated Application</a>. This view uses so called <code>border</code> layout and shows a <code>panel</code> on the west and a <code>tabpanel</code> in the central region of the view.</p>
+</div>
+<div id="FIG6-2" class="imageblock">
+<div class="content">
+<img src="images/fig_06_02.png" alt="image">
+</div>
+<div class="title">Figure 2. The UI of our Sencha CMD-generated Application</div>
+</div>
+<div class="paragraph">
+<p>The total size of this version of the Hello World application is pretty large: 4Mb, and the browser makes 173 requests to the server by the time the user sees the application shown on <a href="#FIG6-2">The UI of our Sencha CMD-generated Application</a>. But Sencha Cmd knows how to build the production version of the Ext JS application. It minimizes and merges the application&#8217;s and required framework&#8217;s JavaScript code into one file. The application css file is also minimized and the references to the image resources become relative hence shorter. Besides, the images may be automatically sliced - cut into smaller rectangular pieces that can be downloaded by the browser simultaneously.</p>
+</div>
+<div class="paragraph">
+<p>To create optimized version of your application go to the Terminal or a command window and change to the root directory of your application (in our case it&#8217;s <em>/Users/yfain11/hello</em>) and run the following command:</p>
+</div>
+<div class="paragraph">
+<p><em>sencha app build</em></p>
+</div>
+<div class="paragraph">
+<p>After the build is finished, you&#8217;ll see newly generated version of the application in the directory <em>build/HelloWorld/production</em>. Open the file index.html while running Chrome Developers Tools, and you&#8217;ll see that the total size of the application is substantially lower (about 900Kb) and the the browser had to make only five requests to the server (see <a href="#FIG6-3">Running production version of HelloWorld</a>). Using gZip will reduce the size of this application to 600Kb, which is still a lot, but Ext JS framework is not the right choice for writing Hello World type of applications or light Web sites.</p>
+</div>
+<div id="FIG6-3" class="imageblock">
+<div class="content">
+<img src="images/fig_06_03.png" alt="image">
+</div>
+<div class="title">Figure 3. Running production version of HelloWorld</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+With older versions of Sencha Cmd (Sencha SDK Tools) you would generate a manifest file in a jsb3 format, that would describe all the classes that your application uses. Such jsb3 file would be used for creating custom builds. This option is still available, but Sencha Cmd uses the command <em>sencha app build</em> as was shown above. For more details about code generation refer to the section <a href="http://docs.sencha.com/ext-js/4-2/#!/guide/command_app">Using Sencha Cmd with Ext JS</a> in the product documentation.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<a href="http://www.sencha.com/products/desktop-packager/">Sencha Desktop Packager</a> allows you to take an existing Ext JS Web application (or any other HTML5 application) and package it as a native desktop application for Windows and MAC OS X. Your application can also integrate with native menus, file dialogs and access the file system.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Later in this chapter we&#8217;ll use Sencha CMD tool again in the section "Building Production Version" to create an optimized version of the Save The Child application.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Sencha CMD 3.1 comes with embedded Jetty 8.1.7 Web server. Open the Terminal or command window and run the following command to serve your Web application on port 8080 (can be another port): <em>sencha fs web -port8080 start -map /path/to/app/docrootdir</em>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If your organization is developing Web applications with Ext JS without using Sencha CMD - it&#8217;s a mistake. Sencha CMD is a very useful code generator and optimizer that also enforces the MVC principles of application design.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_which-ext-js-distribution-to-use"><a class="anchor" href="#_which-ext-js-distribution-to-use"></a>Which Ext JS Distribution to Use?</h4>
+<div class="paragraph">
+<p>First you need to select the packaging of the Ext JS framework that fits your needs. You may select its minimized version to be used in production or a larger and commented version with detailed comments and error messages. As we mentioned earlier in this chapter, you may select a version of Ext JS that include either all or only the core classes. The third option is to create a custom build of Ext JS that will include only the those framework classes that are used by your application.</p>
+</div>
+<div class="paragraph">
+<p>The files with the minimized production version of Ext JS are called ext-all.js and ext.all. We usually pick the latter one. Its size is more than 1Mb, but as we described in the section on Sencha CMD, your can create a build fine-tuned to your application . If this application will be used on the high-speed networks and size is not the object, simply add it to your index.html from your local servers or see if Sencha offers the CDN for the Ext JS version you need, which may look similar to the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;link rel="http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css" /&gt;
+
+&lt;script type="text/javascript" charset="utf-8"
+        src="http://cdn.sencha.io/ext-4.2.0-gpl/ext.js"&gt;&lt;/script&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_declaring-loading-and-instantiating-classes"><a class="anchor" href="#_declaring-loading-and-instantiating-classes"></a>Declaring, Loading and Instantiating Classes</h4>
+<div class="paragraph">
+<p>Pure JavaScript doesn&#8217;t have classes and  constructor functions are the closest to classes language elements. Ext JS extends the JavaScript language and introduces classes and a special way to define and instantiate them with functions <code>Ext.define()</code> and <code>Ext.create()</code>. Ext JS also allows to extend one class from another using the property <code>extend</code> and define class constructors using the property <code>constructor</code>.
+With <code>Ext.define()</code> contains you declare a class declaration, and <code>Ext.create()</code> instantiate it. Basically, <code>define()</code> serves as a template for creation of one or more instances.</p>
+</div>
+<div class="paragraph">
+<p>Usually the first argument you specify to <code>define()</code> is a fully qualified class name, the second argument is an object literal that contains the class definition. If you use <code>null</code> as the first argument Ext JS creates an anonymous class.</p>
+</div>
+<div class="paragraph">
+<p>The next class <code>Header</code> has 200 pixel height, uses the <code>hbox</code> layout, has a custom <code>config</code> property <code>logo</code>, extends <code>Ext.panel.Panel</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define("SSC.view.Header", {
+  extend: 'Ext.panel.Panel',
+
+  title: 'Test',
+  height: 200,
+  renderTo: 'content',        <i class="conum" data-value="1"></i><b>(1)</b>
+
+  config: {
+     logo: 'sony_main.png'    //  <i class="conum" data-value="2"></i><b>(2)</b>
+  },
+
+  layout: {
+    type: 'hbox',
+    align: 'middle'
+  }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Render this panel to an HTML element with <code>id=content</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Defining a custom <code>config</code> property <code>logo</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can optionally include a third argument for <code>define()</code>, which is a function to be called when the class definition is created. Now you can create one or more instances of the class class, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var myHeader = Ext.create("SSC.view.Header");</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The values of custom config properties from the <code>config{}</code> section  of the class can be reassigned during the class instantiation. For example, the next code snippet will print sony.png for the first instance of the header, and sony_small.png for the second one. Please not that Ext JS automatically generated getters and setters for all <code>config</code> properties, which allowed us to use the method <code>getLogo()</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.onReady(function () {
+   var myHeader1 = Ext.create("SSC.view.Header");
+   //
+   var myHeader2 = Ext.create("SSC.view.Header",
+                                { logo: 'sony_small.png' });
+
+    console.log(myHeader1.getLogo());
+    console.log(myHeader2.getLogo());
+});</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Don&#8217;t forget about an online tool JSFiddle that allows you to test and share JavaScript code snippets.JSFiddle knows about Ext JS 4.2 already. For example you can run the code snippet above by following this <a href="http://jsfiddle.net/yfain/yNva6/2/">JSFiddle link</a>. If it doesn&#8217;t render the styles properly, check the URL of the ext-all.css in the section External Resources.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If a class has dependencies on other classes, which must be  preloaded, use the <code>requires</code> parameter. For example, the next code snippet shows that the class <code>SSC.view.Viewport</code> requires the <code>Panel</code> and the <code>Column</code> classes. So the Ext JS loader will check if <code>Panel</code> and/or <code>Column</code> was not loaded yet, it&#8217;ll dynamically load them first.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.view.Viewport', {
+    extend: 'Ext.container.Viewport',
+    requires: [
+        'Ext.tab.Panel',
+        'Ext.layout.container.Column'
+    ]
+    // the rest of the class definition is omitted
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Ext.create()</code> is a preferred way of instantiation as it does more than the <code>new</code> operator that is also allowed in Ext JS. But <code>Ext.create()</code> may perform some additional functionality, for example id <code>Ext.Loader</code> is enabled, <code>create()</code> will attempt to  synchronously load dependencies (if you haven&#8217;t used the option <code>require</code>). But with <code>requires</code> your preloads all dependencies asynchronously in parallel and is a preferred way of specifying dependencies. Besides, the async mode allows loading from different domains, while sync loading doesn&#8217;t.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Ed Spencer published a useful list of recommendations on improving performance of Ext JS applications in his blog titled <a href="http://edspencer.net/2013/07/19/sencha-con-2013-ext-js-performance-tips/">SenchaCon 2013: Ext JS Performance Tips</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Dynamic Class Loading</div>
+<div class="paragraph">
+<p>The singleton <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.Loader">Ext.Loader</a> offers a powerful mechanism of dynamic loading of any classes on demand. You have to explicitly enable the loader first thing after including the Ext JS framework in your HTML file it providing the paths where the loaded should look for files, for example</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">&lt;script type="text/javascript"&gt;
+    Ext.Loader.setConfig({
+      enabled: true,
+      disablrCaching: false,
+      paths: {
+          'SSC': 'my_app_path'
+      }
+    });
+&lt;/script&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then the manual loading of a class can be done using Ext.require(<em>SSC.SomeClass</em>) or Ext.syncRequire(<em>SSC.SomeClass</em>).</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For each class Ext JS creates one instance of special class <code>Ext.Class</code>, which will be shared by all objects instantiated from this class.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The instance of any object has access to its class via a special variable <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.Base-property-self"><code>self</code></a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Prior to creating a class, Ext JS will run some pre-processors and some post-processors based on the class definition. For example, the class <code>'SSC.view.Viewport'</code> from the code sample above uses <code>extend: 'Ext.container.Viewport'</code>, which will engage the <em>extend</em> pre-processor that will do some background work to properly build a subclass of extend: <code>Viewport</code>. If your class includes the <code>config</code> section, the <em>config</em> preprocessor will be engaged.</p>
+</div>
+<div class="sect4">
+<h5 id="_xtype-an-efficient-way-to-create-class-instances"><a class="anchor" href="#_xtype-an-efficient-way-to-create-class-instances"></a>Xtype: An Efficient Way to Create Class Instances</h5>
+<div class="paragraph">
+<p>One of the interesting pre-processors is <em>xtype</em>, which is an alternative to the invocation of the <code>create()</code> method for creating the instance of the class. Every Ext JS component has assigned and documented <code>xtype</code>. For example, <code>Ext.panel.Panel</code> has an <code>xtype</code> of <code>panel</code>. Online documentation displays the name of the corresponding <code>xtype</code> in the header of each component as in <a href="#FIG6-7">Each component has an xtype</a>.</p>
+</div>
+<div id="FIG6-7" class="imageblock">
+<div class="content">
+<img src="images/fig_06_07.png" alt="image">
+</div>
+<div class="title">Figure 4. Each component has an xtype</div>
+</div>
+<div class="paragraph">
+<p>Using <code>xtype</code> instead of <code>create()</code> leads to more efficient memory management. If the object is declared with the <code>xtype</code> attribute, it won&#8217;t be instantiated until some container uses it. You are encouraged to assign <code>xtype</code> to your custom classes, and Ext JS will instantiate if for you without the need to call <code>create()</code>. You can find many examples of using the <code>xtype</code> property in the section "Developing Save The Child with Ext JS" later in this chapter. For example, the following class definition includes many components with the <code>xtype</code> property.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define("SSC.view.LoginBox", {
+    extend: 'Ext.Container',
+    xtype: 'loginbox',
+
+    layout: 'hbox',
+
+    items: [{
+        xtype: 'container',
+        flex: 1
+    }, {
+        xtype: 'textfield',
+        emptyText: 'username',
+        name: 'username',
+        hidden: true
+    }, {
+        xtype: 'textfield',
+        emptyText: 'password',
+        inputType: 'password',
+        name: 'password',
+        hidden: true
+    }, {
+        xtype: 'button',
+        text: 'Login',
+        action: 'login'
+    }]
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Most of the above components use the standard Ext JS <code>xtype</code> values, so the fact that you have included them into the class <code>SSC.view.LoginBox</code> is a command for Ext JS to instantiate all these buttons and text fields.
+But the class <code>SSC.view.LoginBox</code> also includes <code>xtype: 'loginbox'</code>  - we decided to assign the value <code>loginbox</code> to serve as the <code>xtype</code> of our class. Now, you can use the statement <code>xtype: 'loginbox'</code> in any other container, it&#8217;ll know how to instantiate it. For example, later in this chapter you&#8217;ll see the complete code of the main window <code>SSC.view.ViewPort</code>, which includes (and instantiates) our login box as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">   items: [{
+       xtype: 'loginbox',
+       margin: '10 0 0 0'
+   },
+   // more items go here
+   ]</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Ext JS UI components allows you to use <code>alias</code>, which have similar to <code>xtype</code> use. Each of the aliases have to have a <code>widget</code> prefix, e.g. <code>alias: 'widget.DonatePanel'</code> in a definition of the component that extends <code>Ext.panel.Panel</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_multiple-inheritance-with-mixins"><a class="anchor" href="#_multiple-inheritance-with-mixins"></a>Multiple Inheritance With Mixins</h5>
+<div class="paragraph">
+<p>Object-oriented languages Java and C# can be considered as simpler version of C++. One of the C++ features that didn&#8217;t make it into Java and C# was support of multiple inheritance: in these languages a class can extend only one other class. This was done for a good reason - debugging of the C++ programs that were written with multiple inheritance was difficult.</p>
+</div>
+<div class="paragraph">
+<p>Ext JS supports multiple inheritance via JavaScript mixins. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly. The following code snippet shows how to define a <code>classB</code> that will have features defined in classes <code>classA</code>,<code>classC</code>, and <code>classD</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define("MyApp.classB",{
+  extend: "MyApp.classA",
+  mixins: {classC: "MyApp.ClassC"
+           classD, "MyApp.classD"}
+
+  }
+  ...
+});</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+If more than one mixin has a method with the same name, the first method that was applied to the resulting class wins. To avoid collisions Ext JS allows you to provide fully qualified name of the method, for example <code>this.mixins.classC.conflictingName(); this.mixins.classD.conflictingName();</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_mvc-in-ext-js"><a class="anchor" href="#_mvc-in-ext-js"></a>MVC in Ext JS</h4>
+<div class="paragraph">
+<p>While Ext JS doesn&#8217;t force you to architect your application based on the MVC paradigm, it&#8217;s a really good idea to do so. Earlier in the section on Sencha CMD you&#8217;ve seen how this tool generates a project, which separates model, views, controllers and stores into separate directories as in <a href="#FIG6-1">CMD-generated project</a> that depicted the structure of the Hello World project. But later in this chapter we&#8217;ll build our Save The Child application the same way. <a href="#FIG6-8">Model-View-Controller in Ext JS</a> presents a diagram illustration how the Ext JS application that contains all Model-View-Controller tiers.</p>
+</div>
+<div id="FIG6-8" class="imageblock">
+<div class="content">
+<img src="images/fig_06_08.png" alt="image">
+</div>
+<div class="title">Figure 5. Model-View-Controller in Ext JS</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Controller is an object that serves as an intermediary between the data and the views. The data has arrived to your application, and controller has to notify the appropriate view. The user changed the data on the view - the controller should pass the changes to the model (or stores in the Ext JS world). Controller is the place to write event listeners reaction to some important events of your application (e.g. a user clicked on the button). In other words, Controller maps the events to actions to be performed on the data or the view.</p>
+</li>
+<li>
+<p>View is a certain portion of the UI that the user sees. The view is populated with the data from the model (or stores).</p>
+</li>
+<li>
+<p>Model represents some business entity, e.g. Donor, Campaign, Customer, Order e.t.c. In Ext JS models are access via stores.</p>
+</li>
+<li>
+<p>Store contains one or more model instances. Typically, a Model is a separate class that is instantiated by the store object, but in simple cases a store can have the model data embedded in its own class. A store may use more than one model if need be. Both stores and model can communicate with the data feed that in a Web application is usually provided by some server-side data feed.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The application object defines its controllers, views, models, and stores. When the Save The Child will be ready, the code of its app.js will look as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.application({
+    name: 'SSC',
+
+    views: [
+        'CampaignsMap',
+        'DonateForm',
+        'DonorsPanel',
+        'Header',
+        'LoginBox',
+        'VideoPanel',
+        'Viewport'
+    ],
+
+    stores: [
+        'Campaigns',
+        'Donors'
+    ],
+
+    controllers: [
+        'Donate'
+    ]
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above code is a clean and simple to read/write code helps Ext JS framework in generating additional code required for wiring views, models, controllers and stores together. There is no explicit <code>models</code> section, because in our implementation the models were defined inside the <code>stores</code>. For better understanding of the rest of this chapter you should read the <a href="http://docs.sencha.com/extjs/4.2.0/#!/guide/application_architecture">MVC Architecture</a> section from Ext JS documentation. We don&#8217;t want to repeat the content of Sencha product documentation, but rather will be giving you brief descriptions while doing code review of the Save The Child application.</p>
+</div>
+<div class="sect4">
+<h5 id="_models-and-stores"><a class="anchor" href="#_models-and-stores"></a>Models and Stores</h5>
+<div class="paragraph">
+<p>When you create a class to be served as a model, it must be a subclass of <code>Ext.data.Model</code>. A Model has the <code>fields</code> property. For example, this is how the you can represent a Donor entity using just two fields: name and location:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('HR.model.Donor',{
+    extend: 'Ext.data.Model',
+    requires: [
+        'Ext.data.Types'
+    ],
+
+    fields: [
+        { name: 'donors',   type: Ext.data.Types.INT },
+        { name: 'location', type: Ext.data.Types.STRING}
+    ]
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Think of an instance of a model is a of one record representing some business entity, e.g. Donor.  Ext JS generate getters and setters for models, so if an instance of the model is represented by a variable <code>sscDonor</code>, you can set or get its value as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">sscDonor.set('name', 'Farata Systems');
+var donorName= sscDonor.get('name');</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A store in Ext JS holds a collection of instances of some model. For example, if you the application has retrieved the information about ten donors, it&#8217;ll be represented in Ext JS as a collection of ten instances of the class <code>Donor</code>. A custom store in your application has to extend from the class <code>Ext.data.Store</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you need to quickly create a mock store for testing purposes, you can declare a store with inline data that you can specify using the config option <code>data</code>. The next code sample shows a declaration of the store for providing the information about the donors as inline data:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.store.Donors', {
+    extend: 'Ext.data.Store',
+
+    fields: [
+        { name: 'donors',   type: 'int' },
+        { name: 'location', type: 'string' }
+    ],
+
+    data: [
+        { donors: 48, location: 'Chicago, IL' },
+        { donors: 60, location: 'New York, NY' },
+        { donors: 90, location: 'Dallas, TX' }
+    ]
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It&#8217;s a good idea to have a mock store with the test data located right on your computer. This way you won&#8217;t depend on the readiness and availability of the server-side data. But usually, a store makes some AJAX call to a server and retrieves the data via the object <code>Ext.data.reader.Reader</code> or one of its descendants, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.store.Donors', {
+    extend: 'Ext.data.Store',
+
+    model: 'SSC.model.Donor',           <i class="conum" data-value="1"></i><b>(1)</b>
+    proxy: {                  <i class="conum" data-value="2"></i><b>(2)</b>
+        type: 'ajax',
+        url: 'donors.json',   <i class="conum" data-value="3"></i><b>(3)</b>
+        reader: {             <i class="conum" data-value="4"></i><b>(4)</b>
+           type: 'json'
+        }
+    }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The model <code>SSC.model.Donor</code> has to be described in your application as a separate class and contain only the fields defined, no data.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Unless you need to load some raw data from a third-party server provider, wrap your reader into a <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.Proxy">Proxy object</a>. Server proxies are used for implementing CRUD operations and include the corresponding methods - <code>create()</code>, <code>read()</code>, <code>update()</code>, <code>destroy()</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The name of the json-formated data file that contains an array of object literals (each object represents one donor).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>Reader</code> object will consume JSON. Read the <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.reader.Json">Ext JS documentation</a> to decide how to properly configure your JSON reader. The reader knows how to convert the data into the model.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Populating of a store with the external data is usually done via a <code>Proxy</code> object, and Ext JS offers several server side proxies: <code>Ajax</code>, <code>JsonP</code>, <code>Rest</code>, and <code>Direct</code>. To retrieve the data from the server you&#8217;d be calling the method <code>load()</code> on your <code>Store</code> object. To send the data to the server - call the method <code>sync()</code>.</p>
+</div>
+<div class="paragraph">
+<p>The most frequently used proxy is <code>Ajax</code>, which uses <code>XMLHttpRequest</code> to communicate with the server. The code fragment below shows another way of defining the store <code>Donors</code>.  It specifies via the config <code>api</code> the server sides URIs responsible for the four CRUD operations. We&#8217;ve omitted the <code>reader</code> section here because the default data type is JSON anyway.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.store.Donors', {
+    extend: 'Ext.data.Store',
+
+    model: 'SSC.model.Donor',
+    proxy: {
+        type: 'ajax',
+        url: 'donors.json',
+        api: {
+           create: '/create_donors',
+           read: '/read_donors',
+           update: '/update_donors',
+           destroy: '/destroy_donors',
+        }
+    }
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When you create an instance of the data store you can specify the <code>autoload</code> parameter. It it&#8217;s <code>true</code>, the store will be populated the store automatically. Otherwise, explicitly call the method <code>load()</code> whenever the data retrieval is needed. For example, you can call the method <code>myStore.load({callback:someCallback})</code> passing it some callback to be executed.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+In Appendix B we discuss HTML5 local storage API. Ext JS has a class <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.LocalStorage">Ext.data.proxy.LocalStorage</a> that saves the model data locally if the Web browser supports it.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_controllers-and-views"><a class="anchor" href="#_controllers-and-views"></a>Controllers and Views</h5>
+<div class="paragraph">
+<p>Your application controller is a liaison between the data and the views. This class has to extend <code>Ext.app.Controller</code>, and will include references to the views and, possibly stores. Controller will automatically load every class mentioned in its code, create an instance of each store and register each instance with the class [<code>Ext.StoreManager</code>].</p>
+</div>
+<div class="paragraph">
+<p>A controller class has config properties <code>stores</code>, <code>models</code>,  and <code>views</code>, where you can list stores, models, and views that controller should know about. For example, the next code listing shows the controller <code>SSC.controller.Donate</code> includes the names of two stores - <code>SSC.store.Campaigns</code> and <code>SSC.store.Donors</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.controller.Donate', {
+    extend: 'Ext.app.Controller',
+    stores: ['SSC.store.Campaigns', 'SSC.store.Donors']  <i class="conum" data-value="1"></i><b>(1)</b>
+
+    refs: [{                                      <i class="conum" data-value="2"></i><b>(2)</b>
+        ref: 'donatePanel',
+        selector: '[cls=donate-panel]'
+    }
+    // more views can go here
+    ],
+
+    init: function () {                            <i class="conum" data-value="3"></i><b>(3)</b>
+
+        this.control({
+            'button[action=showform]': {
+                click: this.showDonateForm
+            }
+            // more event listeners go here
+        });
+    },
+
+    showDonateForm: function () {                  <i class="conum" data-value="4"></i><b>(4)</b>
+        this.getDonatePanel().getLayout().setActiveItem(1);
+    }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Listing stores in your controller. Actually, in most cases you&#8217;d list stores is the <code>Ext.application</code> singleton as we did earlier. But if you need to dynamically create controllers, you don&#8217;t have a choice but declare stores in such controllers.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Listing one or more views of your application in the <code>refs</code> property, which simplifies the search of the component globally or within some container. Controller generates getters and setters for each object listed in the <code>refs</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Registering event listeners in the function <code>init()</code>. In this case we&#8217;re registering the event handler function <code>showDonateForm</code> that will process clicks on the button, which has an attribute <code>action=showform</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The getter <code>getDonatePanel()</code> will be auto-generated by Ext JS because <code>donatePanel</code> was included in the <code>refs</code> section.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><code>Ext.StoreManager</code> provides a convenience method to look up the store by store ID. If stores were automatically injected into <code>Ext.StoreManager</code> by the controller, the default store ID is its name, e.g. <code>SSC.store.Donors</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var donorsStore = Ext.data.StoreManager.lookup('SSC.store.Donors');
+
+// An alternative syntax to use StoreManager lookup
+var donorsStore = Ext.getStore('SSC.store.Donors');</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above <code>SSC.controller.Donate</code> doesn&#8217;t use the config properties <code>views</code>, but it it did, Ext JS would generate getters and setters for every view (the same is true for stores and models). It uses <code>refs</code> instead to reference components, and getters and setters will be generated for each components listed in <code>refs</code>, e.g. <code>getDonatePanel()</code>. Lookup of such components is done based on the value in <code>selector</code> using the syntax compatible with <a href="http://docs-devel.sencha.com/extjs/4.2.1/#!/api/Ext.ComponentQuery"><code>ComponentQuery</code></a>.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can view and test Ext JS components against bundled themes browsing the Theme Viewer at the <a href="http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html">Ext JS 4.2 Examples</a> page.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_a-component-s-lifecycle"><a class="anchor" href="#_a-component-s-lifecycle"></a>A Component&#8217;s Lifecycle</h4>
+<div class="paragraph">
+<p>In previous versions of our Save The Child application CSS was responsible for all layouts of the UI components. In Chapter 10 you&#8217;ll be learning about the <em>responsive design</em> techniques and CSS media queries, which allow to create fluid layouts that automatically adjust to the size of the viewport. But this section is about Ext JS proprietary way of creating and adding UI components to Web pages. Before the user will see a component, Ext JS framework will go through the following phases for each component:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Load - load the required (or all) Ext JS classes and their dependencies</p>
+</li>
+<li>
+<p>Initialization of components when the DOM is ready</p>
+</li>
+<li>
+<p>Rendering  - convert components to HTML elements</p>
+</li>
+<li>
+<p>Layout - measuring and assigning sizes</p>
+</li>
+<li>
+<p>Destruction - removing the reference from DOM, removing event listeners and unregistering from the component manager.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Rendering and layout are the most time consuming phases. The rendering does a lot of preparations to give the browser&#8217;s rendering engine HTML elements and not Ext JS classes. The layout phase is slow because the calculation of sizes and positions (unless they are in absolute coordinates) and applying of cascading stylesheets takes time.</p>
+</div>
+<div class="paragraph">
+<p>There&#8217;s also the issue of <em>reflows</em>, which happen when the code reads-measures-writes to the DOM and makes dynamic style modifications. Fortunately, Ext JS 4.1 was redesigned to minimize the number of reflows; now a large portion of recalculations is done in a batch before modifying the DOM.</p>
+</div>
+<div class="sect4">
+<h5 id="_components-as-containers"><a class="anchor" href="#_components-as-containers"></a>Components as Containers</h5>
+<div class="paragraph">
+<p>If a component can contain other components, it&#8217;s a container (e.g. <code>Ext.panel.Panel</code>) and will have <a href="http://bit.ly/13QH0TG"><code>Ext.container.Container</code></a> as one of its ancestors. In Ext JS class hierarchy, <code>Container</code> is a subclass of <code>Component</code>, so all methods and properties defined for a component are available for a container too. Each Web page consists of one or more containers, which include some children - components (in Ext JS they are subclasses of <a href="http://bit.ly/Zy3iZU"><code>Ext.Component</code></a>), for example, <code>Ext.button.Button</code>.</p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll be defining your container class with as a subclass of a container by including <code>extend: Ext.container.Container</code>. The child elements of a container are accessible via its property <code>items</code>. In the <code>Ext.define()</code> statement of the container you may specify the code that will loop through this <code>items</code> array and, say style the components, but actual instances of the children will be provided during the <code>Ext.create()</code> call via configuration object.</p>
+</div>
+<div class="paragraph">
+<p>The process of adding a component to a container will typically consist of invoking <code>Ext.create()</code> and specifying in a configuration object where to render the component to, for example <code>renderTo: Ext.getBody()</code>.</p>
+</div>
+<div class="paragraph">
+<p>But under the hood Ext JS will do a lot more work. The framework will auto-generate a unique ID for the component, assign some event listeners, instantiate component plugins if specified, invoke the <code>initComponent()</code>, and add the component to <code>Ext.ComponentManager</code>.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Even though you can manually assign an ID to the component via configuration object, it&#8217;s not recommended because it could result in duplicate IDs.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_events"><a class="anchor" href="#_events"></a>Events</h4>
+<div class="paragraph">
+<p>Events in Ext JS are defined in the mixin <code>Ext.util.Observable</code>. Components interested in receiving events can subscribe to them using on of the following methods:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>By calling the method <code>addListener()</code></p>
+</li>
+<li>
+<p>By using the method <code>on()</code>.</p>
+</li>
+<li>
+<p>Declaratively</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The next code snippet shows two different ways of how a combobox can subscribe to the event <code>change</code>. The handler function is a callback that will be invoked if the event <code>change</code> will be dispatched on this combobox:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">combobox.addListener('change', myEventHandlerFunction);
+
+combobox.on('change', myEventHandlerFunction);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To unsubscribe from the event call the method <code>removeListener()</code> or its shorter version <code>un()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">combobox.removeListener('change', myEventHandlerFunction);
+combobox.un('change', myEventHandlerFunction);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also declaratively subscribe to events using the <code>listeners</code> config property of the component:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.create('Ext.button.Button', {
+   listeners: {
+       click: function() { // handle event here }
+   }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>JavaScript support event bubbling (see Appendix A). In Ext JS event bubbling mechanism enables events dispatched by components that include <code>Ext.util.Observable</code> bubble up through all enclosing containers. For components it means that you can handle component’s event on container level. It can be handy to subscribe and handle multiple similar events in one place. To enable bubbling for selected events use the <code>enableBubble()</code> method, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">this.enableBubble(['textchange', 'validitychange']);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To define custom events use the method <code>addEvents()</code>, where you can provide one or more of the custom event names:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">this.addEvents('messagesent', 'updatecompleted');</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For components you have to define custom events inside the <code>initComponent()</code> method. For controllers - inside <code>init()</code>, and for any other class – inside its constructor.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_layouts"><a class="anchor" href="#_layouts"></a>Layouts</h4>
+<div class="paragraph">
+<p>The container&#8217;s property <code>layout</code> controls how its children are laid out. It does it by referring to the container&#8217;s property <code>items</code>, which lists all of the child components. If you won&#8217;t explicitly set the <code>layout</code> property, its default value is <code>Auto</code>, which is just placing components inside the container top to bottom regardless of the component size.</p>
+</div>
+<div class="paragraph">
+<p>Usually you&#8217;ll be explicitly specifying the layout. For example, the <code>hbox</code> layout would arrange all components inside the container horizontally next to each other, but <code>vbox</code> layout would arrange them vertically. The <code>card</code> layout places the components one under another, but only the top component is visible (think of a tab folder, where the content of only one tab is visible at any given time).</p>
+</div>
+<div class="paragraph">
+<p>The <code>border</code> layout is often used to arrange the components in the main viewport (a.k.a. home page) of your application. This layout allows you to split the container&#8217;s real estate into five imaginary regions: <code>north</code>, <code>east</code>, <code>west</code>, <code>south</code>, and <code>center</code>. If you need to allocate the top menu items, place them to the region <code>north</code>. The footer of the page is in the <code>south</code> as shown in the code sample below.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('MyApp.view.Viewport', {
+  extend: 'Ext.container.Viewport',
+
+  layout: 'border',
+
+  items: [{
+    width: 980,
+    height: 200,
+    title: "Top Menu",
+    region: "north",
+    xtype:  "panel"},
+   {
+    width: 980,
+    height: 600,
+    title: "Page Content",
+    region: "center",
+    xtype:  "panel"},
+   },
+   {
+    width: 980,
+    height: 100,
+    title: "The footer",
+    region: "south",
+    xtype:  "panel"},
+   }]
+});</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_setting-proportional-layouts-with-the-flex-property"><a class="anchor" href="#_setting-proportional-layouts-with-the-flex-property"></a>Setting Proportional Layouts With The flex Property</h5>
+<div class="paragraph">
+<p>Ext JS has a property <code>flex</code> that allows make your layout more flexible. Instead of specifying the width or height of a child component in absolute values you can split the available space proportionally. For example if the space has to be divided between two components having the <code>flex</code> values 2 and 1, this means that the 2/3 of the container&#8217;s space will be allocated to the first component, and 1/3 to the second one as illustrated in the following code snippet.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript"> layout: 'vbox',
+
+ items: [{
+   xtype: 'component',
+   html: 'Lorem ipsum dolor',
+   flex: 2
+   },
+   {
+   xtype: 'button',
+   action: 'showform',
+   text: 'DONATE NOW',
+   flex: 1
+ }]</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+The format of this book doesn&#8217;t allow us to include detailed description of major Ext JS component. If you are planning to use Ext JS for development of enterprise Web applications, allocate some extra time to learn the data grid <code>Ext.grid.Panel</code> that&#8217;s used for rendering of tabular data. You should also master working with forms with <code>Ext.form.Panel</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the next section you&#8217;ll see Ext JS layouts in action while working on the Save The Child application.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_developing-save-the-child-with-ext-js"><a class="anchor" href="#_developing-save-the-child-with-ext-js"></a>Developing Save The Child With Ext JS</h3>
+<div class="paragraph">
+<p>In this section we&#8217;ll do a code walk-through of the Ext JS version of our Save The Child application. Ext JS framework is often used in the enterprise applications that communicate with Java-based server-side. The most popular IDE among Java enterprise developers is called Eclipse. That&#8217;s why we decided to switch from WebStorm to Eclipse IDE for some time. Apache Tomcat is one of the most popular servers among Java developers.</p>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve prepared two separate Eclipse projects:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SSC_Top_ExJS contains the code required to render the top portion of the UI</p>
+</li>
+<li>
+<p>SSC_Complete_ExtJS contains the complete version.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>To test these applications in Eclipse, you need to install its version titled "Eclipse IDE for Java EE developers" and configure it with Apache Tomcat as described below.</p>
+</div>
+<div class="paragraph">
+<p>Note: If you are not planning to work with Java servers, you can continue using WebStorm IDE. Just open in WebStorm the WebContent directory from the above project (as you did in the previous chapters) and open the index.html file in the browser. WebStorm will run these Web application using its internal Web server.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To make WebStorm work faster, exclude directories <em>ext, packages, build, and WEB-INF</em> from the project (hit the icon with a wrench image on the toolbar and select the Directories and the Excluded). This way WebStorm won&#8217;t be indexing these directories.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_setting-up-eclipse-ide-and-apache-tomcat"><a class="anchor" href="#_setting-up-eclipse-ide-and-apache-tomcat"></a>Setting Up Eclipse IDE and Apache Tomcat</h4>
+<div class="paragraph">
+<p>Although Eclipse is not the best IDE for JavaScript developers, but besides being a super popular IDE among Java developers, we&#8217;ll need it to demonstrate the HTML/Java application generation in the next chapter.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Sencha offers Eclipse plugin (not covered in the book) for those who purchased a license of Sencha Complete.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We&#8217;ll use the version "Eclipse IDE for Java EE developers". It&#8217;s available free of charge at <a href="http://www.eclipse.org/downloads/">Eclipse Downloads site</a>. The installation comes down to unzipping of the downloaded archive. Then double-click on the Eclipse executable to start this IDE.</p>
+</div>
+<div class="sect4">
+<h5 id="_apache-tomcat"><a class="anchor" href="#_apache-tomcat"></a>Apache Tomcat</h5>
+<div class="paragraph">
+<p>In Chapter 3 we used a XAMPP server that was running PHP scripts. Since this chapter will include server-side code written in Java, we&#8217;ll use <a href="http://tomcat.apache.org">Apache Tomcat</a>, which is one of the <a href="http://w3techs.com/technologies/details/ws-tomcat/all/all">popular</a> servers used by Java developers for deploying Web applications. Besides being a Web Server, Tomcat also contains Java Servlet container that will be used later in the next chapter in the section "Generating CRUD applications". But for most examples we&#8217;ll use Tomcat as a Web server where Ext JS code will be deployed.</p>
+</div>
+<div class="paragraph">
+<p>Get the latest version of Apache Tomcat from the Download section at <a href="http://tomcat.apache.org">http://tomcat.apache.org</a>. At the time of this writing Tomcat 7 is the latest producation-quality build, so download the zip file with the Tomcat&#8217;s Binary Distributions (Core). Unzip the file in the directory of your choice.</p>
+</div>
+<div class="paragraph">
+<p>Even though you can start Tomcat from a separate command window, the  more productive way is to configure Tomcat right in the Eclipse IDE. This will allow to deploy your applications, and start/stop Tomcat without the need to leave Eclipse.
+To add a server to Eclipse, open Eclipse Java EE perspective (menu Window | Open Perspective ), select the menu  File | New | Other | Server |Server | Apache | Tomcat v7.0 Server, select your Tomcat installation directory and press Finish. If you don’t see Tomcat 7 in the list of Apache servers, click on “Download additional server adapters”.</p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see the Tomcat entry in the Eclipse Project Explorer. Go to Eclipse menu Windows | Show View and open the Servers view. Start Tomcat using the right-click menu.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+By default, Eclipse IDE keeps all required server configuration and deployment files in its own hidden directory. To see where exactly they are located in your computer, just double-click on the name of Tomcat in the Server view. The server path field contains the path. Keep in mind that while Tomcat documentation defines <em>webapps</em> as a default deployment directory, Eclipse uses <em>wtpwebapps</em> directory instead. If you prefer to deploy your Eclipse projects under your original Tomcat installation path, select the option Use Tomcat Installation.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In the next section you&#8217;ll learn how to create Dynamic Web Projects in Eclipse, where you&#8217;ll need to specify the Target Runtime for deployment of your Web applications. This newly installed and configured Tomcat server will serve as a deployment target for our sample projects.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_dynamic-web-projects-and-ext-js"><a class="anchor" href="#_dynamic-web-projects-and-ext-js"></a>Dynamic Web Projects and Ext JS</h5>
+<div class="paragraph">
+<p>Eclipse for Java EE developers comes with <a href="http://www.eclipse.org/webtools/">Web Tools Platform</a> that simplifies development of Web applications by allowing you to create so-called Dynamic Web Project. This is an Eclipse pre-configured project that already knows where its Java server located and deployment to the server is greatly simplified. Sample projects from this chapter will be   specifically created for deployment under Apache Tomcat server.</p>
+</div>
+<div class="paragraph">
+<p>To create such a project select Eclipse menu File | New | Other | Web | Dynamic Web Project. It&#8217;ll pop up a window similar to <a href="#FIG6-4">Creating Dynamic Web Project in Eclipse</a>. Note that the Target Runtime is Apache Tomcat v7.0 that we&#8217;ve configured in the previous section.</p>
+</div>
+<div id="FIG6-4" class="imageblock">
+<div class="content">
+<img src="images/fig_06_04.png" alt="image">
+</div>
+<div class="title">Figure 6. Creating Dynamic Web Project in Eclipse</div>
+</div>
+<div class="paragraph">
+<p>Upon creation, this project will include several directories, and one of them will be called <em>WebContent</em>. This directory it serves as a document root of the Web server in Eclipse Dymamic Web Projects . This is the place to put your index.html and one of possible places to keep the Ext JS framework.Create a subdirectory <em>ext</em> under <em>WebContent</em> and copy there all files from the Ext JS distribution. The <em>app</em> directory should also go under <em>WebContent</em>.</p>
+</div>
+<div class="paragraph">
+<p>Unfortunately, Eclipse IDE is infamous for slow indexing of JavaScript files, and given the fact that Ext JS has hundreds of JavaScript files, your work may be interrupted by Eclipse trying to unnecessary re-validate these files. Developers of Sencha Eclipse plugin decided to solve this problem by creating a special type library file (ext.ser) supporting code assistance in Eclipse. This solution will work until some of the Ext JS API changes, after that Sencha should update the type library file.</p>
+</div>
+<div class="paragraph">
+<p>If you don&#8217;t have Sencha Eclipse plugin, there is a couple of solutions to this problem (we&#8217;ll use the first one).</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Exclude from Eclipse build the following Ext JS directories: ext, build, and packages.</p>
+</li>
+<li>
+<p>Don&#8217;t copy the Ext JS framework into your Eclipse project. Keep it in the place known for Tomcat, and configure as a loadable module.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>To implement the first solution, right click on the properties of your project and select JavaScript | Include Path. Then switch to the Source tab, expand the project&#8217;s Web content and press the buttons Edit and then Add. One by one add the ext, build, and packages as exclusion patterns (add the slash at the end) as shown in <a href="#Fig6-5">[Fig6-5]</a></p>
+</div>
+<div id="FIG6-5" class="imageblock">
+<div class="content">
+<img src="images/fig_06_05.png" alt="image">
+</div>
+<div class="title">Figure 7. Solution 1: Excluding folders in Eclipse</div>
+</div>
+<div class="paragraph">
+<p>For the second solution, you&#8217;ll need to add your Ext JS folder as a static Tomcat module. Double-click at the Tomcat name in the Servers view and then click on the bottom tab Modules. Then Click on Add External Web Module. In the popup window find the folder where your Ext JS is (in my computer it&#8217;s inside the Library folder as in <a href="#Fig6-6">[Fig6-6]</a>) and give it a name (e.g. /extjs-4.2). Now Tomcat will know that on each start it has to load year another static Web module known as /extjs-4.2. If you&#8217;re interested in details of such deployment, open up the file server.xml located in your Eclipse workspace in the hidden directory <em>.metadata/.plugins/org.eclipse.wst.server.core/tmp0/conf</em>.</p>
+</div>
+<div class="paragraph">
+<p>To ensure that you did everything right, just enter in your browser the URL <a href="http://localhost:8080/extjs-4.2">http://localhost:8080/extjs-4.2</a>, and you should see the  welcome screen of Ext JS.</p>
+</div>
+<div id="FIG6-6" class="imageblock">
+<div class="content">
+<img src="images/fig_06_06.png" alt="image">
+</div>
+<div class="title">Figure 8. Solution 2: Adding Ext JS to Tomcat as a static module</div>
+</div>
+<div class="paragraph">
+<p>In both of these solutions you&#8217;ll lose the Ext JS context sensitive help, but at least you will eliminate the long pauses caused by Eclipse internal indexing processes. Developing with ExtJS in WebStorm IDE or IntelliJ IDEA IDEs would spare you from all these issues because these IDE&#8217;s are smart enough to produce context-sensitive help from an external JavaScript library.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+If you decided to stick to WebStorm IDE, you can skip Eclipse-related instructions below and just open in browser index.html located in the WebContent directory of the SSC_Top_ExtJS project. In any case the browser will render the page that looks as in <a href="#FIG6-2-SSC">Running the SSC_Top_ExtJS</a> below.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In this section we brought together three pieces of software: Eclipse IDE, Apache Tomcat server, and Ext JS framework.  Let&#8217;s bring one more program to the mix: Sencha CMD. We already went through the initial code generation of Ext JS applications. If you already have a Dynamic Web Project in Eclipse workspace, run Sencha CMD specifying the <em>WebContent</em> directory of your project as the output folder, where the generated project will reside. For example, if the name of your Dynamic Web Project is hello2, the Sencha CMD command can look as follows:</p>
+</div>
+<div class="paragraph">
+<p><em>sencha -sdk /Library/ext-4.2 generate app HelloWorld /Users/yfain11/myEclipseWorkspace/hello2/WebContent</em></p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_save-the-child-the-top-portion-of-ui"><a class="anchor" href="#_save-the-child-the-top-portion-of-ui"></a>Save The Child: The Top Portion of UI</h4>
+<div class="paragraph">
+<p>To run the top portion of the UI, Select Eclipse menu File | Import | General | Existing projects into workspace and press the button Next. Then select the option <em>Select root directory</em> and press browse to find SSC_Top_ExJS on your disk. This will import the entire Dynamic Web Project, and most likely you&#8217;ll see one error in the Problems view indicating that the target runtime with so-and-so name is not defined. This may happen because the name of the Tomcat configuration in your Eclipse is different from the one in the directory SSC_Top_ExJS.</p>
+</div>
+<div class="paragraph">
+<p>To fix this issue, right-click on the project name and select the menu Properties | Targeted runtimes. Then uncheck the Tomcat name that was imported from our archive and check the name of your Tomcat configuration. This action will make the project SSC_Top_ExtJS deployable under your Tomcat server. Right-click on the server name in the Servers view and select Add and Remove menu item. You&#8217;ll see a popup window similar to <a href="#FIG6-1-SSC">Deploying Dynamic Web Project</a>, which depicts a state when the project SSC_Top_ExtJS is configured (deployed), but SSC_Complete_ExtJS isn&#8217;t yet.</p>
+</div>
+<div id="FIG6-1-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_01_SSC.png" alt="image">
+</div>
+<div class="title">Figure 9. Deploying Dynamic Web Project</div>
+</div>
+<div class="paragraph">
+<p>Right-click on the project name SSC_Top_ExtJS, select the menu Run as | Run on server. Eclipse may offer to restart the server - accept it, and you&#8217;ll see the top portion of the Save The Child application running in the internal browser of Eclipse that will look as shown on <a href="#FIG6-2-SSC">Running the SSC_Top_ExtJS</a>.
+You can either configure Eclipse to use your system browser or just enter the URL <a href="http://localhost:8080/SSC_Top_ExtJS/">http://localhost:8080/SSC_Top_ExtJS/</a> in the browser of your choice - the Web page will look the same.</p>
+</div>
+<div id="FIG6-2-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_02_SSC.png" alt="image">
+</div>
+<div class="title">Figure 10. Running the SSC_Top_ExtJS</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Apache Tomcat runs on the port 8080 by default. If you want to change the port number, double-click on the Tomcat name in the Servers view and change the port there.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>It&#8217;s time for a code review. The initial application was generated by Sencha CMD so the directory structure complies with the MVC paradigm. This version has one controller Donate.js and three views: DonateForm.js, Viewport.js, and Header.js as shown in <a href="#FIG6-3-SSC">Controller, views and images of SSC_Top_ExtJS</a>. The images are located under the folder resources.</p>
+</div>
+<div id="FIG6-3-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_03_SSC.png" alt="image">
+</div>
+<div class="title">Figure 11. Controller, views and images of SSC_Top_ExtJS</div>
+</div>
+<div class="paragraph">
+<p>The app.js is pretty short - it just declares SSC as the application name, views and controllers. By adding the property <code>autoCreateViewport: true</code> we requested the application to automatically load the main window, which must be called Viewport.js and located in the view directory.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.application({
+    name: 'SSC',
+
+    views: [
+        'DonateForm',
+        'Header',
+        'Viewport'
+    ],
+
+    controllers: [
+        'Donate'
+    ],
+
+    autoCreateViewport: true
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this version of the application controller Donate.js is listening to the events from the view <code>DonateForm</code>. It&#8217;s responsible just for the showing and hiding the <code>Donate</code> form panel. We&#8217;ve implemented the same behavior as in the previous version of the SaveThe Child application - click on the Donate Now button reveals the donation form. If the application would need to make some AJAX calls to the server, such code would also be placed in the controller. The code of the <code>Donate</code> controller looks as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.controller.Donate', {
+  extend: 'Ext.app.Controller',
+
+  refs: [{
+    ref: 'donatePanel',
+    selector: '[cls=donate-panel]'
+  }],
+
+  init: function () {                 <i class="conum" data-value="1"></i><b>(1)</b>
+
+    this.control({
+      'button[action=showform]': {    <i class="conum" data-value="2"></i><b>(2)</b>
+        click: this.showDonateForm
+      },
+
+      'button[action=hideform]': {
+        click: this.hideDonateForm
+      },
+
+      'button[action=donate]': {
+        click: this.submitDonateForm
+      }
+    });
+  },
+
+  showDonateForm: function () {        <i class="conum" data-value="3"></i><b>(3)</b>
+    this.getDonatePanel().getLayout().setActiveItem(1); <i class="conum" data-value="4"></i><b>(4)</b>
+  },
+
+  hideDonateForm: function () {
+    this.getDonatePanel().getLayout().setActiveItem(0);
+  },
+
+  submitDonateForm: function () {
+    var form = this.getDonatePanel().down('form'); <i class="conum" data-value="5"></i><b>(5)</b>
+    form.isValid();
+  }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The <code>init()</code> method is invoked only once on instantiation of the controller.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The <code>control()</code> method of the controller takes  selectors as arguments to find components with the corresponding event listeners to be added. For example, <code>'button[action=showform]'</code> means "find a button that has a property <code>action</code> with the value <code>showform</code>" - it has the same meaning as in CSS selectors.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Event handler functions to process show, hide, and submit events.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>In containers with card layout, you can make one of the components visible (the top one in the card deck) by passing its index to the method <code>setActiveItem()</code>. The Viewport.js includes a container with the card layout (see ` cls: <em>donate-panel</em>` in the next code sample).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Finding the children of the container can be done using the method <code>down()</code> method. in this case we are finding the child <code>&lt;form&gt;</code> element of a donate panel. If you need to find the parents of the component use <code>up()</code>.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Since MVC paradigm splits the code into separate layers, you can unit test them separately, e.g. test your controllers separately from the Views. Chapter 7 is dedicated to JavaScript testing, and it contains sections "Testing The Models" and "Testing The Controllers" that illustrate how to arrange for separate testing of the models and controllers in the Ext JS version of the Save The Child application.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The top level window is a <code>SSC.view.Viewport</code>, which will contain the <code>Header</code> and the <code>Donate</code> form views.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.view.Viewport', {
+  extend: 'Ext.container.Viewport',
+  requires: [
+    'Ext.tab.Panel',
+    'Ext.layout.container.Column'
+  ],
+
+  cls: 'app-viewport',
+  layout: 'column',               <i class="conum" data-value="1"></i><b>(1)</b>
+  defaults: {
+    xtype: 'container'
+  },
+
+  items: [{
+    columnWidth: 0.5,
+    html: '&amp;nbsp;' // Otherwise column collapses
+  }, {
+    width: 980,
+    cls: 'main-content',
+    layout: {
+      type: 'vbox',              <i class="conum" data-value="2"></i><b>(2)</b>
+      align: 'stretch'
+    },
+
+    items: [
+      {
+      xtype: 'appheader'
+      },
+      {
+      xtype: 'container',
+      minHeight: 350,
+      flex: 1,
+
+      cls: 'donate-panel',       <i class="conum" data-value="3"></i><b>(3)</b>
+      layout: 'card',
+
+      items: [{
+        xtype: 'container',
+        layout: 'vbox',
+
+        items: [{
+          xtype: 'component',
+          html: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ...',
+
+          maxWidth: 550,
+          padding: '80 20 0'
+        }, {
+          xtype: 'button',
+          action: 'showform',
+          text: 'DONATE NOW',
+          scale: 'large',
+          margin: '30 230'
+        }]
+      }, {
+        xtype: 'donateform',
+        margin: '80 0 0 0'
+      }]
+    }, {
+      xtype: 'container',
+      flex: 1
+    }]
+  }, {
+    columnWidth: 0.5,
+    html: '&amp;nbsp;'
+  }]
+
+});
+</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Our viewport has a <code>column</code> layout, and will be explained after the <a href="#FIG6-5-SSC">Collapsed Code of Viewport.js</a> Collapse Code of Viewport.js below.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The vertical box layout will display the components from the items array one under another : the <code>appheader</code> and the <code>container</code>, which is explained next.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The container with the class selector <code>donate-panel</code> includes two components, but since they are laid out as <code>card</code>, only one of them will be shown at a time: either the one with the "Lorem ipsum" text, or the <code>donateform</code>. Which one to show is mandated by the <code>Donate</code> controller by invoking the method <code>setActiveItem()</code> with the appropriate index.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following figure shows a snapshot from WebStorm IDE, with collapsed code section just to see the big picture of what are the columns in the column layout - they are marked with arrows.</p>
+</div>
+<div id="FIG6-5-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_05_SSC.png" alt="image">
+</div>
+<div class="title">Figure 12. Collapsed Code of Viewport.js</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Open its menu Preferences | JavaScript | Libraries and add the file ext-all-debug-w-comments.js as a global library and pressing the button F1 will display available comments about selected Ext JS element. Configuring Ext JS as external library allows you to remove Ext JS files from WebStorm project without losing context sensitive help.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In Ext JS the column layout is used when you are planning to present the information in columns as explained in the <a href="http://dev.sencha.com/deploy/ext-4.0.0/examples/layout-browser/layout-browser.html">product documentation</a>. Even though there are three columns in this layout, the entire content on this page is located in the middle column having the width of 980. The column on the left and the column on the right just hold one non-breakable space each to provide centering of the middle column in monitors with high resolution wider than 980 pixels (plus the browser&#8217;s chrome).</p>
+</div>
+<div class="paragraph">
+<p>The width of <em>0.5, 980, 0.5</em> means to give the middle column 980 pixels and share the remaining space equally between empty columns.</p>
+</div>
+<div class="paragraph">
+<p>Note: There is another way to lay out this screen using Horizontal Box <code>hbox</code> with the <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.layout.container.HBox-cfg-pack"><code>pack</code> configuration property</a>, but we decided to keep the column layout for illustration purposes.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Consider using <a href="http://www.sencha.com/learn/getting-started-with-ext-designer/">Ext Designer</a> for creating layouts in the wysiwyg mode.
+.SASS and CSS
+</td>
+</tr>
+</table>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>Take a look at the project structure shown at <a href="#FIG6-5-SSC">Collapsed Code of Viewport.js</a> - it has sass directory, which contains several files with styles: DonateForm.scss, Header.scss, and Viewport.scss. Note that the file name extension is not <em>css</em>, but <em>scss</em> - it&#8217;s Syntactically Awesome Stylesheets (SASS). The content of the Viewport.css is shown below. In particular, if you&#8217;ve been wondering where are located the image of the boy and the background flowers - there are right there.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">.app-viewport {
+  background: white;
+}
+
+.main-content {
+  background: url("images/bg-1.png") no-repeat;
+}
+
+.donate-panel {
+  background: url("images/child-1.jpg") no-repeat right bottom, url("images/bg-2.png")
+  no-repeat 90px bottom;
+  border-bottom: 1px dotted #555;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html">SASS</a> is an extension of CSS3, which allows using variables, mixins, inline imports, inherit selectors and more with CSS-compatible syntax.  The simplest example of SASS syntax is to define a variable that stores some color code, e.g. <code>$mypanel-color: #cf6cc2;</code>. Now if you need to change the color you just change the value of the variable in one place rather than trying to find all places in a regular CSS where this color was used. But since modern Web browsers don&#8217;t understand SASS styles, they have to be converted into regular CSS before deploying your Web applications.</p>
+</div>
+<div class="paragraph">
+<p>Ext JS includes <a href="http://compass-style.org/">Compass</a>, which is an open-source CSS Authoring Framework built on top of SASS. It includes a number of modules and functions that will save your time for defining such things as border radius, gradients, transitions and more in a cross-browser fashion. For example, you write one SASS line <code>.simple   { @include border-radius(4px, 4px); }</code>, but Compass will generate the following cross-browser CSS section:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html"> -webkit-border-radius: 4px 4px;
+ -moz-border-radius: 4px / 4px;
+ -khtml-border-radius: 4px / 4px;
+ border-radius: 4px / 4px; }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See <a href="http://compass-style.org/reference/compass/css3/border_radius/">Compass documentation</a> for more examples like the above. To manually compile your SASS into CSS you can use the command <em>compass compile</em> from the Command or Terminal window. This step is also performed automatically during the Sencha CMD application build. In case of the Save The Child application the resulting CSS file is located in build/SSC/production/resources/SSC-all.css.</p>
+</div>
+<div class="paragraph">
+<p>We are not using any extended CSS syntax in our Save The Child application, but since SASS is a superset of CSS, you can use your existing CSS as is - just save it in the <em>.scss</em> file. If you&#8217;d like to learn more about the SASS syntax, visit the site <a href="http://sass-lang.com/">sass-lang.com</a>, which has tutorials and reference documentation.</p>
+</div>
+<div class="paragraph">
+<p>In general, Ext JS substantially reduces the need for manual CSS writing by using predefined <a href="http://docs.sencha.com/extjs/4.2.0/!/guide/theming">themes</a>. Sencha offers a <a href="http://www.sencha.com/learn/theming/!/guide/theming-section-1">tutorial</a> explaining how to use SASS and Compass for theming.</p>
+</div>
+<div class="paragraph">
+<p>Besides SASS, there is another dynamic CSS language called <a href="http://lesscss.org/">LESS</a>. It adds to CSS variables, mixins, operations and functions  It&#8217;s not used in Ext JS though.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s look at the child elements of the <code>SSC.view.Viewport</code>. The <code>SSC.view.Header</code> is the simplest view. Since Save The Child does not include a bunch of forms and grids, we&#8217;ll use the lightest top-level container class <code>Container</code> where possible. The class <code>Container</code> gives you the most freedom in what to put inside and how to layout its child elements. Our <code>SSC.view.Header</code> view extends <code>Ext.Container</code> and contains child elements, some of which have the <code>xtype: component</code>, and some - <code>container</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define("SSC.view.Header", {
+  extend: 'Ext.Container',
+  xtype: 'appheader',       <i class="conum" data-value="1"></i><b>(1)</b>
+
+  cls: 'app-header',        <i class="conum" data-value="2"></i><b>(2)</b>
+
+  height: 85,
+
+  layout: {                 <i class="conum" data-value="3"></i><b>(3)</b>
+    type: 'hbox',
+    align: 'middle'
+  },
+
+  items: [{                 <i class="conum" data-value="4"></i><b>(4)</b>
+    xtype: 'component',
+    cls: 'app-header-logo',
+    width: 75,
+    height: 75
+  }, {
+    xtype: 'component',
+    cls: 'app-header-title',
+    html: 'SAVE The Child',
+    flex: 1
+  }, {
+    xtype: 'container',      <i class="conum" data-value="5"></i><b>(5)</b>
+    defaults: {
+      scale: 'medium',
+      margin: '0 0 0 5'
+    },
+    items: [{
+      xtype: 'button',
+      text: 'Who We Are'
+    }, {
+      xtype: 'button',
+      text: 'What We Do'
+    }, {
+      xtype: 'button',
+      text: 'Where We Work'
+    }, {
+      xtype: 'button',
+      text: 'Way To Give'
+    }]
+  }]
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We assigned <code>appheader</code> as the <code>xtype</code> value of this view, which will be used as a reference inside the <code>SSC.view.Viewport</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><code>cls</code> is a class attribute of a DOM element. In this case it the same as writing <code>class=app-header</code> in the HTML element.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The header uses <code>hbox</code> layout with center alignment</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Child components of the top container are the logo image, the text "Save The Child", and another container with buttons</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>A container with button components</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s review the <code>DonateForm</code> view next, which is a subclass of <code>Ext.form.Panel</code> and contains the form with radio buttons, fields and labels. This component named <code>donateform</code> will be placed under <code>SSC.view.Header</code> inside <code>SSC.view.Viewport</code>. We&#8217;ve removed some of the lines code to make it more readable, but its full version is included in the source code samples accompanying the book.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">Ext.define('SSC.view.DonateForm', {
+  extend: 'Ext.form.Panel',
+  xtype: 'donateform',
+  requires: [                  <i class="conum" data-value="1"></i><b>(1)</b>
+    'Ext.form.RadioGroup',
+    'Ext.form.field.*',
+    'Ext.form.Label'
+  ],
+
+  layout: {
+    type: 'hbox'             <i class="conum" data-value="2"></i><b>(2)</b>
+  },
+
+  items:[{
+    xtype: 'container',        <i class="conum" data-value="3"></i><b>(3)</b>
+    layout: 'vbox',
+
+    items: [{
+      xtype: 'container',
+
+      items: [{
+        xtype: 'radiogroup',
+        fieldLabel: 'Please select or enter donation amount',
+        labelCls: 'donate-form-label',
+
+        vertical: true,
+        columns: 1,
+
+        defaults: {
+          name: 'amount'
+        },
+
+        items: [
+          { boxLabel: '10',  inputValue: '10'  },
+          { boxLabel: '20',  inputValue: '20'  }
+           // more choices 50, 100, 200 go here
+        ]
+      }]
+    }, {
+      xtype: 'textfield',
+      fieldLabel: 'Other amount',
+      labelCls: 'donate-form-label'
+    }]
+  }, {
+    xtype: 'fieldcontainer',             <i class="conum" data-value="4"></i><b>(4)</b>
+    fieldLabel: 'Donor information',
+    labelCls: 'donate-form-label',
+
+    items: [{
+      xtype: 'textfield',
+      name: 'donor',
+      emptyText: 'full name'
+    }, {
+      xtype: 'textfield',
+      emptyText: 'email'
+    }
+    // address,city,zip code,state and country go here
+    ]
+    }, {
+    xtype: 'container',        //  <i class="conum" data-value="5"></i><b>(5)</b>
+    layout: {
+      type: 'vbox',
+      align: 'center'
+    },
+
+    items: [{
+      xtype: 'label',
+      text: 'We accept PayPal payments',
+      cls: 'donate-form-label'
+    }, {
+      xtype: 'component',
+      html: 'Your payment will processed securely by PayPal...'
+    }, {
+      xtype: 'button',
+      action: 'donate',
+      text: 'DONATE NOW'
+    }, {
+      xtype: 'button',
+      action: 'hideform',
+      text: 'I will donate later'
+    }]
+  }]
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>DonateForm</code> depends on several classes listed in the <code>requires</code> property. The Ext JS will check to see if these classes are present in memory, and if not, the loader will load all dependencies first, and only after the DonateForm class.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Our <code>DonateForm</code> uses horizontal box (<code>hbox</code>) layout, which means that certain components or containers will be laid out next to each other horizontally. But which ones? The children of the container located in the <code>items[]</code> arrays hence they are the once that will be laid out horizontally in this case. But the above code contains several of <code>items[]</code> arrays with different level of nesting. How quickly find those that belong to the topmost container <code>DonateForm</code>? This is the case that clearly shows that having a good IDE can be of great help.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>The first element of the <code>hbox</code> is a container that internally laid out as a <code>vbox</code> (see <a href="#FIG6-7-SSC">DonateForm.js: an hbox with three vbox containers</a>).Tthe <code>radiogroup</code> is on top and the <code>textfield</code> for entering Other amount at the bottom.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.form.FieldContainer"><code>fieldcontainer</code></a> is a light-weight Ext JS container useful to group components - the donor information in this case. It&#8217;s the central  element in the <code>hbox</code> container shown in <a href="#FIG6-7-SSC">DonateForm.js: an hbox with three vbox containers</a>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The right side of the <code>hbox</code> is another container with the <code>vbox</code> internal layout to show the "We accept Paypal" message, "DONATE NOW", and "I&#8217;ll donate later" buttons (see <a href="#FIG6-7-SSC">DonateForm.js: an hbox with three vbox containers</a>). These buttons respond to clicks because</td>
+</tr>
+</table>
+</div>
+<div id="FIG6-6-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_06_SSC.png" alt="image">
+</div>
+<div class="title">Figure 13. Collapsed Code of Viewport.js</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Debugging of frameworks that are extensions of JavaScript in Web browsers can be difficult, because while you may be operating with, say Ext JS classes, the browser will receive regular <code>&lt;div&gt;, &lt;p&gt;</code> and other HTML tags and JavaScript. <a href="http://www.illuminations-for-developers.com/">Illuminations</a> is a Firebug add-on that allows to inspect elements showing not just their HTML representations, but the corresponding Ext JS classes that were used to create them.
+</td>
+</tr>
+</table>
+</div>
+<div id="FIG6-7-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_07_SSC.png" alt="image">
+</div>
+<div class="title">Figure 14. DonateForm.js: an hbox with three vbox containers</div>
+</div>
+<div class="paragraph">
+<p>The code review of the top portion of the Save The Child application is finished. Run the SSC_Top_ExtJS project and turn on the Chrome Developers Tools. Scroll to the bottom of the Network tab, and you&#8217;ll see that the browser made about 250 requests to the server and downloaded 4.5Mb in total. Not too exciting isn&#8217;t it?</p>
+</div>
+<div class="paragraph">
+<p>On the next runs these numbers will drop to about 30 requests and 1.7Mb transferred - the browser&#8217;s caching kicked in. These numbers would be better if instead of ext-all.js we&#8217;d be linking ext.js, and even better if we&#8217;d created a custom build (see Sencha CMB section above) for the Save The Child application merging the application code into one file to contain only those framework classes that were actually used.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_completing-save-the-child"><a class="anchor" href="#_completing-save-the-child"></a>Completing Save The Child</h4>
+<div class="paragraph">
+<p>In this section we&#8217;ll review the code supporting the lower half of the Save The Child UI, which you should import into Eclipse IDE from the directory  SSC_Complete_ExtJS.</p>
+</div>
+<div id="FIG6-8-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_08_SSC.png" alt="image">
+</div>
+<div class="title">Figure 15. Save The Child with live charts</div>
+</div>
+<div class="paragraph">
+<p>If you see the target runtime error, read the beginning of the section "Save The Child: The Top Portion" for the cure. Stop the Tomcat server if running, and deploy the SSC_Complete_ExtJS under Tomcat server in the Servers view (the right-click menu, Add and Remove&#8230;).  Start Tomcat in Eclipse, right-click on the project and run it on the server. It&#8217;ll open up a Web browser pointing at <a href="http://localhost:8080/SSC_Complete_ExtJS">http://localhost:8080/SSC_Complete_ExtJS</a> showing the window similar to the one depicted on <a href="#FIG6-8-SSC">Save The Child with live charts</a>.</p>
+</div>
+<div class="paragraph">
+<p>This version has some additions comparing to the previous ones. Notice the bottom left panel with charts. First of all, the charts are placed inside the panel with tabs: Charts and Table. The same data can be rendered either as a chart or as a grid. Second, the charts became live thanks to ExtJS. We took a snapshot of the Window shown in <a href="#FIG6-8-SSC">Save The Child with live charts</a> while hovering the mouse over the pie slice representing New York, and the slice has extended from the pie showing a tooltip.</p>
+</div>
+<div class="paragraph">
+<p>The SSC_Complete_ExtJS has more Ext JS classes comparing to SSC_Top_ExtJS.  You can see more views on <a href="#FIG6-9-SSC">JavaScript classes of SSC_Complete_ExtJS</a>. Besides, we&#8217;ve added two classes Donors.js and Campaigns.js to serve as data stores for the panels with charts and maps.</p>
+</div>
+<div id="FIG6-9-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_09_SSC.png" alt="image">
+</div>
+<div class="title">Figure 16. JavaScript classes of SSC_Complete_ExtJS</div>
+</div>
+<div class="sect4">
+<h5 id="_adding-the-login-box"><a class="anchor" href="#_adding-the-login-box"></a>Adding the Login Box</h5>
+<div class="paragraph">
+<p>The Login Box view is pretty small and self explanatory:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define("SSC.view.LoginBox", {
+    extend: 'Ext.Container',
+    xtype: 'loginbox',
+
+    layout: 'hbox',
+
+    items: [{
+        xtype: 'container',
+        flex: 1
+    }, {
+        xtype: 'textfield',
+        emptyText: 'username',
+        name: 'username',
+        hidden: true
+    }, {
+        xtype: 'textfield',
+        emptyText: 'password',
+        inputType: 'password',
+        name: 'password',
+        hidden: true
+    }, {
+        xtype: 'button',
+        text: 'Login',
+        action: 'login'
+    }]
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The code to process the user&#8217;s logins is added to the Donate.js controller.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">'button[action=login]': {
+      click: this.showLoginFields
+ }
+...
+
+showLoginFields: function () {
+    this.getUsernameBox().show();
+    this.getPasswordBox().show();
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_adding-the-video"><a class="anchor" href="#_adding-the-video"></a>Adding the Video</h5>
+<div class="paragraph">
+<p>The bottom portion of the Windows includes several components. The video view simply reuses the HTML &lt;video&gt; tag we used in chapters 4 and 5. Ext JS 4.2 doesn&#8217;t offer any other solutions for embedding videos. On one hand, sub-classing <code>Ext.Component</code> is the lightest way of including any arbitrary HTML markup. On the other hand, turning HTML into an Ext JS component allows us to use it the same way as any other Ext JS component, e.g. participate in layouts. Here&#8217;s the code of the VideoPanel.js:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define("SSC.view.VideoPanel", {
+ extend: 'Ext.Component',
+ xtype: 'videopanel',
+
+ html: [
+   '&lt;video controls="controls" poster="resources/media/intro.jpg" width="390px" height="240px" preload="metadata"&gt;',
+     '&lt;source src="resources/media/intro.mp4" type="video/mp4"/&gt;',
+     '&lt;source src="resources/media/intro.webm" type="video/webm"/&gt;',
+     '&lt;p&gt;Sorry, your browser doesn\'t support the video element&lt;/p&gt;',
+   '&lt;/video&gt;'
+ ]
+
+});</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Ext JS has a wrapper  for the HTML5 <code>&lt;video&gt;</code> tag. It&#8217;s called <code>Ext.Video</code>, and we&#8217;ll use it in Chapter on Sencha Touch.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_adding-the-maps"><a class="anchor" href="#_adding-the-maps"></a>Adding the Maps</h5>
+<div class="paragraph">
+<p>Adding the map takes considerably more work on our part. The mapping part is located in the view CampaignsMap.js. Initially we tried to use the <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.ux.GMapPanel"><code>Ext.ux.GMapPanel</code></a>, but it didn&#8217;t work as expected. As a workaround, we&#8217;ve added the HTML <code>&lt;div&gt;</code> element to serve as a map container.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define("SSC.view.CampaignsMap", {
+ extend: 'Ext.Component',
+ xtype: 'campaignsmap',
+
+ html: ['&lt;div class="gmap"&gt;&lt;/div&gt;'],
+
+ renderSelectors: {                 <i class="conum" data-value="1"></i><b>(1)</b>
+     mapContainer: 'div'
+ },
+
+ listeners: {                                 <i class="conum" data-value="2"></i><b>(2)</b>
+  afterrender: function (comp) {
+      var map,
+          mapDiv = comp.mapContainer.dom;     <i class="conum" data-value="3"></i><b>(3)</b>
+
+      if (navigator &amp;&amp; navigator.onLine) {    <i class="conum" data-value="4"></i><b>(4)</b>
+          try {
+              map = comp.initMap(mapDiv);
+              comp.addCampaignsOnTheMap(map);
+          } catch (e) {
+              this.displayGoogleMapError();
+          }
+      } else {
+          this.displayGoogleMapError();
+      }
+  }
+ },
+
+ initMap: function (mapDiv) {                   <i class="conum" data-value="5"></i><b>(5)</b>
+   // latitude = 39.8097343 longitude = -98.55561990000001
+   // Lebanon, KS 66952, USA Geographic center of the contiguous United States
+   // the center point of the map
+   var latMapCenter = 39.8097343,
+       lonMapCenter = -98.55561990000001;
+
+   var mapOptions = {
+       zoom     : 3,
+       center   : new google.maps.LatLng(latMapCenter, lonMapCenter),
+       mapTypeId: google.maps.MapTypeId.ROADMAP,
+       mapTypeControlOptions: {
+           style   : google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+           position: google.maps.ControlPosition.TOP_RIGHT
+       }
+   };
+
+   return new google.maps.Map(mapDiv, mapOptions);
+ },
+
+ addCampaignsOnTheMap: function (map) {
+  var marker,
+      infowindow = new google.maps.InfoWindow(),
+      geocoder   = new google.maps.Geocoder(),
+      campaigns  = Ext.StoreMgr.get('Campaigns');    <i class="conum" data-value="6"></i><b>(6)</b>
+
+  campaigns.each(function (campaign) {
+      var title       = campaign.get('title'),       <i class="conum" data-value="7"></i><b>(7)</b>
+          location    = campaign.get('location'),
+          description = campaign.get('description');
+
+      geocoder.geocode({
+          address: location,
+          country: 'USA'
+      }, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+
+              // getting coordinates
+              var lat = results[0].geometry.location.lat(),
+                  lon = results[0].geometry.location.lng();
+
+              // create marker
+              marker = new google.maps.Marker({
+                  position: new google.maps.LatLng(lat, lon),
+                  map     : map,
+                  title   : location
+              });
+
+              // adding click event to the marker to show info-bubble with data from json
+              google.maps.event.addListener(marker, 'click', (function(marker) {
+                  return function () {
+                      var content = Ext.String.format(
+                          '&lt;p class="infowindow"&gt;&lt;b&gt;{0}&lt;/b&gt;&lt;br/&gt;{1}&lt;br/&gt;&lt;i&gt;{2}&lt;/i&gt;&lt;/p&gt;',
+                          title, description, location);
+
+                      infowindow.setContent(content);
+                      infowindow.open(map, marker);
+                  };
+              })(marker));
+          } else {
+              console.error('Error getting location data for address: ' + location);
+          }
+      });
+  });
+ },
+
+ displayGoogleMapError: function () {
+    console.log('Error is successfully handled while rendering Google map');
+    this.mapContainer.update('&lt;p class="error"&gt;Sorry, Google Map service isn\'t available&lt;/p&gt;');
+ }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Since we&#8217;ve added the map container just by including the HTML <code>&lt;div&gt;</code> component, Ext JS will create generated ID for this <code>&lt;div&gt;</code>. It&#8217;s just not a good way to reference an element on the page, since the ID should be unique and we can easily run into conflicting situation. We didn&#8217;t want to create an ID manually hence used the property <code>renderSelectors</code> allows to map an arbitrary name to a DOM selector.  When we reference this element somewhere inside Ext JS code using this <code>renderSelector</code>, e.g. <code>this.mapContainer</code>(<code>mapContainer</code> is an arbitrary name here), it returns <code>Ext.dom.Element</code> object - an abstraction over the plain HTML element - that eliminates cross-browser API differences.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sencha documentation states that declaring <code>listeners</code>  during <code>Ext.define()</code> is bad practice and doing it during <code>Ext.create()</code> should be preferred. This is an arguable statement. Yes, there is a possibility that the handler function will be created during <code>define()</code> but never used during <code>create()</code>, which will lead to unnecessary creation of the handler&#8217;s instance in memory. But the chances are slim. The other consideration is that if listeners are defined during <code>create()</code> each instance can handle the same event differently. We&#8217;ll leave it up to you to decide where&#8217;s the right place for defining listeners. The good part about keeping listeners in the class definition is that the entire code of the class is located in one place.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Querying the DOM to find the <code>mapContainer</code> defined in the <code>renderSelectors</code> property. Note that we are getting the reference to this DOM element after the view is rendered in the event handler function <code>afterrender</code>. The object <code>comp</code> will be provided to this handler, and it points at the instance of the current component, which is <code>SSC.view.CampaignsMap</code>. Think of <code>comp</code> as <code>this</code> for the component.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>If Google Map is not available, display an error message as in <a href="#FIG6-10-SSC">If Google Maps server is not responding</a>. This code was added after one of the authors was testing this code while sitting in the plane with no Internet connection. But checking the status of  <a href="https://developer.mozilla.org/en-US/docs/DOM/window.navigator.onLine"><code>navigator.onLine</code></a> may not be a reliable indicator of the offline status, so we&#8217;ve wrapped it into a <code>try/catch</code> block just to be sure.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The rest of the code in this class has the same mapping functionality as described in Chapter 1 in section "Adding Geolocation Support".</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The data for the campaign information are coming from the store Campaigns.js located in the folder store. The store manager can find the reference to the store either if by assigned <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.StoreManager"><code>storeId</code></a> or by name <code>Campaigns</code> listed in the <code>stores</code> array in the app.js:</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>We are configuring the mapping panel to get the information about the campaign title, location, and description from the fields with corresponding names from the store <code>SSC.store.Campaigns</code> that&#8217;s shown right after app.js below.</td>
+</tr>
+</table>
+</div>
+<div id="FIG6-10-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_10_SSC.png" alt="image">
+</div>
+<div class="title">Figure 17. If Google Maps server is not responding</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.application({
+    name: 'SSC',
+
+    views: [
+        'CampaignsMap',
+        'DonateForm',
+        'DonorsPanel',
+        'Header',
+        'LoginBox',
+        'VideoPanel',
+        'Viewport'
+    ],
+
+    stores: [
+        'Campaigns',
+        'Donors'
+    ],
+
+    controllers: [
+        'Donate'
+    ],
+
+    autoCreateViewport: true
+});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In Chapter 2 the information about campaigns was taken from a file with JSON formatted data. In this version the data will be taken from the class <code>SSC.store.Campaigns</code> that&#8217;s shown next.  This class extends <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.JsonStore"><code>Ext.data.JsonStore</code></a>, which is a helper class for creating stores based on the JSON data. The class <code>JsonStore</code> is a subclass of more generic <code>Ext.data.Store</code>, which implements client side caching of Model objects, can load the data via the <code>Proxy</code> object, and supports sorting and filtering.</p>
+</div>
+<div class="paragraph">
+<p>Later, in the Sencha Touch Chapter, you&#8217;ll see another version of our Save The Child application where all stores are inherited from <code>Ext.data.Store</code>. But  in this version of our application we are not reading the code from external JSON sources and inheriting from <code>Ext.data.Store</code> would suffice.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="JavaScript language-JavaScript">Ext.define('SSC.store.Campaigns', {
+    extend: 'Ext.data.JsonStore',
+
+    fields: [                               <i class="conum" data-value="1"></i><b>(1)</b>
+        { name: 'title',       type: 'string' },
+        { name: 'description', type: 'string' },
+        { name: 'location',    type: 'string' }
+    ],
+
+    data: [{                           <i class="conum" data-value="2"></i><b>(2)</b>
+        title:       'Lorem ipsum',
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        location:    'Chicago, IL'
+    }, {
+        title:       'Donors meeting',
+        description: 'Morbi mollis ante at ante posuere tempor.',
+        location:    'New York, NY'
+    }, {
+        title:       'Sed tincidunt magna',
+        description: 'Donec ac ligula sit amet libero vehicula laoreet',
+        location:    'Dallas, TX'
+    }, {
+        title:       'Fusce tellus dui',
+        description: 'Sed accumsan nibh sapien, interdum ullamcorper velit.',
+        location:    'Miami, FL'
+    }, {
+        title:       'Aenean lorem quam',
+        description: 'Pellentesque habitant morbi tristique senectus',
+        location:    'Fargo, ND'
+    }]
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We have not created a separate model class for each campaign, because this information is used only in one place. The <code>fields</code> array defines our inline model, which consist of objects (<code>data</code>) containing the properties <code>title</code>, <code>description</code>, and <code>location</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Hard-coded data for the model</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_adding-the-chart-and-table-panels"><a class="anchor" href="#_adding-the-chart-and-table-panels"></a>Adding the Chart and Table Panels</h5>
+<div class="paragraph">
+<p>The bottom left area of the Save The Child window is occupied by a subclass of <code>Ext.tab.Panel</code>. The name of our view is <code>SSC.view.DonorsPanel</code>, and it contains two tabs: Chart and Table. Accordingly, the class definition start with declaring dependencies for the Ext JS classes that supports charts and a data grid.</p>
+</div>
+<div class="paragraph">
+<p>Charting is an important part of many enterprise applications, and Ext JS framework offers solid chart drawing capabilities without the need to install any plugins. We&#8217;d like to stress that both Chart and Table panels use the same data - they just provide different vies of the data. Let&#8217;s review the code now.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define("SSC.view.DonorsPanel", {
+ extend: 'Ext.tab.Panel',
+ xtype: 'donorspanel',
+ requires: [
+     'Ext.chart.Chart',
+     'Ext.chart.series.Pie',
+     'Ext.grid.Panel',
+     'Ext.grid.column.Number',
+     'Ext.grid.plugin.CellEditing'
+ ],
+
+ maxHeight: 240,
+ plain: true,                  <i class="conum" data-value="1"></i><b>(1)</b>
+
+ items: [{
+   title: 'Chart',             <i class="conum" data-value="2"></i><b>(2)</b>
+   xtype: 'chart',
+   store: 'Donors',
+   animate: true,
+   legend: {
+       position: 'right'
+   },
+   theme: 'Base:gradients',
+   series: [{
+       type: 'pie',            <i class="conum" data-value="3"></i><b>(3)</b>
+       angleField: 'donors',
+       showInLegend: true,
+       tips: {                                <i class="conum" data-value="4"></i><b>(4)</b>
+           trackMouse: true,
+           renderer: function (storeItem ) {
+
+             var store = storeItem.store,
+                 total = 0;
+
+             store.each(function(rec) {
+                 total += rec.get('donors');        <i class="conum" data-value="5"></i><b>(5)</b>
+             });
+
+             this.update(Ext.String.format('{0}: {1}%',
+                 storeItem.get('location'),               <i class="conum" data-value="6"></i><b>(6)</b>
+                 Math.round(storeItem.get('donors') / total * 100)));
+           }
+       },
+       highlight: {
+           segment: {
+               margin: 20
+           }
+       },
+       label: {                  <i class="conum" data-value="7"></i><b>(7)</b>
+           field: 'location',
+           display: 'horizontal',
+           contrast: true,
+           renderer: function (label, item, storeItem) {
+               return storeItem.get('donors');
+           }
+       }
+   }]
+ }, {
+     title: 'Table',            <i class="conum" data-value="8"></i><b>(8)</b>
+     xtype: 'gridpanel',
+     store: 'Donors',
+     columns: [                 //  <i class="conum" data-value="9"></i><b>(9)</b>
+         { text: 'State',  dataIndex: 'location', flex: 1},
+         { text: 'Donors', dataIndex: 'donors',
+                  xtype: 'numbercolumn', format: '0', editor: 'numberfield' }
+     ],
+     plugins: [{
+         ptype: 'cellediting'
+     }]
+ }]
+
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>By default, the top portion of the tab panel was showing a blue background, which we didn&#8217;t like and turned this style off to give a little cleaner look to the tabs.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The first panel is an instance of xtype <code>chart</code>, which gets the data from the store object <code>Donors</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Configuring and creating a <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.chart.series.Pie">Pie Chart</a>. The width of each sector is controlled by the <code>angleField</code> property, which is mapped to the field <code>donors</code> defined in the store <code>SSC.store.Donors</code> (see the code listing below).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>We&#8217;ve overriden the config <a href="http://bit.ly/16fgnO5"><code>renderer</code></a> to provide custom styling for each element.  In particular, we&#8217;ve configured <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.chart.series.Pie-cfg-tips"><code>tips</code></a> to be displayed on mouse hover.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Calculating total for proper display of the percentages on mouse hover.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The label for each pie sector is retrieved from the field <code>location</code> defined in the store <code>SSC.store.Donors</code> shown in the code listing below.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Displaying the chart legend on the right side. If the user moves the mouse over the legend, the pie sectors start to animate.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>The second tab contains and instance of xtype <code>gridpanel</code>. Note that the store object is the same as the Chart panel uses.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td>The grid has two columns. One of them is a simple text, but the other is rendered as a <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.grid.column.Number"><code>numbercolumn</code></a> that displays the data according to a format string.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The store <code>Donors</code> contains the hard-coded data for our pie chart as well as for the table. In the real world, the data would be retrieved from the server side. Since we were getting ready to consume JSON data (not implemented), our <code>Donors</code> class.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">Ext.define('SSC.store.Donors', {
+    extend: 'Ext.data.JsonStore',
+
+    fields: [
+        { name: 'donors',   type: 'int' },      <i class="conum" data-value="1"></i><b>(1)</b>
+        { name: 'location', type: 'string' }
+    ],
+
+    data: [                                     <i class="conum" data-value="2"></i><b>(2)</b>
+        { donors: 48, location: 'Chicago, IL' },
+        { donors: 60, location: 'New York, NY' },
+        { donors: 90, location: 'Dallas, TX' },
+        { donors: 22, location: 'Miami, FL' },
+        { donors: 14, location: 'Fargo, ND' },
+        { donors: 44, location: 'Long Beach, NY' },
+        { donors: 24, location: 'Lynbrook, NY' }
+    ]
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Defining inline model</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Hard-coded data for the model</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The data located in the store <code>SSC.store.Donors</code> can be rendered not only as a chart, but in a tabular form as well. To switch to a table view shown in <a href="#FIG6-11-SSC">The Table tab</a> the user has to click on the tab Table.</p>
+</div>
+<div id="FIG6-11-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_11_SSC.png" alt="image">
+</div>
+<div class="title">Figure 18. The Table tab</div>
+</div>
+<div class="paragraph">
+<p>The following code fragment from <code>DonorsPanel</code> is all it takes to render the donors' data as a grid. The <code>xtype</code> of this component is <code>gridpanel</code>. For illustration purposes we made the column Donors editable - double click on the a cell with the number and it&#8217;ll turn this field into a numeric field as shown in <a href="#FIG6-11-SSC">The Table tab</a> for the location Fargo, ND.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">{
+ title: 'Table',
+ xtype: 'gridpanel',
+ store: 'Donors',      <i class="conum" data-value="1"></i><b>(1)</b>
+ columns: [
+     { text: 'City/State',  dataIndex: 'location', flex: 1},
+     { text: 'Donors', dataIndex: 'donors', xtype: 'numbercolumn', format: '0', editor: 'numberfield' }
+ ],
+ plugins: [{
+     ptype: 'cellediting'      <i class="conum" data-value="2"></i><b>(2)</b>
+ }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Reusing the same store as in chart panel</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>We are using one of the exiting Ext JS plugins here, namely <code>Ext.grid.plugin.CellEditing</code> to allow editing the cells of the  <code>Donors</code> column. In this example we are using an existing Ext JS editor <code>numberfield</code> in the <code>Donors</code> column. Since we don&#8217;t work with decimal numbers here, the editor uses <code>format:0</code>. To make the entire row of the grid editable use the plugin <code>Ext.grid.plugin.RowEditing</code>. If you wanted to create some custom plugin for a cell, you&#8217;d need to define it by the rules for writing Ext JS plugins.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Modify the any value in the Donor&#8217;s cell and switch to the Chart panel. You&#8217;ll see that the size corresponding pie sector has changed accordingly.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The total number of lines of code in <code>DonorsPanel</code> and in the store <code>Donors</code> is under 100.  Being able to create a tab panel with chart and grid with almost no manual coding is quite impressive, isn&#8217;t it?</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_adding-a-footer"><a class="anchor" href="#_adding-a-footer"></a>Adding a Footer</h5>
+<div class="paragraph">
+<p>To complete Save The Child code review, we need to mention the icons located in the bottom of the ViewPort.js shown on <a href="#FIG6-12-SSC">The Viewport footer</a>. Usually links at the bottom of the page statically refer to the corresponding social network&#8217;s account. Integration with social networks is out of this book&#8217;s scope. But you can study, say Twitter API and implement the functionality to let donors tweet about their donations. The Facebook icon can either have a similar functionality or you may consider implementing automated login to the Save The Child application using OAuth2, which was briefly discussed in the chapter Introduction to Web Application Security.</p>
+</div>
+<div id="FIG6-12-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_12_SSC.png" alt="image">
+</div>
+<div class="title">Figure 19. The Viewport footer</div>
+</div>
+<div class="paragraph">
+<p>This footer was implemented in the code snippet below. We&#8217;ve implemented these little icons as regular images.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript"> items: [{
+     xtype: 'component',
+     flex: 1,
+     html: '&lt;strong&gt;Project SSC_Complete_ExtJS:&lt;/strong&gt;'
+ }, {
+     src: 'resources/images/facebook.png'
+ }, {
+     src: 'resources/images/google_plus.png'
+ }, {
+     src: 'resources/images/twitter.png'
+ }, {
+     src: 'resources/images/rss.png'
+ }, {
+     src: 'resources/images/email.png'
+ }]</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+There is a more efficient way to do this by using a numeric character code that renders as image (see the <a href="http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.Img-cfg-glyph">glyph config property</a>). The <a href="http://pictos.cc/">Pictos library</a> offers more than three hundred of such tiny images in both vector or PNG form. you&#8217;ll see the example of using Pictos fonts in Chapter 12.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Ext JS library contains lots of JavaScript code, but it allows developers produce nice looking applications with a fraction of a code comparing to other frameworks. Also, despite the fact that this version of Save The Child offers more functionality than those from the previous chapters, we&#8217;ve had to write the bare minimum of the CSS code thanks to Ext JS <a href="http://docs.sencha.com/extjs/4.2.0/#!/guide/theming">theming</a>.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_building-production-version-of-save-the-child"><a class="anchor" href="#_building-production-version-of-save-the-child"></a>Building Production Version of Save The Child</h5>
+<div class="paragraph">
+<p>Run the completed version of our application in Chrome browser having Developers Tools turned on. Go to the Network tab and scroll to the bottom. You&#8217;ll see the message reporting that the browser made 365 requests to the server and downloaded 6.4Mb of content as in <a href="#FIG6-13-SSC">The size of development version of Save The Child</a>.</p>
+</div>
+<div id="FIG6-13-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_13_SSC.png" alt="image">
+</div>
+<div class="title">Figure 20. The size of development version of Save The Child</div>
+</div>
+<div class="paragraph">
+<p>Now let&#8217;s create production version with all JavaScript merged into one file. Open the Terminal or Command window and change directory into the Eclipse workspace directory where your project was created (e.g. <em>&#8230;/SSC_Complete_ExtJS/WebContent</em>) and enter the command described in the Sencha CMD section earlier in this chapter:</p>
+</div>
+<div class="paragraph">
+<p><em>sencha app build</em></p>
+</div>
+<div class="paragraph">
+<p>The production version of the Save The Child application will be generated in the directory <em>&#8230;/SSC_Complete_ExtJS/WebContent/build/SSC/production</em>. All your application JavaScript code will be merged with the required classes of Ext JS framework into one file all-classes.js, which in our case weighs 1.2Mb. The generated CSS file SSC-all.css will be located in the directory <em>resources</em>. All images are there too. This is how the production version of index.html will look like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;SSC&lt;/title&gt;
+    &lt;script src="http://maps.googleapis.com/maps/api/js?sensor=false"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" href="resources/SSC-all.css"/&gt;
+&lt;script type="text/javascript" src="all-classes.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Deploy the content of the <em>production</em> under any Web server and load this version of the application in the Chrome with Developer Tools turned on. This time the number of downloaded bytes is three times lower (2.3Mb). Ask your Web Server administrator to enable gzip or deflate, and the size of the JavaScript will go down from 1.2Mb to 365Kb. The size of other resources will decrease even more.  Don&#8217;t forget that we are loading a 500Kb video file intro.mp4. The number of server requests went down to 55, but more that 30 of them were Google Map API calls.</p>
+</div>
+<div id="FIG6-14-SSC" class="imageblock">
+<div class="content">
+<img src="images/fig_06_14_SSC.png" alt="image">
+</div>
+<div class="title">Figure 21. The size of production version of Save The Child</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h3>
+<div class="paragraph">
+<p>Creation of enterprise web applications involves many steps that need to be done by developers. But with the right set of tools the repetitive steps can be automated. Besides, Ext JS class rich component library and themes allows you to lower the amount of manual programming.</p>
+</div>
+<div class="paragraph">
+<p>Remember the DRY principle - don&#8217;t repeat yourself. Try to do more with less efforts. This rather long chapter will help your to get started with Ext JS framework. It&#8217;s an extensive framework, which doesn&#8217;t allow an easy way out should you decide to switch to another one. But for the enterprise applications that require rich UI, dashboards with fancy charts, advanced data grids Ext JS can be a good choice.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2014-01-03 17:10:16 EST
+</div>
+</div>
+</body>
+</html>
