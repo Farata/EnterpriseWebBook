@@ -82,7 +82,7 @@ Consider developing a hybrid application for anything in between, and in this ch
 
 === Intro to the PhoneGap Workflows
 
-In this section you'll go through the entire process of building a PhoneGap application. PhoneGap 3.0 offers two major workflows. Each of them allows you to build a mobile application, but the main difference is where you build it - either locally or remotely. Here they are:
+In this section you'll go through the entire process of building a PhoneGap application. PhoneGap 3.1 offers two major workflows. Each of them allows you to build a mobile application, but the main difference is where you build it - either locally or remotely. Here they are:
 
 1. Install all required mobile SDKs and tools for the mobile platforms you want to develop for (e.g. iOS and Android), generate the initial project using the Command Line Interface (CLI), write your HTML5  application code, build it locally, and test the application using IDE, simulators and physical devices.  
 
@@ -99,7 +99,7 @@ _sudo npm install -g phonegap_
 The above command installs the JavaScript file _phonegap_ in _/usr/local/bin_ and the Cordova library with supporting files in the _/usr/local/lib/node_modules/phonegap_ - Figure <<FIG14-2>> shows the snapshot of some of the files and directories that come with PhoneGap. We've highlighted the create.js script, which will be used for generating Hello World and Save The Child projects.  
 
 [[FIG14-2]]
-.PhoneGap 3.0 Installed
+.PhoneGap 3.1 Installed
 image::images/fig_14_02.png[]
 
 In this chapter we'll be developing a sample application for the iOS platform to illustrate the most involved deployment-deployment cycle. It requires https://developer.apple.com/xcode/[Xcode IDE], which is available at Apple's App Store at no charge. After installing Xcode open its menu Preferences and install Command Line Tools (CLT) from the Downloads panel. By default, Xcode comes with the latest iOS simulator (it's version 6.1 at the time of this writing). 
@@ -297,13 +297,13 @@ Before zipping up the Hello World's  _www_ directory, open and modify the file c
     
     <feature name="http://api.phonegap.com/1.0/device" />
     
-    <preference name="phonegap-version" value="2.9.0" />
+    <preference name="phonegap-version" value="3.1.0" />
     <access origin="*" />
 </widget>
 
 ----
 
-Specify the latest _supported_ PhoneGap version in the "phonegap-version" attribute. The online document https://build.phonegap.com/docs/config-xml[Using config.xml] has the current information about supported versions and other essential properties. We'll change the phonegap-version value to 2.9.0, which was the latest supported by PhoneGap Build version at the time of this writing. You'll see some other entries in config.xml of the Save The Child application.
+Specify the latest _supported_ PhoneGap version in the "phonegap-version" attribute. The online document https://build.phonegap.com/docs/config-xml[Using config.xml] has the current information about supported versions and other essential properties. We'll change the phonegap-version value to 3.1.0, which was the latest supported by PhoneGap Build version at the time of this writing. You'll see some other entries in config.xml of the Save The Child application.
 
 Now select all the content inside the _www_ folder and compress it into the zip file named helloworld-build.zip. Open the Web browser, go to build.phonegap.com, press the button labeled "Upload a .zip file", and select your local file helloworld-build.zip. When uploading is done, you'll see the next screen shown at <<FIG14-4-3>>. 
 
@@ -380,7 +380,7 @@ TIP: If you've architected your hybrid application in a modularized fashion as d
 
 === Save The Child with PhoneGap
 
-To demonstrate how to turn a Web application into a hybrid one, we'll take the code of the jQuery Mobile version of the Save The Child application from Chapter 12. Initially, we'll just turn it into a hybrid PhoneGap application as is without adding any native API calls. After that we'll add to it the ability to work with the photo camera using PhoneGap API and create two builds for iOS and Android platforms. in this exercise we'll use PhoneGap 3.0. 
+To demonstrate how to turn a Web application into a hybrid one, we'll take the code of the jQuery Mobile version of the Save The Child application from Chapter 12. Initially, we'll just turn it into a hybrid PhoneGap application as is without adding any native API calls. After that we'll add to it the ability to work with the photo camera using PhoneGap API and create two builds for iOS and Android platforms. In this exercise we'll use PhoneGap 3.3. 
 
 NOTE: Usually, PhoneGap is mentioned in the context of building hybrid applications that need to access some native API. But PhoneGap can be used for packaging any HTML5 application as a native one even if it doesn't use native API. 
 
@@ -388,15 +388,27 @@ NOTE: Usually, PhoneGap is mentioned in the context of building hybrid applicati
 
 Let's go through the process of building and deploying the jQuery Mobile version of Save The Child in its existing form without changing even one line of code. Here's the step by step procedure: 
 
-//We'll start with packaging this application for iOS and then we'll ask PhoneGap to use the same code and build the application for multiple mobile platforms. We'll continue using XCode IDE under MAC OS to be able to prepare the code for iOS.
-
 . Generate a new PhoneGap project using PhoneGap CLI as we did with Hello World. This time we won't add any specific mobile SDKs to the project though. 
 
 . Copy the existing HTML, CSS, JavaScript and other resources from the jQuery Mobile Save The Child application into the directory _www_ of the newly generated PhoneGap project.
 
-. Compress the entire content of the _www_ directory into a ZIP file, upload it to PhoneGap Build server and generate the packages for several platforms.
+. Create platforms where we're planning to deploy our application:
+
+_$ sudo phonegap build ios
+$ sudo phonegap build android_
+
+. Install PhoneGap plugins necessary for supporting such functionality as Splashscreen, Camera, Inappbrowser, File, and File-transfer.
+
+_$ sudo phonegap local plugin add https://git-wip-us.apache.org/repos/asf/cordova-plugin-splashscreen.git
+$ sudo phonegap local plugin add https://git-wip-us.apache.org/repos/asf/cordova-plugin-camera.git
+$ sudo phonegap local plugin add https://git-wip-us.apache.org/repos/asf/cordova-plugin-inappbrowser.git
+$ sudo phonegap local plugin add https://git-wip-us.apache.org/repos/asf/cordova-plugin-file.git
+$ sudo phonegap local plugin add https://git-wip-us.apache.org/repos/asf/cordova-plugin-file-transfer.git_
 
 . Test the Save The Child application on the Android, iOS or other mobile devices.
+
+NOTE: If you don't have some of the platforms SKS installed locally (as we did in Step 2 above), you can compress the entire content of the _www_ directory into a ZIP file, upload it to PhoneGap Build server and generate the packages for several platforms there.
+
 
 ==== Adding Camera Access to Save The Child
 
@@ -405,10 +417,6 @@ Charity Web sites help millions of people to get better. When this happens, they
 We'll add the camera access to the jQuery Mobile version of our application. The next code fragment is an extract from the file app-main.js.
 
 Our next goal is to use PhoneGap to access the native API of the camera of the mobile device to  take photos. After that, the user should be able to upload images to the server. 
-
-NOTE: As of PhoneGap 3.0, you need to add to your project the plugin supporting camera by running the following command:
-
-_cordova plugin add https://git-wip-us.apache.org/repos/asf/cordova-plugin-camera.git_
 
 For starting the device's default camera application and taking photos, PhoneGap offers the function  `navigator.camera.getPicture()`, which takes three arguments: the name of the function handler if the photo has been successfully taken, the handler for the error, and the object with the optional parameters describing the image. Details about the camera API are available in the http://docs.phonegap.com/en/3.0.0/cordova_camera_camera.md.html#Camera[PhoneGap documentation]. 
 
@@ -450,9 +458,7 @@ function onPhotoDataSuccess(imageURL) {
 
 Depending on the options in the third argument of the `getPicture()`, the image will be returned as either base64-encoded String, or as in our case, the URI of the file where the image is saved. If the photo was taken successfully, the application will make the `#photoUploader` button visible. 
 
-This code sample uses `quality:49` for picture quality, which allows you to request the picture quality as a number on the scale of 1 to 100 (the larger number means better quality). The taken image can be returned as either a base64 encoded string or as a file URI - we used the latter. For the current  list of options refer to the http://docs.phonegap.com/en/1.2.0/phonegap_camera_camera.md.html[PhoneGap Camera API] documentation.  
-
-
+This code sample uses `quality:49` for picture quality, which allows you to request the picture quality as a number on the scale of 1 to 100 (the larger number means better quality). Based on our experience, 49 gives reasonable quality/file size ratio. The taken image can be returned as either a base64 encoded string or as a file URI - we used the latter. For the current  list of options refer to the http://docs.phonegap.com/en/1.2.0/phonegap_camera_camera.md.html[PhoneGap Camera API] documentation.  
 
 TIP: For illustration purposes the above code uses the JavaScript `alert()` function to report a failure. For a more robust solution consider creating some custom way of reporting errors like red borders, modal dialog boxes with images or status bars. 
 
@@ -535,7 +541,11 @@ function onUploadFail(error) {
 }
 ----
 
-This sample code uses the PHP script located at the following URL: http://savesickchild.org/ssc-test/upload.php. You'll see this script in the next section. The `"b"` in the `showPageLoadingMsg()` function defines the http://demos.jquerymobile.com/1.1.0/docs/config/loadingMessageTextVisible.html[jQuery Mobile theme].
+This sample code uses the PHP script located at the following URL: http://savesickchild.org/ssc-test/upload.php. You'll see this script in the next section. The `"b"` in the `showPageLoadingMsg()` function defines the http://demos.jquerymobile.com/1.1.0/docs/config/loadingMessageTextVisible.html[jQuery Mobile theme]. <<FIG14-7>> is a snapshot taken on iPhone while the Save Sick Chile application was uploading a photo.
+
+[[FIG14-7]]
+.Uploading a Photo
+image::images/fig_14_07.png[] 
 
 ==== The Sever Side Support for Photo Images
 
