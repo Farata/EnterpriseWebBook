@@ -606,7 +606,10 @@ p.tableblock.header { color: #6d6e71; }
 <p>Every newly deployed Web application creates a new security hole in accessing of your organization&#8217;s data. The hackers get access to the data that are supposedly hidden behind the firewalls by entering through the ports used by Web application. There is no way to guarantee that your Web application is 100% secure. If it was never attacked by hackers this means that it&#8217;s too small, has almost no users, and is of no interest to them.</p>
 </div>
 <div class="paragraph">
-<p>This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won&#8217;t have any revelations for security professionals. But software developers should have at least a broad understanding of what makes a Web application more or less secure and which threats Web applications face - this is what this chapter is about. To implement any of the security mechanisms mentioned in this chapter you&#8217;ll need to do additional research.</p>
+<p>This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won&#8217;t have any revelations for security professionals. A typical enterprise developer just knows that each person in the organization has an account in some kind of a naming server that&#8217;s stores IDs, passwords and roles, which takes care of authentication and authorization workflows.</p>
+</div>
+<div class="paragraph">
+<p>If an enterprise developer needs an access to some enterprise application, opening an issue with technical support team grants the required access privileges. But software developers should have at least a broad understanding of what makes a Web application more or less secure, and which threats Web applications face - this is what this chapter is about. To implement any of the security mechanisms mentioned in this chapter you&#8217;ll need to do additional research.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -623,7 +626,7 @@ A good starting point for establishing security process for your enterprise proj
 <div class="sect2">
 <h3 id="_http-vs-https"><a class="anchor" href="#_http-vs-https"></a>HTTP vs HTTPS</h3>
 <div class="paragraph">
-<p>Imagine a popular night club with a tall fence and two entry doors. People are waiting in lines to get in. The door number 80 is no guarded in any way - a college student checks the tickets and let people in. The other door has the number 443 on it, and it&#8217;s protected by an armed bully letting qualified people in. The chances of unwanted people getting into the club through the door 443 are pretty slim (unless the bully is corrupted), which is not the case with door 80 - once in a while people that have no right to be there get inside.</p>
+<p>Imagine a popular night club with a tall fence and two entry doors. People are waiting in lines to get in. The door number 80 is no guarded in any way - a college student checks the tickets and let people in. The other door has the number 443 on it, and it&#8217;s protected by an armed bully letting only qualified people in. The chances of unwanted people getting into the club through the door 443 are pretty slim (unless the bully is corrupted), which is not the case with door 80 - once in a while people that have no right to be there get inside.</p>
 </div>
 <div class="paragraph">
 <p>On a similar note, your organization created <em>network security</em> with a firewall (the fence) with only two ports (the doors) opened: 80 for HTTP requests and 443 for HTTPS. One door&#8217;s not secure, the other one is.</p>
@@ -641,13 +644,13 @@ Don&#8217;t assume that your Web application is secure if it&#8217;s deployed be
 </table>
 </div>
 <div class="paragraph">
-<p>The letter "s" in https means <em>secure</em>. Technically, https creates a secure channel over insecure Internet connection. In the past, only the Web pages that dealt with logins, payments or obviously sensitive data would use URL&#8217;s starting with https. Today, more and more Web pages use https and rightly so, because it forces Web browsers to use Secure Socket Layer (SSL) or its successor Transport Layer Security (TLS) protocol for encrypting all the data (including request and response headers) that travel between the connected Internet resources. The O&#8217;Reilly book "High Performance Browser Networking" by Ilya Grigorik  contains <a href="http://chimera.labs.oreilly.com/books/1230000000545/ch04.html">a chapter</a> with detailed coverage of the TLS protocol.</p>
+<p>The letter "s" in <em>https</em> means <em>secure</em>. Technically, https creates a secure channel over the insecure Internet connection. In the past, only the Web pages that dealt with logins, payments or other  sensitive data would use URL&#8217;s starting with https. Today, more and more Web pages use https and rightly so, because it forces Web browsers to use Secure Socket Layer (SSL) or its successor Transport Layer Security (TLS) protocol for encrypting all the data (including request and response headers) that travel between connected Internet resources. The O&#8217;Reilly book "High Performance Browser Networking" by Ilya Grigorik  contains <a href="http://chimera.labs.oreilly.com/books/1230000000545/ch04.html">a chapter</a> with detailed coverage of the TLS protocol.</p>
 </div>
 <div class="paragraph">
-<p>The organization that runs a Web server creates the  public key certificate that has to be signed by a trusted certificate authority (otherwise browsers will display invalid certificate warnings). The authority certifies that the holder of the certificate is a valid operator of the Web server.  SSL/TLS layers authenticate the servers using these certificates to ensure that the browser&#8217;s request is being processed by the proper server and not by some hacker&#8217;s site.</p>
+<p>The organization that runs the Web server creates the  public key certificate that has to be signed by a trusted certificate authority (otherwise browsers will display invalid certificate warnings). The authority certifies that the holder of the certificate is a valid operator of this Web server.  SSL/TLS layers authenticate the servers using these certificates to ensure that the browser&#8217;s request is being processed by the proper server and not by some hacker&#8217;s site.</p>
 </div>
 <div class="paragraph">
-<p>When the client connects to the server via https, the client offers to the server a list of supported ciphers (authentication-encryption-decryption algorithms). The server replies with the sipher they both support.</p>
+<p>When the client connects to the server via https, the client offers to the server a list of supported ciphers (authentication-encryption-decryption algorithms). The server replies with the cipher they both support.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -674,20 +677,20 @@ The annual <a href="http://www.blackhat.com/">Black Hat</a> computer security co
 <div class="sect2">
 <h3 id="_authentication-and-passwords"><a class="anchor" href="#_authentication-and-passwords"></a>Authentication and Passwords</h3>
 <div class="paragraph">
-<p><em>Authentication</em> is an ability to confirm that the user is who he claims to be. The fact the the user has provided a valid id/password combination proves that he is known to the Web application. That&#8217;s all.</p>
+<p><em>Authentication</em> is an ability to confirm that the user is who he claims to be. The fact the the user has provided a valid id/password combination just proves that he is known to the Web application. That&#8217;s all.</p>
 </div>
 <div class="paragraph">
-<p>Specifying the correct user id/password combination may not be enough for some of the Web application. Banks often ask for additional information like "What&#8217;s your pet&#8217;s name?" or "What&#8217;s your favorite movie?</p>
+<p>Specifying the correct user id/password combination may not be enough for some Web applications. Banks often ask for additional information like "What&#8217;s your pet&#8217;s name?" or "What&#8217;s your favorite movie?</p>
 </div>
 <div class="paragraph">
-<p>If you ever worked for a large corporation, you know that they often use the RSA Secure ID (a.k.a. RSA hard token), which is a physical device with random-generated combination of digits. This combination changes every minute or so and has to be entered as a part of the authentication process. Beside physical devices there are programs (soft tokens) that perform user authentication in a similar way.
+<p>Large corporations often use the RSA Secure ID (a.k.a. RSA hard token), which is a physical device with random-generated combination of digits. This combination changes every minute or so and has to be entered as a part of the authentication process. Beside physical devices there are programs (soft tokens) that perform user authentication in a similar way.
 Many financial institutions, social networks, and  large Web portals support 2-factor verification -  besides asking for a user ID and password, they send you either an email, voice mail, or text message with a code that you&#8217;ll need to use after entering the right id/password combination.</p>
 </div>
 <div class="paragraph">
-<p>To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who successfully passed a special background check are entered into the system used in the passport control checkpoints. On the borders the applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the <em>authenticated</em> person can pass the border without waiting in long lines.</p>
+<p>To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who successfully passed a special background check are entered into the system deployed in the passport control checkpoints. These applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the <em>authenticated</em> person can pass the border without waiting in long lines.</p>
 </div>
 <div class="paragraph">
-<p>Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user&#8217;s computer are very inexpensive. Apple&#8217;s iPhone 5S unlocks the phone based on the fingerprint of its owner. In some apartment buildings you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to <a href="mailto:bws-request@nist.gov">bws-request@nist.gov</a> with <em>subscribe</em> as the subject.</p>
+<p>Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user&#8217;s computer are very inexpensive. Apple&#8217;s iPhone 5S unlocks the phone based on the fingerprint of its owner - no need to enter the passcode. In some paces you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to <a href="mailto:bws-request@nist.gov">bws-request@nist.gov</a> with <em>subscribe</em> as the subject.</p>
 </div>
 <div class="sect3">
 <h4 id="_basic-and-digest-authentication"><a class="anchor" href="#_basic-and-digest-authentication"></a>Basic and Digest Authentication</h4>
@@ -698,7 +701,7 @@ Many financial institutions, social networks, and  large Web portals support 2-f
 <p>A Web server administrator can configure certain resources to require basic user authentication.  If a Web browser requests such protected resource while the user didn&#8217;t login to the site, the Web server (not your application) sends the HTTP response containing HTTP status code 401 - <em>Unauthorized</em> and <em>WWW-Authenticate: Basic</em>. The browser pops up the login dialog box. The user enters the ID/password, which are turned into an encoded <em>userID:password</em> string and sent to the server as a part of HTTP header. Basic authentication provides no confidentiality because it doesn&#8217;t encrypt the transmitted credentials. Cookies are not used here.</p>
 </div>
 <div class="paragraph">
-<p>With digest authentication, the server also responds with 401 (<em>WWW-Authenticate: Digest</em>). However, it also sends additional data which allows the Web Browser to apply a hash function to the password. Then the browser sends encrypted password to the server. Digest authentication is more secure than the basic one, but it&#8217;s still less secure than authentication that uses public keys or Kerberos authentication protocol.</p>
+<p>With digest authentication, the server also responds with 401 (<em>WWW-Authenticate: Digest</em>). However, it also sends along additional data which allows the Web Browser to apply a hash function to the password. Then the browser sends encrypted password to the server. Digest authentication is more secure than the basic one, but it&#8217;s still less secure than authentication that uses public keys or Kerberos authentication protocol.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -740,7 +743,7 @@ Usually a Web server is configured with some Web agent, which will add the user&
 <div class="ulist">
 <ul>
 <li>
-<p>If you prefer your application to have the button "Login with Twitter", refer to the Sign in with Twitter API <a href="https://dev.twitter.com/docs/auth/sign-twitter">documentation</a>.</p>
+<p>If you want your application to have a button "Login with Twitter", refer to the Sign in with Twitter API <a href="https://dev.twitter.com/docs/auth/sign-twitter">documentation</a>.</p>
 </li>
 <li>
 <p>LinkedIn is a popular social network for professionals. It also offers API to create the button "Sign in with LinkedIn". For details visit LinkedIn <a href="http://developer.linkedin.com/javascript">online documentation</a> for developers.</p>
@@ -753,24 +756,15 @@ Usually a Web server is configured with some Web agent, which will add the user&
 </li>
 </ul>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="icon-note" title="Note"></i>
-</td>
-<td class="content">
-In most of today&#8217;s enterprise contexts, your organization would not want you to use social networking logins. But some enterprises started to integrate their applications with social networks so SSO via social networks will become more and more popular.
-</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>In most of the traditional enterprise scenarios, your organization would not want you to use social networking logins. But some enterprises started to integrate their applications with social networks so SSO via social networks will become more and more popular.  Especially now, with the spread of mobile devices, the users may need to be able to get authenticated and authorized while being outside of the enterprise perimeter.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_dealing-with-passwords"><a class="anchor" href="#_dealing-with-passwords"></a>Dealing With Passwords</h4>
 <div class="paragraph">
 <p>It might sound obvious, but we&#8217;ll still remind you  that the Web client should never send passwords in clear text. Use <a href="http://en.wikipedia.org/wiki/Secure_Hash_Algorithm">Secure Hash Algorithms</a> (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters (brute-forcing attack), it&#8217;ll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker&#8217;s work more difficult too.
-Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client&#8217;s computer. Then, on each subsequent request to the server Web browser will place the session if in the HTTP request object and send it along with each request. So technically, user&#8217;s identity is  always available at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource.</p>
+Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client&#8217;s computer. Then, on each subsequent request to the server the Web browser will place the session id in the HTTP request object and send it along with each request. Technically, the user&#8217;s identity is  always known at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -788,7 +782,7 @@ Salted hashes increase security by adding <em>salt</em> - a randomly generated d
 <p>Have you ever wondered why Automated Teller Machines (ATM) often ask you to enter PIN more then once? Say, you&#8217;ve deposited a check and then want to see  the balance.on your account. After the check deposit has been completed your ATM session was invalidated to protect the careless users who may rush out from the bank in a hurry as soon as the transaction is finished. Otherwise the next person by the ATM could have requested a cash withdrawal from your bank account.</p>
 </div>
 <div class="paragraph">
-<p>On the same note, if the Web application&#8217;s session is idling more than allowed time interval, the session should be automatically invalidated.  If a trader in a brokerage house is not interacting with the Web trading application for some time, invalidate the session to exclude the situation when the trader stepped out, and someone else is buying financial products on his behalf.</p>
+<p>On the same note, if the Web application&#8217;s session is idling more than allowed time interval, the session should be automatically invalidated.  If a trader in a brokerage house is not interacting with the Web trading application for some time, invalidate the session programmatically to exclude the situation when the trader stepped out, and someone else is buying financial products on his behalf.</p>
 </div>
 </div>
 </div>
@@ -825,7 +819,7 @@ Similarly to authentication the user&#8217;s authorization can be checked more t
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-Session tracking is controlled by the servers. If you&#8217;d like to get familiar with session tracking option in greater details, consult the product documentation for the server or technology being used with your Web application. For example, if you use Java, you can read Oracle&#8217;s documentation for their <a href="http://docs.oracle.com/cd/E13222_01/wls/docs103/webapp/sessions.html">WebLogic server</a> that describes the option on session management.
+Session tracking is usually controlled on the server side. If you&#8217;d like to get familiar with session tracking options in greater details, consult the product documentation for the server or technology being used with your Web application. For example, if you use Java, you can read Oracle&#8217;s documentation for their <a href="http://docs.oracle.com/cd/E13222_01/wls/docs103/webapp/sessions.html">WebLogic server</a> that describes the option on session management.
 </td>
 </tr>
 </table>
@@ -834,21 +828,39 @@ Session tracking is controlled by the servers. If you&#8217;d like to get famili
 <div class="sect2">
 <h3 id="_what-s-oauth"><a class="anchor" href="#_what-s-oauth"></a>What&#8217;s OAuth</h3>
 <div class="paragraph">
-<p>Most likely you ran into the web applications that offer you to share your actions via social networks.
-For example, you just made a donation and want to share this information via social networks. If, say a charity application needs to access the application the user&#8217;s Facebook account for authentication and authorization, the charity app may ask the user&#8217;s ID and password for the Facebook. This is not the right approach, because the charity app gets the user&#8217;s Facebook id/pwd in clear text plus it gives the charity app complete access to the user&#8217;s account in Facebook. But the charity app only needed to authenticate the Facebook user. There was a need for a mechanism to give a <em>limited access</em> to third party applications.</p>
+<p>Most likely you ran into Web applications that offer you to share your actions via social networks.
+For example, you just made a donation and want to share this information via social networks. If, say a charity application needs to access the application the user&#8217;s Facebook account for authentication and authorization, the charity app may ask the user&#8217;s ID and password for the Facebook. This is not the right approach, because the charity app gets the user&#8217;s Facebook id/pwd in clear text plus it gives the charity app full access to the user&#8217;s Facebook account. But the charity app only needed to authenticate the Facebook user. There was a need for a mechanism to give a <em>limited access</em> to third party applications.</p>
 </div>
 <div class="paragraph">
-<p><a href="http://oauth.net/">OAuth</a> became such a mechanism. Oauth is "An open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications".
+<p><a href="http://oauth.net/">OAuth</a> became one of the mechanisms for providing a limited access to an authorizing facility. OAuth is "An open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications".
 Its <a href="http://tools.ietf.org/html/rfc6749">current draft specification</a> provides the following definition:</p>
 </div>
 <div class="paragraph">
 <p><em>The OAuth 2.0 authorization framework enables a third-party application to obtain limited access to an HTTP service, either on behalf of a resource owner by orchestrating an approval interaction between the resource owner and the HTTP service, or by allowing the third-party application to obtain access on its own behalf.</em></p>
 </div>
 <div class="paragraph">
-<p>OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook, the former would get a limited privilege - just to post a message on Facebook on the user&#8217;s behalf.</p>
+<p>Aron Parecki writes in his book "OAuth 2.0: The Definite Guide: <em>"Many cars today come with a valet key. It is a special key you give a parking attendant. Unlike your regular key, the valet key can only turn on the engine but will not open the trunk or glove compartment, or may not let the car drive more than a mile or two. Regardless of what restrictions the valet key imposes, the idea is very clever. You give someone limited access to your car with a special key, while using your regular key to unlock everything."</em> This is a good example of a limited access to a resource in a real life. The OAuth2 authorization server gives the requesting application an <em>access token</em> (think valet key) so it can access, say charity application.</p>
 </div>
 <div class="paragraph">
-<p>Any communications with OAuth 2.0 servers are made through the https connections. Below are the main actors of the OAuth workflow:</p>
+<p>OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook, the former would get a limited privilege - just to post a message on Facebook on the user&#8217;s behalf.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+<a href="http://openid.net/connect/">OpenID Connect</a> is an identity layer on top of OAuth2 that simply verifies the identity of the user. This can be useful if the client application doesn&#8217;t plan to  access its server for the time being, but just needs to know who the user is. The client application will still get a token, but it won&#8217;t contain authorization information.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>OpenID Connect requires using so called called <a href="http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html">JSON Web Tokens</a>, which should eventually replace popular XML-based SAML tokens. JSON Web Token is base64 encoded and signed JSON data structure. While OAuth2 spec doesn&#8217;t mandate using JSON Web Tokens, they became a de-facto standard token format.</p>
+</div>
+<div class="paragraph">
+<p>Any communications with OAuth2 servers are made through the https connections. Below are the main actors of the OAuth workflow:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -859,7 +871,7 @@ Its <a href="http://tools.ietf.org/html/rfc6749">current draft specification</a>
 <p>The application that tries to authenticate the resource owner is called <em>the client</em>. This is an application that offers the buttons like "Login with FaceBook", "Login with Twitter" and the likes.</p>
 </li>
 <li>
-<p>The <em>resource server</em> is a server that has implemented OAuth API for the client. Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth 2.0  implementations visit <a href="http://oauth.net/2">oauth.net/2</a>. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation.</p>
+<p>The <em>resource server</em> is a server that has implemented OAuth API for the client. Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth2  implementations visit <a href="http://oauth.net/2">oauth.net/2</a>. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation.</p>
 </li>
 </ul>
 </div>
@@ -1136,7 +1148,7 @@ Minimize the amount of data stored in the user&#8217;s session to simplify sessi
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-01-06 19:45:09 EST
+Last updated 2014-01-10 16:17:07 EST
 </div>
 </div>
 </body>
