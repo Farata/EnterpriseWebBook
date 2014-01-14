@@ -122,7 +122,7 @@ _The OAuth 2.0 authorization framework enables a third-party application to obta
 
 Aron Parecki writes in his book "OAuth 2.0: The Definite Guide: _"Many cars today come with a valet key. It is a special key you give a parking attendant. Unlike your regular key, the valet key can only turn on the engine but will not open the trunk or glove compartment, or may not let the car drive more than a mile or two. Regardless of what restrictions the valet key imposes, the idea is very clever. You give someone limited access to your car with a special key, while using your regular key to unlock everything."_ This is a good example of a limited access to a resource in a real life. The OAuth2 authorization server gives the requesting application an _access token_ (think valet key) so it can access, say charity application.   
 
-OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook, the former would get a limited privilege - just to post a message on Facebook on the user's behalf. 
+OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook, the former would get a limited access to the user's Facebook account (just the valet key, not the master key). 
 
 NOTE: http://openid.net/connect/[OpenID Connect] is an identity layer on top of OAuth2 that simply verifies the identity of the user. This can be useful if the client application doesn't plan to  access its server for the time being, but just needs to know who the user is. The client application will still get a token, but it won't contain authorization information. 
 
@@ -136,15 +136,19 @@ Any communications with OAuth2 servers are made through the https connections. B
 
 * The _resource server_ is a server-side layer of that supports the client application. 
 
-* The _authorization server_ checks the credentials of the resource owner and gives an athorization tocken to access the resource server.  Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth2  implementations visit http://oauth.net/2[oauth.net/2]. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation. 
+* The _authorization server_ checks the credentials of the resource owner and returns an authorization token with limited information about the user.  Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth2  implementations visit http://oauth.net/2[oauth.net/2]. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation. 
 
-In our context, the user (_resource owner_) works with _the client_ (Save The Child) to access the server supporting this charity application. The client uses the external _authorization server_ to authorize the user's work with the charity application. The diagram <<FIG10-0>> shows these players.
+In our context, the user (_resource owner_) works with _the client_ (the Save The Child UI) to access the server supporting this charity application. The client uses the external _authorization server_ to request the authorization of the the user's work with the charity application. The client has to be registered with the authorization server to be able to participate in such OAuth flow. The authorization server returns a token offering a limited access to the Save The Child application. The diagram <<FIG10-0>> shows all these players.
 
 [[FIG10-0]]
 .Save The Child and OAuth
-image::images/fig_10_0.png[]
+image::images/fig_10_00.png[]
 
+IMPORTANT: The UI code of the Save The Child application doesn't have to know how to parse the token returned by the authorization server. It can simply pass it the the Save The Child's server software, which has to know how to read and decipher the information from the token. 
 
+While the client application tries to get an  authorization from Facebook, Google or the like, it can open a so called _consent window_ that would warn the user that the Save The Child application tries to access certain information from your FaceBook or Google's account. In this scenario the user still has a chance to deny such access. It's a good idea to display a message that the user's password (e.g. to Facebook or Google) will not be given to the the Save The Child application.
+
+IMPORTANT: Request only minimum access that your application needs. For example, if Save The Child application just wants to offer an easy access to all Facebook users, then do not request the write access to the user's Facebook account. On the other hand, if a kid was cured with the help of our charity application and he wants to share the good news with his Facebook friends, the Save The Child application needs a write permission to the user's Facebook account. 
 
 .Using Facebook with OAuth
 *******
