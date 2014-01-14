@@ -842,7 +842,7 @@ Its <a href="http://tools.ietf.org/html/rfc6749">current draft specification</a>
 <p>Aron Parecki writes in his book "OAuth 2.0: The Definite Guide: <em>"Many cars today come with a valet key. It is a special key you give a parking attendant. Unlike your regular key, the valet key can only turn on the engine but will not open the trunk or glove compartment, or may not let the car drive more than a mile or two. Regardless of what restrictions the valet key imposes, the idea is very clever. You give someone limited access to your car with a special key, while using your regular key to unlock everything."</em> This is a good example of a limited access to a resource in a real life. The OAuth2 authorization server gives the requesting application an <em>access token</em> (think valet key) so it can access, say charity application.</p>
 </div>
 <div class="paragraph">
-<p>OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook, the former would get a limited privilege - just to post a message on Facebook on the user&#8217;s behalf.</p>
+<p>OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook, the former would get a limited access to the user&#8217;s Facebook account (just the valet key, not the master key).</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -874,18 +874,45 @@ Its <a href="http://tools.ietf.org/html/rfc6749">current draft specification</a>
 <p>The <em>resource server</em> is a server-side layer of that supports the client application.</p>
 </li>
 <li>
-<p>The <em>authorization server</em> checks the credentials of the resource owner and gives an athorization tocken to access the resource server.  Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth2  implementations visit <a href="http://oauth.net/2">oauth.net/2</a>. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation.</p>
+<p>The <em>authorization server</em> checks the credentials of the resource owner and returns an authorization token with limited information about the user.  Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth2  implementations visit <a href="http://oauth.net/2">oauth.net/2</a>. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>In our context, the user (<em>resource owner</em>) works with <em>the client</em> (Save The Child) to access the server supporting this charity application. The client uses the external <em>authorization server</em> to authorize the user&#8217;s work with the charity application. The diagram <a href="#FIG10-0">Save The Child and OAuth</a> shows these players.</p>
+<p>In our context, the user (<em>resource owner</em>) works with <em>the client</em> (the Save The Child UI) to access the server supporting this charity application. The client uses the external <em>authorization server</em> to request the authorization of the the user&#8217;s work with the charity application. The client has to be registered with the authorization server to be able to participate in such OAuth flow. The authorization server returns a token offering a limited access to the Save The Child application. The diagram <a href="#FIG10-0">Save The Child and OAuth</a> shows all these players.</p>
 </div>
 <div id="FIG10-0" class="imageblock">
 <div class="content">
-<img src="images/fig_10_0.png" alt="fig 10 0">
+<img src="images/fig_10_00.png" alt="fig 10 00">
 </div>
 <div class="title">Figure 1. Save The Child and OAuth</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-important" title="Important"></i>
+</td>
+<td class="content">
+The UI code of the Save The Child application doesn&#8217;t have to know how to parse the token returned by the authorization server. It can simply pass it the the Save The Child&#8217;s server software, which has to know how to read and decipher the information from the token.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>While the client application tries to get an  authorization from Facebook, Google or the like, it can open a so called <em>consent window</em> that would warn the user that the Save The Child application tries to access certain information from your FaceBook or Google&#8217;s account. In this scenario the user still has a chance to deny such access. It&#8217;s a good idea to display a message that the user&#8217;s password (e.g. to Facebook or Google) will not be given to the the Save The Child application.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-important" title="Important"></i>
+</td>
+<td class="content">
+Request only minimum access that your application needs. For example, if Save The Child application just wants to offer an easy access to all Facebook users, then do not request the write access to the user&#8217;s Facebook account. On the other hand, if a kid was cured with the help of our charity application and he wants to share the good news with his Facebook friends, the Save The Child application needs a write permission to the user&#8217;s Facebook account.
+</td>
+</tr>
+</table>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -1160,7 +1187,7 @@ Minimize the amount of data stored in the user&#8217;s session to simplify sessi
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-01-14 10:05:53 EST
+Last updated 2014-01-14 11:16:33 EST
 </div>
 </div>
 </body>
