@@ -124,11 +124,21 @@ Aron Parecki writes in his book "OAuth 2.0: The Definite Guide: _"Many cars toda
 
 OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook, the former would get a limited access to the user's Facebook account (just the valet key, not the master key). 
 
-NOTE: http://openid.net/connect/[OpenID Connect] is an identity layer on top of OAuth2 that simply verifies the identity of the user. This can be useful if the client application doesn't plan to  access its server for the time being, but just needs to know who the user is. The client application will still get a token, but it won't contain authorization information. 
+==== OpenID Connect and JSON Web Tokens
 
-OpenID Connect requires using so called called http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html[JSON Web Tokens], which should eventually replace popular XML-based SAML tokens. JSON Web Token is base64 encoded and signed JSON data structure. While OAuth2 spec doesn't mandate using JSON Web Tokens, they became a de-facto standard token format. 
+http://openid.net/connect/[OpenID Connect] is an identity layer on top of OAuth2 that simply verifies the identity of the user. This can be useful if the client application doesn't plan to  access its server for the time being, but just needs to know who the user is. The client application will still get a token, but it won't contain authorization information. 
 
-Any communications with OAuth2 servers are made through the https connections. Below are the main actors of the OAuth workflow:
+OpenID Connect requires using so called called http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html[JSON Web Tokens(JWT)], which should eventually replace popular XML-based SAML tokens. JSON Web Token is base64 encoded and signed JSON data structure. While OAuth2 spec doesn't mandate using JSON Web Tokens, they became a de-facto standard token format. 
+
+To have a better understanding of how the JSON Web tokens are encoded, visit the http://openidtest.uninett.no/jwt[Federation Lab], which is a Web site with a set of tools for testing and verification od various identity protocols. In particular, you can enter a JWT in a clear text, select a secret signature and encode the token using the HS256 algorithm as shown on the diagram <<FIG10-000>>.
+
+[[FIG10-000]]
+.Encoding JSON Web Token
+image::images/fig_10_000.png[]
+
+==== OAuth Major players
+
+Any communications with OAuth2 servers are made through the https connections. Below are the main actors of the OAuth flows:
 
 * The user who wants to use some service is called _resource owner_.
 
@@ -137,6 +147,9 @@ Any communications with OAuth2 servers are made through the https connections. B
 * The _resource server_ is a server-side layer of that supports the client application. 
 
 * The _authorization server_ checks the credentials of the resource owner and returns an authorization token with limited information about the user.  Facebook, Google, Windows Live, Twitter, GitHub are some of such servers. For the current list of OAuth2  implementations visit http://oauth.net/2[oauth.net/2]. To implement OAuth in your JavaScript code, you need to pick a resource server and read the appropriate section in their documentation. 
+
+
+==== Save The Child and OAuth
 
 In our context, the user (_resource owner_) works with _the client_ (the Save The Child UI) to access the server supporting this charity application. The client uses the external _authorization server_ to request the authorization of the the user's work with the charity application. The client has to be registered with the authorization server to be able to participate in such OAuth flow. The authorization server returns a token offering a limited access to the Save The Child application. The diagram <<FIG10-0>> shows all these players.
 
