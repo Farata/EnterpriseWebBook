@@ -578,15 +578,17 @@ p.tableblock.header { color: #6d6e71; }
 <li>
 <ul class="sectlevel3">
 <li><a href="#_basic-and-digest-authentication">Basic and Digest Authentication</a></li>
-<li><a href="#_single-sign-on-and-social-networks-logins">Single Sign-on and Social Networks Logins</a></li>
+<li><a href="#_single-sign-on">Single Sign-on</a></li>
+<li><a href="#_save-the-child-and-sso">Save The Child and SSO</a></li>
 <li><a href="#_dealing-with-passwords">Dealing With Passwords</a></li>
 </ul>
 </li>
 <li><a href="#_authorization">Authorization</a></li>
-<li><a href="#_what-s-oauth">What&#8217;s OAuth</a></li>
+<li><a href="#_oauth-based-authentication-and-authorization">OAuth-Based Authentication and Authorization</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_openid-connect-and-json-web-tokens">OpenID Connect and JSON Web Tokens</a></li>
+<li><a href="#_federated-identity-with-openid-connect-and-json-web-tokens">Federated Identity with OpenID Connect and JSON Web Tokens</a></li>
+<li><a href="#_using-facebook-login">Using Facebook Login</a></li>
 <li><a href="#_oauth-major-players">OAuth Major players</a></li>
 <li><a href="#_save-the-child-and-oauth">Save The Child and OAuth</a></li>
 </ul>
@@ -613,7 +615,7 @@ p.tableblock.header { color: #6d6e71; }
 <p>Every newly deployed Web application creates a new security hole in accessing of your organization&#8217;s data. The hackers get access to the data that are supposedly hidden behind the firewalls by entering through the ports used by Web application. There is no way to guarantee that your Web application is 100% secure. If it was never attacked by hackers this means that it&#8217;s too small, has almost no users, and is of no interest to them.</p>
 </div>
 <div class="paragraph">
-<p>This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won&#8217;t have any revelations for security professionals. A typical enterprise developer just knows that each person in the organization has an account in some kind of a naming server that&#8217;s stores IDs, passwords and roles, which takes care of authentication and authorization workflows.</p>
+<p>This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. There are plenty of books and online articles that cover security, and enterprises usually have dedicated people to handle security issues for the entire organization. Dealing with security threats is their bread and butter and this chapter won&#8217;t have any revelations for security professionals. A typical enterprise developer just knows that each person in the organization has an account in some kind of a naming server that&#8217;s stores IDs, passwords and roles, which takes care of authentication and authorization flows.</p>
 </div>
 <div class="paragraph">
 <p>If an enterprise developer needs an access to some enterprise application, opening an issue with technical support team grants the required access privileges. But software developers should have at least a broad understanding of what makes a Web application more or less secure, and which threats Web applications face - this is what this chapter is about. To implement any of the security mechanisms mentioned in this chapter you&#8217;ll need to do additional research.</p>
@@ -724,9 +726,9 @@ The HTTP status code 403 (<em>Forbidden</em>) differs from 401. While 401 means 
 </div>
 </div>
 <div class="sect3">
-<h4 id="_single-sign-on-and-social-networks-logins"><a class="anchor" href="#_single-sign-on-and-social-networks-logins"></a>Single Sign-on and Social Networks Logins</h4>
+<h4 id="_single-sign-on"><a class="anchor" href="#_single-sign-on"></a>Single Sign-on</h4>
 <div class="paragraph">
-<p>Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement a single sign-on (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, if the user signs out from one of these applications, terminates his access to all of them. SSO solutions makes authentication totally transparent to your application.</p>
+<p>Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement internally a single sign-on (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, if the user signs out from one of these applications, terminates his access to all of them. SSO solutions makes authentication totally transparent to your application.</p>
 </div>
 <div class="paragraph">
 <p>Typically, when the user logs on to your application, the logon process is intercepted and handled by pre-configured single sign-on software (e.g. Oracle Enterprise Single Sign-On, CA SiteMinder, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO). The SSO infrastructure verifies user&#8217;s credentials by making a call to a corporate LDAP server and creates a user&#8217;s session.
@@ -736,7 +738,7 @@ Usually a Web server is configured with some Web agent, which will add the user&
 <p>The future access to the protected Web application is provided automatically (by the SSO server)without even displaying a logon window as long as the user&#8217;s session is active. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).</p>
 </div>
 <div class="paragraph">
-<p>In the consumer-oriented Internet space single (or reduced) sign-on solutions become more and more popular. For example, some Web applications allow reusing your Twitter or Facebook credentials (provided that you&#8217;ve logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegate authentication procedures to Facebook, Twitter and other authorization services.</p>
+<p>In the consumer-oriented Internet space single (or reduced) sign-on solutions become more and more popular. For example, some Web applications allow reusing your Twitter or Facebook credentials (provided that you&#8217;ve logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegate authentication procedures to Facebook, Twitter and other authorization services, which we&#8217;ll discuss later in the section on OAuth.</p>
 </div>
 <div class="paragraph">
 <p>Back in 2010, Facebook has introduced their <a href="https://www.facebook.com/pages/Single-sign-on/108568432501463#">SSO solution</a> that helps millions of people log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking the user to enter credentials, your application can show the button "Login with FaceBook".</p>
@@ -745,7 +747,7 @@ Usually a Web server is configured with some Web agent, which will add the user&
 <p>Facebook has published JavaScript API that allows implementing FaceBook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit online documentation on <a href="https://developers.facebook.com/docs/facebook-login/">FaceBook Login API</a>.</p>
 </div>
 <div class="paragraph">
-<p>In addition to Facebook other popular social networks offer SSO:</p>
+<p>In addition to Facebook other popular social networks offer authentication across the applications:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -764,7 +766,31 @@ Usually a Web server is configured with some Web agent, which will add the user&
 </ul>
 </div>
 <div class="paragraph">
-<p>In most of the traditional enterprise scenarios, your organization would not want you to use social networking logins. But some enterprises started to integrate their applications with social networks so SSO via social networks will become more and more popular.  Especially now, with the spread of mobile devices, the users may need to be able to get authenticated and authorized while being outside of the enterprise perimeter.</p>
+<p>In most of the traditional enterprise scenarios, your organization would not want you to use social networking logins. But some enterprises started to integrate their applications with social networks so SSO via social networks will become more and more popular.  Especially now, with the spread of mobile devices, the users may need to be able to get authenticated and authorized while being outside of the enterprise perimeter. We&#8217;ll discuss it in more detail in the section on OAuth.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_save-the-child-and-sso"><a class="anchor" href="#_save-the-child-and-sso"></a>Save The Child and SSO</h4>
+<div class="paragraph">
+<p>Is there a use of SSO for our charity application Save The Child? Certainly. In this book we&#8217;re mostly concerned about developing the UI for the consumer-facing part of this application. But there is also a back office team that is involved with the content management that produces the information for the consumer.</p>
+</div>
+<div class="paragraph">
+<p>For example, the employees of our charity organization prepare various fund-raising campaigns in different cities. If an employee of this firm logged in to his desktop, our Save The Child Web application shouldn&#8217;t ask him to login. SSO is a solution here.</p>
+</div>
+<div class="paragraph">
+<p>Take another scenario. Say one of the upcoming charity events is a marathon to fight cancer. To organize such a marathon our charity organization need to use help of company Global Marathon Suppliers will take care of the logistics (providing banners, water, food, rain ponchos, blankets, branded tents et al.) It would be nice if the suppliers would know up to date information about the number of participants in this event. If our  charity firm will set them up with the access to the SSO server, the employees of the Global Marathon Suppliers can have limited access to the marathon participants. This is a very practical and cost-saving setup.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Some of the authors of this book were helping <a href="http://www.lls.org/">Leukemia and Lymphoma Society (LLS)</a> with developing both front and back end software.  LLS ran a number of successful marathons as well as many other campaigns for charity causes.
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
@@ -833,10 +859,15 @@ Session tracking is usually controlled on the server side. If you&#8217;d like t
 </div>
 </div>
 <div class="sect2">
-<h3 id="_what-s-oauth"><a class="anchor" href="#_what-s-oauth"></a>What&#8217;s OAuth</h3>
+<h3 id="_oauth-based-authentication-and-authorization"><a class="anchor" href="#_oauth-based-authentication-and-authorization"></a>OAuth-Based Authentication and Authorization</h3>
 <div class="paragraph">
-<p>Most likely you ran into Web applications that offer you to share your actions via social networks.
-For example, you just made a donation and want to share this information via social networks. If, say a charity application needs to access the application the user&#8217;s Facebook account for authentication and authorization, the charity app may ask the user&#8217;s ID and password for the Facebook. This is not the right approach, because the charity app gets the user&#8217;s Facebook id/pwd in clear text plus it gives the charity app full access to the user&#8217;s Facebook account. But the charity app only needed to authenticate the Facebook user. There was a need for a mechanism to give a <em>limited access</em> to third party applications.</p>
+<p>To put it simple, OAuth is a mechanism of delegated authorization. OpenID Connect is a OAuth-based mechanism for authentication. Let&#8217;s start with authentication first.</p>
+</div>
+<div class="paragraph">
+<p>Most likely you ran into Web applications that offer you to share your actions via social networks. For example, you just made a donation and want to share this information via social networks.</p>
+</div>
+<div class="paragraph">
+<p>If our charity application needed to access the user&#8217;s Facebook account for authentication, the charity app could have asked the user Facebook&#8217;s ID and password. This wouldn&#8217;t be the right approach, because the charity application would get the user&#8217;s Facebook id/password in clear text along with the  full access to the user&#8217;s Facebook account. But the charity app only needed to authenticate the Facebook user. Hence there is a need for a mechanism to give a <em>limited access</em> to third party applications.</p>
 </div>
 <div class="paragraph">
 <p><a href="http://oauth.net/">OAuth</a> became one of the mechanisms for providing a limited access to an authorizing facility. OAuth is "An open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications".
@@ -846,18 +877,41 @@ Its <a href="http://tools.ietf.org/html/rfc6749">current draft specification</a>
 <p><em>The OAuth 2.0 authorization framework enables a third-party application to obtain limited access to an HTTP service, either on behalf of a resource owner by orchestrating an approval interaction between the resource owner and the HTTP service, or by allowing the third-party application to obtain access on its own behalf.</em></p>
 </div>
 <div class="paragraph">
-<p>Aron Parecki writes in his book "OAuth 2.0: The Definite Guide: <em>"Many cars today come with a valet key. It is a special key you give a parking attendant. Unlike your regular key, the valet key can only turn on the engine but will not open the trunk or glove compartment, or may not let the car drive more than a mile or two. Regardless of what restrictions the valet key imposes, the idea is very clever. You give someone limited access to your car with a special key, while using your regular key to unlock everything."</em> This is a good example of a limited access to a resource in a real life. The OAuth2 authorization server gives the requesting application an <em>access token</em> (think valet key) so it can access, say charity application.</p>
+<p>Aron Parecki writes in his book "OAuth 2.0: The Definite Guide: <em>"Many cars today come with a valet key. It is a special key you give a parking attendant. Unlike your regular key, the valet key can only turn on the engine but will not open the trunk or glove compartment, or may not let the car drive more than a mile or two. Regardless of what restrictions the valet key imposes, the idea is very clever. You give someone limited access to your car with a special key, while using your regular key to unlock everything."</em> This is a good example of a limited access to a resource in a real life. The OAuth2 authorization server gives the requesting application an <em>access token</em> (think valet key) so it can access, say the charity application.</p>
 </div>
 <div class="paragraph">
-<p>OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook, the former would get a limited access to the user&#8217;s Facebook account (just the valet key, not the master key).</p>
+<p>OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook (unless we have our own enterprise authentication server), the former would get a limited access to the user&#8217;s Facebook account (just the valet key, not the master key).</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-important" title="Important"></i>
+</td>
+<td class="content">
+OAuth becomes a standard protocol for developing the applications that require authorization. With OAuth application developers won&#8217;t need to use proprietary protocols if they need to add an ability to identify the user via multiple authorization servers.
+</td>
+</tr>
+</table>
 </div>
 <div class="sect3">
-<h4 id="_openid-connect-and-json-web-tokens"><a class="anchor" href="#_openid-connect-and-json-web-tokens"></a>OpenID Connect and JSON Web Tokens</h4>
+<h4 id="_federated-identity-with-openid-connect-and-json-web-tokens"><a class="anchor" href="#_federated-identity-with-openid-connect-and-json-web-tokens"></a>Federated Identity with OpenID Connect and JSON Web Tokens</h4>
 <div class="paragraph">
-<p><a href="http://openid.net/connect/">OpenID Connect</a> is an identity layer on top of OAuth2 that simply verifies the identity of the user. This can be useful if the client application doesn&#8217;t plan to  access its server for the time being, but just needs to know who the user is. The client application will still get a token, but it won&#8217;t contain authorization information.</p>
+<p>There is a term <a href="http://en.wikipedia.org/wiki/Federated_identity"><em>federated identity</em></a>, which Wikipedia defines as the means of linking a person&#8217;s electronic identity and attributes, stored across multiple distinct identity management systems. This is similar to the enterprise single sign-on, but is wider because the authentication token with the information about the user&#8217;s identity can be passed across multiple departments or organizations and software systems.</p>
 </div>
-<div class="paragraph">
-<p>OpenID Connect requires using so called called <a href="http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html">JSON Web Tokens(JWT)</a>, which should eventually replace popular XML-based SAML tokens. JSON Web Token is base64 encoded and signed JSON data structure. While OAuth2 spec doesn&#8217;t mandate using JSON Web Tokens, they became a de-facto standard token format.</p>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Microsoft&#8217;s publication called <a href="http://msdn.microsoft.com/en-us/library/ff423674.aspx">"A Guide to Claims-Based Identity and Access Control"</a> includes a section on <a href="http://msdn.microsoft.com/en-us/library/ff359110.aspx">federated identity for Web applications"</a> with greater details on this subject.
+In the past, the markup language <a href="http://en.wikipedia.org/wiki/Security_Assertion_Markup_Language">SAML</a> was the most popular open standard data format for exchanging authentication and authorization data. <a href="http://openid.net/connect/">OpenID Connect</a> is a newer open standard. It&#8217;s a layer on top of OAuth2 that simply verifies the identity of the user.  <a href="http://openid.net/get-an-openid/">OpenID providers</a> that can confirm the user&#8217;s identity include such companies as Google, Yahoo!, IBM, VeriSign and more.
+Typically OpenID Connect uses so-called <a href="http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html">JSON Web Tokens(JWT)</a>, which should eventually replace popular XML-based SAML tokens. JSON Web Token is base64 encoded and signed JSON data structure. While OAuth2 spec doesn&#8217;t mandate using JSON Web Tokens, they became a de-facto standard token format.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>To have a better understanding of how the JSON Web tokens are encoded, visit the <a href="http://openidtest.uninett.no/jwt">Federation Lab</a>, which is a Web site with a set of tools for testing and verification od various identity protocols. In particular, you can enter a JWT in a clear text, select a secret signature and encode the token using the HS256 algorithm as shown on the diagram <a href="#FIG10-000">Encoding JSON Web Token</a>.</p>
@@ -870,14 +924,26 @@ Its <a href="http://tools.ietf.org/html/rfc6749">current draft specification</a>
 </div>
 </div>
 <div class="sect3">
+<h4 id="_using-facebook-login"><a class="anchor" href="#_using-facebook-login"></a>Using Facebook Login</h4>
+<div class="paragraph">
+<p>Facebook is one of the authorization servers that offer OAuth2-based authentication and authorization API.  The process of using Facebook server is described in the document titled <a href="https://developers.facebook.com/docs/facebook-login/getting-started-web/">Getting Started with Facebook Login for Web</a>.</p>
+</div>
+<div class="paragraph">
+<p>In short, register your application with Facebook by creating an application ID on the Facebook App Dashboard, and then copy/paste a JavaScript SDK code (provided by Facebook) into your application. Include the newly created app id there too. During this registration stage you&#8217;ll need to specify the URI where the user should be redirected in case of successful login. Then add a JavaScript code to support Facebook login to your application.</p>
+</div>
+<div class="paragraph">
+<p>Facebook Login API will continue communicating with your application by sending events as soon as the login status changes. Facebook will send the authorization token to your application&#8217;s code. As we mentioned earlier, authorization token is a secure encoded string that identifies the user and the app, contains the information about permissions and has the expiration time. Your application&#8217;s JavaScript code makes calls to Facebook SDK API, and each of these calls will include the token as a parameter or inside the HTTP request header.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_oauth-major-players"><a class="anchor" href="#_oauth-major-players"></a>OAuth Major players</h4>
 <div class="paragraph">
-<p>Any communications with OAuth2 servers are made through the https connections. Below are the main actors of the OAuth flows:</p>
+<p>Any communications with OAuth2 servers are made through https connections. Below are the main actors of the OAuth flows:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>The user who wants to use some service is called <em>resource owner</em>.</p>
+<p>The user who owns the account with some of the authorization servers (e.g. Facebook, Google et al.) and wants to use some other service (e.g. Save The Child) is called <em>resource owner</em>.</p>
 </li>
 <li>
 <p>The application that tries to authenticate the resource owner is called <em>the client</em>. This is an application that offers the buttons like "Login with FaceBook", "Login with Twitter" and the likes.</p>
@@ -909,13 +975,13 @@ Its <a href="http://tools.ietf.org/html/rfc6749">current draft specification</a>
 <i class="icon-important" title="Important"></i>
 </td>
 <td class="content">
-The UI code of the Save The Child application doesn&#8217;t have to know how to parse the token returned by the authorization server. It can simply pass it the the Save The Child&#8217;s server software, which has to know how to read and decipher the information from the token.
+The UI code of the Save The Child application doesn&#8217;t have to know how to parse the token returned by the authorization server. It can simply pass it the the Save The Child&#8217;s server software (e.g. via the HTTP request header), which has to know how to read and decipher the information from the token.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>While the client application tries to get an  authorization from Facebook, Google or the like, it can open a so called <em>consent window</em> that would warn the user that the Save The Child application tries to access certain information from your FaceBook or Google&#8217;s account. In this scenario the user still has a chance to deny such access. It&#8217;s a good idea to display a message that the user&#8217;s password (e.g. to Facebook or Google) will not be given to the the Save The Child application.</p>
+<p>While the client application tries to get an  authorization from the authorization server, it can open a so-called <em>consent window</em> that would warn the user that the Save The Child application tries to access certain information from your Facebook or Google&#8217;s account. In this scenario the user still has a chance to deny such access. It&#8217;s a good idea to display a message that the user&#8217;s password (e.g. to Facebook or Google) will not be given to the client application.</p>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -928,20 +994,6 @@ Request only minimum access that your application needs. For example, if Save Th
 </td>
 </tr>
 </table>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Using Facebook with OAuth</div>
-<div class="paragraph">
-<p>The process of using Facebook server is described in the document titled <a href="https://developers.facebook.com/docs/facebook-login/getting-started-web/">Getting Started with Facebook Login for Web</a>.</p>
-</div>
-<div class="paragraph">
-<p>In short, you start with creating an application ID on the Facebook App Dashboard, and then copy/paste a JavaScript SDK code (provided by Facebook) into your application. Include the newly created app id there too. Then add a JavaScript code to support Facebook login to your application and the URL of the redirection page in case of successful login.</p>
-</div>
-<div class="paragraph">
-<p>Facebook Login API will continue communicating with your application by sending events as soon as the login status changes. Facebook will send the authorization token to your application&#8217;s code and will take care of its storage. Authorization token is a secure random string that identifies the user and the app, contains the information about permissions and has expiration time. Your application&#8217;s JavaScript code makes calls to Facebook SDK API, and each of these calls will include the token as a parameter.</p>
-</div>
-</div>
 </div>
 <div class="paragraph">
 <p>OAuth has provisions for creating authorization tokens to browser-only applications, for mobile applications, and for the server-to-server communications. For the in-depth coverage get the O&#8217;Reilly book by Aaron Parecki <a href="http://shop.oreilly.com/product/0636920023531.do">"OAuth 2.0: The Definite Guide"</a>.</p>
@@ -1192,6 +1244,9 @@ Minimize the amount of data stored in the user&#8217;s session to simplify sessi
 <p>The proper validation of the received data is very important. Ideally, use the <em>white list</em> validation to compare the user&#8217;s input against the list of allowed values. Otherwise do a <em>black list</em> validation to compare against the keywords that are not allowed in the data entered by the user.</p>
 </div>
 <div class="paragraph">
+<p>There is no way to to guarantee that your application is 100% protected from security breaches. But you should ensure that your application runs in the environment with the latest available patches for known security vulnerabilities. For example, if your application includes components written in  Java programming language, install <a href="http://www.oracle.com/technetwork/topics/security/alerts-086861.html">critical security patches</a> as soon as they become available.</p>
+</div>
+<div class="paragraph">
 <p>With proliferation of clouds, social networks, and sites that offer free or cheap storage people lose control over security hoping that Amazon, Google or Dropbox will take care of it. Besides software solutions, software-as-a-service providers deploy specialized hardware - security appliances that serve as firewalls, perform content filtering, virus and intrusion detection. Interestingly enough, hardware security appliances are also vulnerable.</p>
 </div>
 <div class="paragraph">
@@ -1203,7 +1258,7 @@ Minimize the amount of data stored in the user&#8217;s session to simplify sessi
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-01-14 14:48:07 EST
+Last updated 2014-01-15 15:34:36 EST
 </div>
 </div>
 </body>
