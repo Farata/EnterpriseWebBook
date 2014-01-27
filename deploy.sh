@@ -14,7 +14,7 @@ DIR=temp-enterprisewebbook-site
 rm -rf $DIR
 
 # Clone the current repo into temp folder
-git clone -b gh-pages https://github.com/Farata/EnterpriseWebBook.git $DIR
+git clone --depth=1 -b gh-pages --single-branch https://github.com/Farata/EnterpriseWebBook.git $DIR
 #git clone git@github.com:gAmUssA/EnterpriseWebBook.git $DIR
 
 # Move working directory into temp folder
