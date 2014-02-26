@@ -2,7 +2,7 @@
 
 This chapter is about bringing the external data to HTML Web pages. In the previous chapters we've been using only hard-coded data - our goal was to see how to layout the Web page and how to change the layout in case some events have happened, e.g. the user clicked on the menu button. Now we'll make sure that our single-page application Save The Child can request the data from the external sources and send them the data too. This comes down to two questions:
 
-1. How can an HTML Web page exchange the data with external data sources?
+1. How can an HTML Web page exchange the data with Web servers?
 2. What format to use for presenting the application data?
 
 While there could be different answers to these questions, we'll be using AJAX techniques as an answer to the first question and JSON data format as an answer to the second one. We'll start this chapter with explaining why AJAX and JSON are appropriate choice for the Save The Child Web application and many others.
@@ -13,7 +13,7 @@ In the early days of the Internet, every new page, whether on the same or separa
 
 Back in 1999, Microsoft decided to create a Web version of Outlook - their popular eMail application. Their goal was to be able to modify the Input folder as the new emails arrive, but without refreshing the entire content of the Web page. They created an ActiveX control called `XMLHTTP` that lived inside Internet Explorer 5 and could make requests to the remote servers receiving data without the need to refresh the entire Web page. Such a Web Outlook client would would make periodic requests to the mail server, and if the new mail arrived the application would insert the new row on the top of the Inbox by direct change of the DOM object from JavaScript. 
 
-In early 2000th, other Web browsers adopted this model and implemented their own versions of `XMLHTTPRequest`. Its Working Draft 6 is http://www.w3.org/TR/XMLHttpRequest/[published by W3C].  Google created their famous email client GMail and Map Web applications.  In 2005 Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, the last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and currently is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn't sound as good as AJAX. 
+In early 2000th, other Web browsers implemented their own versions of `XMLHTTPRequest`. Its Working Draft 6 is http://www.w3.org/TR/XMLHttpRequest/[published by W3C].  Google created their famous email client GMail and Map Web applications.  In 2005 Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, the last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and currently is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn't sound as good as AJAX. 
 
 Visit the http://www.google.com/finance[Google Finance] or http://finance.yahoo.com/[Yahoo! Finance] Web pages when the stock market is open, and you'll see how the price quotes or other financial indicators are changing while the most of the content remains the same. This gives an illusion of the server pushing the data to your Web client. But most likely, it not a data push but rather periodic _polling_ of the server's data using AJAX. In the modern Web applications we expect to see more of the real server side data push using HTML5 WebSockets API, which is described in details in Chapter 9 of this book. 
 
@@ -63,6 +63,7 @@ Let's try to implement AJAX techniques by implementing a data retrieval. The pro
 
 *  Modify the DOM elements based on the received data, if need be.
 
+NOTE: Most likely you are going to be using one of the popular JavaScript frameworks, which will spare you from knowing all these details, but knowing how it works under the hood can be beneficial.
 
 In most of the books on AJAX you'll see browser-specific ways of instantiating the `XMLHttpRequest` object (a.k.a. XHR). Most likely you'll be developing your application using some JavaScript library or a framework and all browser specifics in instantiating of the `XMLHttpRequest` will be hidden from you. Chapters 3 and 4 include such examples, but let's stick to the standard JavaScript way implemented by all modern browsers: 
 
@@ -142,11 +143,17 @@ xhr.send(data);
 ----
 ===============================
 
+TIP: http://www.w3.org/TR/XMLHttpRequest2/[XMLHttpRequest Level 2] adds some new functionality like FormData object, timeouts, ArrayBuffers and more. It's supported http://caniuse.com/xhr2[by most] of the Web browsers.
+
 ==== AJAX: Good and Bad 
 
 AJAX techniques have their pros and cons. You saw how easy it was to create a Web page that didn't have to refresh itself, but provided the users with the means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. Taken for granted auto-completion feature would not be possible in HTML/JavaScript application without the AJAX.
 
-On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. Since the AJAX brings most of the content dynamically, the search engines wouldn't rank your Web pages as high as it would do if the content was statically embedded in the HTML. Increasing the amount of AJAX interactions means that your application will have to send more of the JavaScript code to the Web browser, which increases the complexity of programming and decreases the scalability of your application. 
+On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. 
+
+Since the AJAX brings most of the content dynamically, the search engines might not rank your Web pages as high as it would do if the content was statically embedded in the HTML. If discoverability of your Web application is important, some extra steps should be taken to make it more SEO-friendly, e.g. using an https://github.com/thomasdavis/seoserver[SEO Server].  
+
+Increasing the amount of AJAX interactions means that your application will have to send more of the JavaScript code to the Web browser, which increases the complexity of programming and decreases the scalability of your application. 
 
 TIP: Using HTML5 History API (see Chapter 1) will help you in teaching the old dog (the browser's Back button) new tricks.
 
@@ -208,10 +215,10 @@ loadData('data/us-states.html', statesList);
 loadData('data/countries.html', counriesList);
 ----
 
-****
-
 NOTE: The above code has an issue, which may not be so obvious, but can irritate users. The problem is that it doesn't handle errors. Yes, we print the error message on the developer's console, but the end user will never see them. If for some reason the data about countries or states won't arrive, the dropdowns will be empty, the donation form won't be valid and the users will become angry that they can't make a donation without knowing why. Proper error handling and reports are very important for any application so never ignore it. You should display a user-friendly error messages on the Web page. For example the above `else` statement can display the received message in the page footer
 
+[source, javascript]
+----
 else {
 	console.log(xhr.statusText);
 	
@@ -220,6 +227,8 @@ else {
                     target.name + ": "+ xhr.statusText + ",code: "+
                      xhr.status + "</p>";
 }
+
+----
 
 This code uses the CSS selector `error` that will show the error message on the red background. you can find it in the file styles.css in the project-02-donation-error-ajax-html. It looks like this:
 
@@ -233,7 +242,6 @@ footer p.error {
 }
 ----
 
-****
 
 The following code fragment shows how to add the received data to a certain area on the Web page.        
 This code creates an HTML paragraph `<p>` with the text returned by the server and then adds this paragraph to the `<div>` with the ID `main`:

@@ -20,7 +20,7 @@ The proliferation of mobile devices and Web applications require new skills for 
 
 But today's business users are spoiled by nice looking consumer-facing applications, and more often than not new development starts with inviting a Web designer who should create a prototype of the future application.  For example, we’ve seen some excellent (from the UI perspective) functional specifications for boring financial applications made by professional designers.  Business users slowly but surely becoming more demanding in the area of the UI design solutions. The trend is clear: developer’s art does not cut it anymore.
 
-In enterprise IT shops that work Web applications the Web design is usually done professional Web designer. The software developers are not overly familiar with the tools that Web designers are using. But to make this book useful even for a smaller shops that can't afford professional Web design, we'll illustrate the process of design and prototyping of the UI of a Web application. 
+In enterprise IT shops the Web design is usually done by a professional Web designer. The software developers are not overly familiar with the tools that Web designers are using. But to make this book useful even for a smaller shops that can't afford professional Web design, we'll illustrate the process of design and prototyping of the UI of a Web application. 
 
 Our Web designer, let's call him Jerry, is ready to start working on the _mockup_ (a.k.a. _wireframes_) - a set of images depicting various views of the future Save The Child application. We expect him to deliver images with comments that would briefly explain what should change in a view if a user will take  certain actions, e.g. clicks on the button. You can also think of a UI of an application as a set of states, and the user’s action result in your application transitioning from one state to the other. As nerds and mathematicians say, the UI of your application is a http://en.wikipedia.org/wiki/State_machine[finite state machine]", which at any given point of time is in one of the finite number of states, for example, in the view state Donate Form or Auction.
 
@@ -125,9 +125,9 @@ A Single Page Web Application (SPA) is an architectural approach that doesn't re
 
 Have you ever seen a monitor of a trader working for a Wall Street firm? They usually have three or four large monitors, but let's just look at one of them. Imagine a busy screen with lots and lots constantly changing data grouped in dedicated areas of the window. This screen shows the constantly changing prices from financial markets, the trader can place orders to buy or sell products, and notifications on completed trades are also coming to the same screen. If this is would be a Web application it would live in the same Web page. No menus to open another windows. 
 
-The price of Apple share was $590.45 just a second ago and now it's $590.60. How can this be done technically? Here's one of the possibilities: every second an AJAX is being made to the remote server providing current stock prices and the JavaScript code finds in the DOM the HTML element responsible for rendering the price and then modifies its value with the latest price.
+The price of Apple share was $590.45 just a second ago and now it's $590.60. How can this be done technically? Here's one of the possibilities: every second an AJAX call is being made to the remote server providing current stock prices and the JavaScript code finds in the DOM the HTML element responsible for rendering the price and then modifies its value with the latest price.
 
-Have you seen a Web page showing an input box of Google's Gmail? It looks like a table with a list of rows representing the sender, subject, and the date of when each email arrived. All of a sudden you see a new row in bold on top of the list - the new email came in. How was this done technically? A new object(s) was created and inserted into a DOM tree. No page changes, no needs for the user to refresh the browser's page - an undercover AJAX call gets the data and JavaScript changes the DOM. The content of DOM changed - the user sees an updated value.    
+Have you seen a Web page showing the content of the input box of Google's Gmail? It looks like a table with a list of rows representing the sender, subject, and the date of when each email arrived. All of a sudden you see a new row in bold on top of the list - the new email came in. How was this done technically? A new object(s) was created and inserted into a DOM tree. No page changes, no needs for the user to refresh the browser's page - an undercover AJAX call gets the data and JavaScript changes the DOM. The content of DOM changed - the user sees an updated value.    
 
 ==== Running Code Examples from WebStorm
 
@@ -138,7 +138,7 @@ This chapter will include lots of code samples illustrating how the UI is gradua
 ****
 NOTE: We assume that the users of our Save The Child application work with the modern versions of Web browsers (two year old or younger). The real world Web developers need to deal with finding workarounds to the unsupported CSS or HTML5 features in the old browsers, but modern IDE generate HTML5 boilerplate code that include large CSS files providing different solutions to older browsers. 
 
-JavaScript frameworks implement workaround for features unsupported by old browsers too, so we don't want to clutter the text providing several versions of the code just to make book samples work in outdated browsers. This is especially important when developing Enterprise apps in situations where the majority of users are locked in a particular version of and older Web browser.
+JavaScript frameworks implement workarounds (a.k.a. polyfills) for features unsupported by old browsers too, so we don't want to clutter the text providing several versions of the code just to make book samples work in outdated browsers. This is especially important when developing Enterprise apps in situations where the majority of users are locked in a particular version of and older Web browser.
 ****
 
 
@@ -195,8 +195,7 @@ In this section you'll see several projects that show how the static mockup will
 ----
 
 Note that the above HTML file includes the CSS file shown below using the `<link>` tag. Since there is no content yet for the navigation links to open, we use the syntax `href="javascript:void(0)` that allows to create a live link that doesn't load any page, which is fine on the prototyping stage. 
-
-TIP: If reusability is very important for you, avoid using overly specific selectors like `id="temp-project-name-container"` (or even ID selectors) as they limit reusability. 
+ 
 
 [source, css]
 ----
@@ -337,7 +336,7 @@ This project has several directories to keep JavaScript, images, CSS, and fonts 
 
 Usually, the logos on multi-page Web sites are clickable - they bring up the home page. That's why Jerry placed the anchor tag in the logo section. But we are planning to build a single-page application so having a clickable logo won't be needed.  
 
-Run this project in WebStorm and click on the button Login, and you'll see that it reacts. But looking at the login-related `<a>` tags in the `<header>` section you'll find nothing but `href="javascript:void(0)"`. So why the button reacts? Read the code in the main.js shown below, and you'll find there line `loginLink.addEventListener('click', showLoginForm, false);` that invokes the callback `showLoginForm()`. That why the Login button reacts. This seems confusing cause the anchor component was used here just for styling purposes. In this example a better solution  would be to replace the anchor tag `<a id="login-link" class="show-form" href="javascript:void(0)">` with another component that doesn't make the code confusing, for example `<div id="login-link" class="show-form">`.	
+Run this project in WebStorm and click on the button Login, and you'll see that it reacts. But looking at the login-related `<a>` tags in the `<header>` section you'll find nothing but `href="javascript:void(0)"`. So why the button reacts? Read the code in the main.js shown below, and you'll find there line `loginLink.addEventListener('click', showLoginForm, false);` that invokes the callback `showLoginForm()`. That's why the Login button reacts. This seems confusing because the anchor component was used here just for styling purposes. In this example a better solution  would be to replace the anchor tag `<a id="login-link" class="show-form" href="javascript:void(0)">` with another component that doesn't make the code confusing, for example `<div id="login-link" class="show-form">`.	
 
 IMPORTANT: We do not want to build Web applications the old way when a server-side program prepares and sends UI fragments to the client. The server and the client send to each other only the data. If the server is not available, we can use the local storage (the offline mode) or a mockup data one the client. 
 
@@ -352,6 +351,8 @@ var ssc = (function() {
     // Encapsulated variables
     
     // Find login section elements                   //  <1>
+    // You can use here document.getQuerySelector() 
+    // instead of getElementByID ()
 	var loginLink = document.getElementById("login-link");
 	var loginForm = document.getElementById("login-form");
 	var loginSubmit = document.getElementById('login-submit');
@@ -441,9 +442,8 @@ We recommend placing the `<script>` tag with your JavaScript at the end of your 
 __"TypeError: loginLink is null
 loginLink.addEventListener('click', showLoginForm, false);"__
 
-Of course, in many cases your JavaScript code could have tested if the DOM elements exist before using them, but in this particular sample it's just easier to to put the script at the end of the HTML file. Another solution would be to load the JavaScript code located in main.js in a separate handler function that would run only when the window's `load` event is dispatched by the browser indicated that the DOM is ready: `window.onload = function() {...}`. You'll see how to do this in the next version of main.js.
-
-TIP: The `<script>` tag support `defer` and `async` attributes that allow to execute external JavaScript files after the parsing of a Web page is complete.  
+Of course, in many cases your JavaScript code could have tested if the DOM elements exist before using them, but in this particular sample it's just easier to to put the script at the end of the HTML file. Another solution would be to load the JavaScript code located in main.js in a separate handler function that would run only when the window's `load` event is dispatched by the browser indicated that the DOM is ready: `window.addEventListener('load', function() {...}`. You'll see how to do this in the next version of main.js.
+ 
 
 ===== The CSS of our Main Page
 
@@ -478,7 +478,7 @@ li#login input {
 
 The `border-radius` element makes the corners rounded of the HTML element it applied to.  But why we repeat it three times with additional prefixes `-moz-` and `-webkit-`? These are so called _CSS vendor prefixes_, which allow the Web browser vendors to implement experimental CSS properties that haven't been standardized yet. For example, `-webkit-` is the prefix for all WebKit-based browsers: Chrome, Safari, Android, iOS. Microsoft uses `-ms-` for Internet Explorer, Opera uses `-o-`.  These prefixes are temporary measures, which make the CSS files heavier than they need to be. The time will come when the CSS3 standard properties will be implemented by all browser vendors and you won't need to use these prefixes. 
 
-As a matter of fact, unless yo uwant this code to work in the very old versions of Firefox, you can remove the line `-moz-border-radius: 2px;` from our styles.css because Mozilla has implemented the property `border-radius` in most of their browser . You can find a list of CSS properties with the corresponding vendor prefixes in http://peter.sh/experiments/vendor-prefixed-css-property-overview/[this list] maintained by Peter Beverloo.
+As a matter of fact, unless you want this code to work in the very old versions of Firefox, you can remove the line `-moz-border-radius: 2px;` from our styles.css because Mozilla has implemented the property `border-radius` in most of their browser . You can find a list of CSS properties with the corresponding vendor prefixes in http://peter.sh/experiments/vendor-prefixed-css-property-overview/[this list] maintained by Peter Beverloo.
 
 ==== The Footer section
 
@@ -549,7 +549,7 @@ Lorem Ipsum is a dummy text widely used in printing, typesetting, and Web design
 		esse cillum dolore eu fugiat nulla pariatur. 
 		Excepteur sint occaecat cupidatat non proident.
 	</p>
-	<button class="donate-button" id="donate-button">
+	<button class="donate-button" id="donate-btn">
 		<span class="donate-button-header">Donate Now</span>
 		<br/>
 		<span class="donate-2nd-line">Children can't wait</span>
@@ -634,7 +634,14 @@ The HTML of the donation form shown on <<FIG3-11>> is shown below. When the user
 </div>
 ----
 
-The JavaScript code supporting the UI transformations related to the button Donate is shown below. It's the code snippet from the main.js from project-04-donation. The click on the Donate button invokes the event handler `showDonationForm()`, which simply hides the `<div id="donation-address">` with Lorem Ipsum and displays the donation form: ` <form name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post">">`. When the form field loses focus or after the user clicked on the Submit button, the data from the form `_xclick` must be validated and sent to paypal.com. If the user clicks on "I'll donate later", the code hides the form and shows the Lorem Ipsum from the `<div id="donation-address">` again.
+The JavaScript code supporting the UI transformations related to the button Donate is shown below. It's the code snippet from the main.js from project-04-donation. The click on the Donate button invokes the event handler `showDonationForm()`, which simply hides the `<div id="donation-address">` with _Lorem Ipsum_ and displays the donation form: 
+
+[source, html]
+----
+<form name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post">">. 
+----
+
+When the form field loses focus or after the user clicked on the Submit button, the data from the form `_xclick` must be validated and sent to paypal.com. If the user clicks on "I'll donate later", the code hides the form and shows the Lorem Ipsum from the `<div id="donation-address">` again.
 
 IMPORTANT: Not including proper form validation is a sign of a rookie developer. This can easily irritate users. Instead of showing error messages like "Please include only numbers in the phone number field" use http://shop.oreilly.com/product/0636920012337.do[regular expressions] to programmatically strip non-digits away. 
 
@@ -683,9 +690,9 @@ The next code fragment is an extract of JavaScript file main.js provide by Jerry
 	}
 	
 	function onCustomAmountBlur() {
-		var value = customAmount.value;
-		if (value == '') {
-		    // The user haven't entered other amount
+		
+		if (isNan(customAmount.value)) {
+		   // The user haven't entered valid number for other amount
 			donateForm[checkedInd].checked = true;
 		}
 	}
@@ -732,7 +739,7 @@ function onCustomAmountFocus() {
 }
 ----
 
-In the Donate section we started working with event handlers. You'll see many more examples of event processing throughout the book.
+In the Donate section we started working with event handlers. You'll see many more examples of event processing throughout the book. In particular, Appendix A has a section DOM Events providing more details on the subject.
 
 === Adding Video
 
@@ -748,7 +755,7 @@ image::images/fig_03_12.png[]
 
 Let's see how our index.html has changed since its previous version. The bottom part of the main section includes the `<video>` tag. In the past, the videos in Web pages were played predominantly by the browser's Flash Player plugin (even older popular plugins included RealPlayer, MediaPlayer, and QuickTime). For example, you could have used the HTML tag `<embed src="myvideo.swf" height="300" width="300">`and if the user's browser supports Flash Player, that's all you needed for basic video play. While there were plenty of open source video players, creation of the enterprise-grade video player for Flash videos became an important skill for some software developers. For example, HBO, an American cable network offers an advanced multi-featured video player embedded into http://www.hbogo.com[www.hbogo.com] for their subscribers. 
 
-In today's world most of the modern mobile Web browsers don't support Flash Player, and the video content providers prefer broadcasting videos in formats that are supported by all the browsers and can be embedded into Web page using the standard HTML5 element `<video>` (see its current working draft is published at http://www.w3.org/wiki/HTML/Elements/video. 
+In today's world most of the modern mobile Web browsers don't support Flash Player, and the video content providers prefer broadcasting videos in formats that are supported by all the browsers and can be embedded into Web page using the standard HTML5 element `<video>` (see its current working draft is published at http://www.w3.org/wiki/HTML/Elements/video). 
 
 The following code fragment illustrates how we've embedded the video into the bottom portion of our Web page (index.html). It includes two `<source>` elements, which allows to provide alternative media resources. If the Web browser supports playing video specified in the first `<source>` element, it'll ignore the other versions of the media. For example, the code below offers two versions of the video file: intro.mp4 (in H.264/MPEG-4 format natively supported by Safari and Internet Explorer) and intro.webm (WebM format for Firefox, Chrome, and Opera). 
 
@@ -770,9 +777,9 @@ The following code fragment illustrates how we've embedded the video into the bo
 </section>
 ----
 
-The boolean property `controls` asks the Web browser to display the video player with controls (the play/pause buttons, the full screen mode, et al.) If you wouldn't use the property `controls` your JavaScript could would have to control the playback. The `poster` property of the `<video>` tag specifies the image to display as a placeholder for the video - this is the image you see on <<FIG3-12>>. In our case the `preload` valus is `metadata`, which means that we want the Web browser to preload just the first frame of the video its metadata. Should we used `preload="auto"`, the video would start loading in the background as soon as the Web page was loaded unless the user's browser doesn't allow it (e.g. Safari on iOS) for saving the bandwidth.
+The boolean property `controls` asks the Web browser to display the video player with controls (the play/pause buttons, the full screen mode, et al.) You can also control the playback programmatically in JavaScript. The `poster` property of the `<video>` tag specifies the image to display as a placeholder for the video - this is the image you see on <<FIG3-12>>. In our case `preload=metadata`instructs the Web browser to preload just the first frame of the video and its metadata. Should we used `preload="auto"`, the video would start loading in the background as soon as the Web page was loaded unless the user's browser doesn't allow it (e.g. Safari on iOS) for saving the bandwidth.
 
-All major Web browsers released in 2011 and later include their own embedded video players that support the `<video>` element. It's great that your code doesn't depend on the support of the Flash Player, but now video players look different depending on which browser the user has. 
+All major Web browsers released in 2011 and later (including Internet Explorer 9) come with their own embedded video players that support the `<video>` element. It's great that your code doesn't depend on the support of the Flash Player, but browsers' video players look different. 
 
 If neither .mp4 nor .webm files can be played, the content in the `<p>`  tag displays the fallback message "Sorry, your browser doesn't support video". If you need to support older Web browsers that don't support HTML5 video, but support Flash Player, you can replace this `<p>` tag with the `<object>` and `<embed>` tags that embed another media file that Flash Player understands. Finally, if you believe that some users may have the browsers that support neither the `<video>` tag nor Flash Player, just add the links to the files listed in the `<source>` tags right after the closing `</video>` tag. 
 
@@ -787,8 +794,6 @@ Another way to include videos in your Web application is by uploading them to Yo
 * The HTML code to embed a YouTube video is generated for you by pressing the Share and then Embed link by the video itself.
 * You can enrich your Web application by incorporating extensive video libraries by using the https://developers.google.com/youtube/v3/[YouTube Data API]. You can create fine tuned searches retrieving channels, playlists, videos, manage subscriptions, and authorize user requests.
 * Your users can save the YouTube videos on their local drive using free Web Browsers add-ons like DownloadHelper extension for Firefox or a RealDownloader.  
-
-TIP: Youtube offers https://www.youtube.com/html5[ an Opt-In Trial of HTML5 video], which allows the users to request playing most of the videos using HTML 5 video (even those recorded for Flash Player).
 
 Embedding a YouTube video into your HTML page is simple. Find the page with the video on YouTube and press the links Share and Embed located right under the video. Then select the size of your video player and HTTPS encryption if needed (see Chapter 9 on Web security for reasoning). When this is done, copy the generated `iFrame` section into your page.
 
@@ -815,11 +820,13 @@ Note that the initial size of our video player is 390x240 pixels. The `<iframe>`
 .The YouTube player is embeded 
 image::images/fig_03_13.png[]
 
-Now let's do yet another experiment. Enter the URL of our video directly in your Web browser, turn on the Firegug or Developer Tools. We did it in Firebug under Mac OS and selected the Net tab. Then HTML Response looked as in <<FIG3-14>>. YouTube recognized that this Web browser is capable of playing Flash content (FLASH_UPGRADE) and picked the QuickTime as a fallback (QUICKTIME_FALLBACK).
+Now let's do yet another experiment. Enter the URL of our video directly in your Web browser, turn on the Firebug or Chrome Developer Tools as explained in Appendix A. We did it in Firebug under Mac OS and selected the Net tab. Then HTML Response looked as in <<FIG3-14>>. YouTube recognized that this Web browser is capable of playing Flash content (FLASH_UPGRADE) and picked the QuickTime as a fallback (QUICKTIME_FALLBACK).
 
 [[FIG3-14]]
 .HTTP Response object from YouTube 
 image::images/fig_03_14.jpg[]
+
+TIP: Youtube offers https://www.youtube.com/html5[ an Opt-In Trial of HTML5 video], which allows the users to request playing most of the videos using HTML 5 video (even those recorded for Flash Player). Try to experiment on your own with and see if Youtube streams HTML5 videos in your browser. 
 
 Our brief introduction to embedding videos in HTML is over. Let' keep adding new features to the Save The Child Web application. This time we'll get familiar with the HTML5 Geolocation API.
 
@@ -827,9 +834,9 @@ Our brief introduction to embedding videos in HTML is over. Let' keep adding new
 
 HTML5 includes the Geolocation API that allows programmatically figure out the latitude and longitude of the user's device. Most of the people are accustomed to the non-Web GPS applications in cars or mobile devices that display maps and calculate distances based on the current coordinates of the user's device or motor vehicle. But why do we need the Geolocation API in a desktop Web application? 
 
-The goal of this section is to demonstrate a very practical feature - finding registered The Children based on the user's location. This way the users of the Save The Child can find the needy children in a particular geographical area. In this chapter you'll just learn the basics of HTML5 GeoLocation API, but we'll continue improving the location feature of the Save The Child in the next chapter.
+The goal of this section is to demonstrate a very practical feature - finding registered Save The Children events based on the user's location. This way the users of this application can not only donate, but participate in such event or even find the needy children in a particular geographical area. In this chapter you'll just learn the basics of HTML5 GeoLocation API, but we'll continue improving the location feature of the Save The Child in the next chapter.
 
-TIP: The World Wide Web Consortium has published proposed recommendation of the http://www.w3.org/TR/geolocation-API/[Geolocation API Specification].
+TIP: The World Wide Web Consortium has published proposed recommendation of the http://www.w3.org/TR/geolocation-API/[Geolocation API Specification], which can become a part of HTML5 spec soon. 
 
 Does your old desktop computer have a GPS hardware? Most likely it doesn't. But its location can be calculated with varying degree of accuracy. If your desktop computer is connected to the network it has an IP address or your local Wi-Fi router may have an SSID given by the router vendor or your Internet provider so the location of your desktop computer is not a secret, unless you change the SSID of your Wi-Fi router. Highly populated areas have more Wi-Fi routers and cell towers so the accuracy increases. In any case, properly designed applications must to always ask the user's permission to use the current location of her computer or other connected device.
 
@@ -855,7 +862,7 @@ The next version of our application is called project-07-basic-geolocation., whe
 </div>
 ----
 
-The following code snippet from main.js makes a call to the `navigator.geolocation` object to get the current position of the user's computer. 
+The following code snippet from main.js makes a call to the `navigator.geolocation` object to get the current position of the user's computer. In many code samples we'll use https://developer.mozilla.org/en-US/docs/Web/API/console.log[`console.log()`] to print debug data in the Web browser's console.
 
 [source, javascript]
 ----
@@ -1312,6 +1319,8 @@ The JavaScript fragment below displays the map with multiple markers. In this ex
 
   var marker, i;
 
+  // JavaScript forEach() function is deprecated, 
+  // hence using a regular for loop 
   for ( i = 0; i < charityEvents.length; i++) {
   	marker = new google.maps.Marker({
   		position : new google.maps.LatLng(charityEvents[i][1], 
@@ -1339,7 +1348,7 @@ The JavaScript fragment below displays the map with multiple markers. In this ex
 
 This chapter has described the process of mocking the future Web site on by our Web Designer Jerry, who went a lot further than creating a number of images with short descriptions. Jerry created a working prototype of the Save The Child page. Keep in mind that Jerry and his fellow Web designers like creating good looking Web pages. 
 
-But us, Web developers, need to worry about other things like making Web pages responsive and light weight. The first thing you need to do after receiving the prototype of your Web application from Jerry is run it through Google Developer Tools or Firebug and measure the total size of the resources being downloaded from the server. If it loads 1Mb or more worth of images, ask Jerry to review the images and minimize their size.
+But us, Web developers, need to worry about other things like making Web pages responsive and light weight. The first thing you need to do after receiving the prototype of your Web application from Jerry is run it through Google Developer Tools or Firebug (see the Debuggin JavaScript section in Appendix A for details) and measure the total size of the resources being downloaded from the server. If it loads 1Mb or more worth of images, ask Jerry to review the images and minimize their size.
 
 The chances are that you don't need to download all the JavaScript code at once - we'll discuss modularization of large applications in Chapter 6.
 
