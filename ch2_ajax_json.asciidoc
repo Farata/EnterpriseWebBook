@@ -249,6 +249,9 @@ This code creates an HTML paragraph `<p>` with the text returned by the server a
 [source, javascript]
 ----
 if (xhr.readyState == 4) {
+
+  // All status codes between 200 and 300 mean success
+  // and 304 means Not Modified
   if((xhr.status >=200 && xhr.status <300) || xhr.status===304){
       var p = document.createElement("p");
 
@@ -481,7 +484,7 @@ function showCampaignsInfo(campaigns) {
 	createCampaignsMap(campaigns);
 }
 
-function loadData(dataUrl) {
+function loadCampaignsData(dataUrl) {
  var xhr = new XMLHttpRequest();
  xhr.open('GET', dataUrl);
 
@@ -506,10 +509,12 @@ function loadData(dataUrl) {
 }
 
 var dataUrl = 'data/campaignsdata.json';
-loadData(dataUrl);
+loadCampaignsData(dataUrl);
 ----
 
 TIP: Some older Web browsers may bring up a File Download popup window when the content type of the server's response is set to "application/json". Try to use the MIME type "text/html" instead, if you ran into this issue. 
+
+NOTE: For simplicity,  in this section we've been loading JSON formatted data from files, but in the real-world applications the JSON data is created on the server dynamically. For example, a browser makes a RESTFull call to the Java-based server, which queries a database, generates JSON formated result and sends it back to the Web server.
 
 ==== JSON in CMS 
 
@@ -567,7 +572,7 @@ JSON data format is often used in non-JavaScript applications. For example, a Ja
 
 ****
 
-NOTE: The upcoming Java EE 7 specification includes JSR 353, which defines a standardized way for parsing and generating JSON. JSR 353 defines the Java API from JSON Processing (JSON-P) that shouldn't be confused with another acronym http://json-p.org/[JSONP or JSON-P], which is JSON with Padding (we'll discuss it at the end of this chapter).   
+NOTE: The Java EE 7 specification includes JSR 353, which defines a standardized way for parsing and generating JSON. JSR 353 defines the Java API from JSON Processing (JSON-P) that shouldn't be confused with another acronym http://json-p.org/[JSONP or JSON-P], which is JSON with Padding (we'll discuss it at the end of this chapter).   
 ****
 
 === Compressing JSON
@@ -580,7 +585,7 @@ Similarly to most of the content that is being sent to browsers by the Web serve
 
 We prefer using GZip, which stands for GNU zip compression. On the server side you'd need to configure the gzip filters on your Web server. You need to refer to your Web server's documentation to find out how to configure gzipping, which is done by the MIME type. For example, you can request to gzip everything except images (you might want to do this if you're not sure if all browsers can properly uncompress certain MIME types). 
 
-For example, applying the GZip filter to the 9Kb countries.json will reduce its size to 3Kb, which means serious bandwidth savings especially in the Web applications with lots of concurrent users. This is even more important for the mobile Web clients, which may be operating in the areas with slower connections. The Web clients can set the HTTP request attribute `Accept-Encoding: gzip` inviting the server to return gzipped content, and the Web server may compress the response if it does support it or unzipped content otherwise. If the server supports gzip, the HTTP response will have the attribute `Content-Encoding: gzip`, and the browser will know to unzip the response data before use. 
+For example, applying the GZip filter to the 9Kb countries.json will reduce its size to 3Kb, which means serious bandwidth savings especially in the Web applications with lots of concurrent users. This is even more important for the mobile Web clients, which may be operating in the areas with slower connections. Web clients usually  set the HTTP Request attribute `Accept-Encoding: gzip` inviting the server to return gzipped content, and the Web server may compress the response if it does support it or unzipped content otherwise. If the server supports gzip, the HTTP response will have the attribute `Content-Encoding: gzip`, and the browser will know to unzip the response data before use. 
 
 Gzip is being used for compressing all types of content: HTML, CSS, JavaScript and more. If your server sends JSON content to the client setting the content type to `application/json` don't forget to include this MIME type in your server configuration for Gzip. 
 
@@ -592,7 +597,7 @@ Let's consider yet another use case for JSON in Save The Child. We want to displ
 
 The http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides a bitmap canvas, where your  scripts which can draw graphs, game graphics, or other visual images on the fly without using any plugins like Flash Player or Silverlight. To put it simple, the `<canvas>` defines a rectangular area that consists of pixels, where you can draw. Keep in mind that the DOM object can't peek inside the canvas and access specific pixels. So if you are planning to create an area with dynamically changed graphics you might want to consider using `<svg>`. 
 
-The http://www.w3.org/TR/SVG11/[`<svg>` element] supports Scalable Vector Graphics (SVG), which is the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images et al. 
+The `<svg>` element supports http://www.w3.org/TR/SVG11/[Scalable Vector Graphics (SVG)], which is the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images et al. 
 
 ==== Adding Chart With Canvas Element
 
@@ -659,7 +664,7 @@ Loading of the the charddata.json is done using AJAX techniques as explained ear
 
 [source, javascript]
 ----
-function getData(dataUrl, canvas) {
+function getChartData(dataUrl, canvas) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', dataUrl, true);
 
@@ -751,6 +756,7 @@ function drawPieChart (canvas, chartData, centerX, centerY, pieRadius) {
 
 <4> The for-loop paints one sector on each iteration. This code draws lines, arcs, rectangles, and adds text to the canvas. Describing the details of each method of the context object is out of scope of this book, but you can find the details of the context API in the http://www.w3.org/TR/2dcontext/[W3C documentation] available online.
 
+TIP: To minimize the amount of manual coding, consider using one of the JavaScript libraries that helps with visualization (e.g. http://d3js.org/[D3.js]).
 
 ==== Adding Chart With SVG
 
@@ -880,7 +886,7 @@ Since the SVG is XML-based, its very easy to generate the code shown in <<FIG4-7
 TIP: SVG supports animations and transformation effects, while canvas doesn't.
 
 
-=== What is JSONP
+=== Loading Data From Other Servers With JSONP
 
 Imagine that a Web page was loaded from the domain abc.com, and it need JSON formatted data from another domain (xyz.com). As mentioned earlier, AJAX has cross-origin restrictions, which prevent this. JSONP is a technique used in to relax the cross-origin restrictions.  With JSONP, instead of sending plain JSON data, the server wraps them up into a JavaScript function and then sends it to the Web browser for execution as a callback. The Web page that was originated from abc.com may send the request `http://xyz.com?callback=myDataHandler` technically requesting the server xyz.com to invoke the JavaScript callback named `myDataHandler`. This URL is a regular HTTP GET request, which may have other parameters too so you can send some data to the server too.
 
@@ -903,8 +909,6 @@ If all you need is just to retrieve the data from a different domain on page jus
 
 But what if you need to dynamically make such requests periodically (e.g. get all twits with a hashtag `#savisickchild` by sending an HTTP GET using Twitter API at `http://search.twitter.com/search.json?q=savesickchild&rpp=5&include_entities=true&with_twitter_user_id=true&result_type=mixed`)? You add a change handler to the option that is called and passes or grabs the value needed.
 
-[NOTE]
-===========
 You can dynamically add a `<script>` tag to the DOM object from your JavaScript code. Whenever the browser sees the new `<script>` element it executes it. Such script injection can be done like this:
 
 [source, javascript]
@@ -914,16 +918,12 @@ myScriptTag.src = "http://xyz.com?callback=myDataHandler";
 document.getElementsByTagName("body").appendChild(myScriptTag);
 ----
 
-Your JavaScript can build the URL for the `myScriptTag.src` dynamically and pass parameters to the server based on some user's actions, for example:
-[source, javascript]
-----
-myScriptTag.src = "http://xyz.com?city=Boston&callback=myDataHandler";
-----
+Your JavaScript can build the URL for the `myScriptTag.src` dynamically and pass parameters to the server based on some user's actions.
 
-Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com is intercepted and replaced by a malicious code. But it's not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data. 
+Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com is intercepted and replaced by a malicious code (similarly to the JavaScript `eval()` danger). But it's not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data. 
 
 If you decide to use JSONP don't forget about error handling. Most likely you'll be using one of the JavaScript frameworks and they usually offer a standard mechanism for JSONP error handling, dealing with poorly formatted JSON responses, and recovery in cases of network failure. One of such libraries is called https://github.com/jaubourg/jquery-jsonp[jQuery-JSONP].
-===========
+
 
 ==== Beer and JSONP
 
