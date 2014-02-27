@@ -601,7 +601,7 @@ p.tableblock.header { color: #6d6e71; }
 <li><a href="#_adding-chart-with-svg">Adding Chart With SVG</a></li>
 </ul>
 </li>
-<li><a href="#_what-is-jsonp">What is JSONP</a></li>
+<li><a href="#_loading-data-from-other-servers-with-jsonp">Loading Data From Other Servers With JSONP</a></li>
 <li>
 <ul class="sectlevel3">
 <li><a href="#_beer-and-jsonp">Beer and JSONP</a></li>
@@ -623,7 +623,7 @@ p.tableblock.header { color: #6d6e71; }
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>How can an HTML Web page exchange the data with external data sources?</p>
+<p>How can an HTML Web page exchange the data with Web servers?</p>
 </li>
 <li>
 <p>What format to use for presenting the application data?</p>
@@ -642,7 +642,7 @@ p.tableblock.header { color: #6d6e71; }
 <p>Back in 1999, Microsoft decided to create a Web version of Outlook - their popular eMail application. Their goal was to be able to modify the Input folder as the new emails arrive, but without refreshing the entire content of the Web page. They created an ActiveX control called <code>XMLHTTP</code> that lived inside Internet Explorer 5 and could make requests to the remote servers receiving data without the need to refresh the entire Web page. Such a Web Outlook client would would make periodic requests to the mail server, and if the new mail arrived the application would insert the new row on the top of the Inbox by direct change of the DOM object from JavaScript.</p>
 </div>
 <div class="paragraph">
-<p>In early 2000th, other Web browsers adopted this model and implemented their own versions of <code>XMLHTTPRequest</code>. Its Working Draft 6 is <a href="http://www.w3.org/TR/XMLHttpRequest/">published by W3C</a>.  Google created their famous email client GMail and Map Web applications.  In 2005 Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, the last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and currently is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn&#8217;t sound as good as AJAX.</p>
+<p>In early 2000th, other Web browsers implemented their own versions of <code>XMLHTTPRequest</code>. Its Working Draft 6 is <a href="http://www.w3.org/TR/XMLHttpRequest/">published by W3C</a>.  Google created their famous email client GMail and Map Web applications.  In 2005 Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications". The Web developer community liked the term AJAX, which stand for Asynchronous JavaScript and XML, and this gave a birth to the new breed of Web applications that could update the content of just the portion of a Web page without re-retrieving the entire page. Interestingly enough, the last letter in the AJAX acronym stands for XML, while realistically presenting the data in the XML form is not required, and currently is seldom used as a data format in the client-server exchanges. JSON is used a lot more often to represent the data, but apparently AJAJ didn&#8217;t sound as good as AJAX.</p>
 </div>
 <div class="paragraph">
 <p>Visit the <a href="http://www.google.com/finance">Google Finance</a> or <a href="http://finance.yahoo.com/">Yahoo! Finance</a> Web pages when the stock market is open, and you&#8217;ll see how the price quotes or other financial indicators are changing while the most of the content remains the same. This gives an illusion of the server pushing the data to your Web client. But most likely, it not a data push but rather periodic <em>polling</em> of the server&#8217;s data using AJAX. In the modern Web applications we expect to see more of the real server side data push using HTML5 WebSockets API, which is described in details in Chapter 9 of this book.</p>
@@ -722,6 +722,18 @@ We&#8217;ll implement such an auction in Chapter 8 using a lot more efficient pr
 <p>Modify the DOM elements based on the received data, if need be.</p>
 </li>
 </ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+Most likely you are going to be using one of the popular JavaScript frameworks, which will spare you from knowing all these details, but knowing how it works under the hood can be beneficial.
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>In most of the books on AJAX you&#8217;ll see browser-specific ways of instantiating the <code>XMLHttpRequest</code> object (a.k.a. XHR). Most likely you&#8217;ll be developing your application using some JavaScript library or a framework and all browser specifics in instantiating of the <code>XMLHttpRequest</code> will be hidden from you. Chapters 3 and 4 include such examples, but let&#8217;s stick to the standard JavaScript way implemented by all modern browsers:</p>
@@ -863,6 +875,18 @@ xhr.send(data);</code></pre>
 </tr>
 </table>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<a href="http://www.w3.org/TR/XMLHttpRequest2/">XMLHttpRequest Level 2</a> adds some new functionality like FormData object, timeouts, ArrayBuffers and more. It&#8217;s supported <a href="http://caniuse.com/xhr2">by most</a> of the Web browsers.
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_ajax-good-and-bad"><a class="anchor" href="#_ajax-good-and-bad"></a>AJAX: Good and Bad</h4>
@@ -870,7 +894,13 @@ xhr.send(data);</code></pre>
 <p>AJAX techniques have their pros and cons. You saw how easy it was to create a Web page that didn&#8217;t have to refresh itself, but provided the users with the means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating <code>XMLHttpRequest</code> and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. Taken for granted auto-completion feature would not be possible in HTML/JavaScript application without the AJAX.</p>
 </div>
 <div class="paragraph">
-<p>On the bad side, with AJAX the user loses the functionality of the browser&#8217;s Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. Since the AJAX brings most of the content dynamically, the search engines wouldn&#8217;t rank your Web pages as high as it would do if the content was statically embedded in the HTML. Increasing the amount of AJAX interactions means that your application will have to send more of the JavaScript code to the Web browser, which increases the complexity of programming and decreases the scalability of your application.</p>
+<p>On the bad side, with AJAX the user loses the functionality of the browser&#8217;s Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page.</p>
+</div>
+<div class="paragraph">
+<p>Since the AJAX brings most of the content dynamically, the search engines might not rank your Web pages as high as it would do if the content was statically embedded in the HTML. If discoverability of your Web application is important, some extra steps should be taken to make it more SEO-friendly, e.g. using an <a href="https://github.com/thomasdavis/seoserver">SEO Server</a>.</p>
+</div>
+<div class="paragraph">
+<p>Increasing the amount of AJAX interactions means that your application will have to send more of the JavaScript code to the Web browser, which increases the complexity of programming and decreases the scalability of your application.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -955,8 +985,6 @@ loadData('data/us-states.html', statesList);
 loadData('data/countries.html', counriesList);</code></pre>
 </div>
 </div>
-<div class="sidebarblock">
-<div class="content">
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -969,17 +997,17 @@ The above code has an issue, which may not be so obvious, but can irritate users
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>else {
-	console.log(xhr.statusText);</p>
-</div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>	// Show the error message on the Web page
+<pre class="highlight"><code class="javascript language-javascript">else {
+	console.log(xhr.statusText);
+
+	// Show the error message on the Web page
       footerContainer.innerHTML += '&lt;p class="error"&gt;Error getting ' +
                     target.name + ": "+ xhr.statusText + ",code: "+
                      xhr.status + "&lt;/p&gt;";
-}</pre>
+}
+</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -995,8 +1023,6 @@ The above code has an issue, which may not be so obvious, but can irritate users
 }</code></pre>
 </div>
 </div>
-</div>
-</div>
 <div class="paragraph">
 <p>The following code fragment shows how to add the received data to a certain area on the Web page.
 This code creates an HTML paragraph <code>&lt;p&gt;</code> with the text returned by the server and then adds this paragraph to the <code>&lt;div&gt;</code> with the ID <code>main</code>:</p>
@@ -1004,6 +1030,9 @@ This code creates an HTML paragraph <code>&lt;p&gt;</code> with the text returne
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">if (xhr.readyState == 4) {
+
+  // All status codes between 200 and 300 mean success
+  // and 304 means Not Modified
   if((xhr.status &gt;=200 &amp;&amp; xhr.status &lt;300) || xhr.status===304){
       var p = document.createElement("p");
 
@@ -1267,7 +1296,7 @@ loadData('data/countries.json', 'countrieslist', counriesList);</code></pre>
 	createCampaignsMap(campaigns);
 }
 
-function loadData(dataUrl) {
+function loadCampaignsData(dataUrl) {
  var xhr = new XMLHttpRequest();
  xhr.open('GET', dataUrl);
 
@@ -1292,7 +1321,7 @@ function loadData(dataUrl) {
 }
 
 var dataUrl = 'data/campaignsdata.json';
-loadData(dataUrl);</code></pre>
+loadCampaignsData(dataUrl);</code></pre>
 </div>
 </div>
 <div class="admonitionblock tip">
@@ -1303,6 +1332,18 @@ loadData(dataUrl);</code></pre>
 </td>
 <td class="content">
 Some older Web browsers may bring up a File Download popup window when the content type of the server&#8217;s response is set to "application/json". Try to use the MIME type "text/html" instead, if you ran into this issue.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
+For simplicity,  in this section we&#8217;ve been loading JSON formatted data from files, but in the real-world applications the JSON data is created on the server dynamically. For example, a browser makes a RESTFull call to the Java-based server, which queries a database, generates JSON formated result and sends it back to the Web server.
 </td>
 </tr>
 </table>
@@ -1397,7 +1438,7 @@ public String createJsonFromCustomer(Customer cust){
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-The upcoming Java EE 7 specification includes JSR 353, which defines a standardized way for parsing and generating JSON. JSR 353 defines the Java API from JSON Processing (JSON-P) that shouldn&#8217;t be confused with another acronym <a href="http://json-p.org/">JSONP or JSON-P</a>, which is JSON with Padding (we&#8217;ll discuss it at the end of this chapter).
+The Java EE 7 specification includes JSR 353, which defines a standardized way for parsing and generating JSON. JSR 353 defines the Java API from JSON Processing (JSON-P) that shouldn&#8217;t be confused with another acronym <a href="http://json-p.org/">JSONP or JSON-P</a>, which is JSON with Padding (we&#8217;ll discuss it at the end of this chapter).
 </td>
 </tr>
 </table>
@@ -1420,7 +1461,7 @@ The upcoming Java EE 7 specification includes JSR 353, which defines a standardi
 <p>We prefer using GZip, which stands for GNU zip compression. On the server side you&#8217;d need to configure the gzip filters on your Web server. You need to refer to your Web server&#8217;s documentation to find out how to configure gzipping, which is done by the MIME type. For example, you can request to gzip everything except images (you might want to do this if you&#8217;re not sure if all browsers can properly uncompress certain MIME types).</p>
 </div>
 <div class="paragraph">
-<p>For example, applying the GZip filter to the 9Kb countries.json will reduce its size to 3Kb, which means serious bandwidth savings especially in the Web applications with lots of concurrent users. This is even more important for the mobile Web clients, which may be operating in the areas with slower connections. The Web clients can set the HTTP request attribute <code>Accept-Encoding: gzip</code> inviting the server to return gzipped content, and the Web server may compress the response if it does support it or unzipped content otherwise. If the server supports gzip, the HTTP response will have the attribute <code>Content-Encoding: gzip</code>, and the browser will know to unzip the response data before use.</p>
+<p>For example, applying the GZip filter to the 9Kb countries.json will reduce its size to 3Kb, which means serious bandwidth savings especially in the Web applications with lots of concurrent users. This is even more important for the mobile Web clients, which may be operating in the areas with slower connections. Web clients usually  set the HTTP Request attribute <code>Accept-Encoding: gzip</code> inviting the server to return gzipped content, and the Web server may compress the response if it does support it or unzipped content otherwise. If the server supports gzip, the HTTP response will have the attribute <code>Content-Encoding: gzip</code>, and the browser will know to unzip the response data before use.</p>
 </div>
 <div class="paragraph">
 <p>Gzip is being used for compressing all types of content: HTML, CSS, JavaScript and more. If your server sends JSON content to the client setting the content type to <code>application/json</code> don&#8217;t forget to include this MIME type in your server configuration for Gzip.</p>
@@ -1438,7 +1479,7 @@ The upcoming Java EE 7 specification includes JSR 353, which defines a standardi
 <p>The <a href="http://www.w3.org/wiki/HTML/Elements/canvas"><code>&lt;canvas&gt;</code></a> element provides a bitmap canvas, where your  scripts which can draw graphs, game graphics, or other visual images on the fly without using any plugins like Flash Player or Silverlight. To put it simple, the <code>&lt;canvas&gt;</code> defines a rectangular area that consists of pixels, where you can draw. Keep in mind that the DOM object can&#8217;t peek inside the canvas and access specific pixels. So if you are planning to create an area with dynamically changed graphics you might want to consider using <code>&lt;svg&gt;</code>.</p>
 </div>
 <div class="paragraph">
-<p>The <a href="http://www.w3.org/TR/SVG11/"><code>&lt;svg&gt;</code> element</a> supports Scalable Vector Graphics (SVG), which is the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images et al.</p>
+<p>The <code>&lt;svg&gt;</code> element supports <a href="http://www.w3.org/TR/SVG11/">Scalable Vector Graphics (SVG)</a>, which is the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images et al.</p>
 </div>
 <div class="sect3">
 <h4 id="_adding-chart-with-canvas-element"><a class="anchor" href="#_adding-chart-with-canvas-element"></a>Adding Chart With Canvas Element</h4>
@@ -1511,7 +1552,7 @@ The upcoming Java EE 7 specification includes JSR 353, which defines a standardi
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">function getData(dataUrl, canvas) {
+<pre class="highlight"><code class="javascript language-javascript">function getChartData(dataUrl, canvas) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', dataUrl, true);
 
@@ -1620,6 +1661,18 @@ loadData('data/chartdata.json', document.getElementById("canvas"));</code></pre>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>The for-loop paints one sector on each iteration. This code draws lines, arcs, rectangles, and adds text to the canvas. Describing the details of each method of the context object is out of scope of this book, but you can find the details of the context API in the <a href="http://www.w3.org/TR/2dcontext/">W3C documentation</a> available online.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+To minimize the amount of manual coding, consider using one of the JavaScript libraries that helps with visualization (e.g. <a href="http://d3js.org/">D3.js</a>).
+</td>
 </tr>
 </table>
 </div>
@@ -1790,7 +1843,7 @@ SVG supports animations and transformation effects, while canvas doesn&#8217;t.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_what-is-jsonp"><a class="anchor" href="#_what-is-jsonp"></a>What is JSONP</h3>
+<h3 id="_loading-data-from-other-servers-with-jsonp"><a class="anchor" href="#_loading-data-from-other-servers-with-jsonp"></a>Loading Data From Other Servers With JSONP</h3>
 <div class="paragraph">
 <p>Imagine that a Web page was loaded from the domain abc.com, and it need JSON formatted data from another domain (xyz.com). As mentioned earlier, AJAX has cross-origin restrictions, which prevent this. JSONP is a technique used in to relax the cross-origin restrictions.  With JSONP, instead of sending plain JSON data, the server wraps them up into a JavaScript function and then sends it to the Web browser for execution as a callback. The Web page that was originated from abc.com may send the request <code>http://xyz.com?callback=myDataHandler</code> technically requesting the server xyz.com to invoke the JavaScript callback named <code>myDataHandler</code>. This URL is a regular HTTP GET request, which may have other parameters too so you can send some data to the server too.</p>
 </div>
@@ -1820,13 +1873,6 @@ SVG supports animations and transformation effects, while canvas doesn&#8217;t.
 <div class="paragraph">
 <p>But what if you need to dynamically make such requests periodically (e.g. get all twits with a hashtag <code>#savisickchild</code> by sending an HTTP GET using Twitter API at <code>http://search.twitter.com/search.json?q=savesickchild&amp;rpp=5&amp;include_entities=true&amp;with_twitter_user_id=true&amp;result_type=mixed</code>)? You add a change handler to the option that is called and passes or grabs the value needed.</p>
 </div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<i class="icon-note" title="Note"></i>
-</td>
-<td class="content">
 <div class="paragraph">
 <p>You can dynamically add a <code>&lt;script&gt;</code> tag to the DOM object from your JavaScript code. Whenever the browser sees the new <code>&lt;script&gt;</code> element it executes it. Such script injection can be done like this:</p>
 </div>
@@ -1838,22 +1884,13 @@ document.getElementsByTagName("body").appendChild(myScriptTag);</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Your JavaScript can build the URL for the <code>myScriptTag.src</code> dynamically and pass parameters to the server based on some user&#8217;s actions, for example:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="javascript language-javascript">myScriptTag.src = "http://xyz.com?city=Boston&amp;callback=myDataHandler";</code></pre>
-</div>
+<p>Your JavaScript can build the URL for the <code>myScriptTag.src</code> dynamically and pass parameters to the server based on some user&#8217;s actions.</p>
 </div>
 <div class="paragraph">
-<p>Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com is intercepted and replaced by a malicious code. But it&#8217;s not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data.</p>
+<p>Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com is intercepted and replaced by a malicious code (similarly to the JavaScript <code>eval()</code> danger). But it&#8217;s not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data.</p>
 </div>
 <div class="paragraph">
 <p>If you decide to use JSONP don&#8217;t forget about error handling. Most likely you&#8217;ll be using one of the JavaScript frameworks and they usually offer a standard mechanism for JSONP error handling, dealing with poorly formatted JSON responses, and recovery in cases of network failure. One of such libraries is called <a href="https://github.com/jaubourg/jquery-jsonp">jQuery-JSONP</a>.</p>
-</div>
-</td>
-</tr>
-</table>
 </div>
 <div class="sect3">
 <h4 id="_beer-and-jsonp"><a class="anchor" href="#_beer-and-jsonp"></a>Beer and JSONP</h4>
@@ -1963,7 +2000,7 @@ bd.appendChild(myScriptTag);</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-01-06 19:45:09 EST
+Last updated 2014-02-27 08:13:41 EST
 </div>
 </div>
 </body>
