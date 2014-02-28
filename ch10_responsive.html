@@ -592,6 +592,7 @@ p.tableblock.header { color: #6d6e71; }
 <ul class="sectlevel3">
 <li><a href="#_moving-away-from-absolute-sizing">Moving Away From Absolute Sizing</a></li>
 <li><a href="#_window-as-a-grid">Window as a Grid</a></li>
+<li><a href="#_responsive-css-the-good-news">Responsive CSS: The Good News</a></li>
 </ul>
 </li>
 <li><a href="#_making-save-the-child-responsive">Making Save The Child Responsive</a></li>
@@ -715,7 +716,7 @@ There is a framework called <a href="http://zeptojs.com/">Zepto</a>, which is a 
 <p>Run any of the versions of our Save The Child from the first chapters of the book on your desktop and start dragging the right border of the browser&#8217;s window to make it narrower. At some point you&#8217;ll see only a part of the content - those layouts of the Save The Child was not meant to be responsive. It defined fixed sizes for the page sections, which didn&#8217;t change even if the display area shrinks.</p>
 </div>
 <div class="paragraph">
-<p>Enter the address of one of the <a href="http://savesickchild.org:8080/ssc-extjs/">Save The Child</a> projects in your mobile phone&#8217;s browser. Either you&#8217;ll see a partial content of the page or the entire page with illegible small fonts as in <a href="#FIG11-0">Non-responsive version of the app on iPhone 5</a>. Such  design of the Save The Child application doesn&#8217;t look good on all devices.</p>
+<p>Enter the address of the book supporting site  <a href="http://savesickchild.org">Save The Child</a> in your mobile phone&#8217;s browser. Select the version titled HTML/AJAX. Either you&#8217;ll see a partial content of the page or the entire page with illegible small fonts as in <a href="#FIG11-0">Non-responsive version of the app on iPhone 5</a>. Such  design of the Save The Child application doesn&#8217;t look good on all devices.</p>
 </div>
 <div id="FIG11-0" class="imageblock">
 <div class="content">
@@ -724,10 +725,22 @@ There is a framework called <a href="http://zeptojs.com/">Zepto</a>, which is a 
 <div class="title">Figure 2. Non-responsive version of the app on iPhone 5</div>
 </div>
 <div class="paragraph">
-<p>How many versions of the UI do we need to create then? People responsible for developing a Web applications that can run on both desktop and mobile platforms usually start with making an important decision: HTML5 or native?  But even if a decision was made in the favor of the Web platform, the next question is if the desktop and mobile clients will use the same code or not.</p>
+<p>Now try the version titled Responsive Design - looks more usable on a small screen. How many versions of the UI do we need to create then? People responsible for developing a Web applications that can run on both desktop and mobile platforms usually start with making an important decision: HTML5 or native?  But even if a decision was made in the favor of the Web platform, the next question is if the desktop and mobile clients will use the same code or not.</p>
 </div>
 <div class="paragraph">
 <p>If a decision is made to go with separate versions of the Web applications, the Web server can be configured to perform the redirection to the appropriate code depending on the type of the user&#8217;s device. Web servers can do it based on the value of the <code>User-Agent</code> attribute of the HTTP request header. For example, the mobile Web browsers trying to access of <a href="http://www.bbc.com/">BBC</a> (or any other Web page) report their <code>User-Agent</code> to the server differently from desktop computers  hence they receive different content delivered from a different URL. The snapshots <a href="#FIG11-1">The desktop version of bbc.com</a> and <a href="#FIG11-2">The mobile version of bbc.com</a> of the BBC main page were taken at the same time, but <a href="#FIG11-1">The desktop version of bbc.com</a> shows how the page looks on the desktop computer, while <a href="#FIG11-2">The mobile version of bbc.com</a> was taken from the iPhone.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The Safari Browser has a menu Develop, where you can select different User Agents to see how the current Web page will look on different Web browsers. You can also copy/paste a User Agent string from the site <a href="http://www.useragentstring.com/pages/useragentstring.php">useragentstring.com</a> to have an idea how the Web page will look like in hundreds of devices if the Web site is user-agent driven.
+</td>
+</tr>
+</table>
 </div>
 <div id="FIG11-1" class="imageblock">
 <div class="content">
@@ -782,7 +795,7 @@ There is a framework called <a href="http://zeptojs.com/">Zepto</a>, which is a 
 <p>This sounds like a great solution, but if you put all your media queries in the same CSS files, your users will be downloading unnecessary bytes - the entire CSS file that includes all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what&#8217;s necessary for a particular device category.</p>
 </div>
 <div class="paragraph">
-<p>You can have several CSS files for different devices. Include these files using the media attributes. But Web browsers are not smart enough to selectively download only those CSS that are needed. For example, the following HTML will load both CSS files on any user&#8217;s device:</p>
+<p>You can have several CSS files for different devices. Include these files using the media attributes. But Web browsers were not designed to selectively download only those CSS that are needed. For example, the following HTML will load both CSS files (<a href="http://www.igvita.com/2012/06/14/debunking-responsive-css-performance-myths/">without blocking rendering</a>) on any user&#8217;s device:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -791,18 +804,6 @@ There is a framework called <a href="http://zeptojs.com/">Zepto</a>, which is a 
 &lt;link media="only screen and (max-width: 768px)" href="css/tablet.css"rel="stylesheet"&gt;</code></pre>
 </div>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Using the <code>Window.matchMedia</code> attribute may allow you to <a href="http://christianheilmann.com/2012/12/19/conditional-loading-of-resources-with-mediaqueries/">conditionally load</a> CSS in JavaScript.
-</td>
-</tr>
-</table>
-</div>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -810,19 +811,8 @@ Using the <code>Window.matchMedia</code> attribute may allow you to <a href="htt
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-Consider combining Responsive Design on the client with some device-specific components (a.k.a. <a href="http://www.lukew.com/ff/entry.asp?1392">RESS</a>) optimization on the server.
-</td>
-</tr>
-</table>
-</div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<i class="icon-important" title="Important"></i>
-</td>
-<td class="content">
-While Responsive Design allows to re-arrange the content based on the screen size, it may not be a good idea to show the same amount of content on desktop and smartphones. Making a Web application look good on mobile devices must involve not only Web designers and developers, but also people who are responsible for content management.
+Using the <code>Window.matchMedia</code> attribute may allow you to <a href="http://christianheilmann.com/2012/12/19/conditional-loading-of-resources-with-mediaqueries/">conditionally load</a> CSS in JavaScript.
+There JavaScript utility <a href="https://github.com/scottjehl/eCSSential">eCSSential</a> can help Web browser to download CSS faster.
 </td>
 </tr>
 </table>
@@ -925,7 +915,7 @@ Typography can be also considered as one of the pillars of the responsive design
 </table>
 </div>
 <div class="paragraph">
-<p><a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Media_queries">Media query</a> is a CSS element. It consists of a media type (e.g. <em>@media (min-width: 700px) and (orientation: landscape)</em>) followed by the styles applicable to this media. Media queries allow to rearrange the sections (<code>&lt;div&gt;</code><em>s</em>) of the page based on the screen size, fluid grids allows to properly align and scale the content of these sections, and the fluid media is about resizing images or videos.</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Media_queries">Media query</a> is a CSS element. It consists of a media type (e.g. <em>@media (min-width: 700px) and (orientation: landscape)</em>) followed by the styles applicable to this media. Media queries allow to rearrange the sections (like <code>&lt;div&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code> et al.) of the page based on the screen size, fluid grids allows to properly align and scale the content of these sections, and the fluid media is about resizing images or videos.</p>
 </div>
 <div class="paragraph">
 <p>Data grid components are often included in  enterprise applications. Fluid grids are designed using relative positioning and can scale based on the screen sizes. Fluid media is about creating videos and images that react to the screen sizes. We&#8217;ll talk about the above pillars in greater details later in this chapter. But before going into technical details, let&#8217;s get back to the mockups to see how the UI should look like on different devices.</p>
@@ -1032,7 +1022,7 @@ Typography can be also considered as one of the pillars of the responsive design
 </div>
 </div>
 <div class="paragraph">
-<p>The fragment of the CSS file styles.css from the project Responsive_basic_media_queries is shown next. It starts with defining styles for windows having 1280px width (we use 1140 pixels to leave some space for padding and browser&#8217;s chrome). This CSS mandates to change the page layouts if the screen size is or becomes below 768 or 640 pixels. Based on your Web designer&#8217;s recommendations you can specify as many breakout sizes as needed. Say, in the future, everyone will have at lease 1900px wide monitor - you can provide a layout that would use five imaginary columns. This can be a good idea for online newspapers or magazines, but Save The Child is not a publication so we keep its maximum width within 1140px. Or you may decide to make a version of Save The Child available for LCDs of only 320px in width - create a new media query section in your CSS and apply fluid grids to make the content readable.</p>
+<p>Two fragments of the CSS file styles.css from the project Responsive_basic_media_queries are shown next. The first one starts with defining styles for windows having 1280px width (we use 1140 pixels to leave some space for padding and browser&#8217;s chrome).  Here&#8217;s the first fragment:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1090,11 +1080,33 @@ footer {
 	width: 100%;
 	height: 80px;
 	color: #fff;
-}
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Set the maximum width of the window on a desktop to 1140 pixels. It&#8217;s safe to assume that any modern monitor supports the resolution of 1280px width (minus about 10% for padding and chrome).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Allocate one third of the width for video, charts, and maps each.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Float left instructs the browser to render each of these divs starting from the left and adding the next one to the right.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This CSS mandates to change the page layouts if the screen size is or becomes below 768 or 640 pixels. Based on your Web designer&#8217;s recommendations you can specify as many breakout sizes as needed. Say, in the future, everyone will have at lease 1900px wide monitor - you can provide a layout that would use five imaginary columns. This can be a good idea for online newspapers or magazines, but Save The Child is not a publication so we keep its maximum width within 1140px. Or you may decide to make a version of Save The Child available for LCDs of only 320px in width - create a new media query section in your CSS and apply fluid grids to make the content readable. Here&#8217;s the second fragment of the CSS file that defines media queries.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">/* media queries */
 
-/* media queries */
-
-@media only screen and (max-width: 768px) {    <i class="conum" data-value="4"></i><b>(4)</b>
+@media only screen and (max-width: 768px) {    <i class="conum" data-value="1"></i><b>(1)</b>
 	#main-container {
 		width: 98%
 	}
@@ -1104,8 +1116,8 @@ footer {
 	}
 
 	#main-top-section, #main-bottom-section {
-		width: 50%;                           <i class="conum" data-value="5"></i><b>(5)</b>
-		float: left;                          <i class="conum" data-value="6"></i><b>(6)</b>
+		width: 50%;                           <i class="conum" data-value="2"></i><b>(2)</b>
+		float: left;                          <i class="conum" data-value="3"></i><b>(3)</b>
 	}
 
 	#main-top-section {
@@ -1113,17 +1125,17 @@ footer {
 	}
 
 	#video-container, #map-container, #charts-container {
-		float: none;                         //   <i class="conum" data-value="7"></i><b>(7)</b>
+		float: none;                         //   <i class="conum" data-value="4"></i><b>(4)</b>
 		width: 100%;
 		padding-bottom: 70%;
 	}
 
 }
 
-@media only screen and (max-width: 640px) {   //  <i class="conum" data-value="8"></i><b>(8)</b>
+@media only screen and (max-width: 640px) {   //  <i class="conum" data-value="5"></i><b>(5)</b>
 
 	#main-top-section, #main-bottom-section {
-		width: 100%;                          //  <i class="conum" data-value="9"></i><b>(9)</b>
+		width: 100%;                          //  <i class="conum" data-value="6"></i><b>(6)</b>
 		float: none;
 	}
 
@@ -1141,38 +1153,26 @@ footer {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Setting the maximum width of the window on a desktop to 1140 pixels. It&#8217;s safe to assume that any modern monitor supports the resolution of 1280px width (minus about 10% for padding and chrome).</td>
+<td>This media query controls layouts for devices with viewports having the max width of 768px.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Allocate one third of the width for video, charts, and maps each.</td>
+<td>Split the width fifty-fifty between the HTML elements with ID&#8217;s <code>main-top-section</code> and <code>main-bottom-section</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Float left instructs the browser to render each of these divs starting from the left and adding the next one to the right.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The media query controlling layouts for devices with viewports with the max width of 768px starts here.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Split the width fifty-fifty between the HTML elements with ID&#8217;s main-top-section and main-bottom-section.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
 <td>Allocate main-top-section and main-bottom-section next to each other (<code>float: left;</code>) as in <a href="#FIG11-9">The tablet layout (portrait) implemented</a>. To better understand how the CSS <code>float</code> property works, visualize a book page having an small image on the left with the text floating on the right (a text wrap) - this is what <code>float: left;</code> can do on a Web page.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
 <td>Turn the floating off so the charts, maps, and video containers will start one under another as in <a href="#FIG11-9">The tablet layout (portrait) implemented</a>.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
 <td>The media query controlling layouts for devices with viewports with the max width of 640px starts here.</td>
 </tr>
 <tr>
-<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
 <td>Let the containers main-top-section, main-bottom-section take the entire width and be displayed one under another (<code>float: none;</code>) as in <a href="#FIG11-10">The smaller phone layout (portrait) implemented</a>.</td>
 </tr>
 </table>
@@ -1200,9 +1200,7 @@ Internet Explorer 8 and older don&#8217;t natively support media queries. Consid
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="html language-html">---
-&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
----</code></pre>
+<pre class="highlight"><code class="html language-html">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1229,7 +1227,8 @@ If you&#8217;ll apply the initial scale to be 1.0, but to a Web page that was no
 </div>
 </div>
 <div class="paragraph">
-<p>Some of the important concepts to take away from this example are to switch from pixels to percentages when specifying width. In the next examples you&#8217;ll see how to switch from using rigid <code>px</code> to more flexible <code>em</code> units. The CSS <code>float</code> property you can control relative (not absolute) positioning of your page components.  There are also such CSS measure units as <code>vw</code> and <code>vh</code>, which represent percentages of the viewport width and height respectively.</p>
+<p>Some of the important concepts to take away from this example are to switch from pixels to percentages when specifying width. In the next examples you&#8217;ll see how to switch from using rigid <code>px</code> to more flexible <code>em</code> units. The CSS <code>float</code> property you can control relative (not absolute) positioning of your page components.  There are also such CSS measure units as <code>vw</code> and <code>vh</code>, which represent percentages of the viewport width and height respectively.
+But the best practice here is to use <a href="http://css-tricks.com/theres-more-to-the-css-rem-unit-than-font-sizing/"><code>rem</code> units</a>. The app can set the font size on BODY and then specify everything in relative-ems that scale only from that number. <code>Ems</code> cascade their scale down from their parent, meaning lots of extra math the developer and the browser has to do.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1239,6 +1238,18 @@ If you&#8217;ll apply the initial scale to be 1.0, but to a Web page that was no
 </td>
 <td class="content">
 Install an Add-On for Google Chrome called <a href="https://chrome.google.com/webstore/detail/window-resizer/kkelicaakdanhinjdeammmilcgefonfh?hl=en">Window Resizer</a>. It&#8217;ll add an icon to the toolbar for easy switch between the browser screen sizes. This way you can quickly test how your Web page looks on different viewports. There is another handy Add-On for Chrome called <a href="https://chrome.google.com/webstore/detail/responsive-inspector/memcdolmmnmnleeiodllgpibdjlkbpim?hl=en">Responsive Inspector</a>, which allows you to see the various media queries for a page and automatically resize to them.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Google Chrome Developer Tools offer you a way to test a Web page on various emulators of mobile devices. you just need to check off the "Show Emulation view in console drawer" in Settings, and then you&#8217;ll see the Emulation tab under the Elements menu (hit the Esc key if it&#8217;s not shown).
 </td>
 </tr>
 </table>
@@ -1480,7 +1491,7 @@ Adobe&#8217;s Creative Cloud includes a tool called <a href="https://creative.ad
 </div>
 </div>
 <div class="paragraph">
-<p>Note that some of the above HTML elements are styled with more than one class selector, for example <code>class="one-column cell"</code>. The entire content of the file styles.css from Responsive Fluid Grids project is shown next, and you can find the declarations of the class selectors <code>one-column</code> and <code>cell</code> there. Note the section with media queries in this file.</p>
+<p>Note that some of the above HTML elements are styled with more than one class selector, for example <code>class="one-column cell"</code>. The entire content of the file styles.css from Responsive Fluid Grids project is shown next, and you can find the declarations of the class selectors <code>one-column</code> and <code>cell</code> there.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1582,20 +1593,50 @@ ul li {
 .row.nested {
 	padding: 0;
 	margin-right: -0.5em
-}
-
-/* --------------- Media queries -------------- */
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Styling grid rows, which  are containers for cells.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Defining common class selectors (floating and padding) for the cells located in the viewports of any width. Please note the property <code>float: left;</code> - it&#8217;ll change in the media queries section.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Dividing 100% of the container&#8217;s width by 12 columns results in allocating 8.333% of width per column. Each cell in the 12-column table in our HTML has the <code>one-column</code> class selector.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Check the HTML for the 6-column grid - each cell is styled as <code>two-column</code> and will occupy 16.666% of the container&#8217;s width.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The HTML for the 4-column grid uses the <code>three-column</code> style for each cell that will use 24.999% of the container&#8217;s width.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Note the section with media queries in this file (below is just another fragment of the same CSS file).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="html language-html">/* --------------- Media queries -------------- */
 
 @media only screen and (max-width: 768px) {
 	.breakpoint-768 .cell {
-		float: none;                         <i class="conum" data-value="6"></i><b>(6)</b>
-		width: 100%;                         <i class="conum" data-value="7"></i><b>(7)</b>
+		float: none;                         <i class="conum" data-value="1"></i><b>(1)</b>
+		width: 100%;
 		padding-bottom: 0.5em
 	}
 }
 
 @media only screen and (max-width: 640px) {
-	.breakpoint-640 .cell {                  <i class="conum" data-value="8"></i><b>(8)</b>
+	.breakpoint-640 .cell {                  <i class="conum" data-value="2"></i><b>(2)</b>
 		float: none;
 		width: 100%;
 		padding-bottom: 0.5em
@@ -1649,34 +1690,11 @@ p.temp-project-description {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Styling grid rows, which  are containers for cells.</td>
+<td>This media query turns off the floating (<code>float:none</code>) if the viewport is 768px or less. This will reallocate the cells vertically.
+The <code>width:100%</code> forces the cell to occupy the entire width of the container as opposed to, say 8.333% in the 12-column grid.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Defining common class selectors (floating and padding) for the cells located in the viewports of any width. Please note the property <code>float: left;</code> - it&#8217;ll change in the media queries section.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Dividing 100% of the container&#8217;s width by 12 columns results in allocating 8.333% of width per column. Each cell in the 12-column table in our HTML has the <code>one-column</code> class selector.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Check the HTML for the 6-column grid - each cell is styled as <code>two-column</code> and will occupy 16.666% of the container&#8217;s width.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>The HTML for the 4-column grid uses the <code>three-column</code> style for each cell that will use 24.999% of the container&#8217;s width.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>This media query turns off the floating if the viewport is 768px or less. This will reallocate the cells vertically.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="7"></i><b>7</b></td>
-<td>The cell should occupy the entire width of the container as opposed to, say 8.333% in the 12-column grid.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="8"></i><b>8</b></td>
 <td>The media query for 640px won&#8217;t kick in until the viewport width goes below 640px. If you&#8217;ll resize the browser window to make it below 768px but larger than 640px, note that the 4-column grid (styled as <code>breakpoint-640</code>) has not changed its layout just yet.</td>
 </tr>
 </table>
@@ -1694,7 +1712,29 @@ In some cases you may need to use a mix of fluid and fixed layouts, for example,
 </table>
 </div>
 <div class="paragraph">
-<p>Spend some time analyzing the content of index.html and styles.css files from the project named Responsive Fluid Grid. Try to modify the values in CSS and see how your changes affect the behavior of the fluid grid.In the next section we&#8217;ll apply these techniques to our Save The Child application.</p>
+<p>Spend some time analyzing the content of index.html and styles.css files from the project named Responsive Fluid Grid. Try to modify the values in CSS and see how your changes affect the behavior of the fluid grid. In the next section we&#8217;ll apply these techniques to our Save The Child application.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_responsive-css-the-good-news"><a class="anchor" href="#_responsive-css-the-good-news"></a>Responsive CSS: The Good News</h4>
+<div class="paragraph">
+<p>We were explaining how the fluid grid work under the hood, but  calculating percentages is not the most exciting job for sofrtare developers.  The good news is that there are several responsive frameworks that offer CSS, typography and some JavaScript to jump start the development of the UI of a Web application. They&#8217;ll spare you for most of the mundane work with cascading style sheets. Here are some of them:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Consider using Twitter&#8217;s framework called <a href="http://twbs.github.io/bootstrap/">Bootstrap</a>, which has lots of greatly styled <a href="http://twbs.github.io/bootstrap/components/">components</a> and also supports fluid grid system.</p>
+</li>
+<li>
+<p>The <a href="http://foundation.zurb.com/">Foundation 4</a> framework promotes mobile first design and includes the flexible grid.</p>
+</li>
+<li>
+<p><a href="http://www.getskeleton.com/">The Skeleton</a> is a collection of CSS files, which includes a scalable grid.</p>
+</li>
+<li>
+<p><a href="http://semantic-ui.com">Semantic-UI</a> is a collection of styled UI components, which includes <a href="http://semantic-ui.com/collections/grid.html">responsive grid</a> too.</p>
+</li>
+</ul>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1703,8 +1743,7 @@ In some cases you may need to use a mix of fluid and fixed layouts, for example,
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-There are several responsive frameworks that offer CSS, typography and some JavaScript to jump start the development of the UI of a Web application. The <a href="http://foundation.zurb.com/">Foundation 4</a> framework promotes mobile first design and includes the flexible grid. Consider using Twitter&#8217;s framework called <a href="http://twbs.github.io/bootstrap/">Bootstrap</a>, which has lots of greatly styled <a href="http://twbs.github.io/bootstrap/components/">components</a> and also supports fluid grid system.
-<a href="http://www.getskeleton.com/">The Skeleton</a> is a collection of CSS files, which includes a scalable grid.
+People who work with CSS a lot use an authoring framework <a href="http://compass-style.org">Compass</a> with CSS extension <a href="http://sass-lang.com/">SASS</a> or a CSS pre-processor <a href="http://lesscss.org/">LESS</a>, which are systems that compile to CSS allowing for code including variables for tracking and calculating such numbers as column with and more. You can now modularize your CSS as well as your code. In Chapter 12 we&#8217;ll use a SASS theme that comes with Sencha Touch framework.
 </td>
 </tr>
 </table>
@@ -1714,8 +1753,7 @@ There are several responsive frameworks that offer CSS, typography and some Java
 <div class="sect2">
 <h3 id="_making-save-the-child-responsive"><a class="anchor" href="#_making-save-the-child-responsive"></a>Making Save The Child Responsive</h3>
 <div class="paragraph">
-<p>First, run any of the previous versions of the Save The Child application to make sure it was not responsive. Just make the browser window narrower, and you won&#8217;t see some of the page content on the right.
-We&#8217;ll make the page responsive gradually - the first version will make the header responsive, then the donation section, and, finally the entire page will become fluid. Open in the Web browser the file index.html from the project named Responsive Header and you&#8217;ll see a page similar to <a href="#FIG11-14">Responsive Header (width 580px+)</a>.</p>
+<p>First, run any of the previous versions of the Save The Child application to make sure it was not responsive. Just make the browser window narrower, and you won&#8217;t see some of the page content on the right. We&#8217;ll make the page responsive gradually - the first version will make the header responsive, then the donation section, and, finally the entire page will become fluid. Open in the Web browser the file index.html from the project named Responsive Header and you&#8217;ll see a page similar to <a href="#FIG11-14">Responsive Header (width 580px+)</a>.</p>
 </div>
 <div id="FIG11-14" class="imageblock">
 <div class="content">
@@ -1724,7 +1762,7 @@ We&#8217;ll make the page responsive gradually - the first version will make the
 <div class="title">Figure 17. Responsive Header (width 580px+)</div>
 </div>
 <div class="paragraph">
-<p>Below is the fragment from index.html that&#8217;s displays the logo image and the header&#8217;s menus.</p>
+<p>Below is the fragment from index.html that displays the logo image and the header&#8217;s menus.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2131,7 +2169,7 @@ While using base-64 encoding increases the total size of the image in bytes, it 
 <p>But using responsive design for styling the application that must run on tablets or mobile devices will require Jerry-the-designer to work in tandem with the User Experience specialist so that UI will have larger controls and fonts while  minimizing the need of manual data entry. And don&#8217;t forget that the half of a mobile screen could be covered by a virtual keyboard, and if you ignore this, the user will look at your application&#8217;s UI  via a keyhole and even our fluid <code>&lt;div&gt;'s</code> may not fit.</p>
 </div>
 <div class="paragraph">
-<p>In the next two chapters we&#8217;ll be working on yet another version of the Save The Child application. First, it&#8217;s going to be done with the jQuery Mobile framework and then with Sencha Touch.</p>
+<p>In the next two chapters we&#8217;ll be working on yet another version of the Save The Child application. First, we&#8217;ll use the jQuery Mobile framework and then - Sencha Touch.</p>
 </div>
 </div>
 </div>
@@ -2139,7 +2177,7 @@ While using base-64 encoding increases the total size of the image in bytes, it 
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-01-07 11:29:01 EST
+Last updated 2014-02-28 13:24:26 EST
 </div>
 </div>
 </body>
