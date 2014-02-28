@@ -3,7 +3,7 @@
 
 == Introduction to Web Application Security 
 
-Every newly deployed Web application creates a new security hole in accessing of your organization's data. The hackers get access to the data by sneaking through the ports that are supposedly hidden behind the firewalls. There is no way to guarantee that your Web application is 100% secure. If it was never attacked by hackers most likelely it's too small and is of no interest to them. 
+Every newly deployed Web application creates a new security hole in accessing of your organization's data. The hackers get access to the data by sneaking through the ports that are supposedly hidden behind the firewalls. There is no way to guarantee that your Web application is 100% secure. If it was never attacked by hackers most likely it's too small and is of no interest to them. 
  
 This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. We'll also cover delegated authorization with OAuth, and possible authentication and authorization scenarios for our Save The Child application. 
 
@@ -87,6 +87,7 @@ Besides Facebook other popular social networks offer authentication across the a
 * Google also offers the OAuth-based authentication API. Details about their client library for JavaScript are published https://developers.google.com/api-client-library/javascript/features/authentication[online]. For implementing SAML-based SSO with Google, visit  https://developers.google.com/google-apps/sso/saml_reference_implementation[this Web page].
 
 * Mozilla offers a new way to sign-in using any of your existing email addresses using http://www.mozilla.org/en-US/persona/[Persona]. 
+* Several large organizations (e.g. Google, Yahoo!, Microsoft, Facebook) either issue or accept http://openid.net/[OpenID], which allows to sign in to more than 50000 Web sites.  
 
 Typically, large enterprises would not want users  to use logins from social networks. But some organizations started integrating their applications with social networks.  Especially now, with the spread of mobile devices, the users may need to be able to get authenticated and authorized while being outside of the enterprise perimeter. We'll discuss it in more detail in the section on OAuth.
 
@@ -99,7 +100,7 @@ For example, the employees of our charity organization create fund-raising campa
 
 ==== Dealing With Passwords
 
-It might sound obvious, but we'll still remind you  that the Web client should never send passwords in clear text. Use http://en.wikipedia.org/wiki/Secure_Hash_Algorithm[Secure Hash Algorithms] (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters (a http://en.wikipedia.org/wiki/Brute-force_attack[_brute-force attack_]), it'll take a lot more time with long passwords. Periodical changing of the passwords makes the hacker's work more difficult too. 
+It might sound obvious, but we'll still remind you  that the Web client should never send passwords in clear text. Use http://en.wikipedia.org/wiki/Secure_Hash_Algorithm[Secure Hash Algorithms] (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters (a http://en.wikipedia.org/wiki/Brute-force_attack[_brute-force attack_]), it'll take a lot more time with long passwords. Periodic changing of the passwords makes the hacker's work more difficult too. 
 Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client's computer. Then, on each subsequent request to the server the Web browser will place the session id in the HTTP request object and send it along with each request. Technically, the user's identity is  always known at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource. 
 
 TIP: Salted hashes increase security by adding _salt_ - a randomly generated data that's concatenated with the password and then processed by a hash function. 
@@ -140,13 +141,13 @@ Aron Parecki writes in his book "OAuth 2.0: The Definite Guide: _"Many cars toda
 
 OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook (unless we have our own enterprise authentication server), the former would get a limited access to the user's Facebook account (just the valet key, not the master key). 
 
-IMPORTANT: OAuth becomes a standard protocol for developing the applications that require authorization. With OAuth application developers won't need to use proprietary protocols if they need to add an ability to identify the user via multiple authorization servers. 
+OAuth becomes a standard protocol for developing the applications that require authorization. With OAuth application developers won't need to use proprietary protocols if they need to add an ability to identify the user via multiple authorization servers. 
 
 ==== Federated Identity with OpenID Connect and JSON Web Tokens
 
 There is a term http://en.wikipedia.org/wiki/Federated_identity[_federated identity_], which Wikipedia defines as the means of linking a person's electronic identity and attributes, stored across multiple distinct identity management systems. This is similar to the enterprise single sign-on, but is wider because the authentication token with the information about the user's identity can be passed across multiple departments or organizations and software systems. 
 
-Microsoft's publication called http://msdn.microsoft.com/en-us/library/ff423674.aspx["A Guide to Claims-Based Identity and Access Control"] includes a section on http://msdn.microsoft.com/en-us/library/ff359110.aspx[federated identity for Web applications"] with greater details on this subject. 
+Microsoft's publication called http://msdn.microsoft.com/en-us/library/ff423674.aspx["A Guide to Claims-Based Identity and Access Control"] includes a section on http://msdn.microsoft.com/en-us/library/ff359110.aspx[federated identity for Web applications] with greater details on this subject. 
 
 In the past, the markup language http://en.wikipedia.org/wiki/Security_Assertion_Markup_Language[SAML] was the most popular open standard data format for exchanging authentication and authorization data. http://openid.net/connect/[OpenID Connect] is a newer open standard. It's a layer on top of OAuth 2.0 that simply verifies the identity of the user.  http://openid.net/get-an-openid/[OpenID providers] that can confirm the user's identity include such companies as Google, Yahoo!, IBM, VeriSign and more.  
 Typically OpenID Connect uses so-called http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html[JSON Web Tokens(JWT)], which should eventually replace popular XML-based SAML tokens. JSON Web Token is base64 encoded and signed JSON data structure. While OAuth 2.0 spec doesn't mandate using JSON Web Tokens, they became a de-facto standard token format. 
@@ -162,7 +163,7 @@ image::images/fig_10_000.png[]
 *******
 Facebook is one of the authorization servers that offer OAuth-based authentication and authorization API.  The online document https://developers.facebook.com/docs/javascript/quickstart/["Quickstart: Facebook SDK for JavaScript"] is a good starting point. 
 
-Before using the SDK you need to register your application with Facebook by creating a client ID and obtaining the client secret (the password). Then use the JavaScript SDK code (provided by Facebook) in your Web application. Include the newly created app id there too. During this registration stage you'll need to specify the URI where the user should be redirected in case of successful login. Then add a JavaScript code to support required Facebook API (e.g. for Login) to your application. You can find a sample JavaScript code that uses Facebook Login API in https://developers.facebook.com/docs/facebook-login/login-flow-for-web/[this guide].
+Before using the SDK you need to register your application with Facebook by creating a client ID and obtaining the client secret (the password). Then use the JavaScript SDK code (provided by Facebook) in your Web application. Include the newly created app id there. During this registration stage you'll need to specify the URI where the user should be redirected in case of successful login. Then add a JavaScript code to support required Facebook API (e.g. for Login) to your application. You can find a sample JavaScript code that uses Facebook Login API in https://developers.facebook.com/docs/facebook-login/login-flow-for-web/[this guide].
 
 Facebook Login API communicates with your application by sending events as soon as the login status changes. Facebook will send the authorization token to your application's code. As we mentioned earlier, authorization token is a secure encoded string that identifies the user and the app, contains the information about permissions and has the expiration time. Your application's JavaScript code makes calls to Facebook SDK API, and each of these calls will include the token as a parameter or inside the HTTP request header.
 *******
@@ -179,7 +180,7 @@ Any communications with OAuth 2.0 servers are made through https connections. Be
 
 * The _authorization server_ checks the credentials of the resource owner and returns an authorization token with limited information about the user. It can be the same as resource server, but not necessarily. Facebook, Google, Windows Live, Twitter, GitHub are some of the examples of authorization servers. For the current list of OAuth 2.0  implementations visit http://oauth.net/2[oauth.net/2]. 
 
-To implement OAuth in your JavaScript code, you need to pick the a resource/authorization server and study their API documentation. Keep in mind that OAuth defines two types of clients - public and confidential. Public clients use embedded password while communicating with the authorization server. If you're going to keep the password inside your JavaScript code, it won't be safe. To be considered  a confidential client, a Web application should store its password on the server side.
+To implement OAuth in your client application, you need to pick the a resource/authorization server and study their API documentation. Keep in mind that OAuth defines two types of clients - public and confidential. Public clients use embedded password while communicating with the authorization server. If you're going to keep the password inside your JavaScript code, it won't be safe. To be considered  a confidential client, a Web application should store its password on the server side.
 
 OAuth has provisions for creating authorization tokens to browser-only applications, for mobile applications, and for the server-to-server communications. For the in-depth coverage get the O'Reilly book by Aaron Parecki http://shop.oreilly.com/product/0636920023531.do["OAuth 2.0: The Definite Guide"].
 
@@ -200,7 +201,7 @@ While the client application tries to get an  authorization from the authorizati
 
 Your application should request only minimum access to the user's resource server. For example, if the Save The Child application just needs to offer an easy authentication for all Facebook users, then do not request the write access to the user's Facebook account. On the other hand, if a kid was cured with the involvement of our charity application, and he wants to share the good news with his Facebook friends, the Save The Child application needs a write permission to the user's Facebook account.
 
-The UI code of the Save The Child application doesn't have to know how to parse the token returned by the authorization server. It can simply pass it the the Save The Child's server software (e.g. via the HTTP request header), which has to know how to read and decipher the information from the token. The client application sends to the authorization server only the client id, and not the client secret needed for deciphering the user's information from the token.
+The UI code of the Save The Child application doesn't have to know how to parse the token returned by the authorization server. It can simply pass it to the Save The Child's server software (e.g. via the HTTP request header). The server has to know how to read and decipher the information from the token. The client application sends to the authorization server only the client id, and not the _client secret_ needed for deciphering the user's information from the token.
  
 ===== Private Authorization Servers 
 
@@ -246,8 +247,8 @@ In the ideal world the client-side code should not even send the non-validated d
 
 ==== Cross-Site Scripting
 
-Cross-site scripting (XSS) - the user of your Web application receive some unwanted code fragments from a malicious server that reaches the user via the site that a person visited (hence cross-site).
-Single-page AJAX-based applications makes lots of under-the-hood requests to the servers, which increases the attack surface comparing to traditional legacy Web sites that would be downloading Web pages a lot less frequently.  
+Cross-site scripting (XSS) is when an attacker injects the malicious code into a browser-side script of your Web application.  The user was accessing a trusted Web site, but got an injection from a malicious server that reached the user via the trusted server (hence cross-site).
+Single-page AJAX-based applications make lots of under-the-hood requests to the servers, which increases the attack surface comparing to traditional legacy Web sites that would be downloading Web pages a lot less frequently.  
 XSS can happen in three ways: 
 
 * Reflected (a.k.a. phishing) - the Web page contains a link that seems valid, but when the user clicks on it, the user's browser receives and executes the the script created by the attacker.
@@ -274,6 +275,8 @@ NOTE: While we've been working on the section describing Apple's developers cert
 
 IMPORTANT: One of the OWASP guides is titled https://www.owasp.org/index.php/Web_Application_Penetration_Testing[Web Application Penetration Testing]. In about 350 pages it explains the methodology of testing a Web application for each vulnerability. OWASP defines _penetration test_ as a method of evaluating the security of a computer systems by simulating an attack. Hundreds of security experts from around the world have contributed to this guide. Running penetration tests should become a part of your development process, and the sooner you start running them the better.
 
+For example, the Payment Card Industry published a Data Security Standard, which includes a https://www.pcisecuritystandards.org/documents/information_supplement_11.3.pdf[Requirement 11.3] of penetration testing.
+
 === Regulatory Compliance and Enterprise Security 
 
 So far in this chapter we've been discussing security vulnerabilities from the technical perspective. But there is another aspect that can't be ignored - the regulatory compliance of the business you automate.
@@ -291,11 +294,11 @@ Our customers are insurance agencies and carriers. We charge for our services, a
  
 One of the first questions our perspective customers ask if our application is _PCI compliant_. They won't work with us until they review the _application-level security_ implemented in our system. As per the http://www.pcicomplianceguide.org/pci-basics.php[PCI Compliance Guide], "the Payment Card Industry Data Security Standard is used by all card brands to assure the security of the data gathered while an employee is making a transaction at a bank or participating vendor".
 
-If your application stores PCI data, authenticating via FaceBook, Google or a similar OAuth service won't be an option. The users will be required to authenticate themselves by entering long passwords containing combinations of letters, numbers and special characters.
+If your application stores PCI data, authenticating via Facebook, Google or a similar OAuth service won't be an option. The users will be required to authenticate themselves by entering long passwords containing combinations of letters, numbers and special characters.
 
 Even if you are not dealing with the credit card information, there are other areas where the application data must be protected. Take the human resources application - social security numbers (unique ID's of the USA residents) of employees must be encrypted.
 
-Pretty often our perspective customers send us a questionnaire to see if our security measures are compliant with their requirements. In some cases this document can include as many as 300 questions.
+Some of our perspective customers send us a questionnaire to see if our security measures are compliant with their requirements. In some cases this document can include as many as 300 questions.
 
 You may want to implement different levels of security depending on what devices is being used to access your application - a public computer, an internal corporate computer, iPad or an Android tablet. If a desktop user forgot his password, you may implement a recovery mechanism that send an email to the user and expects to receive a certain  response from him. If the user holds a smartphone, the application can send a text message to his device.
 
