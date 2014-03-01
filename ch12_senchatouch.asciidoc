@@ -273,7 +273,7 @@ TIP: If you need to detect the environment on the user's mobile device, use such
 
 Besides grouping components, containers allow you to assign a `Layout` to control its children arrangements. In desktop applications physical screens are larger, and pretty often you can place multiple containers on the same screen at the same time. In mobile world you don't have such a luxury and typically you'll be showing just one container at a time. Not all http://docs.sencha.com/touch/2.0.2/#!/guide/layouts[layouts] are practical to use on smaller screens, which is the reason why not all Ext JS layouts are supported in Sencha Touch.  
 
-Figure <<FIG13-13>> illustrates the main container that shows either the `tabpanel` or `loginform`. The `tabpanel` is a container with a special layout that shows only one of its child containers at a time (e.g. About, Donate, et al).
+Figure <<FIG13-13>> illustrates the main container that shows either the `tabpanel` or `loginform`. The `tabpanel` is a container with a special layout that shows only one of its child containers at a time (e.g. About, Donate, et al). You can see all these components in action at http://savesickchild.org/[savesickchild.org] - just run the Sencha Touch version of our Save Sick Child application and view the sources.
 
 By default, a container's layout is `auto`, which instructs the rendering engine to use the entire width of the container, but use just enough height to display the children. This behavior is similar to the `vbox` layout (vertical box), where all components are being added to the container vertically - one under another. Accordingly, the `hbox` will arrange all components horizontally - one next to the other. 
 
@@ -363,7 +363,7 @@ The Sencha Touch version of the Save The Child application will be based on the 
 
 ==== Building the Application
 
-The materials presented in this chapter were tested with Sencha Touch 2.3.1 framework, which was current at the time of this writing, and you can use the source code of the Save The Child application that comes with the boot. It's packaged with Sencha 2.3.1. We've also deployed this application at http://savesickchild.org:8080/ssc-touch-prod/[http://savesickchild.org:8080/ssc-touch-prod]. 
+The materials presented in this chapter were tested with Sencha Touch 2.3.1 framework, which was current at the time of this writing, and you can use the source code of the Save The Child application that comes with the book. It's packaged with Sencha 2.3.1. We've also deployed this application at http://savesickchild.org:8080/ssc-touch-prod/[http://savesickchild.org:8080/ssc-touch-prod]. 
 
 In case you need to use a newer version of Sencha Touch framework, just download and unzip it to the directory of your choice (in our case it was  _/Library/touch-2.3.1_).Download the book code and remove the content of the _touch_ directory from _Lesson12/ssc-mobile_. After that, cd to this directory and copy a newer version of Sencha touch there. For example, on MAC OS we did it as follows:
 
@@ -973,7 +973,7 @@ After doing some research, we found out that Sencha Touch has the UI component c
 .Donate form with SegmentedButton
 image::images/fig_13_18.png[]
 
-This looks nice, but as opposed to regular HTML form with inputs, the `SegmentedButton` is not an HTML `<input>` field and its value won't be automatically submitted to the server. This required a little bit of a manual coding, which will be explained as a part of the `DonateForm` code review, which follows.
+This looks nice, but as opposed to regular HTML form with inputs, the `SegmentedButton` is not an HTML `<input>` field and its value won't be automatically submitted to the server. This required a little bit of a manual coding, which will be explained as a part of the `DonateForm` code review, which follows (we've split it into two fragments for better readability).
 
 [source, javascript]
 ----
@@ -1041,11 +1041,28 @@ Ext.define('SSC.view.DonateForm', {
          { xtype: 'hiddenfield',             // <5>
            name: 'amount'
          },
+----
+
+<1> Defining event listeners for the `segmentedbutton` and the field for entering other amount. When the control section is used not in a controller, but in a component it's scoped to the object in which it was defined. Hence the `ComponentQuery` will be looking for `segmentedbutton` and `numberfield[name=amount]` only within the DonateForm instance. If these event handlers would be defined in the controller, the scope would be global.
+
+<2> Borrowing the class that Sencha Touch uses for all `fieldset` container so our title looks the same.
+
+<3> The `segmentedbutton` is defined here. By default, its config property `allowToggle=true`, which allows only one button to be pressed at a time.
+
+<4> The `segmentedbutton` has no property to store the value of each of its button. But any  sublcass of `Ext.Component` has a property `data`. We are extending the `data` property to store the button's `value`. It'll be available in the event handler in `button.getData().value`.
+ 
+<5> Since the buttons in the `segmentedbutton` are not input fields, we define a hidden field to remember the currently selected amount. 
+
+The second half of `SSC.view.DonateForm` comes next.  
+
+[source, javascript]
+----
+
          { xtype: 'fieldset',
            title: '... or enter other amount',
 
              items: [
-                 { xtype: 'numberfield',     //  <6>
+                 { xtype: 'numberfield',     //  <1>
                    label: 'Amount',
                    name: 'amount'
                  }
@@ -1111,19 +1128,19 @@ Ext.define('SSC.view.DonateForm', {
  },
 
  onAmountButtonChange: function (segButton, 
-                                button, isPressed) { // <7>
+                                button, isPressed) { // <2>
   
-  if (isPressed) {                                   // <8>
+  if (isPressed) {                                   // <3>
       this.clearAmountField();
       this.updateHiddenAmountField(button.getData().value);
-      button.setUi('confirm');                       // <9>
+      button.setUi('confirm');                       // <4>
   }
   else {
       button.setUi('normal');
   }
  },
 
- onAmountFieldChange: function () {         // <10>
+ onAmountFieldChange: function () {         // <5>
 
    this.depressAmountButtons();
    this.clearHiddenAmountField();
@@ -1132,9 +1149,9 @@ Ext.define('SSC.view.DonateForm', {
  clearAmountField: function () {
    var amountField = this.down('numberfield[name=amount]');  
 
-   amountField.suspendEvents();            //  <11>
+   amountField.suspendEvents();            //  <6>
    amountField.setValue(null);
-   amountField.resumeEvents(true);         //  <12>
+   amountField.resumeEvents(true);         //  <7>
  },
 
  updateHiddenAmountField: function (value) {
@@ -1151,29 +1168,20 @@ Ext.define('SSC.view.DonateForm', {
 });
 ----   
 
-<1> Defining event listeners for the `segmentedbutton` and the field for entering other amount. When the control section is used not in a controller, but in a component it's scoped to the object in which it was defined. Hence the `ComponentQuery` will be looking for `segmentedbutton` and `numberfield[name=amount]` only within the DonateForm instance. If these event handlers would be defined in the controller, the scope would be global.
 
-<2> Borrowing the class that Sencha Touch uses for all `fieldset` container so our title looks the same.
+<1> This `numberfield` stores the _other amount_ if entered. Note that it has the same name `amount` as the hidden field. The methods `clearAmountField()` and `clearHiddenAmountField()` will ensure that only one of the amounts has a value.
 
-<3> The `segmentedbutton` is defined here. By default, its config property `allowToggle=true`, which allows only one button to be pressed at a time.
+<2>  When the `toggle` event is fired it comes with an object that contains the reference to the button that was toggled, and if the button becomes pressed as the result of this event.
 
-<4> The `segmentedbutton` has no property to store the value of each of its button. But any  sublcass of `Ext.Component` has a property `data`. We are extending the `data` property to store the button's `value`. It'll be available in the event handler in `button.getData().value`.
- 
-<5> Since the buttons in the `segmentedbutton` are not input fields, we define a hidden field to remember the currently selected amount. 
+<3> The toggle event is dispatched twice - one for the button that becomes pressed, and another for the button that was pressed before. If the button becomes pressed (`isPressed=true`), clean the previously selected amount and store a new one in the hidden field. 
 
-<6> This `numberfield` stores the _other amount_ if entered. Note that it has the same name `amount` as the hidden field. The methods `clearAmountField()` and `clearHiddenAmountField()` will ensure that only one of the amounts has a value.
+<4> Change the style of the button to make it visibly highlighted. We use the predefine`confirm` style (see the http://dev.sencha.com/deploy/touch/examples/production/kitchensink/#demo/buttons[Kitchen Sink] application for other button styles).
 
-<7>  When the `toggle` event is fired it comes with an object that contains the reference to the button that was toggled, and if the button becomes pressed as the result of this event.
+<5> When the _other amount_ field loses focus, this event handler is invoked. The code cleans up the hidden field and removes the pressed state from all buttons.  
 
-<8> The toggle event is dispatched twice - one for the button that becomes pressed, and another for the button that was pressed before. If the button becomes pressed (`isPressed=true`), clean the previously selected amount and store a new one in the hidden field. 
+<6> Temporarily suspend dispatching events while setting the  value of the amount `numberfield` to null. Otherwise setting to null would cause unnecessary dispatching of the `change` event. 
 
-<9> Change the style of the button to make it visibly highlighted. We use the predefine`confirm` style (see the http://dev.sencha.com/deploy/touch/examples/production/kitchensink/#demo/buttons[Kitchen Sink] application for other button styles).
-
-<10> When the _other amount_ field loses focus, this event handler is invoked. The code cleans up the hidden field and removes the pressed state from all buttons.  
-
-<11> Temporarily suspend dispatching events while setting the  value of the amount `numberfield` to null. Otherwise setting to null would cause unnecessary dispatching of the `change` event. 
-
-<12> Resume event dispatching.  The `true` argument is for discarding all the queued events.
+<7> Resume event dispatching.  The `true` argument is for discarding all the queued events.
 
 Previous versions of the Save The Child application illustrated how to submit the Donate form to the server for further processing. The Sencha Touch version of this application doesn't include this code.  If you'd like to experiment with this, just create a new controller class that extends `Ext.app.Controller` and define there an event handler for the button Donate (see the Login controller as an example). 
 
@@ -1461,11 +1469,14 @@ Ext.define('SSC.store.Videos', {
       ],
 
       data: [
-          { title: 'The title of a video-clip 1', description: 'Short video description 1', url: 'intro.mp4', thumbnail: 'intro.jpg' },
+          { title: 'The title of a video-clip 1', description: 'Short video description 1', 
+          url: 'intro.mp4', thumbnail: 'intro.jpg' },
 
-          { title: 'The title of a video-clip 2', description: 'Short video description 2', url: 'intro.mp4', thumbnail: 'intro.jpg' },
+          { title: 'The title of a video-clip 2', description: 'Short video description 2', 
+          url: 'intro.mp4', thumbnail: 'intro.jpg' },
 
-          { title: 'The title of a video-clip 3', description: 'Short video description 3', url: 'intro.mp4', thumbnail: 'intro.jpg' }
+          { title: 'The title of a video-clip 3', description: 'Short video description 3', 
+          url: 'intro.mp4', thumbnail: 'intro.jpg' }
       ]
   }
 });
@@ -1545,6 +1556,28 @@ Ext.define('SSC.store.Campaigns', {
 });
 ----
 
+==== Dealing With Landscape Mode
+
+Handling the landscape mode with Sencha Touch is done differently depending on how you deploy your application. If you decide to http://docs.sencha.com/cmd/3.1.2/#!/guide/native_packaging[package this app as a native one], the landscape mode will supported. Sencha CMD willgenerate the file packager.json, which will include the  section dealing with orientation:
+
+[source, javascript]
+----
+    "orientations": [
+        "portrait",
+        "landscapeLeft",
+        "landscapeRight",
+        "portraitUpsideDown"
+    ]
+----
+
+If you're not planning to package your app as the native one, you'll need to do some manual coding by processing the `orientationchange` event. For example, 
+
+[source, javascript]
+----
+Ext.Viewport.on('orientationchange', function() {
+   // write the code to handle the landscape code here
+});
+----
 
 This concludes the review of the Sencha Touch version of our sample application, which consists of six nice looking screens. The amount of manual coding to achieve this was minimal. In the real world, you'd need to add business logic to this application, but comes down to inserting the JavaScript code to a well structured layers. The code to communicate with the server will go to the stores, the data will be placed in the models, the UI remains in the views, and the main glue of your application is controllers. Sencha Touch did a pretty good job for us, wouldn't you agree?     
 
