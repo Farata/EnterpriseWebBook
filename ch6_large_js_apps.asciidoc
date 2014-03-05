@@ -39,7 +39,7 @@ In this chapter we're going to discuss the following frameworks for modularizati
 
 Modules are code fragments that implement certain functionality and are written using a specific techniques. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the _module concept_ in the JavaScript language itself. This is the future. 
 
-You may ask, "Aren't .js files modules already?" Of course, you can include and load each JavaScript file using the `<script>` tag. But this approach is error prone and slow. Developers have to manually manage dependencies and file loading order. Moreover, each `<script>` tag results in the  additional HTTP call to the server.
+You may ask, "Aren't .js files modules already?" Of course, you can include and load each JavaScript file using the `<script>` tag. But this approach is error prone and slow. Developers have to manually manage dependencies and file loading order. Each `<script>` tag results in the additional HTTP call to the server. Moreover, the browser blocks rendering until it loads and executes JavaScript files.
 
 As the application gets larger the number of script files grows accordingly, which is illustrated in the following 
 <<LISTING_SCRIPT_TAG, code sample>>.
@@ -56,9 +56,13 @@ As the application gets larger the number of script files grows accordingly, whi
     
     <title>Save The Child | Home Page</title>
     <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<!-- page body -->
+
+<!-- body content is omitted -->
 
     <script src="components/jquery.js></script>     <!--1-->
-
     <script type="text/javascript" src="app/modules/utils/load-html-content.js"></script>
     <script type="text/javascript" src="app/modules/utils/show-hide-div.js"></script>
     <script type="text/javascript" src="app/modules/svg-pie-chart.js"></script>
@@ -70,12 +74,7 @@ As the application gets larger the number of script files grows accordingly, whi
     <script type="text/javascript" src="app/modules/module2.js"></script>
     <script type="text/javascript" src="app/config.js"></script>
     <script type="text/javascript" src="app/main.js"></script> <!--3-->
-
-</head>
-<body>
-<!-- page body -->
-
-</body>
+</body> <!--4-->
 </html>
 ----
 <1> Loading the jQuery first because all other modules depend on it.
@@ -83,6 +82,8 @@ As the application gets larger the number of script files grows accordingly, whi
 <2> Other application components may also have internal dependencies on other scripts. Those scripts need to be loaded before the respective components. Having the proper order of these script tags is very important.
 
 <3> The script for the main Web page should be loaded after all dependencies have finished loading.
+
+<4> We're putting script elements at the end of the document, as it blocks as little content as possible.
 
 As you can see, we need a better way to modularize applications than simply adding `<script>` tags. As our first step, we can use the Module design pattern and leverage the so-called "Immediately Invoked Function Expressions".
 
@@ -100,7 +101,7 @@ The next section reviews various approaches and patterns of modular JavaScript a
 
 === Roads To Modularization
 
-Although JavaScript has no build-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. In this section, we'll explore a few options for modularizing your application. 
+Although JavaScript has no built-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. In this section, we'll explore a few options for modularizing your application. 
 
 * The Module Pattern
 * CommonJS
@@ -112,12 +113,12 @@ Of these three, the _Module pattern_ doesn't require any additional frameworks a
 
 In software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We're able to include both public and private methods as well as variables inside the single object, thus hiding the encapsulated code from other global scope objects. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts that could be used in the same application's scope.
 
-Ultimately, it's just some code in an IIFE that creates a module object in the internal scope of a function and exposes this module to the global scope using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs.
+Ultimately, it's just some code in an immediate-invoked function expression (IIFE) that creates a module object in the internal scope of a function and exposes this module to the global scope using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs.
 
-.Returning the value from a module 
+.Creating a closure that hides implementation of login module
 [source,javascript]
 ----
-include::include/ch7_iife_loginModule.js[]
+include::include/ch6_iife_loginModule.js[]
 ----
 <1> Assigning the module object that was created in the closure to the variable `loginModule`.
 <2> Because of the JavaScript's function scoping, other parts of the code can't access the code inside the closure. With this approach you can implement encapsulation and private members.
@@ -125,7 +126,7 @@ include::include/ch7_iife_loginModule.js[]
 .Injecting the module into the global object 
 [source,javascript]
 ----
-include::include/ch7_iife_global_loginModule.js[]
+include::include/ch6_iife_global_loginModule.js[]
 ----
 <1> Instead of exporting the module to a variable as in the previous example, we're passing the global object as a parameter inside the closure.
 <2> Attaching the newly created object to the global object. After that the `loginModule` object can be accessed from the external application code as `window.loginModule` or just `loginModule`.
@@ -133,7 +134,7 @@ include::include/ch7_iife_global_loginModule.js[]
 .Introducing namespaces in the global object
 [source,javascript]
 ----
-include::include/ch7_iife_namespace_loginModule.js[]
+include::include/ch6_iife_namespace_loginModule.js[]
 ----
 <1> Here we have modification of the approach described in previous snippet. To avoid name conflicts, create a namespace for our application called `ssc`. Note that we check for this object existence in the next line.
 <2> Now we can logically structure application code using namespaces. The global `ssc` object will contain only the code related to the Save The Child application.
@@ -144,7 +145,7 @@ The Module pattern has a serious drawback - you  still need to deal with manual 
 
 ==== CommonJS
 
-http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for both modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of the server-side JavaScript.
+http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for various JavaScript API (similar to standard libraries in Java, Python and etc) including standards for modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of the server-side JavaScript.
 
 On the Web browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One of the solutions suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. On the server side separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.
 
@@ -152,7 +153,7 @@ In brief, the CommonJS specification requires the environment to have  http://wi
 
 [source,javascript]
 ----
-include::include/ch7_commonjs.js[]
+include::include/ch6_commonjs.js[]
 ----
 <1> If a module requires other modules, declare references to those modules inside the current module's scope by using the `require` function. You need to call `require(id)` for each module it  depends on.  The module id has slashes defining the file path or a URL to indicate namespaces for external modules. Modules are grouped into a packages.
 
@@ -160,7 +161,7 @@ include::include/ch7_commonjs.js[]
 
 <3> The `module` variable provides the metadata about the module. It holds such properties as `id` and a unique `uri` of each module. The `module.export` exposes `exports` object as its property. Because objects in JavaScript are passed as references, the `exports` and `module.exports` point at the same object.
 
-WARNING: The snippet above may give you an impression that the module's code is executed in the global scope, but it's not. Each module is executed in its own scope which helps to isolate them. This works automatically when you write modules for NodeJS environment running on the server (see Chapter 8). But to use CommonJS module format in the Web browser you need to use an extra tool to generate transport format from _authoring format_. http://browserify.org/[Browserify] takes all your scripts and concatenates them it to one large file.  Besides the module's code the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually developers perform the _code/save/refresh browser_ routine, but it doesn't work in this case and requires an extra steps as you need to install the additional build tool and write  build scripts. 
+WARNING: The snippet above may give you an impression that the module's code is executed in the global scope, but it's not. Each module is executed in its own scope which helps to isolate them. This works automatically when you write modules for NodeJS environment running on the server. But to use CommonJS module format in the Web browser you need to use an extra tool to generate transport format from _authoring format_. http://browserify.org/[Browserify] takes all your scripts and concatenates them it to one large file.  Besides the module's code the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually developers perform the _code/save/refresh browser_ routine, but it doesn't work in this case and requires an extra steps as you need to install the additional build tool and write  build scripts. 
 
 
 [underline]#Pros to using CommonJS:#
@@ -248,8 +249,7 @@ require(["main"], function() {
 
 * A wide variety of loaders is available. You'll find more coverage on loaders in the <<REQUIREJS, RequireJS section>>.
 
-* A CommonJS module authoring format is supported by the majority of loaders. You'll see an example of modules later in the <<require_cjs>> section. 
-
+* The CommonJS module authoring format is supported by the majority of loaders. You'll see an example of modules later in the <<require_cjs>> section. 
 
 * Plugins offer an immense amount of flexibility.
 
@@ -447,7 +447,7 @@ define("main", ["circle"],
     });
 ----
 
-Using the _globals_ option in the _compile-modules_ command line produces the code that can be used as described in the Module Patter section earlier in the chapter. 
+Using the _globals_ option in the _compile-modules_ command line produces the code that can be used as described in the Module Pattern section earlier in the chapter. 
 
 * Browser globals
 +
@@ -455,35 +455,14 @@ Using the _globals_ option in the _compile-modules_ command line produces the co
 .circle.js
 [source,javascript]
 ----
-(function(exports) {
-    "use strict";
-
-    function area(radius) {
-        return Math.PI * radius * radius;
-    }
-
-    function circumference(radius) {
-        return 2 * Math.PI * radius;
-    }
-    exports.circle.area = area;
-    exports.circle.circumference = circumference;
-})(window);
+include::include/ch6_es6_globals_circle.js[]
 ----
 +
 
 .main.js
 [source,javascript]
 ----
-(function(circle) {
-    "use strict";
-    var area = circle.area;
-    var circumference = circle.circumference;
-
-    console.log("Area of the circle: " + area(2) + " meter squared");
-    console.log("Circumference of the circle: " + circumference(5) + " meters");
-
-})(window.circle);
-
+include::include/ch6_es6_globals_main.js[]
 ----
 
 To learn the up-to-date information on the ES6 browsers' support visit http://kangax.github.io/es5-compat-table/es6/[ECMAScript 6 compatibility table].
@@ -646,7 +625,7 @@ In the Save The Child application we use the _order.js_ plugin that allows to sp
 RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that performs module optimization. 
 Earlier in this chapter, we've specified the dependencies as an array of string literals that are passed to the top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
 
-Furthermore, r.js integrates with other optimization tools like `UglifyJS` and `Closure Compiler` to minify the content of script files. We are going to use the JavaScript task runner http://gruntjs.com/[Grunt] that you learned in previous chapter on automation tools. 
+Furthermore, r.js integrates with other optimization tools like https://github.com/mishoo/UglifyJS2[`UglifyJS`] and https://developers.google.com/closure/compiler/[`Closure Compiler`] to minify the content of script files. We are going to use the JavaScript task runner http://gruntjs.com/[Grunt] that you learned in previous chapter on automation tools. 
 
 Let's configure our Grunt project to enable the optimization task. Here's the command to install RequireJS, and Grunt's task packages clean, concat and uglify and save them as development dependencies in the file package.json:
 
