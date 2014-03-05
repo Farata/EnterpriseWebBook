@@ -672,7 +672,7 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <p>Modules are code fragments that implement certain functionality and are written using a specific techniques. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the <em>module concept</em> in the JavaScript language itself. This is the future.</p>
 </div>
 <div class="paragraph">
-<p>You may ask, "Aren&#8217;t .js files modules already?" Of course, you can include and load each JavaScript file using the <code>&lt;script&gt;</code> tag. But this approach is error prone and slow. Developers have to manually manage dependencies and file loading order. Moreover, each <code>&lt;script&gt;</code> tag results in the  additional HTTP call to the server.</p>
+<p>You may ask, "Aren&#8217;t .js files modules already?" Of course, you can include and load each JavaScript file using the <code>&lt;script&gt;</code> tag. But this approach is error prone and slow. Developers have to manually manage dependencies and file loading order. Each <code>&lt;script&gt;</code> tag results in the additional HTTP call to the server. Moreover, the browser blocks rendering until it loads and executes JavaScript files.</p>
 </div>
 <div class="paragraph">
 <p>As the application gets larger the number of script files grows accordingly, which is illustrated in the following
@@ -689,9 +689,13 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 
     &lt;title&gt;Save The Child | Home Page&lt;/title&gt;
     &lt;link rel="stylesheet" href="assets/css/styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;!-- page body --&gt;
+
+&lt;!-- body content is omitted --&gt;
 
     &lt;script src="components/jquery.js&gt;&lt;/script&gt;     <i class="conum" data-value="1"></i><b>(1)</b>
-
     &lt;script type="text/javascript" src="app/modules/utils/load-html-content.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" src="app/modules/utils/show-hide-div.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" src="app/modules/svg-pie-chart.js"&gt;&lt;/script&gt;
@@ -703,12 +707,7 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
     &lt;script type="text/javascript" src="app/modules/module2.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" src="app/config.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" src="app/main.js"&gt;&lt;/script&gt; <i class="conum" data-value="3"></i><b>(3)</b>
-
-&lt;/head&gt;
-&lt;body&gt;
-&lt;!-- page body --&gt;
-
-&lt;/body&gt;
+&lt;/body&gt; <i class="conum" data-value="4"></i><b>(4)</b>
 &lt;/html&gt;</code></pre>
 </div>
 </div>
@@ -725,6 +724,10 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>The script for the main Web page should be loaded after all dependencies have finished loading.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>We&#8217;re putting script elements at the end of the document, as it blocks as little content as possible.</td>
 </tr>
 </table>
 </div>
@@ -753,7 +756,7 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <div class="sect2">
 <h3 id="_roads-to-modularization"><a class="anchor" href="#_roads-to-modularization"></a>Roads To Modularization</h3>
 <div class="paragraph">
-<p>Although JavaScript has no build-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. In this section, we&#8217;ll explore a few options for modularizing your application.</p>
+<p>Although JavaScript has no built-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. In this section, we&#8217;ll explore a few options for modularizing your application.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -777,10 +780,10 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <p>In software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We&#8217;re able to include both public and private methods as well as variables inside the single object, thus hiding the encapsulated code from other global scope objects. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts that could be used in the same application&#8217;s scope.</p>
 </div>
 <div class="paragraph">
-<p>Ultimately, it&#8217;s just some code in an IIFE that creates a module object in the internal scope of a function and exposes this module to the global scope using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs.</p>
+<p>Ultimately, it&#8217;s just some code in an immediate-invoked function expression (IIFE) that creates a module object in the internal scope of a function and exposes this module to the global scope using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs.</p>
 </div>
 <div class="listingblock">
-<div class="title">Returning the value from a module</div>
+<div class="title">Creating a closure that hides implementation of login module</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">var loginModule = (function() {     <i class="conum" data-value="1"></i><b>(1)</b>
     "use strict";
@@ -866,23 +869,23 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <pre class="highlight"><code class="javascript language-javascript">(function(global) {
     "use strict";
 
-    var ssc = global.ssc;   <i class="conum" data-value="1"></i><b>(1)</b>
+    var ssc = global.ssc; <i class="conum" data-value="1"></i><b>(1)</b>
     if (!ssc) {
         ssc = {};
         global.ssc = ssc;
     }
 
-    var module = ssc.loginModule = {};  <i class="conum" data-value="2"></i><b>(2)</b>
+    var module = ssc.loginModule = {}; <i class="conum" data-value="2"></i><b>(2)</b>
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
-        console.log("login implementation omitted");
+        console.log("login implementation for " + userNameValue + "and" + userPasswordValue + "omitted");
     };
 
     module.logout = function() {
         console.log("logout implementation omitted");
     };
-})(window);</code></pre>
+})(this);</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -907,7 +910,7 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 <div class="sect3">
 <h4 id="_commonjs"><a class="anchor" href="#_commonjs"></a>CommonJS</h4>
 <div class="paragraph">
-<p><a href="http://www.commonjs.org/">CommonJS</a> is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for both modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of the server-side JavaScript.</p>
+<p><a href="http://www.commonjs.org/">CommonJS</a> is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for various JavaScript API (similar to standard libraries in Java, Python and etc) including standards for modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of the server-side JavaScript.</p>
 </div>
 <div class="paragraph">
 <p>On the Web browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One of the solutions suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. On the server side separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.</p>
@@ -974,7 +977,7 @@ loginModule.printMetadata = function(){
 <i class="icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-The snippet above may give you an impression that the module&#8217;s code is executed in the global scope, but it&#8217;s not. Each module is executed in its own scope which helps to isolate them. This works automatically when you write modules for NodeJS environment running on the server (see Chapter 8). But to use CommonJS module format in the Web browser you need to use an extra tool to generate transport format from <em>authoring format</em>. <a href="http://browserify.org/">Browserify</a> takes all your scripts and concatenates them it to one large file.  Besides the module&#8217;s code the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually developers perform the <em>code/save/refresh browser</em> routine, but it doesn&#8217;t work in this case and requires an extra steps as you need to install the additional build tool and write  build scripts.
+The snippet above may give you an impression that the module&#8217;s code is executed in the global scope, but it&#8217;s not. Each module is executed in its own scope which helps to isolate them. This works automatically when you write modules for NodeJS environment running on the server. But to use CommonJS module format in the Web browser you need to use an extra tool to generate transport format from <em>authoring format</em>. <a href="http://browserify.org/">Browserify</a> takes all your scripts and concatenates them it to one large file.  Besides the module&#8217;s code the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually developers perform the <em>code/save/refresh browser</em> routine, but it doesn&#8217;t work in this case and requires an extra steps as you need to install the additional build tool and write  build scripts.
 </td>
 </tr>
 </table>
@@ -1177,7 +1180,7 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 <p>A wide variety of loaders is available. You&#8217;ll find more coverage on loaders in the <a href="#REQUIREJS">RequireJS section</a>.</p>
 </li>
 <li>
-<p>A CommonJS module authoring format is supported by the majority of loaders. You&#8217;ll see an example of modules later in the <a href="#require_cjs">Using CommonJS module format in RequireJS</a> section.</p>
+<p>The CommonJS module authoring format is supported by the majority of loaders. You&#8217;ll see an example of modules later in the <a href="#require_cjs">Using CommonJS module format in RequireJS</a> section.</p>
 </li>
 <li>
 <p>Plugins offer an immense amount of flexibility.</p>
@@ -1468,7 +1471,7 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 </ul>
 </div>
 <div class="paragraph">
-<p>Using the <em>globals</em> option in the <em>compile-modules</em> command line produces the code that can be used as described in the Module Patter section earlier in the chapter.</p>
+<p>Using the <em>globals</em> option in the <em>compile-modules</em> command line produces the code that can be used as described in the Module Pattern section earlier in the chapter.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1503,8 +1506,7 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
     console.log("Area of the circle: " + area(2) + " meter squared");
     console.log("Circumference of the circle: " + circumference(5) + " meters");
 
-})(window.circle);
-</code></pre>
+})(window.circle);</code></pre>
 </div>
 </div>
 </li>
@@ -1932,7 +1934,7 @@ var buttonClickHandler = function(event) {
 Earlier in this chapter, we&#8217;ve specified the dependencies as an array of string literals that are passed to the top-level <a href="#REQUIRE_DESC">require</a> and <a href="#DEFINE_DESC">define</a> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.</p>
 </div>
 <div class="paragraph">
-<p>Furthermore, r.js integrates with other optimization tools like <code>UglifyJS</code> and <code>Closure Compiler</code> to minify the content of script files. We are going to use the JavaScript task runner <a href="http://gruntjs.com/">Grunt</a> that you learned in previous chapter on automation tools.</p>
+<p>Furthermore, r.js integrates with other optimization tools like <a href="https://github.com/mishoo/UglifyJS2"><code>UglifyJS</code></a> and <a href="https://developers.google.com/closure/compiler/"><code>Closure Compiler</code></a> to minify the content of script files. We are going to use the JavaScript task runner <a href="http://gruntjs.com/">Grunt</a> that you learned in previous chapter on automation tools.</p>
 </div>
 <div class="paragraph">
 <p>Let&#8217;s configure our Grunt project to enable the optimization task. Here&#8217;s the command to install RequireJS, and Grunt&#8217;s task packages clean, concat and uglify and save them as development dependencies in the file package.json:</p>
@@ -2378,7 +2380,7 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-01-06 19:45:09 EST
+Last updated 2014-03-05 10:48:47 EST
 </div>
 </div>
 </body>
