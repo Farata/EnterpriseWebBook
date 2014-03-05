@@ -76,7 +76,7 @@ Each task can be called separately from the command line by passing the task's n
 
 Let's run this `hello` task with the following command:
 
-_grunt --gruntfile Grunt_simple.js hello_.
++grunt --gruntfile Grunt_simple.js hello+.
 
 [source,bash]
 ----------------------------------------------------------------------
@@ -109,11 +109,11 @@ var bonds = [                   // <1>
 
 <2> Here is example of a typo that may cause errors in some browsers. A developer commented out the line containing an array element but kept the coma in previous line.
 
-<3> A missing semicolon is a typical typo. Although it is not an error, an automatic semicolon insertion (ASI) will get you covered in this case.
+<3> A missing semicolon is a typical typo. Although it is not an error (and many JavaScript developers do consider omitting semicolons as "best practice"), an automatic semicolon insertion (ASI) will get you covered in this case.
 
 .What is a Automatic Semicolon Insertion?
 ****
-In JavaScript, you can omit a semicolon between two statements written in separate lines. Automatic semicolon insertion is a source code parsing procedure that infers omitted semicolons in certain contexts into your program. You can read more about optional semicolons in JavaScript in the chapter "Optional Semicolons" in  <<flanagan, 'JavaScript. Definitive Guide. 6th Edition'>> book.
+In JavaScript, the semicolons are optional meaning that you can omit a semicolon between two statements written in separate lines. Automatic semicolon insertion is a source code parsing procedure that infers omitted semicolons in certain contexts into your program. You can read more about optional semicolons in JavaScript in the chapter "Optional Semicolons" in  <<flanagan, 'JavaScript. Definitive Guide. 6th Edition'>> book.
 ****
 
 The above code snippet is a fairly simple example that can cause trouble and frustration if you don't have proper tools to check the code semantics and syntax. Let's see how JSHint can help in this situation. 
@@ -483,7 +483,9 @@ public class Person {
 
 -----------------------------------------------------
 
-You may also add a `toString()` method to the class. Now you'll need the same corresponding Ext JS model for  the Java class `Person`. Just annotate this class with the annotation `@JSClass` to have CDB generate the Ext JS model. 
+You may also add a `toString()` method to the class. Now you'll need the same corresponding Ext JS model for  the Java class `Person`. Just annotate this Java class with the annotation `@JSClass` and CDB generates the Ext JS model. 
+
+NOTE: CDB integrates into standard Eclipse build life-cycle. You don't need to trigger a code generation procedure manually. If you have "Build Automatically" option selected in Project menu, a code generations starts immediately you've saved the file.
 
 The next step is to annotate the `id` field with the CDB annotation `@JSGeneratedId`. This annotation  instructs CDB to threat this field as an auto generated id. Let's examine the directory of Ext JS MVC application to see what's inside the model folder. In the JavaScript section there is the folder dto which corresponds to the Java +dto+ package where the `PersonModel` resides as illustrated on <<FIG6-5-CDB>>. 
 
@@ -512,7 +514,7 @@ public interface PersonService {
 }
 ----------------------------------------------------------------------
 
-When the code generation is complete, you'll get the implementation for the service - `PersonServiceImpl`. The store folder inside the application folder (+WebContent\app+) has the Ext JS store, which is bound to the previously generated `PersonModel`. In this case, CDB generated store that binds to the remote service. 
+When the code generation is complete, you'll get the implementation for the service - `PersonServiceImpl`. The store folder inside the application folder (+WebContent/app+) has the Ext JS store, which is bound to the previously generated `PersonModel`. In this case, CDB generated store that binds to the remote service. 
 
 [[FIG6-6-CDB]]
 .Structure of store and model folders
@@ -593,15 +595,15 @@ public class PersonServiceImpl extends _PersonServiceImpl { // <1>
 ----------------------------------------------------------------------
 <1> Extend the generated class and provide the actual implementation
 
-<2> The `getPerson()` is our retrieve method (the R in CRUD)
+<2> The `getPerson()` is our retrieve (fill) method (the R in CRUD)
 
 <3> For this sample application we can use `java.util.ArrayList` class as in-memory server side storage of the `Person` objects. In the real world applications you'd use a database or other persistent storage
 
-<4> +fillmethod++`doCreate()` is our create method (the C in CRUD)
+<4> +fillMethodName+ +`_doCreate()` is our create method (the C in CRUD)
 
-<5> +fillmethod++` doUpdate` is our update method (the U in CRUD)
+<5> +fillMethodName+ +`_doUpdate()` is our update method (the U in CRUD)
 
-<6> +fillmethod++` doDelete` is our delete method (the D in CRUD)
+<6> +fillMethodName+ +`_doDelete()` is our delete method (the D in CRUD)
 
 Click on the +Load+ menu on the UI, and the application will retrieve four persons from our server 
 
