@@ -43,7 +43,7 @@ Software QA (or _Quality Control_ (QC)) is the process that helps identify the c
 
 UAT _is performed by business users_ or subject area experts. The UAT should result in the  endorsement that the tested applications/functionality/module meets the agreed upon requirements. The results of UAT gives the confidence to the end-user that the system will perform in production according to specification.
 
-During the QA process the specialist intents to perform all tests trying to break the application. This approach helps finding the errors undiscovered by developers. On the contrary, during UAT the user runs business-as-usual scenarios and makes sure that business functions are implemented in the application.
+During the QA process the specialist intends to perform all tests trying to break the application. This approach helps finding the errors undiscovered by developers. On the contrary, during UAT the user runs business-as-usual scenarios and makes sure that business functions are implemented in the application.
 ****
 
 Let's go over the strategies, approaches, and tools that will help you in test automation.
@@ -157,7 +157,7 @@ The methodology known as Test-Driven Development (TDD) substantially changes the
 - Refactor.
 - Repeat.
 
-This technique also referred as "Red-Green-Refactoring" because IDE's and test runners use red color to indicate failed tests and green color to indicate the tests that passed.
+This technique also referred as "Red-Green-Refactor" because IDE's and test runners use red color to indicate failed tests and green color to indicate the tests that passed.
 
 When you are about to start programming a class with some business logic, ask yourself, "How can I ensure that this function works as expected?" After you know the answer, write a test JavaScript class that calls this function _to assert_ that the business logic gives the expected result. 
 
@@ -187,7 +187,7 @@ With any testing framework, your tests will follow same basic pattern. First, yo
 
 [[AAAR]]This pattern for authoring unit tests is called _Arrange-Act-Assert-Reset_ (AAAR footnote:[ http://integralpath.blogs.com/thinkingoutloud/2005/09/principles_of_t.html[Principles for Test-Driven Development] ]).
 
-* In the _Arrange_ phase you set up the unit of work to test. For example, create a DOM element.
+* In the _Arrange_ phase you set up the unit of work to test. For example, create a JavaScript objects, prepare dependencies and etc.
 * In the _Act_ phase you exercise the unit under test and capture the  resulting state. You execute your production code in unit test context.
 * In the _Assert_ phase you verify the behavior through assertions.
 * In the _Reset_ phase, you reset the environment to the initial state. For example, erase the DOM elements created in the _Arrange_ phase. Most of the frameworks provide a "teardown" function that would be invoked after test is done.
@@ -202,10 +202,15 @@ We'll start our journey to JavaScript testing frameworks with http://qunitjs.com
 
 ===== Setup Grunt With Qunit
 
-In this section you're going learn how to automatically run the Qunit tests using Grunt. Let's setup our project by adding the Qunit framework and tests file. Start with downloading the latest version from http://qunitjs.com/[QUint Web site]. You need to get only two files - `qunit-*.js` and `qunit-*.css`.
+In this section you're going learn how to automatically run the Qunit tests using Grunt. Let's setup our project by adding the Qunit framework and tests file. Start with downloading the latest version from using bower.
 
-.A download section on QUnit website
-image::fig_08_04.png[]
+.Installing qunit with bower
+[source,bash]
+----
+bower install qunit
+---- 
+
+You need to get only two files - `qunit-*.js` and `qunit-*.css`.
 
 .QUnit framework in our project 
 image::fig_08_05.png[]
@@ -213,10 +218,7 @@ image::fig_08_05.png[]
 .Our first QUnit test
 [source,javascript]
 ----
-'use strict';
-test("my first qunit test", function () {
-    ok(2 + 2 === 4, "Passed!");
-});
+include::include/ch7/first_qunit_test.js[]
 ----
 
 You'll also need a test runner for the test setup. A test runner is an html file contains links to QUnit framework JavaScript file.
@@ -224,23 +226,7 @@ You'll also need a test runner for the test setup. A test runner is an html file
 .A test runner
 [source,html]
 ----
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>QUnit Example</title>
-    <link rel="stylesheet" href="lib/qunit-1.11/qunit.css"> 
-    <script src="lib/qunit-1.11/qunit.js"></script> 
-    <script type="text/javascript" src="../app/js/libs/jquery-1.9.0.min.js"></script> <!--1-->
-    <script src="test/tests.js"></script>               <!--2-->
-</head>
-<body>
-<div id="qunit"></div> <!--3-->
-<div id='qunit-fixture'>
-    <!--4-->
-</div>
-</body>
-</html>
+include::include/ch7/qunit-runner.html[]
 ----
 <1> In this section we continue working on the jQuery-based version of the Save The Child application. Hence our "production environment" depends on availability of jQuery, so we need to include jQuery in the test runner.
 
@@ -252,19 +238,10 @@ You'll also need a test runner for the test setup. A test runner is an html file
 
 To run all our tests we need to open the `qunit-runner.html` in browser.  (See <<FIG_8_06>>).
 
-.Gruntfile with qunit runner
+.Grunt config for qunit test runner
 [source,javascript]
 ----
-module.exports = function (grunt) {
-    "use strict";
-    grunt.initConfig({
-        qunit: {
-            all: ["test/qunit-runner.html"]
-        }
-    });
-    grunt.registerTask("test", "qunit");
-    grunt.loadNpmTasks("grunt-contrib-qunit");  // <1>
-};
+include::include/ch7/gruntfile_for_qunit.js[]
 ----
 <1> Grunt loads task from local NPM repository. To install this tasks in +node_modules+ directory use command 'npm install grunt-contrib-qunit'.
 
@@ -278,25 +255,7 @@ Now let's briefly review QUnit API components. You can find a typical QUnit scri
 .A sample QUnint test
 [source,javascript]
 ----
-(function($) {  
-    module('SaveSickChild: login component test', { // <1>
-        setup: function() { // <2>
-            // test setup code goes here
-        },
-        teardown: function() {  // <3>
-            // test cleanup code goes here
-        }
-    });
-    test('jquery is here', function() {     // <4>
-        ok($, "yes, it's here");
-    });
-    test("2 add 2 equals 4", function() {
-        ok(2 + 2 === 4, "Passed!");     // <5>
-    });
-    test('2 add 2 not equals 5', function() {
-        notEqual(2 + 2, 5, "failed");       // <6>
-    });
-}(jQuery));     // <7>
+include::include/ch7/sample_qunit_test.js[]
 ----
 <1> A `module` function allows to combine related tests as group.
 
@@ -310,7 +269,7 @@ Now let's briefly review QUnit API components. You can find a typical QUnit scri
 
 <6> A pair of functions `equal` and `notEqual` will check for the equivalence of the first and second arguments, which could be expressions as well.
 
-<7> A code of the test is wrapped in immediate-invoked function expression (IIFE) and passes `jQuery` object as `$` variable.
+<7> A code of the test is wrapped in IIFE and passes `jQuery` object as `$` variable.
 
 You can find more details about QUnit in http://api.qunitjs.com/[product  documentation] and http://qunitjs.com/cookbook/[QUnit Cookbook].         
 
@@ -324,15 +283,16 @@ Now we'll demonstrate this concept using Jasmine - the BDD frameworks for JavaSc
 
 ===== Setup Grunt with Jasmine
 
-You've learned already how to use the Grunt tool to automate boilerplate tasks. Now let's execute a Jasmine specification with Grunt. The next section covers Jasmine basics, but for now think of Jasmine as a piece of code that should be executed by Grunt.
+Now let's learn how to execute a Jasmine specification with Grunt. We will cover Jasmine basics in the next section, but for now think of Jasmine as a piece of code that should be executed by Grunt.
 
-Let's start with downloading the latest version of Jasmine from https://github.com/pivotal/jasmine/downloads[its github repository]. Unzip the archive. The content of unzipped folder will look similar to the screenshot <<FIG-1>>.
+Let's start with downloading the latest version of Jasmine using bower. 
 
-.Jasmine Distribution
-[[FIG-1]]
-image::fig_08_01.png["Jasmine distribution"]
+[source,bash]
+----
+bower install jasmine
+----
 
-Jasmine comes with an example spec (_spec_ folder) and an html test runner - SpecRunner.html. Let's open the file SpecRunner.html in browser <<FIG-2>>. 
+Unzip `jasmine-standalone-2.0.0.zip` in _dist_ directory. Jasmine comes with an example spec (_spec_ folder) and an html test runner - SpecRunner.html. Let's open the file SpecRunner.html in browser <<FIG-2>>. 
 
 .Running Jasmine Specs in a Browser
 [[FIG-2]]
@@ -342,16 +302,16 @@ The SpecRunner.html is structured similarly to QUnit html runner. You can run sp
 
 [source, html]
 ----------------------------------------------------------------------
-include::include/SpecRunner.html[]
+include::include/ch7/SpecRunner.html[]
 ----------------------------------------------------------------------
 
 <1> Required Jasmine framework library.
 
-<2> Include the source files.
+<2> Initialize Jasmine and run all specifications when the page is loaded.
 
-<3> Include the specification code. It's not required but files that contain specification code can have suffix `*Spec.js`.
+<3> Include the source files.
 
-<4> Initialize Jasmine and run all specifications when the page is loaded.
+<4> Include the specification code. It's not required but files that contain specification code can have suffix `*Spec.js`.
 
 Now let's update the Grunfile to run the same sample specifications with the PhantomJS headless browser. Copy the content of _src_ folder of your Jasmine distribution into the _app/js_ folder of our project, and then copy the content of the _spec_ folder into the _test/spec_ folder of your project. Also create a folder _test/lib/jasmine_ and copy the content of Jasmine distribution _lib_ folder there. <<FIG-3>>
 
@@ -364,24 +324,7 @@ Now you need to edit Gruntfile_jasmine.js to activate Jasmine support.
 .Gruntfile_jasmine.js with Jasmine running support 
 [source,javascript]
 ----------------------------------------------------------------------
-module.exports = function (grunt) {
-    'use strict';
-
-    grunt.initConfig({
-        jasmine: {  // <1>
-            src: ['app/js/Player.js', 'app/js/Song.js'], // <2> 
-            options: {
-                specs: 'test/spec/PlayerSpec.js',   // <3>
-                helpers: 'test/spec/SpecHelper.js'  // <4>
-            }
-        }
-    });
-
-    // Alias the `test` task
-    grunt.registerTask('test', 'jasmine');
-    // loading jasmine grunt module
-    grunt.loadNpmTasks('grunt-contrib-jasmine');    // <5>
-};
+include::include/ch7/gruntfile_for_jasmine.js[]
 ----------------------------------------------------------------------
 
 <1> Configuring the Jasmine task.
@@ -436,24 +379,7 @@ After we've set up the tools for running tests, let's start developing tests and
 .ExampleSpec.js
 [source,javascript]
 ----
-describe("My function under test should", function () {     // <1>
-    it("return on", function () {                           // <2>
-        // place specification code here
-        //
-    });
-    describe("another suite", function () {                   // <3>
-        it("spec1", function () {
-
-        });
-    });
-    it("my another spec", function () {                    // <4>
-        var truth = true;
-        expect(truth).toBeTruthy();
-    });
-    it("2+2 = 4", function () {
-        expect(2 + 2).toEqual(4);                       // <5>
-    });
-});
+include::include/ch7/ExampleSpec.js[]
 ----
 
 <1> The function `describe()` accepts two parameters - the name of the test suite, and the callback function. The function is a block of code that implements the suite. If for some reasons you would like to skip the suite from execution you can just use method `xdescribe()` and a whole suite will be excluded until you rename it back to `describe()`.
@@ -510,7 +436,7 @@ This function is used to reverse matchers to ensure that they aren't `true`. To 
 expect(["James Bond", "Austin Powers", "Jack Reacher"]).not.toContain("Duck");
 ----
 
-Above we've listed only some of existing matchers. You can find the complete documentation with code examples at http://pivotal.github.io/jasmine/#section-Matchers[official Jasmine website] and at https://github.com/pivotal/jasmine/wiki/Matchers[wiki].
+Above we've listed only some of existing matchers. You can find the complete documentation with code examples at http://jasmine.github.io/2.0/introduction.html#section-Matchers[official Jasmine website] and at https://github.com/pivotal/jasmine/wiki/Matchers[wiki].
 
 TIP: There is a large set of jquery-specific matchers available https://github.com/velesin/jasmine-jquery
 
@@ -528,49 +454,7 @@ Test fixture refers to the fixed state used as a baseline for running tests. The
 .Specification setup with beforeEach
 [source,javascript]
 ----
-(function($) {
-    describe("DOM manipulation spec", function() {
-        var usernameInput;
-        var passwordInput;
-        beforeEach(function() {         // <1>
-            usernameInput = document.createElement("input");       // <2>
-            usernameInput.setAttribute("type", "text");
-            usernameInput.setAttribute("id", "username");
-            usernameInput.setAttribute("name", "username");
-            usernameInput.setAttribute("placeholder", "username");
-            usernameInput.setAttribute("autocomplete", "off");
-
-            passwordInput = document.createElement("input");
-            passwordInput.setAttribute("type", "text");
-            passwordInput.setAttribute("id", "password");
-            passwordInput.setAttribute("name", "password");
-            passwordInput.setAttribute("placeholder", "password");
-            passwordInput.setAttribute("autocomplete", "off");
-        });
-
-        afterEach(function () { // <3>
-
-        });
-
-        it("jquey should be present", function() {
-            expect($).not.toBeNull();
-        });
-        it("inputs should exist", function() {
-            expect(usernameInput.id).toBe("username");
-            expect(passwordInput.id).toBe("password");
-        });
-        it("should not allow login with empty username and password and return code equals 0", function() {
-            var result = ssc.login(usernameInput, passwordInput);   // <4>
-            expect(result).toBe(0);
-        });
-        it("should allow login with user admin and password 1234 and return code equals 1", function() {
-            usernameInput.value = "admin";      // <5>
-            passwordInput.value = "1234";
-            var result = ssc.login(usernameInput, passwordInput);  
-            expect(result).toBe(1);
-        });
-    });
-})(jQuery);
+include::include/ch7/beforeEach.js[]
 ----
 
 <1> This method will be called before each specification.
@@ -586,37 +470,23 @@ Test fixture refers to the fixed state used as a baseline for running tests. The
 
 ===== Custom Matchers
 
-Jasmine framework is easily extendable, and it allows you to define your own matchers if for some reasons you're unable to find the appropriate matchers in the Jasmine distribution. In such cases you'd need to write a custom matcher. Let's write a matcher that check if a string contains name of the "secret agent" from the defined list of agents. 
+Jasmine framework is easily extensible, and it allows you to define your own matchers if for some reasons you're unable to find the appropriate matchers in the Jasmine distribution. In such cases you'd need to write a custom matcher. Let's write a matcher that check if a string contains name of the "secret agent" from the defined list of agents. 
 
 .Custom `toBeSecretAgent` matcher
 [source,javascript]
 ----
-beforeEach(function () {
-    this.addMatchers({
-        toBeSecretAgent: function () {
-            var agentList = [
-                "James Bond",
-                "Ethan Hunt",
-                "Jason Bourne",
-                "Aaron Cross",
-                "Jack Reacher"
-            ];
-
-            var actual = this.actual;               // <1>
-            this.message = function () {            // <2>
-                return actual + " is not a secret agent";
-            };
-            return agentList.indexOf(actual) !== -1;    // <3> 
-        }
-    });
-});
+include::include/ch7/jasmine_custom_matcher.js[]
 ----
 
-<1> `this.actual` contains the value used as arguments in the `expect` function.
+<1> We need to implement function `compare` that accepts two parameters from  `expect` call - actual and expected values.
 
-<2> We can customize error message if the test fails.
+<2> A function `compare` should return `result` object.
 
 <3> This function checks if `agentsList` contains the actual value.
+
+<4> A `pass` property of `result` object indicates success or failure of matcher execution;
+
+<5> We can customize error message (a `message` property of `result` object) if the test fails.
 
 The invocations of this helper can look like this:
 
@@ -640,20 +510,26 @@ The following custom failure message will be displayed on the console.
     
 [source,bash]
 ----
-/usr/local/share/npm/bin/grunt --gruntfile Gruntfile_jasmine.js jasmine
+grunt --gruntfile Gruntfile_jasmine.js test
 Running "jasmine:src" (jasmine) task
-Testing jasmine specs via phantom
-...........x
-My function under test should:: part of super agents: failed
-  "Austin Powers is not a secret agent (4)"
-1 specs in 0.115s.
+Testing jasmine specs via PhantomJS
+ My function under test should
+   ✓ return on
+   another suite
+     ✓ spec1
+   ✓ my another spec
+   ✓ 2+2 = 4
+   X part of super agents
+     Austin Powers is not a secret agent (1)
+
+5 specs in 0.01s.
 >> 1 failures
 Warning: Task "jasmine:src" failed. Use --force to continue.
 
 Aborted due to warnings.
 ----
 
-"Austin Powers is not a secret agent (4)" is a custom failure message. Also, the failed `expect` was the fourth one (4) according to the order mentioned in spec.
+"Austin Powers is not a secret agent (1)" is a custom failure message.
 
 ===== Spies
 
@@ -731,7 +607,7 @@ You can configure Testem to specify which files should be included in testing. T
 [source,javascript]
 ----
 {
-    "framework": "jasmine",         // <1>
+    "framework": "jasmine2",         // <1>
     "src_files": [                 // <2> 
         "ext/ext-all.js",
         "test.js"
@@ -907,28 +783,11 @@ Let's create a skeleton application that can provide for our classes under the t
 .A HTML-runner for Jasmine and ExtJS application
 [source,html]
 ----
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title id="page-title">ExtJS Jasmine Tester</title>
-    <link rel="stylesheet" type="text/css" href="test/lib/jasmine-1.3.1/jasmine.css"/>
-    <script type="text/javascript" src=ext/ext-all.js></script> // <1>
-
-    <script type="text/javascript" src="test/lib/jasmine-1.3.1/jasmine.js"></script> //<2>
-    <script type="text/javascript" src="test/lib/jasmine-1.3.1/jasmine-html.js"></script>
-
-    <script type="text/javascript" src="test.js"></script> // <3>
-
-</head>
-<body>
-
-</body>
-</html>
+include::include/ch7/jasmine_runner_for_extjs.html[]
 ----
-<1> Adding the Jasmine framework dependencies.
+<1> Adding ExtJS framework dependencies.
 
-<2> Adding ExtJS framework dependencies.
+<2> Adding the Jasmine framework dependencies.
 
 <3> This is our skeleton ExtJS application that will setup "friendly" environment for components under the test. You can see content of test.js in the <<SKELETON_EXTJS_APP,following listing>>.
 
@@ -936,34 +795,7 @@ Let's create a skeleton application that can provide for our classes under the t
 .A ExtJS testing endpoint
 [source,javascript]
 ----
-Ext.Loader.setConfig({
-    disableCaching: false,
-    enabled: true,
-    paths: {
-        Test:   'test',       // <1>    
-        SSC:    'app'          // <2>
-        }
-});
-
-var application = null;
-
-Ext.onReady(function() {
-    application = Ext.create('Ext.app.Application', {   
-        name: 'SSC',        // <3>
-        requires: [
-            'Test.spec.AllSpecs'        // <4>
-        ],
-        controllers: [
-            'Donate'        // <5>
-        ],
-        launch: function() {
-            Ext.create('Test.spec.AllSpecs');
-
-            jasmine.getEnv().addReporter(new jasmine.TrivialReporter());        // <6>
-            jasmine.getEnv().execute();
-        }
-    });
-});
+include::include/ch7/jasmine_extjs_runner.js[]
 ----
 <1> Ext JS loader needs to know the location of the testing classes...
 
@@ -975,15 +807,12 @@ Ext.onReady(function() {
 
 <5> The skeleton application will test the controllers from the production application code
 
-<6> This code initializes Jasmine environment and reporters.
-
 [[ALL_SPEC]]
 [source,javascript]
 ----
 Ext.define('Test.spec.AllSpecs', {
     requires: [         // <1>
         'Test.spec.BasicAssumptions'
-        /*, 'Test.spec.ModelAssumptions' */
     ]
 });
 ----
@@ -1062,7 +891,7 @@ Ext.define("Test.spec.DonateControllerSpec", {}, function () {
                 var donateForm = Ext.create('SSC.view.DonateForm', {});
                 var controller = Ext.create('SSC.controller.Donate');
                 spyOn(donorInfo, 'donate');     // <2>
-                spyOn(controller, 'getDonatePanel').andCallFake(function () {   // <3>
+                spyOn(controller, 'getDonatePanel').and.callFake(function () {   // <3>
                     donateForm.down = function () {
                         return {
                             isValid: function () {
@@ -1075,7 +904,7 @@ Ext.define("Test.spec.DonateControllerSpec", {}, function () {
                     };
                     return donateForm;
                 });
-                spyOn(controller, 'newDonorInfo').andCallFake(function () { //<4>
+                spyOn(controller, 'newDonorInfo').and.callFake(function () { //<4>
                     return donorInfo;
                 });
                 controller.submitDonateForm();  
