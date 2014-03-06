@@ -322,9 +322,9 @@ One of the most important features of ES6 specification is the _module syntax_. 
 .Login module definition
 [source,javascript]
 ----
-export function login(userNameValue, userPasswordValue) { 
-    console.log("login implementation omitted");
-};
+export function login(userNameValue, userPasswordValue) {
+    return userNameValue + "_" + userNameValue;
+}
 ----
 
 The keyword `export` specifies the function or object (a separate file) to be exposed as a module, which can be used from any other JavaScript code as follows:
@@ -332,7 +332,7 @@ The keyword `export` specifies the function or object (a separate file) to be ex
 .Main application module
 [source,javascript]
 ----
-import login from 'login'
+import {login} from './login'
 var result = login("admin", "password");
 ----
 
@@ -347,20 +347,22 @@ Consider the following module circle.js:
 .A `circle.js` module
 [source, javascript]
 ----
-export function area(radius) { 
-  return Math.PI * radius * radius;
+function area(radius) {
+    return Math.PI * radius * radius;
 }
 
-export function circumference(radius) { 
-  return 2 * Math.PI * radius;
+function circumference(radius) {
+    return 2 * Math.PI * radius;
 }
+
+export {area, circumference};
 ----
 This module exports two functions: `area()` and `circumference()`.
 
 .The main application's script `main.js` can use these functions
 [source, javascript]
 ----
-import { area, circumference } from 'circle';     // <1>
+import { area, circumference } from './circle';     // <1>
 
 console.log("Area of the circle: " + area(2) + " meter squared");   // <2>
 console.log("Circumference of the circle: " + circumference(5) + " meters");
@@ -382,7 +384,6 @@ compile-modules main.js --type cjs --to ../js/
 [source,javascript]
 ----
 "use strict";
-
 function area(radius) {
     return Math.PI * radius * radius;
 }
@@ -390,6 +391,7 @@ function area(radius) {
 function circumference(radius) {
     return 2 * Math.PI * radius;
 }
+
 exports.area = area;
 exports.circumference = circumference;
 ----
@@ -399,9 +401,8 @@ exports.circumference = circumference;
 [source,javascript]
 ----
 "use strict";
-var __dependency1__ = require("circle");
-var area = __dependency1__.area;
-var circumference = __dependency1__.circumference;
+var area = require("./circle").area;
+var circumference = require("./circle").circumference;
 
 console.log("Area of the circle: " + area(2) + " meter squared");
 console.log("Circumference of the circle: " + circumference(5) + " meters");
@@ -415,36 +416,37 @@ Should we compiled the modules into the AMD format using the option _amd_, we wo
 .circle.js
 [source,javascript]
 ----
-define("circle", ["exports"],
-    function(__exports__) {
-        "use strict";
+define("circle", 
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    function area(radius) {
+        return Math.PI * radius * radius;
+    }
 
-        function area(radius) {
-            return Math.PI * radius * radius;
-        }
+    function circumference(radius) {
+        return 2 * Math.PI * radius;
+    }
 
-        function circumference(radius) {
-            return 2 * Math.PI * radius;
-        }
-        __exports__.area = area;
-        __exports__.circumference = circumference;
-    });
+    __exports__.area = area;
+    __exports__.circumference = circumference;
+  });
 ----
 +
 
 .main.js
 [source,javascript]
 ----
-define("main", ["circle"],
-    function(__dependency1__) {
-        "use strict";
-        var area = __dependency1__.area;
-        var circumference = __dependency1__.circumference;
+define("main", 
+  ["./circle"],
+  function(__dependency1__) {
+    "use strict";
+    var area = __dependency1__.area;
+    var circumference = __dependency1__.circumference;
 
-        console.log("Area of the circle: " + area(2) + " meter squared");
-        console.log("Circumference of the circle: " + circumference(5) + " meters");
-
-    });
+    console.log("Area of the circle: " + area(2) + " meter squared");
+    console.log("Circumference of the circle: " + circumference(5) + " meters");
+  });
 ----
 
 Using the _globals_ option in the _compile-modules_ command line produces the code that can be used as described in the Module Pattern section earlier in the chapter. 
@@ -513,7 +515,7 @@ Once RequireJS downloaded and placed into the project directory, add it to the i
 <body>
 <!-- page body -->
 
-<script src="components/requirejs/require.js" 
+<script src="bower_components/requirejs/require.js" 
         data-main="app/config"></script> <!--1-->
 
 </body>
@@ -530,7 +532,7 @@ RequiredJS uses a configuration object that includes modules and dependencies th
 
 [source,javascript]
 ----
-include::include/ch7_require_config.js[]
+include::include/ch6_require_config.js[]
 ----
 <1> The http://requirejs.org/docs/api.html#config[RequireJS documentation] has a comprehensive overview of all configuration options. We've included some of them here. 
 
@@ -600,13 +602,13 @@ Let's apply the technique demonstrated in <<load_ondemand_snippet>> snippet for 
 ----
 include::include/ch7_main_module.js[]
 ----
-<1> The first argument of the `define` function is an array of dependencies. The `!` sign in the module id string literals means that RequireJS delegates some work to a  plugin such as `order` in our example. This plugin enforces the loading order. We will talk about RequireJS plugins later in this chapter in the <<requirejs_plugins>> section.
+<1> The first argument of the `define` function is an array of dependencies.
 
-<2> An array of modules that can be loaded on demand.
+<2> Here we're using the approach described in the <<load_ondemand_snippet>> section. This factory function produces the handler for the button click event. It uses RequireJS API to load the module once the  user clicked on the button.
 
-<3> Here we're using the approach described in the <<load_ondemand_snippet>> section. This factory function produces the handler for the button click event. It uses RequireJS API to load the module once the  user clicked on the button.
+<3> Instantiate the click handler function using `onDemandLoadingClickHandlerFactory` and assign it to the button defined in the module config.
 
-<4> Instantiate the click handler function using `lazyLoadingEventHandlerFactory` and assign it to the button defined in the module config.
+<4> An array of modules that can be loaded on demand.
 
 <5> In the last step, we need to initialize each module button with the lazy loading handler.
 
