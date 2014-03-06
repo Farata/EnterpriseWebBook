@@ -61,7 +61,7 @@ define(['login',
         }];
         for (_i = 0, _len = componentConfigArray.length; _i < _len; _i++) {
             componentConfig = componentConfigArray[_i];
-            initComponent(componentConfig); <5>
+            initComponent(componentConfig); // <5>
         }
         console.log('app is loaded');
     })();
