@@ -5,7 +5,8 @@ function convert()
 {
     # echo -e "\t$@"
 
-    local src_file=$@
+    local src_file=$1
+    local file_name=$2
 
     # asciidoctor --trace -v                     \
     asciidoctor                                  \
@@ -23,11 +24,11 @@ function convert()
             -a idseparator=-                     \
             -a sectanchors                       \
             --compact                            \
-            --out-file .preview_$src_file.html   \
+            --out-file .preview_$file_name.html   \
             $src_file
 }
 
 # echo $PATH
 # echo "Building preview for..."
-convert $1
+convert $1 $2
 open -a "/Applications/Google Chrome.app" $3/.preview_$2.html
