@@ -46,6 +46,7 @@ As the application gets larger the number of script files grows accordingly, whi
 
 [[LISTING_SCRIPT_TAG]]
 .Multiple `<script>` tags complicate controlling  application dependencies
+====
 [source,html]
 ----
 <!DOCTYPE html>
@@ -77,6 +78,8 @@ As the application gets larger the number of script files grows accordingly, whi
 </body> <!--4-->
 </html>
 ----
+====
+
 <1> Loading the jQuery first because all other modules depend on it.
 
 <2> Other application components may also have internal dependencies on other scripts. Those scripts need to be loaded before the respective components. Having the proper order of these script tags is very important.
@@ -116,26 +119,35 @@ In software engineering, the Module pattern was originally defined as a way to i
 Ultimately, it's just some code in an immediate-invoked function expression (IIFE) that creates a module object in the internal scope of a function and exposes this module to the global scope using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs.
 
 .Creating a closure that hides implementation of login module
+====
 [source,javascript]
 ----
 include::include/ch6_iife_loginModule.js[]
 ----
+====
+
 <1> Assigning the module object that was created in the closure to the variable `loginModule`.
 <2> Because of the JavaScript's function scoping, other parts of the code can't access the code inside the closure. With this approach you can implement encapsulation and private members.
 
 .Injecting the module into the global object 
+====
 [source,javascript]
 ----
 include::include/ch6_iife_global_loginModule.js[]
 ----
+====
+
 <1> Instead of exporting the module to a variable as in the previous example, we're passing the global object as a parameter inside the closure.
 <2> Attaching the newly created object to the global object. After that the `loginModule` object can be accessed from the external application code as `window.loginModule` or just `loginModule`.
 
 .Introducing namespaces in the global object
+====
 [source,javascript]
 ----
 include::include/ch6_iife_namespace_loginModule.js[]
 ----
+====
+
 <1> Here we have modification of the approach described in previous snippet. To avoid name conflicts, create a namespace for our application called `ssc`. Note that we check for this object existence in the next line.
 <2> Now we can logically structure application code using namespaces. The global `ssc` object will contain only the code related to the Save The Child application.
 
@@ -203,6 +215,7 @@ The AMD API have the following main functions:
 
 [[LISTING_define_func]]
 .The signature of a `define` function
+====
 [source,javascript]
 ----
 define(
@@ -211,6 +224,8 @@ define(
     function {}
 );
 ----
+====
+
 <1> This string literal defines +module_id+ that will be used by the AMD loader for loading this module.
 <2> An optional array of dependencies' ids.
 
@@ -220,10 +235,13 @@ For example, the Save The Child application has a menu Way To Give, which in tur
 
 [[LISTING_define_modeule]]
 .The definition of the wayToGive module
+====
 [source,javascript]
 ----
 include::include/ch7_define_wayToGive.js[]
 ----
+====
+
 <1> This code doesn't have the optional +module_id+. The loader will use the file name without the `.js` extension as +module_id+. Our module has one dependency on the module called +otherContent+. The dependent module instance will be passed in the factory method as variable +otherContent+. 
 <2> We can start using the dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.
 <3> The module returns constructor function to be used for creation of new objects.
@@ -236,12 +254,15 @@ include::include/ch7_define_wayToGive.js[]
 
 [[LISTING_require_func]]
 .The example of `require` function usage
+====
 [source,javascript]
 ----
 require(["main"], function() {
     console.log("module main is loaded");
 }); 
 ----
+====
+
 
 [underline]#Pros to using AMD:#
 
@@ -320,21 +341,27 @@ The ECMAScript 6 (ES6) specification is an evolving draft outlining changes and 
 One of the most important features of ES6 specification is the _module syntax_. Here is an example of some login module definition:
 
 .Login module definition
+====
 [source,javascript]
 ----
 export function login(userNameValue, userPasswordValue) {
     return userNameValue + "_" + userNameValue;
 }
 ----
+====
+
 
 The keyword `export` specifies the function or object (a separate file) to be exposed as a module, which can be used from any other JavaScript code as follows:
 
 .Main application module
+====
 [source,javascript]
 ----
 import {login} from './login'
 var result = login("admin", "password");
 ----
+====
+
 
 With the `import` keyword we assign instance of `login()` function imported from `login` module.
 
@@ -345,6 +372,7 @@ Although ES6 standard is not implemented yet by most of browsers you can use the
 Consider the following module circle.js: 
 
 .A `circle.js` module
+====
 [source, javascript]
 ----
 function area(radius) {
@@ -357,9 +385,12 @@ function circumference(radius) {
 
 export {area, circumference};
 ----
+====
+
 This module exports two functions: `area()` and `circumference()`.
 
 .The main application's script `main.js` can use these functions
+====
 [source, javascript]
 ----
 import { area, circumference } from './circle';     // <1>
@@ -367,6 +398,8 @@ import { area, circumference } from './circle';     // <1>
 console.log("Area of the circle: " + area(2) + " meter squared");   // <2>
 console.log("Circumference of the circle: " + circumference(5) + " meters");
 ----
+====
+
 <1> The `import` keyword specifies the objects we want to use from the module.
 <2> A sample use of the imported functions
 
@@ -381,6 +414,7 @@ compile-modules main.js --type cjs --to ../js/
 +
 
 .circle.js
+====
 [source,javascript]
 ----
 "use strict";
@@ -395,9 +429,12 @@ function circumference(radius) {
 exports.area = area;
 exports.circumference = circumference;
 ----
+====
+
 +
 
 .main.js
+====
 [source,javascript]
 ----
 "use strict";
@@ -407,6 +444,8 @@ var circumference = require("./circle").circumference;
 console.log("Area of the circle: " + area(2) + " meter squared");
 console.log("Circumference of the circle: " + circumference(5) + " meters");
 ----
+====
+
 
 Should we compiled the modules into the AMD format using the option _amd_, we would have received a different output in the AMD format.
 
@@ -414,6 +453,7 @@ Should we compiled the modules into the AMD format using the option _amd_, we wo
 +
 
 .circle.js
+====
 [source,javascript]
 ----
 define("circle", 
@@ -432,9 +472,12 @@ define("circle",
     __exports__.circumference = circumference;
   });
 ----
+====
+
 +
 
 .main.js
+====
 [source,javascript]
 ----
 define("main", 
@@ -448,6 +491,8 @@ define("main",
     console.log("Circumference of the circle: " + circumference(5) + " meters");
   });
 ----
+====
+
 
 Using the _globals_ option in the _compile-modules_ command line produces the code that can be used as described in the Module Pattern section earlier in the chapter. 
 
@@ -455,17 +500,23 @@ Using the _globals_ option in the _compile-modules_ command line produces the co
 +
 
 .circle.js
+====
 [source,javascript]
 ----
 include::include/ch6_es6_globals_circle.js[]
 ----
+====
+
 +
 
 .main.js
+====
 [source,javascript]
 ----
 include::include/ch6_es6_globals_main.js[]
 ----
+====
+
 
 To learn the up-to-date information on the ES6 browsers' support visit http://kangax.github.io/es5-compat-table/es6/[ECMAScript 6 compatibility table].
 
@@ -506,6 +557,7 @@ Once RequireJS downloaded and placed into the project directory, add it to the i
 
 [[add_requirejs]]
 .Adding RequireJS to the web page
+====
 [source,html]
 ----
 <!DOCTYPE html>
@@ -521,6 +573,8 @@ Once RequireJS downloaded and placed into the project directory, add it to the i
 </body>
 </html>
 ----
+====
+
 [[data_main_attrib]]
 <1> Once the RequireJS library is loaded it will look for the `data-main` attribute and attempt to load the `app/config.js` script asynchronously. The `app/config.js` will become the entry point of our application.
 
@@ -562,10 +616,13 @@ Here is an example of CommonJS module format with RequireJS.
 
 [[require_cjs]]
 .Using CommonJS module format in RequireJS
+====
 [source,javascript]
 ----
 include::include/ch7_commonjs_require.js[]
 ----
+====
+
 <1> The factory receives up to three arguments that emulate the CommonJS `require`, `exports`, and `module` variables. 
 
 <2> Export your module rather than returning it. You can export an object in two ways - assign the the module directly to `module.exports` as shown in this snippet, or set the  properties on the `exports` object. 
@@ -585,10 +642,13 @@ At any given time a module can be in one of three states:
 
 [[load_ondemand_snippet]]
 .Loading the module on demand
+====
 [source,javascript]
 ----
 include::include/ch7_module_ondemand.js[]
----- 
+----
+====
+ 
 
 <1> Checking if module loading in progress.
 <2> Don't re-load the same module. If the module was already loaded just call the method to render the widget on the Web page.
@@ -598,10 +658,13 @@ include::include/ch7_module_ondemand.js[]
 Let's apply the technique demonstrated in <<load_ondemand_snippet>> snippet for Save The Child application to lazy load the "Who We Are", "What We Do", "Where We Work" and "What To Give" modules only if the user clicked on the corresponding top bar link.
 
 .The Main Module
+====
 [source,javascript]
 ----
 include::include/ch7_main_module.js[]
 ----
+====
+
 <1> The first argument of the `define` function is an array of dependencies.
 
 <2> Here we're using the approach described in the <<load_ondemand_snippet>> section. This factory function produces the handler for the button click event. It uses RequireJS API to load the module once the  user clicked on the button.
@@ -632,12 +695,15 @@ Furthermore, r.js integrates with other optimization tools like https://github.c
 Let's configure our Grunt project to enable the optimization task. Here's the command to install RequireJS, and Grunt's task packages clean, concat and uglify and save them as development dependencies in the file package.json:
 
 .Adding dependencies to package.json
+====
 [source,bash]
 ----
 > npm install grunt-contrib-requirejs\ 
 grunt-contrib-concat grunt-contrib-clean\ 
 grunt-contrib-uglify --saveDev 
 ----
+====
+
 
 <<rjs_gruntfile_list,The following listing>> describes the script to setup RequireJS optimizer and the related optimization tasks for Grunt. You'll need to run this script to generate optimized version of the Save The Child application. 
 
@@ -736,10 +802,13 @@ As we stated before, we need a Mediator to handle communication between the appl
 
 [[mediator_impl]]
 .The implementation of Mediator pattern.
+====
 [source,javascript]
 ----
 include::include/ch7_mediator.js[]
 ----
+====
+
 <1> Return the private object that stores registered components.
 <2> With the `Mediator.register()` function we can store components in the associative array. The Mediator is a singleton object here.
 <3> Assigning the mediator instance to the component being registered.
