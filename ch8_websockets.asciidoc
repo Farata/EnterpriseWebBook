@@ -1,5 +1,3 @@
-:imagesdir: ./
-
 [[upgrading_http_to_websocket]]
 == Upgrading HTTP To WebSocket
 
@@ -34,7 +32,7 @@ Visualize a child seating on back seat of your car and asking every minute, "Hav
 
 [[FIG9-1]]
 .Polling
-image::images/fig_09_01.png[image]
+image::images/ewdv_0901.png[image]
 
 ==== Long Polling ====
 
@@ -46,7 +44,7 @@ From the HTTP specification perspective described trick is legitimate: the long 
 
 [[FIG9-2]]
 .Long Polling
-image::images/fig_09_02.png[image]
+image::images/ewdv_0902.png[image]
 
 ==== HTTP Streaming ====
 
@@ -54,7 +52,7 @@ The client sends the request for data. As soon as the server gets the data ready
 
 [[FIG9-3]]
 .HTTP Streaming
-image::images/fig_09_03.png[image]
+image::images/ewdv_0903.png[image]
 
 Polling and streaming can be used as a fall-back for legacy browsers that don't support the HTML5 APIs _Server-Sent Events_ and _WebSocket_.
 
@@ -602,19 +600,19 @@ Once the application starts, the require.js loads only essential modules - login
 
 [[FIG9-9]]
 .Initially only two modules are loaded
-image::images/fig_09_09.png[]
+image::images/ewdv_0904.png[]
 
 In Google Chrome Developer Tools console you can see that login and donation modules are reporting about successful loading. <<FIG9-10>> confirms that these modules perform fine - clicking on the button Donate reveals the form and clicking on the Login button makes the id/password fields visible.
 
 [[FIG9-10]]
 .Two modules are loaded during the Save The Child application startup
-image::images/fig_09_10.png[]
+image::images/ewdv_0905.png[]
 
 Now click the Way To Give menu item and keep an eye on the Developer Tools console <<FIG9-11>>. You will see the way-to-give module reporting about its loading and rendering.
 
 [[FIG9-11]]
 .The auction controls are loaded and rendered
-image::images/fig_09_11.png[]
+image::images/ewdv_0906.png[]
 
 Once the user clicks the menu Way to Give the framework require.js has to load code of the WebSocket-based auction module. Here is the code snippet from the JavaScript file `app.js` - the entry point of our Save The Child application. This is how it loads the module _on demand_ (see Chapter 7 for the Require.js refresher).
 
@@ -659,15 +657,15 @@ The user can select the auction lot from the combo box and see its images. <<FIG
 
 [[FIG9-12]]
 .The console logs incoming message contains list of auction items.
-image::images/fig_09_12.png[]
+image::images/ewdv_0907.png[]
 
 [[FIG9-13]]
 .Using Network feature of Dev Tools we can monitor WebSocket frames.
-image::images/fig_09_13.png[]
+image::images/ewdv_0908.png[]
 
 [[FIG9-14]]
 .The buyer can choose another item to bit for.
-image::images/fig_09_14.png[]
+image::images/ewdv_0909.png[]
 
 ==== Monitor the WebSocket traffic with Chrome Developers Tools ====
 
@@ -675,30 +673,30 @@ Let's review the practical use of the theory described in the <<HANDSHAKE>> sect
 
 [[FIG9-4]]
 .Initial WebSocket handshake in Chrome DevTools
-image::images/fig_09_04.png[]
+image::images/ewdv_0910.png[]
 
 You can also click on +WebSocket+ at the bottom-right to show only the `WebSocket` endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG9-5>>. The white colored rows represent incoming data, and the green (or gray on paper) rows - outgoing.
 
 [[FIG9-5]]
 .Monitoring WebSocket frames in Chrome Developer Tools
-image::images/fig_09_05.png[]
+image::images/ewdv_0911.png[]
 
 For more gore details you can navigate your Google Chrome to the secret URL - `chrome://net-internals`, which is a very useful URL showing a lot of additional information (see <<FIG9-6>> and <<FIG9-7>> ). You can find documentation about net-internal in http://www.chromium.org/developers/design-documents/network-stack/view-net-internals[Chromium Design Documents]
 
 [[FIG9-6]]
 .Details of initial handshake in Chrome Net Internals
-image::images/fig_09_06.png[]
+image::images/ewdv_0912.png[]
 
 
 [[FIG9-7]]
 .Details of the socket connection
-image::images/fig_09_07.png[]
+image::images/ewdv_0913.png[]
 
 Google Developer Tools show just the length of the data. But `chrome://net-internals` shows the actual size of the WebSocket frame too. <<FIG9-8>> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of the frame is slightly different from the size of the payload. There are few more bytes for the frame header. Moreover, all outgoing messages will be masked by the browser (see the note in the <<FRAMES>> section). This frame's mask is going to be transferred to the server as a part of the frame itself, which creates additional 32 bits (4 bytes) overhead.
 
 [[FIG9-8]]
 .Dev tools and net-internals side by side
-image::images/fig_09_08.png[]
+image::images/ewdv_0914.png[]
 
 
 ==== Sniffing WebSocket frames with Wireshark ====
@@ -707,41 +705,41 @@ Wireshark is a powerful and comprehensive monitoring tool for analyzing the netw
 
 [[FIG9-15]]
 .Wireshark application main view
-image::images/fig_09_15.png[]
+image::images/ewdv_0915.png[]
 
 Wireshark captures all network activity. Set up the filter to see only the data you are interested in. We want to capture HTTP and TCP traffic on the port +8080+ because our WebSocket server (Oracle's GlassFish) runs on this port <<FIG9-16>>. Enter `http && (tcp.dstport==8080)` in the filter text box and click Apply.
 
 [[FIG9-16]]
 .Filter setup
-image::images/fig_09_16.png[]
+image::images/ewdv_0916.png[]
 
 Now the Wireshark is ready to sniff at the traffic of our application. You can start the auction session and place bids. After you're done with the auction you can return to the Wireshark window and analyze what we got. You can see the initial handshake (+GET+ request on <<FIG9-17>> and the +Upgrade+ response on <<FIG9-18>>).
 
 [[FIG9-17]]
 .The +GET+ request for protocol upgrade
-image::images/fig_09_17.png[]
+image::images/ewdv_0917.png[]
 
 [[FIG9-18]]
 .The +GET+ response with protocol upgrade
-image::images/fig_09_18.png[]
+image::images/ewdv_0918.png[]
 
 After the successful connection upgrade, Wireshark captured the `http-alt` stream (this is how it reports the Websocket's traffic) on the 8080 port. Right click on this row and select +Follow TCP Stream+ <<FIG9-19>>.
 
 [[FIG9-19]]
 .The +GET+ response with protocol upgrade
-image::images/fig_09_19.png[]
+image::images/ewdv_0919.png[]
 
 On the next screen you can see the details of WebSocket frame <<FIG9-20>>. We took this screenshot right after the auction application started. You can see here the data with the list of available auctions. The outgoing data is marked with _red_ color and the incoming data is shown in _blue_.
 
 [[FIG9-20]]
 .WebSocket frame
-image::images/fig_09_20.png[]
+image::images/ewdv_0920.png[]
 
 The screenshot <<FIG9-21>> was taken  after the auction has been closed. You can see here the entire data that were sent over the WebSocket connection.
 
 [[FIG9-21]]
 .Entire auction conversation
-image::images/fig_09_21.png[]
+image::images/ewdv_0921.png[]
 
 
 [[Auction_Messages_Specification]]
