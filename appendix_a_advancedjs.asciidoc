@@ -219,11 +219,11 @@ TIP: The topic "Function declaration vs. function expressions" is one of those f
 
 JavaScript objects are simply unordered collections of properties. You can assign new or delete existing properties from the objects during the runtime whenever you please. In classical object oriented languages there are _classes_ and there are _objects_. However JavaScript doesn't have classes.  
 
-****
+[NOTE]
+====
+The ECMAScript 6 specification will include classes too, but since it's a work in progress we won't consider them as something useful in the today's world. If you'd like to experiment with the upcoming features of JavaScript, download the https://tools.google.com/dlpage/chromesxs[Chrome Canary browser], go to `chrome:flags` and enable experimental JavaScript.  Chrome Canary should be installed on the computer of any HTML5 developers - you can use today those features that will be officially released in Chrome  Developer Tools in about three months. 
 
-NOTE: The ECMAScript 6 specification will include classes too, but since it's a work in progress we won't consider them as something useful in the today's world. If you'd like to experiment with the upcoming features of JavaScript, download the https://tools.google.com/dlpage/chromesxs[Chrome Canary browser], go to `chrome:flags` and enable experimental JavaScript.  Chrome Canary should be installed on the computer of any HTML5 developers - you can use today those features that will be officially released in Chrome  Developer Tools in about three months. 
-
-****
+====
 
 In JavaScript you can create objects using one of the following methods:
 
@@ -234,11 +234,10 @@ In JavaScript you can create objects using one of the following methods:
 
 Technically, there can be other APIs that implicitly create objects, e.g. JSON.parse(), but let's keep things simple.
 
-****
-
-NOTE: In JavaScript everything is an +Object+. Think of +Object+ as of a root of of the hierarchy of all objects used in your program. All your custom objects are descendants from +Object+.
-
-****
+[NOTE]
+====
+In JavaScript everything is an +Object+. Think of +Object+ as of a root of of the hierarchy of all objects used in your program. All your custom objects are descendants from +Object+.
+====
 
 ==== Object Literals
 
@@ -360,11 +359,10 @@ var p = { lastName: "Roberts",
 p.makeAppointment();
 ----
 
-****
-
-NOTE: Since we already started using arrays, it's worth mentioning that arrays can store any objects. You don't have to declare the size of the array upfront and can create new arrays as easy as `var myArray=[]` or `var myArray=new Array()`. You can even store function declarations as regular strings, but they will be evaluated on the array initialization. For example, during the +greetArray+ initialization the user will see a prompt asking to enter her name, and, when it's done, the +greetArray+ will store two strings. The output of the code fragment below can look like  "Hello, Mary".
-
-****
+[NOTE] 
+====
+Since we already started using arrays, it's worth mentioning that arrays can store any objects. You don't have to declare the size of the array upfront and can create new arrays as easy as `var myArray=[]` or `var myArray=new Array()`. You can even store function declarations as regular strings, but they will be evaluated on the array initialization. For example, during the +greetArray+ initialization the user will see a prompt asking to enter her name, and, when it's done, the +greetArray+ will store two strings. The output of the code fragment below can look like  "Hello, Mary".
+====
 
 [source, javascript]
 ----
@@ -720,9 +718,9 @@ image::images/ewdv_aa15.png[]
 
 So if you need to declare a method on the object that will play a role of the ancestor, do it on the prototype level. The only exception to this rule is the case when such method needs to use some object specific variable that's different for each instance - in case declare methods inside the constructors (see the section on closures for details). 
 
-****
-
-NOTE: All modern Web browsers support the function `Object.create()`, which creates a new object based on another prototype object creates a new object and sets that new object's prototype to be the object passed in. For example, `var objectB=Object.create(objectA);`.  What if you must support an older browser and need such "create by example" functionality? Of course, you can always create a custom arbitrarily named function with the similar functionality as the latest implementation of `Object.create()`. But the future-proof approach is to create the missing methods with the same signatures and on the same objects as the latest ECMAScript specification prescribes. In case of `Object.create()` you can use the implementation http://javascript.crockford.com/prototypal.html[offered by Douglas Crockford]:
+[NOTE]
+====
+All modern Web browsers support the function `Object.create()`, which creates a new object based on another prototype object creates a new object and sets that new object's prototype to be the object passed in. For example, `var objectB=Object.create(objectA);`.  What if you must support an older browser and need such "create by example" functionality? Of course, you can always create a custom arbitrarily named function with the similar functionality as the latest implementation of `Object.create()`. But the future-proof approach is to create the missing methods with the same signatures and on the same objects as the latest ECMAScript specification prescribes. In case of `Object.create()` you can use the implementation http://javascript.crockford.com/prototypal.html[offered by Douglas Crockford]:
 
 [source, javascript]
 ----
@@ -738,7 +736,7 @@ newObject = Object.create(oldObject);
 
 Such approach of custom implementation of missing pieces according to the latest ECMAScript specifications or W3C drafts is known as _polyfills_. People who can't wait till the browser vendors will implement the newest functionality create cross-browser polyfills and some of them submit their source code to the public domain. You can find a number of polyfills in the git repository of the https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills[Modernizr project]. The Web site http://caniuse.com[http://caniuse.com/] contains the current information about browser's support of the latest HTML5, JavaScript, and CSS features.
 
-****
+====
 
 TIP: In the Ext JS chapter you'll see how this frameworks offers its own class system that supports inheritance.
 
@@ -820,9 +818,10 @@ This code fragment illustrates the use of _nested functions_. The object method 
 
 But this doesn't sound right, does it? The problem is that in JavaScript the context where the function executes depends on the way it was invoked. In this case the function `mafiaSpecial()` was invoked as a function (not a method) without specifying the object it should apply to, and JavaScript makes it operate in the global object, hence the global variable `taxDeduction` having the value of 300 is being used. So in expression `this.taxDeduction`  the variable `this` means global unless the code is operated in the strict mode.
 
-****
-NOTE: ECMAScript 5 introduced a restricted version of JavaScript called _strict mode_, which among other things places stricter requirements to variable declarations and scope identification. Adding "use strict" as the first statement of the method `doTax()` will make the context _undefined_, and it'll print the error "this is undefined" and not 300. You can read about the strict mode at http://mzl.la/N4z1QI[Mozilla's developers site]. 
-****
+[NOTE]
+====
+ECMAScript 5 introduced a restricted version of JavaScript called _strict mode_, which among other things places stricter requirements to variable declarations and scope identification. Adding "use strict" as the first statement of the method `doTax()` will make the context _undefined_, and it'll print the error "this is undefined" and not 300. You can read about the strict mode at http://mzl.la/N4z1QI[Mozilla's developers site]. 
+====
 
 Let's make a slight change to this example and take to control what `this` represents. When the object `myTaxObject` was instantiated its own `this` reference was created. The following code fragment stores this reference in  additional variable `thisOfMyTaxObject` changes the game and the expression `thisOfMyTaxObject.taxDeduction` evaluates to 500. 
 
