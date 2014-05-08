@@ -1,6 +1,6 @@
 == Using AJAX and JSON
 
-This chapter is about bringing the external data to HTML Web pages. In the previous chapters we've been using only hard-coded data - our goal was to see how to layout the Web page and how to change the layout in case some events have happened, e.g. the user clicked on the menu button. Now we'll make sure that our single-page application Save The Child can request the data from the external sources and send them the data too. This comes down to two questions:
+This chapter is about bringing the external data to HTML Web pages. In the previous chapters we've been using only hard-coded data because our goal was to see how to layout the Web page and how to change the layout in case some events have happened, e.g. the user clicked on the menu button. Now we'll make sure that our single-page application Save The Child can request the data from the external sources and send them the data too. This comes down to two questions:
 
 1. How can an HTML Web page exchange the data with Web servers?
 2. What format to use for presenting the application data?
@@ -64,13 +64,13 @@ Let's try to implement AJAX techniques by implementing a data retrieval. The pro
 
 *  Modify the DOM elements based on the received data, if need be.
 
-NOTE: Most likely you are going to be using one of the popular JavaScript frameworks, which will spare you from knowing all these details, but knowing how it works under the hood can be beneficial.
+NOTE: Most likely you are going to be using one of the popular JavaScript frameworks, which will spare you from knowing all these details, but knowing how AJAX works under the hood can be beneficial.
 
 In most of the books on AJAX you'll see browser-specific ways of instantiating the `XMLHttpRequest` object (a.k.a. XHR). Most likely you'll be developing your application using some JavaScript library or a framework and all browser specifics in instantiating of the `XMLHttpRequest` will be hidden from you. Chapters 3 and 4 include such examples, but let's stick to the standard JavaScript way implemented by all modern browsers: 
 
 `var xhr = new XMLHttpRequest();`
 
-The next step is to initialize a request by invoking the method `open()`. You need to provide the HTTP method (`GET`, `POST` et al.), the URL of the data source. Optionally, you can provide three more arguments: a Boolean variable indicating if you want this request to be processed asynchronously (which is the default), and the user id and password if the authentication is required. Keep in mind, that the following method does not request the data yet.
+The next step is to initialize a request by invoking the method `open()`. You need to provide the HTTP method (`GET`, `POST` et al.) and the URL of the data source. Optionally, you can provide three more arguments: a Boolean variable indicating if you want this request to be processed asynchronously (which is the default), and the user id and password if the authentication is required. Keep in mind, that the following method does not request the data yet.
 
 `xhr.open('GET', dataUrl);`
 
@@ -127,6 +127,8 @@ xhr.onreadystatechange = function(){
 };
 ----
 
+.Example 2-1 Processing AJAX response 
+
 One note about the third line of the code above. Here we're checking the http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP status code] received from server. W3C splits the HTTP codes into groups. The codes numbered as 1xx are informational, 2xx are successful codes, 3xx are about redirections, 4xx represent bad requests (like infamous 404 for Not Found), and 5xx for server errors. That's why the above code fragment checks for all 2xx codes and 304 - the data was not modified and taken from cache. 
 
 [NOTE]
@@ -148,11 +150,11 @@ TIP: http://www.w3.org/TR/XMLHttpRequest2/[XMLHttpRequest Level 2] adds some new
 
 ==== AJAX: Good and Bad 
 
-AJAX techniques have their pros and cons. You saw how easy it was to create a Web page that didn't have to refresh itself, but provided the users with the means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. Taken for granted auto-completion feature would not be possible in HTML/JavaScript application without the AJAX.
+AJAX techniques have their pros and cons. You saw how easy it was to create a Web page that didn't have to refresh itself, but provided the users with the means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. The auto-completion feature, which is often taken for granted, would not be possible in HTML/JavaScript application without the AJAX.
 
 On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. 
 
-Since the AJAX brings most of the content dynamically, the search engines might not rank your Web pages as high as it would do if the content was statically embedded in the HTML. If discoverability of your Web application is important, some extra steps should be taken to make it more SEO-friendly, e.g. using an https://github.com/thomasdavis/seoserver[SEO Server].  
+Since the AJAX brings most of the content dynamically, the search engines might not rank your Web pages as high as it would do if the content was statically embedded in the HTML. If discoverability of your Web application is important, some extra steps should be taken to make it more Search Engine Optimization (SEO) friendly, e.g. using an https://github.com/thomasdavis/seoserver[SEO Server].  
 
 Increasing the amount of AJAX interactions means that your application will have to send more of the JavaScript code to the Web browser, which increases the complexity of programming and decreases the scalability of your application. 
 
@@ -179,8 +181,9 @@ To see the first example where we are using AJAX in our Save The Child applicati
   </select>
 ----
 
+.Example 2-2 State and Country dropdowns 
 
-The resulting Save The Child page will look the same as the last sample from the previous chapter, but the Countries and States dropdowns are now populated be the data located in these files(later in this chapter in the section on JSON we'll replace this HTML file with its JSON version). These are the first three lines (out of 241) from the file countries.html:
+The resulting Save The Child page will look the same as the last sample from the previous chapter, but the Countries and States dropdowns are now populated be the data located in these files(later in this chapter in the section on Java Server Object Notation (JSON) we'll replace this HTML file with its JSON version). These are the first three lines (out of 241) from the file countries.html:
 
 [source, html]
 ----
@@ -188,6 +191,7 @@ The resulting Save The Child page will look the same as the last sample from the
 <option value="United Kingdom">United Kingdom</option>
 <option value="Afghanistan">Afghanistan</option>
 ----
+.Example 2-3 A fragment from the file countries.html 
 
 The JavaScript code that reads countries and states from file (text and HTML markup) and populates the dropdowns comes next. The content of these files is assigned to the `innerHTML` attribute of the given HTML `<select>` element. 
 
@@ -216,6 +220,8 @@ loadData('data/us-states.html', statesList);
 loadData('data/countries.html', counriesList);
 ----
 
+.Example 2-3 Loading HTML content into county and state dropdowns 
+
 NOTE: The above code has an issue, which may not be so obvious, but can irritate users. The problem is that it doesn't handle errors. Yes, we print the error message on the developer's console, but the end user will never see them. If for some reason the data about countries or states won't arrive, the dropdowns will be empty, the donation form won't be valid and the users will become angry that they can't make a donation without knowing why. Proper error handling and reports are very important for any application so never ignore it. You should display a user-friendly error messages on the Web page. For example the above `else` statement can display the received message in the page footer
 
 [source, javascript]
@@ -230,6 +236,7 @@ else {
 }
 
 ----
+.Example 2-4 Displaying the AJAX error in the page footer 
 
 This code uses the CSS selector `error` that will show the error message on the red background. you can find it in the file styles.css in the project-02-donation-error-ajax-html. It looks like this:
 
@@ -242,6 +249,8 @@ footer p.error {
 	color: #fff;
 }
 ----
+
+.Example 2-5 Styling error message with CSS 
 
 
 The following code fragment shows how to add the received data to a certain area on the Web page.        
@@ -262,6 +271,8 @@ if (xhr.readyState == 4) {
   }
 }    
 ----
+
+.Example 2-6 Styling a paragraph 
 
 
 === Using JSON 
@@ -284,9 +295,11 @@ Douglas Crockford popularized new data format, which is known as JSON. In today'
 }
 ----
 
+.Example 2-7 Sample JSON-formatted data  
+
 Anyone who knows JavaScript understands that this is an object that represents a person, which has a nested object that represents an address. Note the difference with JavaScript literals: the names of the properties are always strings, and every string must be taken into quotes. Representing the same object in XML would need a lot more characters (e.g. `<fname>Alex</fname>` etc). 
 
-There are some other important differences between JSON and XML. The structure of the XML document can be defined using DTD or XML Schema, which simplifies the data validation, but requires additional programming and schema maintenance. On the other hand, JSON data have data types, for example the `age` attribute in the above example is not only a `Number`, but will be further evaluated by the JavaScript engine and will be stored as an integer. JSON also supports arrays while XML doesn't. 
+There are some other important differences between JSON and XML. The structure of the XML document can be defined using Document Type Definition (DTD) or XML Schema, which simplifies the data validation, but requires additional programming and schema maintenance. On the other hand, JSON data have data types, for example the `age` attribute in the above example is not only a `Number`, but will be further evaluated by the JavaScript engine and will be stored as an integer. JSON also supports arrays while XML doesn't. 
 
 For parsing JSON in JavaScript you use the method `JSON.parse()`, which takes a string and returns JavaScript object, for example:
 
@@ -298,7 +311,9 @@ console.log(“Your name is ” + customer.fname + “ “ + customer.lname);
 
 ----
 
-For a reverse operation - turning an object into JSON string - do `JSON.stringify(custormer)`. The older browsers didn't have the `JSON` object, and there is an alternative way of parsing JSON is with the help of the script json2.js, which creates the JSON property on the global object. The json2.js is freely available on http://bit.ly/aUMLnL[Github]. In Chapter 3 you've learned about feature detection with Modernizr, and you can automate the loading of this script if needed. 
+.Example 2-8 Parsing JSON in JavaScript 
+
+For a reverse operation - turning an object into JSON string - do `JSON.stringify(customer)`. The older browsers didn't have the `JSON` object, and there is an alternative way of parsing JSON is with the help of the script json2.js, which creates the JSON property on the global object. The json2.js is freely available on http://bit.ly/aUMLnL[Github]. In Chapter 1 you've learned about feature detection with Modernizr, and you can automate the loading of this script if needed. 
 
 [source, javascript]
 ----
@@ -310,7 +325,7 @@ Modernizr.load({
     }
 });
 ----
-
+.Example 2-9 Parsing using Modernizr 
 
 Usually, JSON-related articles and blogs are quick to remind you about the evil nature of the JavaScript function `eval()` that can take an arbitrary JavaScript code and execute it. The `JSON.parse()` is pictured as a protection against the malicious JavaScript that can be injected into your application's code and then executed by `eval()` by the Web browser. The main argument is that `JSON.parse()` will not be processing the incoming code unless it contains valid JSON data.
 
@@ -338,6 +353,7 @@ Earlier in this chapter you've seen an example of populating states and countrie
 		"code": "AL"
 	}, 
 ----
+.Example 2-10 A fragment from the file countries.json 
 
 The JavaScript code that populates the countries and states comboboxes comes next. Note the difference in creating the `<option>` tags from JSON vs. HTML.  In case of HTML, the received data were added to the `<select>` element as is: `target.innerHTML += xhr.responseText;` In JSON files the data were not wrapped in to the `<option>` tags,  hence it's done programmatically. 
 
@@ -379,6 +395,8 @@ function loadData(dataUrl, rootElement, target) {
 loadData('data/us-states.json', 'usstateslist', statesList);
 loadData('data/countries.json', 'countrieslist', counriesList);
 ----
+.Example 2-11 Loading JSON-formatted countries and states 
+
 
 In the above example we called the method `XMLHttpRequest.overrideMimeType()` to ensure that the data will be treated by the browser as JSON even if the server won't report them as such.  
 
@@ -405,6 +423,7 @@ JSON supports arrays, and the next example shows you how the information about a
                       " cell phone=" + customer.phones[1]); 
 </script>        
 ----
+.Example 2-12 Accessing array of phones in JSON data 
 
 The code above creates an instance of the JavaScript object referenced by the variable `customer`. In this example the `phones` array just holds two strings. But you can store object in JSON array the same way as you'd do it in JavaScript object literal - just don't forget to put every property name in quotes. 
 
@@ -418,27 +437,30 @@ var customerJson = '{"fname":"Alex",
                     }';
 ----
 
+.Example 2-13 JavaScript object literal 
+
+
 ==== Loading Charity Events using AJAX and JSON
 
 The last example in Chapter 1 was about displaying various charity events on the Google map using multiple markers. But the data about these events were hard-coded in HTML file. After getting familiar with AJAX and JSON it should not be too difficult to create a separate file with the information about charities in JSON format and load them using `XMLHTTPRequest` object.
 
-The next version of Save The Child is a modified version of the application that displayed Google map with multiple markers from Chapter 1. But this time we'll load the information about the charity events from the file campaigndata.json shown next.
+The next version of Save The Child displays Google map using the information about the charity events from the file campaigndata.json shown next.
 
 [source, javascript]
 ----
 {
   "campaigns": {
     "header": "Nationwide Charity Events",
-    "timestamp":"12/15/2012",
+    "timestamp":"10/04/2014",
     "items": [
       {
         "title": "Lawyers for Children",
-        "description":"Lawyers offering free services for The Children",
+        "description":"Lawyers offering free services for the children",
         "location":"New York,NY"
       },
       {
         "title": "Mothers of Asthmatics",
-        "description":"Mothers of Asthmatics - nationwide Asthma network",
+        "description":"Mothers of Asthmatics - nationwide asthma network",
         "location": "Dallas,TX"
       },
       {
@@ -448,7 +470,7 @@ The next version of Save The Child is a modified version of the application that
       },
       {
         "title": "A Place Called Home",
-        "description":"Adoption of The Children",
+        "description":"Adoption of the children",
         "location":"Miami,FL"
       },
       {
@@ -460,6 +482,7 @@ The next version of Save The Child is a modified version of the application that
   }
 }
 ----
+.Example 2-14 The file campaignsdata.json 
 
 Run the project-03-maps-json-data and you'll see the map with the markers for each of the events loaded from the file campaigndata.json (see <<FIG4-03>>). Click on the marker to see an overlay with the event details. 
 
@@ -477,7 +500,7 @@ function showCampaignsInfo(campaigns) {
 
 	var message = "<h3>" + campaigns.header + "</h3>" + 
 	                      "On " + campaigns.timestamp + 
-	                " we run " + campaignsCount + " campaigns.";
+	                " we'll run " + campaignsCount + " campaigns.";
 	
     locationUI.innerHTML = message + locationUI.innerHTML;
 	resizeMapLink.style.visibility = "visible";
@@ -513,6 +536,9 @@ var dataUrl = 'data/campaignsdata.json';
 loadCampaignsData(dataUrl);
 ----
 
+.Example 2-15 Displaying campaigns data 
+
+
 TIP: Some older Web browsers may bring up a File Download popup window when the content type of the server's response is set to "application/json". Try to use the MIME type "text/html" instead, if you ran into this issue. 
 
 NOTE: For simplicity,  in this section we've been loading JSON formatted data from files, but in the real-world applications the JSON data is created on the server dynamically. For example, a browser makes a RESTFull call to the Java-based server, which queries a database, generates JSON formated result and sends it back to the Web server.
@@ -536,11 +562,11 @@ image::images/ewdv_0205.png[]
 TIP: There's a side benefit of learning JSON - it's used as data format in NoSQL databases like http://www.mongodb.com/[MongoDB].
 
 
-=== JSON in Java
+=== Handling JSON in Java
 
 If a Web browser receives JSON stream from the server the application needs to turn it into JavaScript objects. If a Web client needs to send the JavaScriot objects to the server they can be converted into JSON string. Similar tasks have to be performed on the server side. Our Save The Child application uses Java application server. There is a number of third-party Java libraries that can consume and generate JSON content. 
 
-There are several Java libraries to convert Java objects into their JSON representation and back, for example http://code.google.com/p/google-gson/[Google’s Gson], http://jackson.codehaus.org/[Jackson], http://code.google.com/p/json-simple/[json-simple]. 
+Java Enterprise Edition 7 includes http://docs.oracle.com/javaee/7/tutorial/doc/jsonp.htm[Java API for JSON Processing]. Also, there are several Java libraries to convert Java objects into their JSON representation and back, for example http://code.google.com/p/google-gson/[Google’s Gson], http://jackson.codehaus.org/[Jackson], http://code.google.com/p/json-simple/[json-simple]. 
 
 Google's Gson is probably the simplest one for use. It provides methods `toJson()` and `fromJson()` to convert Java objects to JSON and back. Gson allows pre-existing un-modifiable objects to be converted to and from JSON and Supports Java Generics. Gson works well with complex objects with deep inheritance hierarchies. 
 
@@ -566,6 +592,8 @@ public String createJsonFromCustomer(Customer cust){
 	return gson.toJson(cust, Customer.class);
 }
 ----
+
+.Example 2-16 Processing JSON with GSon 
 
 Of course, the declaration of the Java class `Customer` must exist in the in the classpath and don't forget to include gson.jar to your Java project.
 
@@ -602,7 +630,7 @@ The `<svg>` element supports http://www.w3.org/TR/SVG11/[Scalable Vector Graphic
 
 ==== Adding Chart With Canvas Element
 
-Let's review some code fragments from project-04-canvas-pie-chart-json. The HTML section defines `<canvas>` of 260x240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your canvas element so your JavaScript code can access it.
+Let's review some code fragments from project-04-canvas-pie-chart-json. The HTML section defines `<canvas>` of 260x240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your `<canvas>` element so your JavaScript code can access it.
 
 [source, html]
 ----
@@ -614,6 +642,7 @@ Let's review some code fragments from project-04-canvas-pie-chart-json. The HTML
     <p> Lorem ipsum dolor sit amet, consectetur</p>
 </div>
 ----
+.Example 2-17 Displaying campaigns data 
 
 Run the project-04-canvas-pie-chart-json, and you'll see the chart with donation statistics by city as in <<FIG4-6>>. We haven't style our `<canvas>` element, but we could've added a background color, the border and other bells and whistles if required.
 
@@ -660,6 +689,8 @@ The data to be used for drawing a pie chart in our canvas are stored in the file
   }
 }
 ----
+.Example 2-18 The file chartdata.json 
+
 
 Loading of the the charddata.json is done using AJAX techniques as explained earlier. Although in our example we're loading the chart immediately when the Save The Child loads, the following code could be invoked only when the user requests to see the charts by clicking on some menu item on the page.
 
@@ -693,10 +724,11 @@ function getChartData(dataUrl, canvas) {
 
 loadData('data/chartdata.json', document.getElementById("canvas"));
 ----
+.Example 2-19 Loading chartdata.json 
 
 <1> Parse JSON and create the `ChartData` Javascript object.
 
-<2> Pass the data to the `drawPieChart()` function that will draw the pie in the `canvas` element with the center coordinates x=50 and y=50 pixels. The top left corner of the canvas has coordinates (0,0). The radius of the pie will be 49 pixels. The code of the function that draws the pie on the canvas goes next.
+<2> Pass the data to the `drawPieChart()` function that will draw the pie in the `<canvas>` element with the center coordinates x=50 and y=50 pixels. The top left corner of the canvas has coordinates (0,0). The radius of the pie will be 49 pixels. The code of the function that draws the pie on the canvas goes next.
 
 [source, javascript]
 ----
@@ -748,6 +780,7 @@ function drawPieChart (canvas, chartData, centerX, centerY, pieRadius) {
 	}
 }
 ----
+.Example 2-20 Drawing the pie chart in <canvas>
 
 <1> Count the total number of donors.
 
@@ -777,6 +810,7 @@ To implement the same donation statistics pie with the `<svg>` element, you'd ne
 	</p>
 </div>
 ----
+.Example 2-21 The SVG container 
 
 Running the project-05-svg-pie-chart-json would show you pretty much the same pie as it uses the file chartdata.json with the same content, but the pie was produced differently. The code of the new version of the `drawPieChart()` is shown below. We won't discuss all the details of the drawing with SVG, but will highlight the a couple of important lines of code that illustrate the difference between drawing on `<canvas>` vs. `<svg>`.  
 
@@ -801,7 +835,8 @@ function drawPieChart(chartContaner, chartData, centerX, centerY,
 	startAngle = 0;
 	for (var i = 0; i < totalCities; i++) {
 		// End of the sector = starting angle + sector size
-		var endAngle = startAngle + chartData.items[i].donors / totalDonors * Math.PI * 2;
+		var endAngle = startAngle + chartData.items[i].donors 
+                   / totalDonors * Math.PI * 2;
 		var x1 = centerX + pieRadius * Math.sin(startAngle);
 		var y1 = centerY - pieRadius * Math.cos(startAngle);
 		var x2 = centerX + pieRadius * Math.sin(endAngle);
@@ -835,7 +870,7 @@ function drawPieChart(chartContaner, chartData, centerX, centerY,
 		// Sector fill color
 		path.setAttribute("fill", colorScheme[i]);
 
-		chartContaner.appendChild(path);                    // <3> 
+		chartContaner.appendChild(path);    // <3> 
 
 		// The next sector begins where this one ends
 		startAngle = endAngle;
@@ -851,7 +886,7 @@ function drawPieChart(chartContaner, chartData, centerX, centerY,
 		labelBullet.setAttribute("height", 10);
 		labelBullet.setAttribute("fill", colorScheme[i]);
 
-		chartContaner.appendChild(labelBullet);             // <3>
+		chartContaner.appendChild(labelBullet);    // <3>
 
 		// Add the label text
 		var labelText = document.createElementNS(namespace, "text");
@@ -863,11 +898,12 @@ function drawPieChart(chartContaner, chartData, centerX, centerY,
 		" | "+chartData.items[i].donors);
 		
 		labelText.appendChild(txt);
-		chartContaner.appendChild(labelText);               //  <3>
+		chartContaner.appendChild(labelText);     //  <3>
 	}
 
 }
 ----
+.Example 2-22 Drawing the pie chart in <svg>
 
 <1> Create the `<svg:path>` HTML element, which is the most important SVG element for drawing basic shapes.. It includes a series of commands that produce the required drawing. For example, _M 10 10_ means _movo to the coordinate 10,10_ and _L 20 30_ means _draw the line to the coordinate 20,30_. 
 
@@ -903,6 +939,7 @@ function myDataHandler(data){
   // process the content of the argument data - the JSON object 
   // received from xyz.com
 }
+.Example 2-22 The callback myDataHandler
 
 If all you need is just to retrieve the data from a different domain on page just add the following tag to your HTML page:
 
@@ -918,6 +955,7 @@ var myScriptTag = document.createElement("script");
 myScriptTag.src = "http://xyz.com?callback=myDataHandler";
 document.getElementsByTagName("body").appendChild(myScriptTag);
 ----
+.Example 2-23 Adding the `<scrpt>` tag dynamically
 
 Your JavaScript can build the URL for the `myScriptTag.src` dynamically and pass parameters to the server based on some user's actions.
 
@@ -956,6 +994,7 @@ First, enter the URL `http://api.openbeerdatabase.com/v1/breweries.json` in the 
    ]
 }
 ----
+.Example 2-24 JSON representation of beer
 
 Now let's request the same data, but in a JSONP format by adding to the URL a parameter with a callback name `myDataHandler`. Entering in the browser `http://api.openbeerdatabase.com/v1/breweries.json?callback=processBeer` will return the following (it's a short version):
 
@@ -967,6 +1006,8 @@ processBeer({"page":1,"pages":1,"total":7,"breweries":[{"id":1,"name":"(512) Bre
 "url":"http://21st-amendment.com","created_at":"2010-12-07T02:53:38Z",
 "updated_at":"2010-12-07T02:53:38Z"}]})
 ----
+.Example 2-25 JSONP representation of beer
+
 Since we haven't declared the function `processBeer()` yet, it won't be invoked. Let's fix it now. The function will check first if the received data contains the information about the breweries. If it does, the name of the very first brewery will be printed on the JavaScript console. Otherwise the console output will read "Retrieved data has no breweries info".
 
 [source, javascript]
@@ -991,6 +1032,7 @@ var myScriptTag = document.createElement("script");
 var bd = document.getElementsByTagName('body')[0];
 bd.appendChild(myScriptTag);
 ----
+.Example 2-26 Processing JSONP 
 
 <<FIG4-8>> is a screen snapshot taken in the Firebug when it reached the breakpoint placed inside the processBeer callback on the `console.log(in the processBeer callback")`. You can see the content of the `data` argument - the beer has arrived. 
 
