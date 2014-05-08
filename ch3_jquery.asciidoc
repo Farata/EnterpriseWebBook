@@ -53,7 +53,7 @@ While it's easier to write `$()` than `jQuery()`, keep in mind that if you decid
    // Your code goes here	
 })(jQuery);
 ----
-
+.Example 3.1 Hiding your code inside a function
 ====
 
 As you remember, JavaScript functions do not require you to invoke them with exactly the same number of parameters as they were declared with. Hence, when you invoke jQuery constructor you can pass different things to it. You can pass a String as an argument or another function, and jQuery constructor will invoke different code based on the argument type. For example, if you'll pass it a String, jQuery will assume that it's a CSS selector, and the caller wants to find element(s) in the DOM that match this selector. Basically, you may think of it this way - whenever you want jQuery do something for you, invoke `$()` passing it your request.
@@ -88,6 +88,7 @@ The "Hello World" program is always a good start to learn any new software, and 
   </body>
 </html>
 ----
+.Example 3.2 Hello World with jQuery
 
 <1> If the script passes a function as an argument to jQuery, such a function is called when the DOM object is ready - the jQuery's `ready()` function gets invoked . Keep in mind that it's not the same as invoking a function handler `window.onload`, which is called after all windows resources (not just the DOM object) are completely  loaded (read more in the jQuery Events section). 
 
@@ -122,8 +123,9 @@ $('label.donation-heading');
 // Find an HTML input element that has a value attribute of 200
 // and change the text of its next sibling to "two hundred"
 $('input[value="200"]').next().text("two hundred");
-
 ----
+.Example 3.3 Sample jQuery selectors
+
 TIP: If jQuery returns a set of elements that match the selector's expression, you can access its elements using array notation: `var theSecondDiv = $('div')[1]`. If you want to iterate through the entire set use jQuery method http://api.jquery.com/each/[`$(selector).each()`]. For example, if you want to perform some function on each paragraph of an HTML document, you can do it a follows: `$("p").each(function(){...}). 
 
 === Testing jQuery Code with JSFiddle
@@ -143,7 +145,7 @@ TIP: If you chained a method, e.g. an event handler, to the HTML element returne
 
 If jQuery selector returns a number of HTML elements, you can further narrow down this collection by applying so-called filters.jQuery has such filters as `eq()`, `has()`, `first()` and more.
 
-For example, applying the selector `$('label');`to the Donate section HTML fragment shown in <<FIG5-1>> would return a set of HTML elements `<label>`. Say we want to change the background of the label "20" to be red. This is the third label in the HTML from <<FIG5-1>>, and the `eq(n)` filter selects the element at the zero-based index `n` within the matched set.
+For example, applying the selector `$('label');` to the Donate section HTML fragment shown in <<FIG5-1>> would return a set of HTML elements `<label>`. Say we want to change the background of the label "20" to be red. This is the third label in the HTML from <<FIG5-1>>, and the `eq(n)` filter selects the element at the zero-based index `n` within the matched set.
 
 You can apply this filter using the following syntax: `$('label:eq(2)');`. But jQuery documentation suggests using the syntax `$('label').eq(2);` http://api.jquery.com/eq-selector/[for better performance].
 
@@ -194,6 +196,7 @@ $(window).load(function(){
 		$("body").append("<h1>Hello World!</h1>"); 
 });
 ----
+.Example 3.4 Appending an HTML element during load
 
 If the user interacts with your Web page using the mouse , the events handlers can be added using a similar procedure. For example, if you want the header in our Hello World example to process click events, find the reference to this header and attach the `click()` handler to it. Adding the following to the `<script>` section of Hello World will append the text each time the user clicks on the header.
 
@@ -203,6 +206,7 @@ $("h1").click(function(event){
     $("body").append("Hey, you clicked on the header!");				
 })
 ----
+.Example 3.5 Appending an HTML element on click
 
 If you'd like to process double-clicks - replace the `click()` invocation with `dblclick()`. jQuery has handlers for about a dozen mouse events, which are wrapper methods to the corresponding JavaScript events that are dispatched when mouse entering or leaving the area, the mouse pointer goes up/down, or the focus moves in or out of an input field. The shorthand methods `click()` and `dblclick()` (and several others) internally use the method `on()`, which you can and should use in your code too (it works during the bubbling phase of the event as described in the section DOM Events in Appendix A).  
 
@@ -217,7 +221,7 @@ The event methods can be attached just by passing a handler function as it was d
 	
 	$('#login-link').on('click', showLoginForm);
 ----
-
+.Example 3.6 Handling the click on login link
 
 The `on()` method allows you to assign the same handler function to more than one event. For example, to invoke the `showLoginForm` function when the user clicks or moves the mouse over the HTML element you could written  `on('click mouseover', showLoginForm)`. 
 
@@ -230,21 +234,23 @@ The method `off()` is used for removing the event handler and the event won't be
 
 ==== Delegating Events
 
-The method `on()` can be called with passing an optional selector as an argument. Since we haven't used selectors in the example from the previous section, the event was triggered only when reached the element with an id `login-link`. Now imagine an HTML container that has child elements, e.g. a calculator implemented as a `<div id="calculator">` containing buttons. The following code would assign a click handler *to each* button styled with a class `.digitButton`:
+The method `on()` can be called with passing an optional selector as an argument. Since we haven't used selectors in the example from the previous section, the event was triggered only when reached the element with an id `login-link`. Now imagine an HTML container that has child elements, e.g. a calculator implemented as a `<div id="calculator">` containing buttons. The following code would assign a click handler _to each_ button styled with a class `.digitButton`:
 
 [source, javascript]
 ----
 $("div#calculator .digitButton").on("click", function(){...});
 ----
+.Example 3.7 Handling the click on HTML element styled as digitButton inside <div>
 
-But instead of assigning an event handler to each button, you can assign an event handler to the container and specify additional selector that child elements may be found by. The following code assigns the event handler function *to only one* object - the `div#calculator` instructing this container to invoke the event handler when any of its children matching `.digitButton` is clicked. 
+But instead of assigning an event handler to each button, you can assign an event handler to the container and specify additional selector that child elements may be found by. The following code assigns the event handler function _to only one_ object - the `div#calculator` instructing this container to invoke the event handler when any of its children matching `.digitButton` is clicked. 
 
 [source, javascript]
 ----
 $("div#calculator").on("click", ".digitButton",function(){...});
 ----
+.Example 3.8 Handling the click on any HTML element styled as digitButton
 
-When the button is clicked, the event bubbles up and reaches the container's level, whose click handler will do the processing (jQuery doesn't support capturing phase of events). The work on processing clicks for digit buttons is delegated to the container. 
+When the button is clicked, the event bubbles up and reaches the container's level, whose click handler will do the processing (jQuery doesn't support the capturing phase of events). The work on processing clicks for digit buttons is delegated to the container. 
 
 Another good use case for delegating event processing to a container is a financial application that displays the data in an HTML table containing hundreds of rows. Instead of assigning event hundreds event handlers (one per table row), assign one to the table. There is one extra benefit to using delegation in this case - if the application can dynamically add new rows to this table (say, the order execution data), there is no need to explicitly assign event handlers to them - the container will do the processing for both old and new rows.
 
@@ -264,7 +270,7 @@ $('#customAmount').on({
 	blur : onCustomAmountBlur
 });
 ----
-
+.Example 3.9 Handling focus and blur events
 
 === AJAX with jQuery
 
@@ -283,6 +289,7 @@ $.ajax({
 	}).done(function (data) {...})
 	  .fail(function (jqXHR, textStatus) {...});
 ----
+.Example 3.10 A sample call of method `ajax()`
 
 This example takes a JavaScript object that defines three properties: the URL, the type of the request,  and the expected data type. Using chaining, you can attach the methods `done()` and `fail()`, which have to specify the function handlers to be invoked in case of success and failure respectively. The http://api.jquery.com/jQuery.ajax/#jqXHR[jqXHR] is a jQuery wrapper for the browser's  `XMLHttpRequest` object.
 
@@ -290,7 +297,7 @@ Don't forget about the asynchronous nature of  AJAX calls, which means that the 
 
 [NOTE]
 ====
-An alternative to having a `fail()` handler for each ajax request is setting the global error handling routine. Consider doing this for some serious HTTP failures like 403 (access forbidden)  or errors with codes 5xx. For example:
+An alternative to having a `fail()` handler for each ajax request is setting the global error handling routine using `ajaxSetup()`. Consider doing this for some serious HTTP failures like 403 (access forbidden)  or errors with codes 5xx. For example:
 
 [source, javascript]
 ----
@@ -310,6 +317,7 @@ $(function() {
   });
 });
 ----
+.Example 3.11 Setting global event handling routines
 ====
 
 If you need to chain asynchronous callbacks (`done()`, `fail()`, `always()`) that don't need to be called right away (they wait for the result) the method `ajax()` returns http://api.jquery.com/category/deferred-object/[`Deferred`] object. It places these callbacks in a queue to be called later. As a matter of fact, the callback `fail()` may never be called if no errors occurred. 
@@ -338,6 +346,7 @@ $.get('ssc/getDonors?city=Miami', function(){alert("Got the donors");})
   .fail(function(){alert("Request for donors failed");});
 ;
 ----
+.Example 3.12 Processing HTML GET requests  
 
 The global method `post()` makes an HTTP `POST` request to the server. You must specify at least one argument - the URL on the server, and, optionally, the data to be passed, the callback to be invoked on the request completion, and the type of data expected from the server. Similarly to the `ajax()` invocation, you can chain the `done(),` `fail()`, and `always()` methods to `post()`. The following example makes a `POST` request to the server passing an object with the new donor information.
 
@@ -346,8 +355,9 @@ The global method `post()` makes an HTTP `POST` request to the server. You must 
 $.post('ssc/addDonor', {id:123, name:"John Smith"});
 ;
 ----
+.Example 3.13 Processing HTML POST requests 
 
-The global method http://api.jquery.com/jQuery.getJSON/[`getJSON()`] retrieves and parses the JSON data from the specified URL and passes the JavaScript object to the specified callback. If need be, you can send the data to the server with the request. Callinf `getJSON()` is like calling `ajax()` with parameter `dataType: "json"`.
+The global method http://api.jquery.com/jQuery.getJSON/[`getJSON()`] retrieves and parses the JSON data from the specified URL and passes the JavaScript object to the specified callback. If need be, you can send the data to the server with the request. Calling `getJSON()` is like calling `ajax()` with parameter `dataType: "json"`.
  
 [source, javascript]
 ----
@@ -355,21 +365,25 @@ $.getJSON('data/us-states-list.json', function (data) {
                 // code to populate states combo goes here})
           .fail(function(){alert("Request for us states failed");});
 ----
+.Example 3.14 Getting JSON data using an AJAX call
 
 The method http://api.jquery.com/serialize/[`serialize()`] is used when you need to submit to the server a filled out HTML `<form>`. This method presents the form data as a text sting in a standard URL-encoded notation. Typically, the code finds a required form using jQuery selector and then calls `serialize()` on this object. But you can invoke `serialize()` not only on the entire form, but on selected form elements too. Belows is a sample code that finds the form and serializes it.  
 
 [source, javascript]
+----
 $('form').submit(function() {
   alert($(this).serialize());
   return false;
 }); 
+----
+.Example 3.15 Serializing the form
 
 TIP: Returning `false` from a jQuery event handler is the same as calling either `preventDefault()` and `stopPropagation()` on the `jQuery.Event` object. In pure JavaScript returning `false` doesn't stop propagation (try to run http://jsfiddle.net/APQk6/[this fiddle]). 
 
 Later in this chapter in the section Submitting Donate Form you'll see a code that uses `serialize()` method.
 
 
-=== Save The Child With jQuery
+=== Programming Save The Child With jQuery
 
 In this section we'll review code samples from several small projects (see Appendix C for running instructions) that are jQuery re-writes of the corresponding pure-JavaScript projects from Chapters 1 and 2. We are not going to add any new functionality - the goal is to demonstrate how jQuery allows you to achieve the same results while writing less code. You'll also see how it can save you time by handling browser incompatibility for common uses (like AJAX).
 
@@ -377,7 +391,7 @@ In this section we'll review code samples from several small projects (see Appen
 
 For example, the file main.js from project-02-jQuery-Login is 33% less in size than project-02-login written in pure JavaScript. jQuery allows your programs to be brief. For example, the next code shows how six lines of code in JavaScript can be replaced with one - the jQuery function `toggle()` will toggle the visibility of `login-link`, `login-form`, and `login-submit`. 
 
-Note. The total size of your jQuery application is not necessarily smaller comparing the pure JavaScript one because it includes the code of jQuery library.
+NOTE: The total size of your jQuery application is not necessarily smaller comparing the pure JavaScript one because it includes the code of jQuery library.
 
 [source, javascript]
 ----
@@ -396,6 +410,7 @@ function showLoginForm() {
 $('#login-link, #login-form, #login-submit').toggle();
 }
 ----
+.Example 3.16 The Login form
 
 The code of the Donation section also becomes slimmer with jQuery. For example, the following section from the JavaScript version of the application is removed:
 
@@ -408,6 +423,7 @@ var customAmount = document.getElementById('customAmount');
 var donateForm = document.forms['_xclick'];
 var donateLaterLink = document.getElementById('donate-later-link');
 ----
+.Example 3.17 Removed JavaScript code
 
 The jQuery method chaining allows combining (in one line) finding DOM objects and acting upon them. The following is the entire code of the main.js from project-01-jQuery-make-donation, which includes the initial version of the code of Login and Donate sections of Save The Child.
 
@@ -468,7 +484,7 @@ $(function() {
   		
   
   // Show/hide the donation form if the user clicks
-  // on the button Donate or the Donate Later
+  // on the button Donate Now or the link I'll Donate Later
   function showHideDonationForm() {
   	$('#donation-address, #donate-form-container').toggle();
   }
@@ -504,6 +520,7 @@ $(function() {
 
 });
 ----
+.Example 3.18 The entire jQuery script from main.js
 
 <1> This one liner finds all elements of the form named `_xclick`, and immediately applies the jQuery filter to remove from this collection any elements except radiobuttons. Then it unchecks all of them by setting the property `checked` to `false`.  This has to be done if the user places the focus inside the  "Other amount" field.
 
@@ -511,7 +528,7 @@ $(function() {
 
 <3> A single invocation of the `on()` method registers two event handlers: one for the `focus` and one for the `blur` event.
 
-jQuery includes http://api.jquery.com/category/effects/[a number of effects] that make the user experience more engaging. Let's use one of them called `fadeToggle()`. In the code above there is a section that toggles visibility of the Donate form. If the user clicks on the Donate button, the form becomes visible (see <<FIG3-11>>). If the user clicks on the link "I'll donate later", the form becomes hidden as in <<FIG3-10>>. The jQuery method `toggle()` does its job, but the change happens abruptly. The effect `fadeToggle()` allows to introduce slower fading which improves the user experience, at least to our taste. 
+jQuery includes http://api.jquery.com/category/effects/[a number of effects] that make the user experience more engaging. Let's use one of them called `fadeToggle()`. In the code above there is a section that toggles visibility of the Donate form. If the user clicks on the Donate Now button, the form becomes visible (see <<FIG3-11>>). If the user clicks on the link "I'll donate later", the form becomes hidden as in <<FIG3-10>>. The jQuery method `toggle()` does its job, but the change happens abruptly. The effect `fadeToggle()` allows to introduce slower fading which improves the user experience, at least to our taste. 
 
 If the code would hide/show just one component, the code change would be trivial - replacing `toggle()` with `fadeToggle('slow')` would do the trick.  But in our case, the toggle changes visibility of two `<div>'s`: `donation-address` and `donation-form-container`, which should happen in a certain order. The code below is a replacement of the show/hide section in the main.js to introduce the fading effect.
 
@@ -532,6 +549,7 @@ $('#donate-button').on('click', function() {
 $('#donate-later-link').on('click', function() {
         showHideDonationForm(donForm, donAddress)});	
 ----
+.Example 3.19 Showing and hiding the donation form
 
 If you want to see the difference, first run the  project-01-jQuery-make-donation and click on the Donate button (no effects), and then run project-04-jQuery-donation-ajax-json, which has the fading effect.
 
@@ -568,12 +586,13 @@ var countryPrompt =
 // Pass the wrong data URL on purpose
 loadData('da----ta/countries.html', $('#counriesList'), countryPrompt); // <4>
 ----
+.Example 3.20 Loading data and processing errors
 
 <1> The callback to be invoked right after the `load()` completes the request.
 
-<2> Using jQuery method `prepend()` insert the very first element to HTML <select> to prompt the user to select a state or a country.
+<2> Using jQuery method `prepend()` insert the very first element into the HTML element <select> to prompt the user to select a state or a country.
 
-<3> Display an error message at the bottom of the Web page in the `<div>` with ID `temp-project-name-container`.
+<3> Display an error message at the bottom of the Web page in the `<div>` section with ID `temp-project-name-container`.
 
 <4> Pass the misspelled data URL to generate error message.
 
@@ -617,8 +636,9 @@ loadData('data/us-states-list.json',                           // <5>
 loadData('data/counries-list.json',                            // <6>
                          'countrieslist', $('#counriesList'));
 ----
+.Example 3.21 Loading countries and states with ajax()
 
-<1> Set the timeout. If the result of the `ajax()` call won'r return within 5 second, the method `fail()` will be invoked.
+<1> Set the timeout. If the result of the `ajax()` call won't return within 5 second, the method `fail()` will be invoked.
 
 <2> The handler function to process the successfully retrieved data 
 
@@ -690,6 +710,8 @@ Our Save The Child application should be able to  submit the donation form to Pa
     </div>
 </form>
 ----
+.Example 3.22 A fragment of the Donate form
+
 
 ===== Manual Form Serialization
 
@@ -707,6 +729,7 @@ $('#donate-form').submit(function() {
   return false;  // stop event propagation and default action
 });
 ----
+.Example 3.23 Manual serialization of the Donate form
 
 Run project-04-jQuery-donation-ajax-json and open Chrome Developer Tools of Firebug. Then fill out the donation form as shown in <<FIG5-5>>:
 
@@ -738,6 +761,8 @@ queryString = $('form[name="_xclick"]')                     // <3>
                 .find(':input[type=hidden]')
                 .serialize();
 ----
+.Example 3.24 Samples of sending partial form content
+
 <1> Find the form named '_xclick', apply the filter to select only the full name and the email address and serialize only these two fields.
  
 <2> Find the form named '_xclick', apply the filter to select only the input fields of type `text` and serialize them
@@ -773,6 +798,7 @@ if (isset($_POST['paypal_email'])) {
 exit();
 ?>
 ----
+.Example 3.25 The server-side script demo.php
 
 The process of integration with the payment system using https://www.x.com/content/introducing-adaptive-payments[Paypal API] is out of this book's scope, but at least we can identify the place to do it - it's typically done on the server-side. In this chapter's example it's a server-side PHP script, but it can be a Java, .Net, Python or any other server. You'd need to replace the `echo` statement with the code making requests to Paypal or any other payment system. The fragment from the main.js that shows how to make a request to the demo.php comes next.
 
@@ -817,10 +843,11 @@ function submitSerializedData(event) {
         });
 }
 ----
+.Example 3.26 Submitting the Donate form to demo.php 
 
 <1> Prevent the default processing of the submit event - we don't want to simply the form to the URL listed in the form's `action` property.
 
-<2>  Serializing the form fields excluding the empty amounts and the hidden field with the name cmd.
+<2>  Serializing the form fields excluding the empty amounts and the hidden field with the name `cmd`.
 
 <3>   The serialized data from `queryString` will be submitted to the server-side script demo.php
 
@@ -878,7 +905,7 @@ The chances are that you will be able to find a plugin written by someone that f
 
 ==== Validating the Donate Form With Plugin 
 
-The project-14-jQuery-validate illustrates the use of the jQuery http://docs.jquery.com/Plugins/Validation[validate] plugin, which allows you to specify the rules to be checked when the user tries to submit the form. If the value is not valid, your custom message is displayed. We've included this plugin in index.html of project-14-jQuery-validate:
+The project-14-jQuery-validate illustrates the use of the jQuery http://docs.jquery.com/Plugins/Validation[Validator] plugin, which allows you to specify the rules to be checked when the user tries to submit the form. If the value is not valid, your custom message is displayed. We've included this plugin in index.html of project-14-jQuery-validate:
 
 [source, html]
 ----
@@ -892,7 +919,7 @@ To validate a form with this plugin, you need to invoke a jQuery selector findin
     $("#myform").validate({// validation options go here});
 ----
 
-The file main.js includes the code to validate the Donation form. The validation options can include many options described in the plugin documentation. Our code sample uses the following options:
+The file main.js includes the code to validate the Donation form. The validation routine can include many options described in the plugin documentation. Our code sample uses the following options:
 
 * the `highlight` and `unhighlight` callbacks
 * the HTML element to be used for displaying errors
@@ -950,6 +977,7 @@ var validator = $('form[name="_xclick"]').validate({
   	}
 });
 ----
+.Example 3.27 Displaying validation errors 
 
 <1> When the invalid field will be highlighted, this function will be invoked. It changes the styling of the input field and updates the error count to display in the validation summary `<div>` on top  of the form.
 
@@ -979,8 +1007,10 @@ Pretty often you need to add a rotation of the images feature to a Web page. The
 <link rel="stylesheet" href="assets/css/responsive-carousel.fade.css" />
 <link rel="stylesheet" href="assets/css/responsive-carousel.flip.css" />
 ...
-<script src="js/plugins/responsive-carousel/responsive-carousel.min.js"></script>
-<script src="js/plugins/responsive-carousel/responsive-carousel.flip.js"></script>
+<script src="js/plugins/responsive-carousel/responsive-carousel.min.js">
+</script>
+<script src="js/plugins/responsive-carousel/responsive-carousel.flip.js">
+</script>
 ----
 
 Run the project-16-jQuery-slider and you'll see how three plain slides rotate as shown on <<FIG5-8>>. The HTML part of the container includes the three slides as follows. 
@@ -1000,7 +1030,7 @@ Run the project-16-jQuery-slider and you'll see how three plain slides rotate as
 	</div>
 </div>
 ----
-
+.Example 3.28 The HTML part of the carousel 
 
 [[FIG5-8]]
 .Using Responsive Carousel plugin
@@ -1020,10 +1050,10 @@ $(function() {
 	});
 });
 ----
-
+.Example 3.29 Processing the carousel clicks
 TIP: To see code samples of using Responsive Carousel (including popular auto-playing slide shows) visit the Web page http://filamentgroup.github.io/responsive-carousel/test/functional/[Responsive Carousel variations].
 
-The Validator and Responsive Carousel clearly demonstrate that jQuery plugins can save you some serious time of writing code to implement some commonly required features. It's great that the members of the jQuery community from around the world share their creations with other developers. If you can't find a plugin that fits your needs or have specific custom logic that needs to be used or reused in your application.  Should you decide to write a plugin on your own, refer to the http://docs.jquery.com/Plugins/Authoring[Plugins/Authoring] document.
+The Validator and Responsive Carousel clearly demonstrate that jQuery plugins can save you some serious time of writing code to implement some commonly required features. It's great that the members of the jQuery community from around the world share their creations with other developers. If you can't find a plugin that fits your needs or have specific custom logic that needs to be used or reused in your application, write your own plugin.  Should you decide to write a plugin on your own, refer to the http://docs.jquery.com/Plugins/Authoring[Plugins/Authoring] document.
 
 
 === Summary
