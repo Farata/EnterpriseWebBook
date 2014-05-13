@@ -377,6 +377,9 @@ We do not want to build web applications the old way wherein a server-side progr
 
 Now let's examine the JavaScript code located in _main.js_. This code self-invokes the anonymous function, which creates an object-encapsulated namespace +ssc+ (short for Save The Child). This avoids polluting the global namespace. If we wanted to expose anything from this closure to the global namespace, we could have done this via the variable `ssc`, as described in <<appendix_a, Appenix A>> in the section "Closures."  
 
+[[javascript_code_of_home_page]]
+.The JavaScript code of the Home page
+====
 [source, javascript]
 ----
 // global namespace ssc
@@ -453,18 +456,17 @@ var ssc = (function() {
 
 })();
 ----
+==== 
 
-.Example 1-3 The JavaScript code of the Home page 
-
-<1> First query the DOM to get references to login-related HTML elements. 
+<1> Query the DOM to get references to login-related HTML elements. 
 
 <2> Register event listeners for the clickable login elements. 
 
-<3> To make a DOM element invisible set its `style.display="none"`. Hide the login button and show the login form having two input fields for entering the user id and the password.
+<3> To make a DOM element invisible, set its `style.display="none"`. Hide the Login button and show the login form having two input fields for entering the user ID and the password.
 
 <4> If the user is _admin_ and the password is _1234_, hide the `loginForm` and make the top corner of the page look as in <<FIG3-8>>. 
 
-WARNING: We keep the user ID and password in this code just for the illustration purposes. Never do this in your applications. Authentication has to be done in a secure way on the server side.	
+WARNING: We keep the user ID and password in this code just for illustration purposes. Never do this in your applications. Authentication has to be done in a secure way on the server side.	
 
 [[FIG3-8]]
 .After successful login
@@ -472,19 +474,19 @@ image::images/ewdv_0108.png[]
 
 ===== Where to put JavaScript
 
-We recommend placing the `<script>` tag with your JavaScript at the end of your HTML file as in our index.html above. If you move the line `<script src="js/main.js"></script>` to the top of the `<body>` section and re-run index.html the screen will look as in <<FIG3-7>>, but clicking on the Login won't display the login form as it should. Why? Because registering of the event listeners in the script main.js failed cause the DOM components  (`login-link`, `login-form` and others) were not created yet by the time this script was running. Open the Firebug, Chrome Developer Tools, or any other debugging tool and you'll see an error on the console that will look similar to the following:
+We recommend placing the `<script>` tag with your JavaScript at the end of your HTML file as in our _index.html_ shown previously. If you move the line `<script src="js/main.js"></script>` to the top of the `<body>` section and rerun _index.html_, the screen will look like <<FIG3-7>>, but clicking Login won't display the login form as it should. Why? Registering of the event listeners in the script _main.js_ failed because the DOM components  (`login-link`, `login-form` and others) were not created by the time this script was running. Open Firebug, Chrome Developer Tools, or any other debugging tool, and you'll see an error on the console that will look similar to the following:
 
-__"TypeError: loginLink is null
-loginLink.addEventListener('click', showLoginForm, false);"__
+__TypeError: loginLink is null
+loginLink.addEventListener('click', showLoginForm, false);__
 
-Of course, in many cases your JavaScript code could have tested if the DOM elements exist before using them, but in this particular sample it's just easier to to put the script at the end of the HTML file. Another solution would be to load the JavaScript code located in main.js in a separate handler function that would run only when the window's `load` event is dispatched by the browser indicated that the DOM is ready: `window.addEventListener('load', function() {...}`. You'll see how to do this in the next version of main.js.
+Of course, in many cases, your JavaScript code could have tested whether the DOM elements exist before using them, but in this particular sample, it's just easier to put the script at the end of the HTML file. Another solution is to load the JavaScript code located in _main.js_ in a separate handler function that would run only when the window's `load` event, which is dispatched by the browser, indicates that the DOM is ready: `window.addEventListener('load', function() {...}`. You'll see how to do this in the next version of _main.js_.
  
 
-===== The CSS of our Main Page
+===== The CSS of our main page
 
-After reviewing the HTML and JavaScript code let's spend a little more time with the CSS that supports the page shown in <<FIG3-7>>. The difference between the screen shots shown in <<FIG3-6>> and <<FIG3-7>> is substantial. First, the top left image is nowere to be found in index.html. Open the styles.css file and you'll see the line `background: url(../img/logo.png) no-repeat;` in the `header h1#logo` section.
+Now that we have reviewed the HTML and JavaScript code, let's spend a little more time with the CSS that supports the page shown in <<FIG3-7>>. The difference between the screenshots shown in <<FIG3-6>> and <<FIG3-7>> is substantial. First, the upper-left image is nowhere to be found in _index.html_. Open the _styles.css_ file and you'll see the line `background: url(../img/logo.png) no-repeat;` in the `header h1#logo` section.
 
-The page layout is also specified in the file styles.css. In this version the sizes of each section is specified in pixels (px), which won't make you page fluid and easily resizable.  For example, the HTML element with `id="main-top-section"` is styled like this:
+The page layout is also specified in the file _styles.css_. In this version, the size of each section is specified in pixels (px), which won't make your page fluid and easily resizable.  For example, the HTML element with `id="main-top-section"` is styled like this:
 
 [source, css]
 ----
@@ -495,7 +497,7 @@ The page layout is also specified in the file styles.css. In this version the si
 }
 ----
 
-Jerry styled the main to section to take the entire width of the browser's window and to be 320 pixels tall. If you'll keep in mind the "Mobile First" mantra, this may not be the best approach cause 320 pixels mean difference size (in inches) on the displays with different screen density. For example, 320 pixels on the iPhone 5 with retina display will look a lot smaller than 320 pixels on the iPhone 4. You may consider switching from `px` to `em` units: 1em is equal to the current font height, 2em means twice the size et al. You can read more about creating scalable style sheets with _em_ units at http://www.w3.org/WAI/GL/css2em.htm[http://www.w3.org/WAI/GL/css2em.htm]. 
+Jerry styled the main section to take the entire width of the browser's window and to be 320 pixels tall. If you keep in mind the Mobile First mantra, this might not be the best approach because 320 pixels means a different size (in inches) on the displays with different screen density. For example, 320 pixels on the iPhone 5 with Retina display will look a lot smaller than 320 pixels on the iPhone 4. You might want to consider switching from `px` to `em` units: 1 em is equal to the current font height, 2 em means twice the size, and so forth. You can read more about creating scalable style sheets with _em_ units at http://www.w3.org/WAI/GL/css2em.htm[http://www.w3.org/WAI/GL/css2em.htm]. 
 
 What looks a Login button on <<FIG3-7>> is not a button, but a styled `div` element. Initially it was a clickable anchor `<a>`, and we've explained this change right after Example 1-2 above. The CSS fragment supporting the Login button looks like this:
 
