@@ -156,23 +156,26 @@ TIP: http://www.w3.org/TR/XMLHttpRequest2/[XMLHttpRequest Level 2] adds new func
 
 Ajax techniques have their pros and cons. You saw how easy it is to create a web page that doesn't have to refresh itself but can provide users with a means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to reduce the amount of data that goes over the wire is important, too. Another important advantage of Ajax is that it works in a standard HTML/JavaScript environment and is supported by all web browsers. The JavaScript frameworks hide all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Because the entire page is not reloaded, you can create _fat clients_ that keep certain data preloaded so that it can be reused in your JavaScript in different use cases. With Ajax, you can lazy-load content as needed rather than loading everything at once. Finally, the autocompletion feature, which is often taken for granted, would not be possible in an HTML/JavaScript application without Ajax.
 
-On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. 
+On the bad side, with Ajax, the user loses the functionality of the browser's Back button, which reloads the previous web page in a way that enables the user to see the previous state of that page. 
 
-Since the AJAX brings most of the content dynamically, the search engines might not rank your Web pages as high as it would do if the content was statically embedded in the HTML. If discoverability of your Web application is important, some extra steps should be taken to make it more Search Engine Optimization (SEO) friendly, e.g. using an https://github.com/thomasdavis/seoserver[SEO Server].  
+Because Ajax brings most content dynamically, search engines might not rank your web pages as high as if the content were statically embedded in the HTML. If discoverability of your web application is important, extra steps should be taken to make it more Search Engine Optimization (SEO)&#8211;friendly (for example, using an https://github.com/thomasdavis/seoserver[SEO Server]).  
 
-Increasing the amount of AJAX interactions means that your application will have to send more of the JavaScript code to the Web browser, which increases the complexity of programming and decreases the scalability of your application. 
+Increasing the number of Ajax interactions means that your application will have to send more JavaScript code to the web browser, which increases the complexity of programming and decreases the scalability of your application. 
 
-TIP: Using HTML5 History API (see Chapter 1) will help you in teaching the old dog (the browser's Back button) new tricks.
+TIP: Using the HTML5 History API (see <<mocking_up_the_app>>) will help you teach the old dog (the browser's Back button) new tricks.
 
-AJAX applications are subject to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Same_origin_policy_for_JavaScript[_the same origin policy_] (the same protocol, host name, and port) allowing `XMLHttpRequest` make HTTP requests only to the domains where the Web application was loaded from. It's a security measure to limit the ability of JavaScript code to interact with resources that arrive to the Web browser from a different Web server.
+Ajax applications are subject to https://developer.mozilla.org/en-US/docs/Web/JavaScript/Same_origin_policy_for_JavaScript[_the same origin policy_] (the same protocol, hostname, and port), which allows `XMLHttpRequest` to make HTTP requests only to the domains where the web application was loaded from. It's a security measure to limit the ability of JavaScript code to interact with resources that arrive to the web browser from a different web server.
 
-TIP: W3C has published a working draft of https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control[Cross-Origin Resource Sharing] (CORS) - a mechanism to enable client-side cross-origin requests.
+TIP: W3C has published a working draft of https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control[Cross-Origin Resource Sharing] (CORS), a mechanism to enable client-side cross-origin requests.
 
 
 ==== Populating States and Countries from HTML Files
 
-To see the first example where we are using AJAX in our Save The Child application run the project-01-donation-ajax-html, where we've removed the hard-coded data about countries and states from HTML and saved them in two separate files: data/us-states.html and data/countries.html. In this project the file index.html has two empty comboboxes (`<select>` elements):
+To see the first example for which we use Ajax in our Save The Child application, run _project-01-donation-ajax-html_. In this example, we've removed the hard-coded data about countries and states from HTML and saved it in two separate files: data/us-states.html and data/countries.html. In this project, the file _index.html_ has two empty combo boxes (`<select>` elements), as shown in <<ex_state_country_dropdowns>>.
 
+[[ex_state_country_dropdowns]]
+.State and Country drop-downs
+====
 [source, html]
 ----
   <select name="state" id="state">
@@ -184,21 +187,26 @@ To see the first example where we are using AJAX in our Save The Child applicati
     <!-- AJAX will load the rest of content -->
   </select>
 ----
+====
 
-.Example 2-2 State and Country dropdowns 
+The resulting Save The Child page will look the same as the last sample from the previous chapter, but the Country and State drop-downs are now populated by the data located in these files (later in this chapter, in the section on JSON, we replace this HTML file with its JSON version). <<ex_countries_file>> presents the first three lines (out of 241) from the file _countries.html_:
 
-The resulting Save The Child page will look the same as the last sample from the previous chapter, but the Countries and States dropdowns are now populated be the data located in these files(later in this chapter in the section on Java Server Object Notation (JSON) we'll replace this HTML file with its JSON version). These are the first three lines (out of 241) from the file countries.html:
-
+[[ex_countries_file]]
+.A fragment from the file countries.html
+====
 [source, html]
 ----
 <option value="United States">United States</option>
 <option value="United Kingdom">United Kingdom</option>
 <option value="Afghanistan">Afghanistan</option>
 ----
-.Example 2-3 A fragment from the file countries.html 
+==== 
 
-The JavaScript code that reads countries and states from file (text and HTML markup) and populates the dropdowns comes next. The content of these files is assigned to the `innerHTML` attribute of the given HTML `<select>` element. 
+The JavaScript code that reads countries and states from files (text and HTML markup) and populates the drop-downs comes next. <<ex_loading_dropdowns>> demonstrates that the content of these files is assigned to the `innerHTML` attribute of the given HTML `<select>` element. 
 
+[[ex_loading_dropdowns]]
+.Loading HTML content into the Country and State drop-downs
+====
 [source, javascript]
 ----
 function loadData(dataUrl, target) {
@@ -223,10 +231,9 @@ function loadData(dataUrl, target) {
 loadData('data/us-states.html', statesList);
 loadData('data/countries.html', counriesList);
 ----
+==== 
 
-.Example 2-3 Loading HTML content into county and state dropdowns 
-
-NOTE: The above code has an issue, which may not be so obvious, but can irritate users. The problem is that it doesn't handle errors. Yes, we print the error message on the developer's console, but the end user will never see them. If for some reason the data about countries or states won't arrive, the dropdowns will be empty, the donation form won't be valid and the users will become angry that they can't make a donation without knowing why. Proper error handling and reports are very important for any application so never ignore it. You should display a user-friendly error messages on the Web page. For example the above `else` statement can display the received message in the page footer
+NOTE: The preceding code has an issue, which might not be so obvious, but can irritate users. The problem is that it doesn't handle errors. Yes, we print the error message on the developer's console, but the end user will never see it. If for some reason the data about countries or states doesn't arrive, the drop-downs will be empty, the donation form won't be valid, and the users will become angry that they can't make a donation and don't know why. Proper error handling and reports are important for any application, so never ignore it. You should display a user-friendly error message on the web page. For example, the `else` statement in the preceding example can display the received message in the page footer.
 
 [source, javascript]
 ----
