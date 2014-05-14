@@ -107,7 +107,7 @@ The complete cycle of the `readyState` transitions is depicted in <<FIG4-2>>.
 .Transitions of the readyState attribute
 image::images/ewdv_0202.png[]
 
-Let's spend a bit more time discussing the completion of this cycle when the server's response is received and the XHR's `readyState` is equal to 4. This means that we've received something, which can be either the data we've expected or an error message. We need to handle both scenarios in the function assigned to the `onreadystatechange` attribute. This is a common way to do it in JavaScript without using frameworks:
+Let's spend a bit more time discussing the completion of this cycle when the server's response is received and the XHR's `readyState` is equal to 4. This means that we've received something, which can be either the data we've expected or an error message. We need to handle both scenarios in the function assigned to the `onreadystatechange` attribute  (see <<processing_ajax_response>>). This is a common way to do it in JavaScript without using frameworks:
 
 [[processing_ajax_response]]
 .Processing Ajax response
@@ -133,8 +133,7 @@ xhr.onreadystatechange = function(){
 ----
 ====
  
-
-One note about the third line of the code above. Here we're checking the http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP status code] received from server. W3C splits the HTTP codes into groups. The codes numbered as 1xx are informational, 2xx are successful codes, 3xx are about redirections, 4xx represent bad requests (like infamous 404 for Not Found), and 5xx for server errors. That's why the above code fragment checks for all 2xx codes and 304 - the data was not modified and taken from cache. 
+One note about the third line of this code. Here we're checking the http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html[HTTP status code] received from the server. W3C splits the HTTP codes into groups. The codes numbered 1__xx__ are informational, 2__xx__ are successful codes, 3__xx__ are about redirections, 4__xx__ represent bad requests (such as the infamous 404 for Not Found), and 5xx indicate server errors. That's why the preceding code fragment checks for all 2__xx__ codes and for 304: the data was not modified and taken from cache. 
 
 [NOTE]
 ===============================
@@ -151,11 +150,11 @@ xhr.send(data);
 ----
 ===============================
 
-TIP: http://www.w3.org/TR/XMLHttpRequest2/[XMLHttpRequest Level 2] adds some new functionality like FormData object, timeouts, ArrayBuffers and more. It's supported http://caniuse.com/xhr2[by most] of the Web browsers.
+TIP: http://www.w3.org/TR/XMLHttpRequest2/[XMLHttpRequest Level 2] adds new functionality including +FormData+ objects, timeouts, ++ArrayBuffer++s, and more. It's supported http://caniuse.com/xhr2[by most] web browsers.
 
-==== AJAX: Good and Bad 
+==== Ajax: Good and Bad 
 
-AJAX techniques have their pros and cons. You saw how easy it was to create a Web page that didn't have to refresh itself, but provided the users with the means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to lower the amount of data that goes over the wire is important too. Another important advantage of AJAX that it works in a standard HTML/JavaScript environment and is supported by all Web browsers. The JavaScript frameworks hides all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Since the entire page is not reloaded, you can create "fat clients" that keep certain data preloaded once and reused in your JavaScript in different use cases. With AJAX you can lazy load some content as needed rather than loading everything at once. The auto-completion feature, which is often taken for granted, would not be possible in HTML/JavaScript application without the AJAX.
+Ajax techniques have their pros and cons. You saw how easy it is to create a web page that doesn't have to refresh itself but can provide users with a means of communicating with the server. This certainly improves the user experience. The fact that AJAX allows you to reduce the amount of data that goes over the wire is important, too. Another important advantage of Ajax is that it works in a standard HTML/JavaScript environment and is supported by all web browsers. The JavaScript frameworks hide all the differences in instantiating `XMLHttpRequest` and simplify making HTTP requests and processing responses. Because the entire page is not reloaded, you can create _fat clients_ that keep certain data preloaded so that it can be reused in your JavaScript in different use cases. With Ajax, you can lazy-load content as needed rather than loading everything at once. Finally, the autocompletion feature, which is often taken for granted, would not be possible in an HTML/JavaScript application without Ajax.
 
 On the bad side, with AJAX the user loses the functionality of the browser's Back button, which reloads the previous Web page while the user could expect to see the previous state of the same page. 
 
