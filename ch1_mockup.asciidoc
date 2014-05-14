@@ -1035,6 +1035,7 @@ image::images/ewdv_0115.png[]
 TIP: If you want to monitor the position as it changes (the device is moving), use `geolocation.watchPosition()`, which implements an internal timer and checks the position. To stop monitoring the position, use `geolocation.clearWatch()`.
 
 
+[[integration_with_google_maps]]
 ==== Integration with Google Maps
 
 Knowing the device coordinates is important, but let's make the location information more presentable by feeding the device coordinates to the https://developers.google.com/maps/[Google Maps API]. In this version of Save The Child, we'll replace the gray rectangle from <<FIG3-15> with the Google Maps container. We want to show a familiar map fragment with a pin pointing at the location of the user's web browser. To follow our show-and-tell style, let's see it working first. Run _project-08-geolocation-maps_, and you'll see a map with your current location, as shown in <<FIG3-16>>. 
@@ -1267,10 +1268,13 @@ Actually, the Modernizr loader internally utilizes a tiny (under 2 KB) resource 
 ----
 ====
 
-The preceding code invokes the function `load()`, which can take different arguments. In our example, the argument is a specially prepared object with four properties: +test+, +yep+, +nope+, and +complete+. The `load()` function will test the value of `Modernizr.geolocation` and if it's true, it'll load the scripts listed in the `yep` property. Otherwise, it will load the code listed in the `nope` array. The code in _get-native-geo-data.js_ gets the user's location the same way as was done earlier in the section "<<MMMMMMMMMMMM>>." 
+The preceding code invokes the function `load()`, which can take different arguments. In our example, the argument is a specially prepared object with four properties: +test+, +yep+, +nope+, and +complete+. The `load()` function will test the value of `Modernizr.geolocation` and if it's true, it'll load the scripts listed in the `yep` property. Otherwise, it will load the code listed in the `nope` array. The code in _get-native-geo-data.js_ gets the user's location the same way as was done earlier in the section "<<integration_with_google_maps>>." 
 
-Now let's consider the "nope" case. The code of the get-geo-data-by-ip.js has to offer an alternative way of getting the location for the browsers that don't support HTML5 Geolocation API. We found the GeoIP JavaScript API offered by http://www.maxmind.com/[MaxMind, Inc.]. Their service returns country, region, city, latitude and longitude, which can serve as a good illustration of how a workaround of a non-supported feature can be implemented. The code in get-geo-data-by-ip.js is very simple for now.
+Now let's consider the +nope+ case. The code of _get-geo-data-by-ip.js_ has to offer an alternative way of getting the location of browsers that don't support the HTML5 Geolocation API. We found the GeoIP JavaScript API offered by http://www.maxmind.com/[MaxMind]. Its service returns country, region, city, latitude, and longitude, which can serve as a good illustration of how a workaround of a nonsupported feature can be implemented. The code in _get-geo-data-by-ip.js_ (see <<ex_workaround_for_nonsupported_features>>) is simple for now:
 
+[[ex_workaround_for_nonsupported_features]]
+.Reporting nonimplemented features
+====
 [source, javascript]
 ----
 function init(){
@@ -1280,36 +1284,39 @@ function init(){
 
  // The code to get the location by IP from http://j.maxmind.com/app/geoip.js 
  // will go here. Then we'll pass the latitude and longitude values to 
- // Google Map API for drawing the map.
+ // Google Maps API for drawing the map.
 	
 }
 
 ----
-.Example 1-14 Reporting non-implemented features
+====
 
-Most likely your browser supports HTML5 geolocation API, and you'll see the map created by the script get-native-geo-data.js. But if you want to test a non-supported geolocation (the nope branch)  either try this code in the older browser or change the test condition to look like this: `Modernizr.fakegeolocation,`.
+Most likely your browser supports the HTML5 Geolocation API, and you'll see the map created by the script _get-native-geo-data.js_. But if you want to test nonsupported geolocation (the +nope+ branch), either try this code in the older browser or change the test condition to look like this: `Modernizr.fakegeolocation,`.
 
-Google has several JavaScript APIs, for example, Maps, Search, Feeds, Earths et al. Any of these APIs can be loaded by  https://developers.google.com/loader/[Google AJAX Loader] `google.load()`. This is more generic way of loading any APIs comparing to loading maps from http://maps.googleapis.com/maps/api in the previous section on integrating geolocation and maps. The process of loading of the Google code with Google AJAX Loader consists of two steps:
+Google has several JavaScript APIs--for example, Maps, Search, Feed, and Earth. Any of these APIs can be loaded by the https://developers.google.com/loader/[Google AJAX Loader] `google.load()`. This is a more generic way of loading any APIs compared to loading maps from http://maps.googleapis.com/maps/api[maps.googleapis.com/maps/api], as shown in the previous section on integrating geolocation and maps. The process of loading the Google code with the Google Ajax loader consists of two steps:
 
-1. Load Google's  common loader script from https://www.google.com/jsapi
+1. Load Google's  common loader script from https://www.google.com/jsapi[www.google.com/jsapi].
 
-2. Load the concrete module API specifying its name, version and optional parameters. In our example we are loading the maps API of version 3 passing an object with two properties: `sensor=false` and the name of the callback function to invoke right after the mapping API completes loading: `'callback':init`.
+2. Load the concrete module API, specifying its name, version, and optional parameters. In our example, we are loading the Maps API of version 3, passing an object with two properties: `sensor=false` and the name of the callback function to invoke right after the mapping API completes loading, `'callback':init`.
 
-TIP: If you want to test your Web page in the specific old version of a particular Web browser, you can find their distributions at oldapps.com. For example, you can find all the old version of Firefox for http://mac.oldapps.com/firefox.php[Mac OS] and for http://www.oldapps.com/firefox.php[Windows].
+TIP: If you want to test your web page in a specific older version of a particular web browser, you can find distributions at https://www.oldapps.com[oldapps.com]. For example, you can find all the old version of Firefox for http://mac.oldapps.com/firefox.php[Mac OS] and for http://www.oldapps.com/firefox.php[Windows].
 
-==== Search and Multi-Markers With Google Maps
+==== Search and Multimarkers with Google Maps
 
-We've prepared for you a couple of more examples just to showcase the features of Google Maps API. The working examples will be included in the code accompanying the book, and we'll provide very brief explanations below. 
+We've prepared a couple of more examples to showcase the features of Google Maps. The working examples are included in the code accompanying this book, and we provide brief explanations in this section. 
 
-The project-09-map-and-search is an example of address search using Google Maps API. <<FIG3-19>> shows a fragment of the Save The Child page after we've entered the address "26 Broadway ny ny" in the search field. You can do a search by city or a zip code too. This can be a useful feature if you'd want to allow the users search for the children living in a particular geographical area so their donation would be directed to specific people.  
+The _project-09-map-and-search_ is an example of an address search using Google Maps. <<FIG3-19>> shows a fragment of the Save The Child page after we've entered the address *26 Broadway ny ny* in the search field. You can do a search by city or zip code, too. This can be a useful feature if you want to allow users to search for children living in a particular geographical area so their donations could be directed to specific people.  
 
 
 [[FIG3-19]]
-.Searching by Address
+.Searching by address
 image::images/ewdv_0119.png[]
 
-Our implementation of the search is shown in the code fragment from main.js. It uses geocoding, which is a process of converting an address into geographic coordinates (latitude and longitude). If the address is found, the code places a marker on the map. 
+Our implementation of the search is shown in <<ex_finding_location_by_address>>, a code fragment from _main.js_. It uses _geocoding_, which is the process of converting an address into geographic coordinates (latitude and longitude). If the address is found, the code places a marker on the map. 
 
+[[ex_finding_location_by_address]]
+.Finding map location by address
+====
 [source, javascript]
 ----
 var geocoder = new google.maps.Geocoder();
@@ -1344,7 +1351,7 @@ function getMapByAddress() {
 
    } else if (status == google.maps.GeocoderStatus.ZERO_RESULTS) { // <5>
   	console.log('geocode was successful but returned no results. ' +
-  	 'This may occur if the geocode was passed a non-existent ' + 
+  	 'This may occur if the geocode was passed a nonexistent ' + 
   	 'address or a latlng in a remote location.');
 
    } else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
@@ -1361,23 +1368,23 @@ function getMapByAddress() {
  });
 }
 ----
-.Example 1-15 Finding map location by address
+====
 
-<1> Initiate request to the `Gecoder` object providing the `GeocodeRequest` object with the address and a function to process the results. Since the request to the Google server is asynchronous, the function is a callback.
+<1> Initiate request to the `Gecoder` object, providing the `GeocodeRequest` object with the address and a function to process the results. Since the request to the Google server is asynchronous, the function is a callback.
 
-<2> When the callback will be invoked, it'll get an array with results.	
+<2> When the callback is invoked, it will get an array with results.	
 
 <3> Get the latitude and longitude from the result.
 
-<4> Prepare the LatLng object and give it to the mapping API for rendering. 	
+<4> Prepare the +LatLng+ object and give it to the mapping API for rendering. 	
 
 <5> Process errors.	
 
-The Geocoding API is simple and free to use until your application reaches a certain number of requests. Refer to https://developers.google.com/maps/documentation/javascript/geocoding[Google Geocoding API documentation] for more details. If your application is getting the status code `OVER_QUERY_LIMIT` you need to contact Google Maps API for Business sales team for information on licensing options.
+The Geocoding API is simple and free to use until your application reaches a certain number of requests. Refer to the https://developers.google.com/maps/documentation/javascript/geocoding[Google Geocoding API documentation] for more details. If your application is getting the status code `OVER_QUERY_LIMIT`, you need to contact the Google Maps API for Business sales team for information on licensing options.
 
-===== Adding Multiple Markers on the Map
+===== Adding multiple markers on the map
 
-Jerry has yet another idea: show multiple markers on the map reflecting several donation campaigns and charity events that are going on at various locations. If we display  this information on the Save The Child page more people may participate with their donations or other ways. We've just learned how to do an address search on the map, and if the application has an access to the data about charity events, we can display them as the markers on the map. Run the project-10-maps-multi-markers and you'll see a map with multiple markers as in <<FIG3-20>>
+Our designer, Jerry, has yet another idea: show multiple markers on the map to reflect several donation campaigns and charity events that are going on at various locations. If we display  this information on the Save The Child page, more people might donate or participate in other ways. We've just learned how to do an address search on the map, and if the application has access to data about charity events, we can display them as the markers on the map. Run _project-10-maps-multi-markers_ and you'll see a map with multiple markers, as shown in <<FIG3-20>>.
 
 [[FIG3-20]]
 .Multiple markers on the map
