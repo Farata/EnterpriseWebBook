@@ -16,56 +16,56 @@ Back in 1999, Microsoft decided to create a web version of Outlook, its popular 
 
 In the early 2000s, other web browsers implemented their own versions of `XMLHTTPRequest`. Its Working Draft 6 is http://www.w3.org/TR/XMLHttpRequest/[published by W3C].  Google created its famous email client, Gmail, and its Maps web application. In 2005, Jesse James Garrett wrote an article titled "AJAX: A New Approach to Web Applications." The web developer community liked the term AJAX, which stands for Asynchronous JavaScript and XML (it was originally presented as an acronym; today, it's considered as a name, hence the now more common spelling, "Ajax"), and this gave birth to a new breed of web applications that could update the content of just a portion of a web page without re-retrieving the entire page. Interestingly enough, the last letter in the AJAX acronym stands for XML, although presenting the data in XML form is not required, and currently is seldom used as a data format in client-server exchanges. JSON is used a lot more often to represent data, but apparently AJAJ didn't sound as good as AJAX. 
 
-Visit the http://www.google.com/finance[Google Finance] or http://finance.yahoo.com/[Yahoo! Finance] web pages when the stock market is open, and you'll see how price quotes or other financial indicators change while most of the content remains the same. This gives an illusion of the server pushing the data to your web client. But most likely, it is not a data push but rather periodic _polling_ of the server's data using Ajax. In modern web applications, we expect to see more real server-side data push using the HTML5 WebSocket API, which is described in detail in <<upgrading_http_to_websocket>>. 
+Visit the http://www.google.com/finance[Google Finance] or http://finance.yahoo.com/[Yahoo! Finance] web pages when the stock market is open, and you'll see how price quotes or other financial indicators change while most of the content remains the same. This gives an illusion of the server pushing the data to your web client. But most likely, it is not a data push but rather periodic _polling_ of the server's data using Ajax. In modern web applications, we expect to see more of real server-side data push using the HTML5 WebSocket API, which is described in detail in <<upgrading_http_to_websocket>>. 
 
 
-=== What's JSON
+=== Understanding JSON
 
-http://www.json.org/js.html[JSON] stands for JavaScript Object Notation. It's a more compact than XML way to represent the data. Besides, all modern Web Browsers understand and can parse JSON data. After learning the JavaScript object literals in Chapter 1, you'll see that the presenting the data in JSON notation is almost the same as writing JavaScript object literals. 
+http://www.json.org/js.html[JSON] stands for JavaScript Object Notation. Compared to XML, it's a more compact way to represent data. Besides, all modern web browsers understand and can parse JSON data. Now that you've learned about JavaScript object literals in <<mocking_up_the_app>>, you'll see that presenting data in JSON notation is almost the same as writing JavaScript object literals. 
 
 
-<<FIG4-1>> depicts a high level view of a typical Web application. All of the code samples from Chapter 1 (and in Appendixes) were where written in HTML, JavaScript and CSS. In this chapter will add to the mix the `XMLHttpRequest` object that will send and receive the JSON content wrapped into `HTTPRequest` and `HTTPResponse` objects.
+<<FIG4-1>> depicts a high-level view of a typical web application. All of the code samples from <<mocking_up_the_app>> (and <<appendix_a>>, <<appendix_b>>, and <<appendix_c>>) were written in HTML, JavaScript, and CSS. In this chapter, we add to the mix the `XMLHttpRequest` object that will send and receive the JSON content wrapped into `HTTPRequest` and `HTTPResponse` objects.
 
 
 [[FIG4-1]]
-.Anatomy of a Web application
+.Anatomy of a web application
 image::images/ewdv_0201.png[]
 
-When a Web page is loaded the user doesn't know (and doesn't have to know) that the page content was brought from several servers that can be located thousands miles apart. More often than not, when the user enters the URL requesting an HTML document, the server side code can engage several servers to bring all the data requested by the user. Some of the data are retrieved by making calls to one or more Web Services. The legacy Web services were build using SOAP + XML, but  majority of today's Web services are build using lighter http://en.wikipedia.org/wiki/Representational_state_transfer[_RESTful architecture_], and JSON has become a de facto standard data exchange format of the REST Web services. 
+When a web page is loaded, the user doesn't know (and doesn't have to know) that the page content was brought from several servers that could be located thousands of miles apart. More often than not, when the user enters the URL requesting an HTML document, the server-side code can engage several servers to bring all the data requested by the user. Some data is retrieved by making calls to one or more web services. The legacy web services were built using SOAP + XML, but the majority of today's web services are built using lighter http://en.wikipedia.org/wiki/Representational_state_transfer[_RESTful architecture_] (REST standing for Representational State Transfer), and JSON has become a de facto standard data exchange format for REST web services. 
 
-=== How AJAX Works
+=== Working with Ajax
 
-Imagine a single-page application that needs some data to refreshed in real time. For example, our Save The Child application includes an online auction where people can bid and purchase some goods as a part of a charity event. If John from New York placed a bid on certain auction item, and some time later Mary from Chicago placed the higher bid on the same item, we want to make sure that John knows about it immediately, in real time.  This means that the server-side software that received Mary's bid has to push this data to all users who expressed their interest in the same item.
+Imagine a single-page application that needs some data refreshed in real time. For example, our Save The Child application includes an online auction where people can bid and purchase goods as a part of a charity event. If John from New York places a bid on a certain auction item, and some time later Mary from Chicago places a higher bid on the same item, we want to make sure that John knows about it immediately, in real time. This means that the server-side software that received Mary's bid has to push this data to all users who expressed their interest in the same item.
 
-But the server has to send and the browser has to modify only the new price while the rest of the content of the Web page should remain the same. You can implement behavior using AJAX. But first, the bad news: you can't implement the real-time server side push with AJAX. You can only emulate this behavior by using polling techniques, when the `XMLHttpRequest` object sits inside your JavaScript code and periodically sends HTTP requests to the server asking if there were any changes in bids since the last request. 
+But the server has to send, and the browser has to modify, only the new price while the rest of the content of the web page should remain the same. You can implement this behavior by using Ajax. First, however, the bad news: you can't implement real-time server-side push with Ajax. You can only emulate this behavior by using polling techniques, whereby the `XMLHttpRequest` object sits inside your JavaScript code and periodically sends HTTP requests to the server asking whether any changes in bids occurred since the last request. 
 
-If, for instance, the last request was made at 10:20:00AM, the new bid was placed at 10:20:02AM, and the application makes a new request (and updates the browser's window) at 10:20:25AM, this means that the user will be notified about the price change with a three second delay. AJAX is still request-response based way of getting the server's data, and strictly speaking, doesn't offer a real real-time updates. Some people use the term _near real time_ notifications.
+If, for instance, the last request was made at 10:20:00A.M., the new bid was placed at 10:20:02A.M., and the application makes a new request (and updates the browser's window) at 10:20:25A.M., this means that the user will be notified about the price change with a 3-second delay. Ajax is still a request-response-based way of getting the server's data, and strictly speaking, doesn't offer true real-time updates. Some people use the term _near real-time_ notifications.
 
-Another bad news is that AJAX uses HTTP protocol for the data communication, which means that a substantial overhead in the form of `HTTPResponse` header will be added to the new price, and it can be as large as several hundred bytes. This is still better than sending the entire page to the Web browser, but HTTP adds a hefty overhead. 
+Other bad news is that Ajax uses HTTP for data communication, which means that substantial overhead in the form of an `HTTPResponse` header will be added to the new price, and it can be as large as several hundred bytes. This is still better than sending the entire page to the web browser, but HTTP adds a hefty overhead. 
 
 [NOTE] 
 ====
-We'll implement such an auction in Chapter 8 using a lot more efficient protocol called WebSockets, which supports a real-time data push and adds only several extra bytes to the data load. 
+We implement such an auction in <<upgrading_http_to_websocket>> by using a lot more efficient protocol called WebSocket, which supports a real-time data push and adds only several extra bytes to the data load. 
 ====
 
-==== Retrieving Data From the Server
+==== Retrieving Data from the Server
 
-Let's try to implement AJAX techniques by implementing a data retrieval. The process of making an AJAX request is well defined and consists of the following steps:
+Let's try to implement Ajax techniques for data retrieval. The process of making an Ajax request is well defined and consists of the following steps:
 
 
-* Create an instance of XMLHttpRequest object.
+. Create an instance of the +XMLHttpRequest+ object.
 
-* Initialize the request to your data source by invoking the method `open()`.
+. Initialize the request to your data source by invoking the method `open()`.
 
-*  Assign the a handler to the `onreadystatechange` attribute to process server's response.
+.  Assign a handler to the `onreadystatechange` attribute to process the server's response.
 
-*  Make a non-blocking request to the data source by calling `send()`. 
+.  Make a nonblocking request to the data source by calling `send()`. 
 
-*  In your handler function process the response when it arrives from the server. This is were  _asynchronous_ came from - the handler can be invoked at any time whenever the server prepares the response.
+.  In your handler function, process the response when it arrives from the server. This is where  _asynchronous_ comes from: the handler can be invoked at any time, whenever the server prepares the response.
 
-*  Modify the DOM elements based on the received data, if need be.
+.  Modify the DOM elements based on the received data, if need be.
 
-NOTE: Most likely you are going to be using one of the popular JavaScript frameworks, which will spare you from knowing all these details, but knowing how AJAX works under the hood can be beneficial.
+NOTE: Most likely you are going to be using one of the popular JavaScript frameworks, which will spare you from knowing all these details, but knowing how Ajax works under the hood can be beneficial.
 
 In most of the books on AJAX you'll see browser-specific ways of instantiating the `XMLHttpRequest` object (a.k.a. XHR). Most likely you'll be developing your application using some JavaScript library or a framework and all browser specifics in instantiating of the `XMLHttpRequest` will be hidden from you. Chapters 3 and 4 include such examples, but let's stick to the standard JavaScript way implemented by all modern browsers: 
 
