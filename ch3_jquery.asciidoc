@@ -384,19 +384,22 @@ $('form').submit(function() {
 
 TIP: Returning `false` from a jQuery event handler is the same as calling either `preventDefault()` or `stopPropagation()` on the `jQuery.Event` object. In pure JavaScript, returning `false` doesn't stop propagation (try to run http://jsfiddle.net/APQk6/[this fiddle]). 
 
-Later in this chapter, in the section "Submitting Donate Form," you'll see code that uses the `serialize()` method.
+Later in this chapter, in the section "<<submitting_donate_form>>," you'll see code that uses the `serialize()` method.
 
 
 [[programming_stc_with_jquery]]
-=== Programming Save The Child With jQuery
+=== Programming Save The Child by Using jQuery
 
-In this section we'll review code samples from several small projects (see Appendix C for running instructions) that are jQuery re-writes of the corresponding pure-JavaScript projects from Chapters 1 and 2. We are not going to add any new functionality - the goal is to demonstrate how jQuery allows you to achieve the same results while writing less code. You'll also see how it can save you time by handling browser incompatibility for common uses (like AJAX).
+In this section, we'll review code samples from several small projects (see <<appendix_c>> for running instructions) that are jQuery rewrites of the corresponding pure-JavaScript projects from <<mocking_up_the_app>> and <<using_ajax_and_json>>. We are not going to add any new functionality - the goal is to demonstrate how jQuery allows you to achieve the same results while writing less code. You'll also see how it can save you time by handling browser incompatibility for common uses (like Ajax).
 
 ==== Login and Donate
 
-For example, the file main.js from project-02-jQuery-Login is 33% less in size than project-02-login written in pure JavaScript. jQuery allows your programs to be brief. For example, the next code shows how six lines of code in JavaScript can be replaced with one - the jQuery function `toggle()` will toggle the visibility of `login-link`, `login-form`, and `login-submit`. 
+The file _main.js_ from _project-02-jQuery-Login_ is 33 percent smaller than _project-02-login_ written in pure JavaScript. jQuery allows your programs to be brief. For example, the next code shows how six lines of JavaScript can be replaced with one: the jQuery function `toggle()` toggles the visibility of `login-link`, `login-form`, and `login-submit`. 
 
-NOTE: The total size of your jQuery application is not necessarily smaller comparing the pure JavaScript one because it includes the code of jQuery library.
+[NOTE]
+====
+The total size of your jQuery application is not necessarily smaller than the pure JavaScript one because it includes the code of the jQuery library.
+====
 
 [source, javascript]
 ----
@@ -415,7 +418,6 @@ function showLoginForm() {
 $('#login-link, #login-form, #login-submit').toggle();
 }
 ----
-.Example 3.16 The Login form
 
 The code of the Donation section also becomes slimmer with jQuery. For example, the following section from the JavaScript version of the application is removed:
 
@@ -428,10 +430,12 @@ var customAmount = document.getElementById('customAmount');
 var donateForm = document.forms['_xclick'];
 var donateLaterLink = document.getElementById('donate-later-link');
 ----
-.Example 3.17 Removed JavaScript code
 
-The jQuery method chaining allows combining (in one line) finding DOM objects and acting upon them. The following is the entire code of the main.js from project-01-jQuery-make-donation, which includes the initial version of the code of Login and Donate sections of Save The Child.
+The jQuery method chaining allows combining (in one line) finding DOM objects and acting upon them. <<ex_entire_jquery_script>> presents the entire code of _main.js_ from _project-01-jQuery-make-donation_, which includes the initial version of the code of the Login and Donate sections of Save The Child.
 
+[[ex_entire_jquery_script]]
+.The entire jQuery script from main.js
+====
 [source, javascript]
 ----
 /* --------- login section -------------- */
@@ -489,7 +493,7 @@ $(function() {
   		
   
   // Show/hide the donation form if the user clicks
-  // on the button Donate Now or the link I'll Donate Later
+  // the button Donate Now or the link I'll Donate Later
   function showHideDonationForm() {
   	$('#donation-address, #donate-form-container').toggle();
   }
@@ -525,17 +529,17 @@ $(function() {
 
 });
 ----
-.Example 3.18 The entire jQuery script from main.js
+====
 
-<1> This one liner finds all elements of the form named `_xclick`, and immediately applies the jQuery filter to remove from this collection any elements except radiobuttons. Then it unchecks all of them by setting the property `checked` to `false`.  This has to be done if the user places the focus inside the  "Other amount" field.
+<1> This one-liner finds all elements of the form named `_xclick`, and immediately applies the jQuery filter to remove from this collection any elements except radio buttons. Then, it deselects all of them by setting the property `checked` to `false`.  This has to be done if the user places the focus inside the  Other Amount field.
 
-<2> If the user leaves the "Other amount" return the check the previously selected radiobutton again. The `eq` filter picks the radiobutton whose number is equal to the value of the variable `checkedInd`.
+<2> If the user leaves the Other Amount field, return the check to the previously selected radio button again. The `eq` filter picks the radio button whose number is equal to the value of the variable `checkedInd`.
 
 <3> A single invocation of the `on()` method registers two event handlers: one for the `focus` and one for the `blur` event.
 
-jQuery includes http://api.jquery.com/category/effects/[a number of effects] that make the user experience more engaging. Let's use one of them called `fadeToggle()`. In the code above there is a section that toggles visibility of the Donate form. If the user clicks on the Donate Now button, the form becomes visible (see <<FIG3-11>>). If the user clicks on the link "I'll donate later", the form becomes hidden as in <<FIG3-10>>. The jQuery method `toggle()` does its job, but the change happens abruptly. The effect `fadeToggle()` allows to introduce slower fading which improves the user experience, at least to our taste. 
+jQuery includes http://api.jquery.com/category/effects/[a number of effects] that make the user experience more engaging. Let's use one of them, called `fadeToggle()`. In the preceding code, a section that visibility of the Donate form. If the user clicks the Donate Now button, the form becomes visible (see <<FIG3-11>>). If the user clicks the link "I'll donate later," the form becomes hidden, as in <<FIG3-10>>. The jQuery method `toggle()` does its job, but the change happens abruptly. The effect `fadeToggle()` allows us to introduce slower fading, which improves the user experience, at least to our taste. 
 
-If the code would hide/show just one component, the code change would be trivial - replacing `toggle()` with `fadeToggle('slow')` would do the trick.  But in our case, the toggle changes visibility of two `<div>'s`: `donation-address` and `donation-form-container`, which should happen in a certain order. The code below is a replacement of the show/hide section in the main.js to introduce the fading effect.
+If the code would hide/show just one component, the code change would be trivial--replacing `toggle()` with `fadeToggle('slow')` would do the trick. But in our case, the toggle changes visibility of two ++<div>++s: `donation-address` and `donation-form-container`, which should happen in a certain order. The following code is a replacement of the show/hide section of _main.js_ to introduce the fading effect.
 
 [source, javascript]
 ----
@@ -554,15 +558,17 @@ $('#donate-button').on('click', function() {
 $('#donate-later-link').on('click', function() {
         showHideDonationForm(donForm, donAddress)});	
 ----
-.Example 3.19 Showing and hiding the donation form
 
-If you want to see the difference, first run the  project-01-jQuery-make-donation and click on the Donate button (no effects), and then run project-04-jQuery-donation-ajax-json, which has the fading effect.
+If you want to see the difference, first run _project-01-jQuery-make-donation_ and click the Donate Now button (no effects), and then run _project-04-jQuery-donation-ajax-json_, which has the fading effect.
 
 [[html_states_and_countries]]
-==== HTML States and Countries With jQuery AJAX
+==== Loading HTML States and Countries by Using jQuery Ajax
 
-The project project-03-jQuery-donation-ajax-html illustrates retrieving the HTML data about the states and countries using jQuery method `load()`. Here's the fragment from main.js that makes two `load()` calls. The second call purposely misspells the name of the file to generate error.
+The _project-03-jQuery-donation-ajax-html_ project illustrates retrieving HTML data about the states and countries by using the jQuery method `load()`. <<ex_loading_data_processing_errors>> shows the fragment from _main.js_ that makes two `load()` calls. The second call purposely misspells the name of the file to generate an error.
 
+[[ex_loading_data_processing_errors]]
+.Loading data and processing errors
+====
 [source, javascript]
 ----
 function loadData(dataUrl, target, selectionPrompt) {
@@ -592,21 +598,24 @@ var countryPrompt =
 // Pass the wrong data URL on purpose
 loadData('da----ta/countries.html', $('#counriesList'), countryPrompt); // <4>
 ----
-.Example 3.20 Loading data and processing errors
+====
 
 <1> The callback to be invoked right after the `load()` completes the request.
 
-<2> Using jQuery method `prepend()` insert the very first element into the HTML element <select> to prompt the user to select a state or a country.
+<2> Using the jQuery method `prepend()`, insert the first element into the HTML element +<select>+ to prompt the user to select a state or a country.
 
-<3> Display an error message at the bottom of the Web page in the `<div>` section with ID `temp-project-name-container`.
+<3> Display an error message at the bottom of the web page in the `<div>` section with the ID `temp-project-name-container`.
 
-<4> Pass the misspelled data URL to generate error message.
+<4> Pass the misspelled data URL to generate an error message.
 
 
-==== JSON States and Countries With jQuery AJAX
+==== Loading JSON States and Countries by Using jQuery Ajax
 
-The project named project-04-jQuery-donation-ajax-json demonstrates how to make a jQuery `ajax()` call to retrieve the JSON data about countries and states and populate the respective comboboxes in the donation form.  The function `loadData()` in the following code fragment takes three arguments: the data URL, the name of the root element in the JSON file and the target HTML element to be populated with the data retrieved from the AJAX call.  
+The project named project-04-jQuery-donation-ajax-json demonstrates how to make a jQuery `ajax()` call to retrieve the JSON data about countries and states and populate the respective combo boxes in the donation form.  The function `loadData()` in <<ex_loading_using_ajax>> takes three arguments: the data URL, the name of the root element in the JSON file, and the target HTML element to be populated with the data retrieved from the Ajax call.  
 
+[[ex_loading_using_ajax]]
+.Loading countries and states with ajax()
+====
 [source, javascript]
 ----
 function loadData(dataUrl, rootElement, target) {
@@ -642,29 +651,29 @@ loadData('data/us-states-list.json',                           // <5>
 loadData('data/counries-list.json',                            // <6>
                          'countrieslist', $('#counriesList'));
 ----
-.Example 3.21 Loading countries and states with ajax()
+====
 
-<1> Set the timeout. If the result of the `ajax()` call won't return within 5 second, the method `fail()` will be invoked.
+<1> Set the timeout. If the result of the `ajax()` call won't return within 5 seconds, the method `fail()` will be invoked.
 
-<2> The handler function to process the successfully retrieved data 
+<2> The handler function to process the successfully retrieved data.
 
 <3> Get the content of the HTML `<select>` element to populate with states or countries. The jQuery method `html()` uses the browser's `innerHTML` property.
 
-<4> The handler function to process errors, if any
+<4> The handler function to process errors, if any.
 
-<5> Calling `loadData()` to retrieve states and populate the `#state` combobox. The `usstatelist` is the name of the root element in the json file us-states-list.json.
+<5> Calling `loadData()` to retrieve states and populate the `#state` combo box. The `usstatelist` is the name of the root element in the JSON file _us-states-list.json_.
 
-<6> Calling `loadData()` to retrieve countries and populate the `#countriesList` combobox
+<6> Calling `loadData()` to retrieve countries and populate the `#countriesList` combo box.
 
-Compare this code with the pure JavaScript version from Chapter 2 that populates states and countries. If the jQuery code doesn't seem to be shorter, keep in mind that to writing a cross-browser version in pure JavaScript would require more than a dozen of additional lines of code that deal with instantiation of `XMLHttpRequest`.
+Compare this code with the pure JavaScript version from <<using_ajax_and_json>> that populates states and countries. If the jQuery code doesn't seem to be shorter, keep in mind that writing a cross-browser version in pure JavaScript would require more than a dozen additional lines of code that deal with the instantiation of `XMLHttpRequest`.
 
-Run the project-04-jQuery-donation-ajax-json and open Google Developer Tools and click on the Network tab. From <<FIG5-2>> you can see that jQuery made two successful calls retrieving two JSON files with the data on states and countries.
+Run _project-04-jQuery-donation-ajax-json_. Open Google Developer Tools and click the Network tab. In <<FIG5-2>>, you can see that jQuery made two successful calls, retrieving two JSON files with the data on states and countries.
 
 [[FIG5-2]]
 .Calling ajax() to retrieve states and countries 
 image::images/ewdv_0302.png[] 
 
-Click on the the countries-list on the left (see <<FIG5-3>>) and you'll see the JSON data in the response object.
+Click _countries-list_ on the left (see <<FIG5-3>>) and you'll see the JSON data in the response object.
 
 [[FIG5-3]]
 .The JSON with countries is successfully retrieved 
@@ -676,7 +685,8 @@ Now let's create an error situation to test the `$.ajax().fail()` chain. Just ch
 .The file counries.json is not found: 404
 image::images/ewdv_0304.png[]
 
-==== Submitting Donate Form
+[[submitting_donate_form]]
+==== Submitting the Donate Form
 
 Our Save The Child application should be able to  submit the donation form to Paypal.com. The file index.html from project project-04-jQuery-donation-ajax-json contains the form with `id="donate-form"`. The fragment of this form is shown below.  
 
