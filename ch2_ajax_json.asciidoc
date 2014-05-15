@@ -937,49 +937,48 @@ function drawPieChart(chartContaner, chartData, centerX, centerY,
 ----
 ====
 
-<1> Create the `<svg:path>` HTML element, which is the most important SVG element for drawing basic shapes.. It includes a series of commands that produce the required drawing. For example, _M 10 10_ means _movo to the coordinate 10,10_ and _L 20 30_ means _draw the line to the coordinate 20,30_. 
+<1> Create the `<svg:path>` HTML element, which is the most important SVG element for drawing basic shapes. It includes a series of commands that produce the required drawing. For example, _M 10 10_ means _move to the coordinate 10,10_ and _L 20 30_ means _draw the line to the coordinate 20,30_. 
 
-<2> Fill the details of the `<svg:path>` element to draw the pie sector. 
-Run the project-05-svg-pie-chart-json to see the Save The Child page, then right-click on the pie chart and select Inspect Element (this is the name of the menu item in Firefox). <<FIG4-7>> shows the resulting content of our `<svg>` element. As you can see, it's not pixel based but a set of XML-like commands that drew the content of the chart. If you'll run the previous version of our application (project-04-canvas-pie-chart-json) and right-click on the chart, you will be able to save it as an image, but won't see the internals of the `<canvas>` element.
+<2> Fill the details of the `<svg:path>` element to draw the pie sector. Run _project-05-svg-pie-chart-json_ to see the Save The Child page, and then right-click the pie chart and select Inspect Element (this is the name of the menu item in Firefox). <<FIG4-7>> shows the resulting content of our `<svg>` element. As you can see, it's not pixel based but a set of XML-like commands that drew the content of the chart. If you run the previous version of our application (_project-04-canvas-pie-chart-json_) and right-click the chart, you will be able to save it as an image, but won't see the internals of the `<canvas>` element.
 
-<3> Adding the internal elements of the chart container to the DOM - path, bullets and text. These elements can be modified if needed without redrawing the entire content of the container.	
+<3> Add the internal elements of the chart container to the DOM: path, bullets, and text. These elements can be modified if needed without redrawing the entire content of the container.	
 
-TIP: in our code example we have written the path commands manually to process the data dynamically. But Web designers often use tools (http://www.adobe.com/products/illustrator.html[Adobe Illustrator], http://inkscape.org/[Incscape] et al.) to draw and then export images into an SVG format. In this case all paths will be encoded as `<svg:path>` automatically. 
+TIP: In our code example, we have written the path commands manually to process the data dynamically. But web designers often use tools (http://www.adobe.com/products/illustrator.html[Adobe Illustrator] or http://inkscape.org/[Incscape]) to draw and then export images into SVG format. In this case all paths will be encoded as `<svg:path>` automatically. 
  
 [[FIG4-7]]
 .The chart content in SVG
 image::images/ewdv_0207.png[]
 
-Since the SVG is XML-based, its very easy to generate the code shown in <<FIG4-7>> on the server, and lots of Web applications send ready to display SVG graphics to the users' Web browsers. But in our example we are generating the SVG output in the JavaScript from JSON received from the server, which provides a cleaner separation between the client and the server-side code. The final decision on what to send to the Web browser (ready to render SVG or raw JSON) has to be made after considering various factors such as available bandwidth, the size of data, the number of users, the existing load on the server resources. 
+Because the SVG is XML-based, it's easy to generate the code shown in <<FIG4-7>> on the server, and lots of web applications send ready-to-display SVG graphics to the users' web browsers. But in our example, we are generating the SVG output in the JavaScript from JSON received from the server, which provides a cleaner separation between the client and the server-side code. The final decision on what to send to the web browser (ready-to-render SVG or raw JSON) has to be made after considering various factors such as available bandwidth, and the size of data, the number of users, and the existing load on server resources. 
 
 TIP: SVG supports animations and transformation effects, while canvas doesn't.
 
 
-=== Loading Data From Other Servers With JSONP
+=== Loading Data from Other Servers by Using JSONP
 
-Imagine that a Web page was loaded from the domain abc.com, and it need JSON formatted data from another domain (xyz.com). As mentioned earlier, AJAX has cross-origin restrictions, which prevent this. JSONP is a technique used in to relax the cross-origin restrictions.  With JSONP, instead of sending plain JSON data, the server wraps them up into a JavaScript function and then sends it to the Web browser for execution as a callback. The Web page that was originated from abc.com may send the request `http://xyz.com?callback=myDataHandler` technically requesting the server xyz.com to invoke the JavaScript callback named `myDataHandler`. This URL is a regular HTTP GET request, which may have other parameters too so you can send some data to the server too.
+Imagine that a web page was loaded from the domain _abc.com_, and it needs JSON-formatted data from another domain (_xyz.com_). As mentioned earlier, Ajax has cross-origin restrictions, which prevent this. JSONP is a technique used to relax the cross-origin restrictions.  With JSONP, instead of sending plain JSON data, the server wraps it up into a JavaScript function and then sends it to the web browser for execution as a callback. The web page that was originated from _abc.com_ might send the request `http://xyz.com?callback=myDataHandler`, technically requesting the server _xyz.com_ to invoke the JavaScript callback named `myDataHandler`. This URL is a regular HTTP +GET+ request, which may have other parameters so that you can send some data to the server, too.
 
-The server will send to the browser the JavaScript function that may look as follow:
+The server then sends to the browser the JavaScript function that might look as follows:
 
 `function myDataHandler({"fname": "Alex", "lname":"Smith","skillLevel": 11});`
 
-The Web browser will invoke the callback `myDataHandler()`, which must exist in the Web page. The Web browser will pass the received JSON object as an argument to this callback:
+The web browser invokes the callback `myDataHandler()`, which must exist in the web page. The web browser passes the received JSON object as an argument to this callback:
 
 [source, javascript]
-
+----
 function myDataHandler(data){
   // process the content of the argument data - the JSON object 
   // received from xyz.com
 }
-.Example 2-22 The callback myDataHandler
+----
 
-If all you need is just to retrieve the data from a different domain on page just add the following tag to your HTML page:
+If all you need is to retrieve data from a different domain on the page, just add the following tag to your HTML page:
 
 `<script src="http://xyz.com?callback=myDataHandler">` 
 
-But what if you need to dynamically make such requests periodically (e.g. get all twits with a hashtag `#savisickchild` by sending an HTTP GET using Twitter API at `http://search.twitter.com/search.json?q=savesickchild&rpp=5&include_entities=true&with_twitter_user_id=true&result_type=mixed`)? You add a change handler to the option that is called and passes or grabs the value needed.
+But what if you need to dynamically make such requests periodically (for example, get all tweets with a hashtag `#savesickchild` by sending an HTTP +GET+ using the Twitter API at `http://search.twitter.com/search.json?q=savesickchild&rpp=5&include_entities=true&with_twitter_user_id=true&result_type=mixed`)? You add a change handler to the option that is called and passes or grabs the value needed.
 
-You can dynamically add a `<script>` tag to the DOM object from your JavaScript code. Whenever the browser sees the new `<script>` element it executes it. Such script injection can be done like this:
+You can dynamically add a `<script>` tag to the DOM object from your JavaScript code. Whenever the browser sees the new `<script>` element, it executes it. The script injection can be done like this:
 
 [source, javascript]
 ----
@@ -987,20 +986,19 @@ var myScriptTag = document.createElement("script");
 myScriptTag.src = "http://xyz.com?callback=myDataHandler";
 document.getElementsByTagName("body").appendChild(myScriptTag);
 ----
-.Example 2-23 Adding the `<scrpt>` tag dynamically
 
-Your JavaScript can build the URL for the `myScriptTag.src` dynamically and pass parameters to the server based on some user's actions.
+Your JavaScript can build the URL for the `myScriptTag.src` dynamically and pass parameters to the server based on a user's actions.
 
-Of course, this technique presents a danger if there is a chance that the JavaScript code sent by xyz.com is intercepted and replaced by a malicious code (similarly to the JavaScript `eval()` danger). But it's not more dangerous that receiving any JavaScript from non-trusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data. 
+Of course, this technique presents a danger if there is a chance that the JavaScript code sent by _xyz.com_ is intercepted and replaced by a malicious code (similarly to the JavaScript `eval()` danger). But it's not more dangerous than receiving any JavaScript from a nontrusted  server. Besides, your handler function could always make sure that the received data is a valid object with expected properties, and only after that handle the data. 
 
-If you decide to use JSONP don't forget about error handling. Most likely you'll be using one of the JavaScript frameworks and they usually offer a standard mechanism for JSONP error handling, dealing with poorly formatted JSON responses, and recovery in cases of network failure. One of such libraries is called https://github.com/jaubourg/jquery-jsonp[jQuery-JSONP].
+If you decide to use JSONP, don't forget about error handling. Most likely you'll use one of the JavaScript frameworks, which usually offer a standard mechanism for JSONP error handling, dealing with poorly formatted JSON responses, and recovery in cases of network failure. One such library is called https://github.com/jaubourg/jquery-jsonp[jQuery-JSONP].
 
 
 ==== Beer and JSONP
 
-In this section you'll see a small code example illustrating the data retrieval from publicly publicly available http://openbeerdatabase.com/[Open Beer DataBase], which exists to help software developers test their code that makes REST Web service calls and works with JSON and JSONP data. Our Save The Child page won't display beer bottles, but we want to show that in addition to the retrieval of the donations and charts data from one domain we can get the data from a third-party domain openbeerdatabase.com. 
+In this section, you'll see a small code example illustrating the data retrieval from the publicly available http://openbeerdatabase.com/[Open Beer DataBase], which exists to help software developers test code that makes RESTful web service calls and works with JSON and JSONP data. Our Save The Child page won't display beer bottles, but we want to show that in addition to the retrieval of the donations and charts data from one domain, we can get the data from a third-party domain _openbeerdatabase.com_. 
 
-First, enter the URL `http://api.openbeerdatabase.com/v1/breweries.json` in the address bar of your Web browser, and it'll return the following JSON data (only 2 out of 7 breweries are shown for brevity):
+First, enter the URL `http://api.openbeerdatabase.com/v1/breweries.json` in the address bar of your web browser; it will return the following JSON data (only two out of seven breweries are shown for brevity):
 
 [source, javascript]
 ----
@@ -1026,7 +1024,6 @@ First, enter the URL `http://api.openbeerdatabase.com/v1/breweries.json` in the 
    ]
 }
 ----
-.Example 2-24 JSON representation of beer
 
 Now let's request the same data, but in a JSONP format by adding to the URL a parameter with a callback name `myDataHandler`. Entering in the browser `http://api.openbeerdatabase.com/v1/breweries.json?callback=processBeer` will return the following (it's a short version):
 
