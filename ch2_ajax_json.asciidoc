@@ -638,21 +638,21 @@ We prefer using Gzip, which stands for GNU zip compression. On the server side, 
 
 For example, applying the Gzip filter to the 9 KB _countries.json_ file will reduce its size to 3 KB, which means serious bandwidth savings, especially for web applications with lots of concurrent users. This is even more important for mobile web clients, which might be operating in areas with slower connections. Web clients usually set the HTTP request attribute `Accept-Encoding: gzip`, inviting the server to return GZipped content, and the web server may compress the response if it does support it or unzipped content otherwise. If the server supports Gzip, the HTTP response will have the attribute `Content-Encoding: gzip`, and the browser will know to unzip the response data before use. 
 
-Gzip is being used for compressing all types of content: HTML, CSS, JavaScript and more. If your server sends JSON content to the client setting the content type to `application/json` don't forget to include this MIME type in your server configuration for Gzip. 
+Gzip is being used for compressing all types of content: HTML, CSS, JavaScript, and more. If your server sends JSON content to the client by setting the content type to `application/json`, don't forget to include this MIME type in your server configuration for Gzip. 
 
-Web browsers support the gzipping too, and your application can set `Content-Ecoding: gzip` in HTTP request while sending the data from the Web client to the server. But Web clients usually don't send massive amounts of data to the server so the benefits of the compression on the client side may not be as big.
+Web browsers support GZipping, too, and your application can set `Content-Ecoding: gzip` in HTTP request while sending the data from the web client to the server. But web clients usually don't send massive amounts of data to the server, so the benefits of the compression on the client side might not be as big.
 
 === Adding Charts to Save The Child
 
-Let's consider yet another use case for JSON in Save The Child. We want to display charts with statistics about the donations.  By now, our application look not exactly as the original mockup from <<FIG3-2>>, but it's pretty close. There is an empty space in the left to the maps, and the charts showing donation statistics can fit right in. Now we need to decide how to draw the charts using nothing, but HTML5 elements. Note that we are not talking about displaying static images using the `<img>` element - the goal is to draw the images dynamically in the client's code. You can accomplish this goal using HTML5 elements `<canvas>` or `<svg>`. 
+Let's consider yet another use case for JSON in Save The Child. We want to display charts with statistics about donations. By now, our application doesn't look exactly like the original mock-up from <<FIG3-2>>, but it's pretty close. There is an empty space to the left of the maps, and the charts showing donation statistics can fit right in. Now we need to decide how to draw the charts by using nothing but HTML5 elements. Note that we are not talking about displaying static images by using the `<img>` element. The goal is to draw the images dynamically in the client's code. You can accomplish this by using the HTML5 elements `<canvas>` or `<svg>`. 
 
-The http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides a bitmap canvas, where your  scripts which can draw graphs, game graphics, or other visual images on the fly without using any plugins like Flash Player or Silverlight. To put it simple, the `<canvas>` defines a rectangular area that consists of pixels, where you can draw. Keep in mind that the DOM object can't peek inside the canvas and access specific pixels. So if you are planning to create an area with dynamically changed graphics you might want to consider using `<svg>`. 
+The http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides a bitmap canvas, where your scripts can draw graphs, game graphics, or other visual images on the fly without using any plug-ins such as Flash Player or Silverlight. To put it simply, `<canvas>` defines a rectangular area that consists of pixels, where you can draw. Keep in mind that the DOM object can't peek inside the canvas and access specific pixels. So if you are planning to create an area with dynamically changing graphics, you might want to consider using `<svg>`. 
 
-The `<svg>` element supports http://www.w3.org/TR/SVG11/[Scalable Vector Graphics (SVG)], which is the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images et al. 
+The `<svg>` element supports http://www.w3.org/TR/SVG11/[Scalable Vector Graphics (SVG)], the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images, and so forth. 
 
-==== Adding Chart With Canvas Element
+==== Adding a Chart with the Canvas Element
 
-Let's review some code fragments from project-04-canvas-pie-chart-json. The HTML section defines `<canvas>` of 260x240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your `<canvas>` element so your JavaScript code can access it.
+Let's review some code fragments from _project-04-canvas-pie-chart-json_. The HTML section defines `<canvas>` as 260 x 240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your `<canvas>` element so your JavaScript code can access it.
 
 [source, html]
 ----
@@ -664,15 +664,14 @@ Let's review some code fragments from project-04-canvas-pie-chart-json. The HTML
     <p> Lorem ipsum dolor sit amet, consectetur</p>
 </div>
 ----
-.Example 2-17 Displaying campaigns data 
 
-Run the project-04-canvas-pie-chart-json, and you'll see the chart with donation statistics by city as in <<FIG4-6>>. We haven't style our `<canvas>` element, but we could've added a background color, the border and other bells and whistles if required.
+Run _project-04-canvas-pie-chart-json_, and you'll see the chart with donation statistics by city, as shown in <<FIG4-6>>. We haven't styled our `<canvas>` element, but we could add a background color, border, or other bells and whistles if required.
 
 [[FIG4-6]]
 .Adding a chart 
 image::images/ewdv_0206.png[]
 
-The data to be used for drawing a pie chart in our canvas are stored in the file data/chartdata.json, but in a real-world the server side code can generate it based on the up-to-the-second donation data and send it to the client. For example, you could do it as was explained in the section Json in Java above. This is the content of our file chartdata.json:
+The data to be used for drawing a pie chart in our canvas is stored in the file _data/chartdata.json_, but in the real world, the server-side code can generate it based on the up-to-the-second donation data and send it to the client. For example, you could do it as was explained in the section Json in Java above. This is the content of our file chartdata.json:
 
 [source, javascript]
 ----
