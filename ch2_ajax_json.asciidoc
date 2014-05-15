@@ -591,13 +591,13 @@ If a web browser receives a JSON stream from the server, the application needs t
 
 Java Enterprise Edition 7 includes http://docs.oracle.com/javaee/7/tutorial/doc/jsonp.htm[Java API for JSON Processing]. Also, Several Java libraries can convert Java objects into their JSON representation and back--for example, http://code.google.com/p/google-gson/[Google’s Gson], http://jackson.codehaus.org/[Jackson], and http://code.google.com/p/json-simple/[json-simple]. 
 
-Google's Gson is probably the simplest one for use. It provides methods `toJson()` and `fromJson()` to convert Java objects to JSON and back. Gson allows pre-existing un-modifiable objects to be converted to and from JSON and Supports Java Generics. Gson works well with complex objects with deep inheritance hierarchies. 
+Google's Gson is probably the simplest one to use. It provides the methods `toJson()` and `fromJson()` to convert Java objects to JSON and back. Gson allows pre-existing un-modifiable objects to be converted to and from JSON and supports Java Generics. Gson works well with complex objects with deep inheritance hierarchies. 
 
 Let's say JavaScript sends to Java the following JSON string: 
 
 `{"fname": "Alex", "lname":"Smith","skillLevel": 11}`
 
-The Java code can turn it into an instance of the Customer object by calling the method `Gson.fromJson()`. Similarly, Java code can create a JSON string from an object instance. Both of these operations are illustrated below. 
+The Java code can turn it into an instance of the +Customer+ object by calling the method `Gson.fromJson()`. Similarly, Java code can create a JSON string from an object instance. Both of these operations are illustrated here: 
 
 [source, javascript]
 ----
@@ -616,22 +616,21 @@ public String createJsonFromCustomer(Customer cust){
 }
 ----
 
-.Example 2-16 Processing JSON with GSon 
 
-Of course, the declaration of the Java class `Customer` must exist in the in the classpath and don't forget to include gson.jar to your Java project.
+Of course, the declaration of the Java class `Customer` must exist in the classpath, and don't forget to include _gson.jar_ in your Java project.
 
-JSON data format is often used in non-JavaScript applications. For example, a Java server can exchange the JSON-formatted data with a .Net server.
+The JSON data format is often used in non-JavaScript applications. For example, a Java server can exchange JSON-formatted data with a .NET server.
 
 [NOTE]
 ====
-The Java EE 7 specification includes JSR 353, which defines a standardized way for parsing and generating JSON. JSR 353 defines the Java API from JSON Processing (JSON-P) that shouldn't be confused with another acronym http://json-p.org/[JSONP or JSON-P], which is JSON with Padding (we'll discuss it at the end of this chapter).   
+The Java EE 7 specification includes JSR 353, which defines a standardized way for parsing and generating JSON. JSR 353 defines the Java API from JSON Processing (JSON-P) that shouldn't be confused with another acronym, http://json-p.org/[JSONP or JSON-P], which is JSON with Padding (we'll discuss it at the end of this chapter).   
 ====
 
 === Compressing JSON
 
-JSON format is more compact than XML and is readable by the human beings. But when you are ready to deploy your application in production, you still want to compress the data so less bytes will travel over the wire to the user's browser. The server-side libraries that generate JSON will make the data sent to the client compact by removing the tab and the new line characters. 
+JSON format is more compact than XML and is readable by human beings. But when you are ready to deploy your application in production, you still want to compress the data so fewer bytes will travel over the wire to the user's browser. Server-side libraries that generate JSON will make the data sent to the client compact by removing the tab and the new line characters. 
 
-If you want to turn the pretty-print JSON into a more compact one-line format just use such Web sites as http://javascriptcompressor.com/[JavaScript Compressor] or http://www.freeformatter.com/json-formatter.html/[JSON Formatter]. For example, after running the 12Kb file countries.json through this compressor, its size was decreased to 9Kb. JSONLint can also compress JSON if you provide this URL: http://jsonlint.com?reformat=compress.
+If you want to turn the pretty-print JSON into a more compact one-line format, just use such websites as http://javascriptcompressor.com/[JavaScript Compressor] or http://www.freeformatter.com/json-formatter.html/[JSON Formatter]. For example, after running the 12 KB file _countries.json_ through this compressor, its size was decreased to 9 KB. JSONLint can also compress JSON if you provide this URL: http://jsonlint.com?reformat=compress.
 
 Similarly to most of the content that is being sent to browsers by the Web servers, the JSON data should be compressed. http://en.wikipedia.org/wiki/Gzip[GZip] and http://en.wikipedia.org/wiki/DEFLATE[Deflate] are the two main compression methods used in today's Web. Both use the same compression algorithm _deflate_, but while with Deflate the compressed data are being streamed to the client, the GZip first compresses the entire file, calculates the size and adds some additional headers to the compressed data. So GZip may need some extra time and memory, but you are more protected from getting incomplete JSON, JavaScript or other content. Both Gzip and Deflate are easily configurable by major Web servers, but it's hard to say which one is better for your application - set up some tests with each of them and decide which one works faster or take less system resources, but don't compromise on reliability of the compressed content. 
 
