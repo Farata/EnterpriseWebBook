@@ -223,7 +223,7 @@ If you'd like to process double-clicks, replace the `click()` invocation with `d
 
 ==== Attaching Event Handlers and Elements by Using the Method on()
 
-Event methods can be attached just by passing a handler function, as in the preceding examples. You can also process the event by using the `on()` method, which allows you to specify the native event name and the event handler as its arguments. In the section "Working on Save The Child," you'll see lots of examples that use the `on()` method. The following one-liner assigns the function handler named `showLoginForm` to the `click` event of the element with the id `login-link`. The following code snippet includes the commented-out pure-JavaScript version of the code (see _project-02-login_ in <<mocking_up_the_app>>) that has the same functionality:
+Event methods can be attached just by passing a handler function, as in the preceding examples. You can also process the event by using the `on()` method, which allows you to specify the native event name and the event handler as its arguments. In the section "<<programming_stc_with_jquery>>," you'll see lots of examples that use the `on()` method. The following one-liner assigns the function handler named `showLoginForm` to the `click` event of the element with the id `login-link`. The following code snippet includes the commented-out pure-JavaScript version of the code (see _project-02-login_ in <<mocking_up_the_app>>) that has the same functionality:
 
 [source, javascript]
 ----
@@ -234,9 +234,9 @@ Event methods can be attached just by passing a handler function, as in the prec
 ----
 .Example 3.6 Handling the click on login link
 
-The `on()` method allows you to assign the same handler function to more than one event. For example, to invoke the `showLoginForm` function when the user clicks or moves the mouse over the HTML element you could written  `on('click mouseover', showLoginForm)`. 
+The `on()` method allows you to assign the same handler function to more than one event. For example, to invoke the `showLoginForm` function when the user clicks or moves the mouse over the HTML element, you could write `on('click mouseover', showLoginForm)`. 
 
-The method `off()` is used for removing the event handler and the event won't be processed anymore. For example, if you want to turn off the login link's ability to process `click` event, simply write this:
+The method `off()` is used for removing the event handler so that the event won't be processed anymore. For example, if you want to turn off the login link's ability to process the `click` event, simply write this:
 
 [source, javascript]
 ----	 
@@ -245,34 +245,32 @@ The method `off()` is used for removing the event handler and the event won't be
 
 ==== Delegating Events
 
-The method `on()` can be called with passing an optional selector as an argument. Since we haven't used selectors in the example from the previous section, the event was triggered only when reached the element with an id `login-link`. Now imagine an HTML container that has child elements, e.g. a calculator implemented as a `<div id="calculator">` containing buttons. The following code would assign a click handler _to each_ button styled with a class `.digitButton`:
+The method `on()` can be called by passing an optional selector as an argument. Because we haven't used selectors in this example, the event was triggered only when it reached the element with the ID `login-link`. Now imagine an HTML container that has child elements--for example, a calculator implemented as `<div id="calculator">` containing buttons. The following code assigns a click handler _to each_ button styled with the class `.digitButton`:
 
 [source, javascript]
 ----
 $("div#calculator .digitButton").on("click", function(){...});
 ----
-.Example 3.7 Handling the click on HTML element styled as digitButton inside <div>
 
-But instead of assigning an event handler to each button, you can assign an event handler to the container and specify additional selector that child elements may be found by. The following code assigns the event handler function _to only one_ object - the `div#calculator` instructing this container to invoke the event handler when any of its children matching `.digitButton` is clicked. 
+But instead of assigning an event handler to each button, you can assign an event handler to the container and specify an additional selector that can find child elements. The following code assigns the event handler function _to only one_ object: the `div#calculator` instructing this container to invoke the event handler when any of its children matching `.digitButton` is clicked. 
 
 [source, javascript]
 ----
 $("div#calculator").on("click", ".digitButton",function(){...});
 ----
-.Example 3.8 Handling the click on any HTML element styled as digitButton
 
 When the button is clicked, the event bubbles up and reaches the container's level, whose click handler will do the processing (jQuery doesn't support the capturing phase of events). The work on processing clicks for digit buttons is delegated to the container. 
 
-Another good use case for delegating event processing to a container is a financial application that displays the data in an HTML table containing hundreds of rows. Instead of assigning event hundreds event handlers (one per table row), assign one to the table. There is one extra benefit to using delegation in this case - if the application can dynamically add new rows to this table (say, the order execution data), there is no need to explicitly assign event handlers to them - the container will do the processing for both old and new rows.
+Another good use case for delegating event processing to a container is a financial application that displays the data in an HTML table containing hundreds of rows. Instead of assigning hundreds of event handlers (one per table row), assign one to the table. There is one extra benefit to using delegation in this case: if the application can dynamically add new rows to this table (say, the order execution data), there is no need to explicitly assign event handlers to them; the container will do the processing for both old and new rows.
 
 [NOTE]
 ====
-Starting from jQuery 1.7, the method `on()` is a recommended replacement of the methods `bind()`, `unbind()`, `delegate()`, and `undelegate()` that are still being used in earlier versions of jQuery.  If you decide to develop your application with jQuery and its mobile version with jQuery Mobile, you need to be aware that the latter may not implement the latest code of the core jQuery.  Using `on()` is safe though, because at the time of this writing jQuery Mobile 1.2 supports all the features of jQuery 1.8.2. In Chapter 10, you'll see how using the responsive design principles can help you to reuse the same code on both desktop and mobile devices.
+Starting from jQuery 1.7, the method `on()` is a recommended replacement of the methods `bind()`, `unbind()`, `delegate()`, and `undelegate()` that are still being used in earlier versions of jQuery.  If you decide to develop your application with jQuery and its mobile version with jQuery Mobile, you need to be aware that the latter may not implement the latest code of the core jQuery.  Using `on()` is safe, though, because at the time of this writing jQuery Mobile 1.2 supports all the features of jQuery 1.8.2. <<responsive_design>> shows you how using responsive design principles can help you reuse the same code on both desktop and mobile devices.
 ====
 
 The method `on()` allows passing the data to the function handler (see http://api.jquery.com/on/[jQuery documentation] for details). 
 
-You are also allowed to assign different handlers to different events in on invocation of `on()`. The following code snippet from project-11-jQuery-canvas-pie-chart-json assigns handlers to `focus` and `blur` events:
+You are also allowed to assign different handlers to different events in one invocation of `on()`. The following code snippet from _project-11-jQuery-canvas-pie-chart-json_ assigns handlers to `focus` and `blur` events:
 
 [source, javascript]
 ----
@@ -281,15 +279,14 @@ $('#customAmount').on({
 	blur : onCustomAmountBlur
 });
 ----
-.Example 3.9 Handling focus and blur events
 
-=== AJAX with jQuery
+=== Using Ajax with jQuery
 
-Making AJAX requests to the server is also easier with jQuery than with pure JavaScript. All the complexity of dealing with various flavors of `XMLHttpRequest` is hidden from the developers. The method http://api.jquery.com/jQuery.ajax/[`$.ajax()`] spares JavaScript developers from writing the code with multiple browser-specific ways of instantiating the `XMLHttpRequest` object. By invoking `ajax()` you can exchange the data with the server and load the JavaScript code. In its simplest form, this method takes just the URL of the remote resource to which the request is sent. Such invocation will use global defaults that should have been set in advance by invoking the method http://api.jquery.com/jQuery.ajaxSetup/[`ajaxSetup()`]. 
+Making Ajax requests to the server is also easier with jQuery than with pure JavaScript. All the complexity of dealing with various flavors of `XMLHttpRequest` is hidden from the developers. The method http://api.jquery.com/jQuery.ajax/[`$.ajax()`] spares JavaScript developers from writing the code with multiple browser-specific ways of instantiating the `XMLHttpRequest` object. By invoking `ajax()`, you can exchange data with the server and load the JavaScript code. In its simplest form, this method takes just the URL of the remote resource to which the request is sent. This invocation uses global defaults that must be set in advance by invoking the method http://api.jquery.com/jQuery.ajaxSetup/[`ajaxSetup()`]. 
 
-But you can combine specifying parameters of the AJAX call and making the `ajax()` call. Just provide as an argument a configuration object that defines the URL, the function handlers for success and failures, and some other parameters like a function to call right before the AJAX request (`beforeSend`) or caching instructions for the browser (`cache`). 
+But you can combine specifying parameters of the AJAX call and making the `ajax()` call. Just provide as an argument a configuration object that defines the URL, the function handlers for success and failures, and other parameters such as a function to call right before the Ajax request (`beforeSend`) or caching instructions for the browser (`cache`). 
 
-Spend some time getting familiar with all different configuration parameters that you can use with the jQuery method `ajax()`. Here's a sample template for calling jQuery `ajax()`:
+Spend some time becoming familiar with all the configuration parameters that you can use with the jQuery method `ajax()`. Here's a sample template for calling jQuery `ajax()`:
 
 [source, javascript]
 ----
@@ -300,15 +297,14 @@ $.ajax({
 	}).done(function (data) {...})
 	  .fail(function (jqXHR, textStatus) {...});
 ----
-.Example 3.10 A sample call of method `ajax()`
 
-This example takes a JavaScript object that defines three properties: the URL, the type of the request,  and the expected data type. Using chaining, you can attach the methods `done()` and `fail()`, which have to specify the function handlers to be invoked in case of success and failure respectively. The http://api.jquery.com/jQuery.ajax/#jqXHR[jqXHR] is a jQuery wrapper for the browser's  `XMLHttpRequest` object.
+This example takes a JavaScript object that defines three properties: the URL, the type of the request,  and the expected data type. Using chaining, you can attach the methods `done()` and `fail()`, which have to specify the function handlers to be invoked in case of success and failure, respectively. http://api.jquery.com/jQuery.ajax/#jqXHR[jqXHR] is a jQuery wrapper for the browser's `XMLHttpRequest` object.
 
-Don't forget about the asynchronous nature of  AJAX calls, which means that the `ajax()` method  will be finished before the `done()` or `fail()` callbacks will be invoked. You may attach another  _promised callback_ method `always()` that will be invoked regardless of if the `ajax()` call succeeds or fails. 
+Don't forget about the asynchronous nature of  AJAX calls, which means that the `ajax()` method  will be finished before the `done()` or `fail()` callbacks will be invoked. You can attach another  _promised callback_ method `always()` that will be invoked regardless of whether the `ajax()` call succeeds or fails. 
 
 [NOTE]
 ====
-An alternative to having a `fail()` handler for each ajax request is setting the global error handling routine using `ajaxSetup()`. Consider doing this for some serious HTTP failures like 403 (access forbidden)  or errors with codes 5xx. For example:
+An alternative to having a `fail()` handler for each Ajax request is setting the global error-handling routine by using `ajaxSetup()`. Consider doing this for some serious HTTP failures such as 403 (access forbidden) or errors with codes 5__xx__. For example:
 
 [source, javascript]
 ----
@@ -328,20 +324,19 @@ $(function() {
   });
 });
 ----
-.Example 3.11 Setting global event handling routines
 ====
 
-If you need to chain asynchronous callbacks (`done()`, `fail()`, `always()`) that don't need to be called right away (they wait for the result) the method `ajax()` returns http://api.jquery.com/category/deferred-object/[`Deferred`] object. It places these callbacks in a queue to be called later. As a matter of fact, the callback `fail()` may never be called if no errors occurred. 
+If you need to chain asynchronous callbacks (`done()`, `fail()`, `always()`) that don't need to be called right away (they wait for the result), the method `ajax()` returns the http://api.jquery.com/category/deferred-object/[`Deferred`] object. It places these callbacks in a queue to be called later. As a matter of fact, the callback `fail()` might never be called if no errors occur. 
 
-If you specify JSON as a value of the `dataType` property, the result will be parsed automatically by jQuery - there is no need to call `JSON.parse()` as it was done in Chapter 2. Even though the jQuery object has a utility  method `parseJSON()`, you don't have to invoke it to process return of the `ajax()` call.
+If you specify JSON as a value of the `dataType` property, the result will be parsed automatically by jQuery; there is no need to call `JSON.parse()` as was done in <<using_ajax_and_json>>. Even though the jQuery object has a utility  method `parseJSON()`, you don't have to invoke it to process a return of the `ajax()` call.
 
-In the above example the type of the AJAX request was `GET`. But you can use `POST` too. In this case you'll need to prepare valid JSON data to be sent to the server. In this case the configuration object that you provide as an argument to the method `ajax()` has to include the property `data` containing valid JSON.
+In the preceding example, the type of Ajax request was `GET`. But you can use `POST`, too. In this case, you need to prepare valid JSON data to be sent to the server, and the configuration object that you provide as an argument to the method `ajax()` has to include the property `data` containing valid JSON.
 
 ==== Handy Shorthand Methods
 
-jQuery has several shorthand methods that allow making AJAX calls with the simpler syntax, which we'll consider next.
+jQuery has several shorthand methods that allow making AJAX calls with a simpler syntax, which we'll consider next.
 
-The method http://api.jquery.com/load/[`load()`] makes an AJAX call from an HTML element(s) to the specified URL (the first argument) and populates the HTML element with the returned data. You can pass optional second and third arguments: HTTP request parameters and the callback function to process the results. If the second argument is an object, the `load()` method will make a `POST` request, otherwise - `GET`. You'll see the code that uses `load()` to populate states and countries from remote HTML files later in this chapter in the section on bringing the states and countries from remote HTML files. But the next line shows an example of calling `load()` with two parameters: the URL and the callback:
+The method http://api.jquery.com/load/[`load()`] makes an AJAX call from an HTML element(s) to the specified URL (the first argument) and populates the HTML element with the returned data. You can pass optional second and third arguments: HTTP request parameters and the callback function to process the results. If the second argument is an object, the `load()` method will make a `POST` request; otherwise, `GET`. You'll see the code that uses `load()` to populate states and countries from remote HTML files later in this chapter, in the section on bringing the states and countries from remote HTML files. But the next line shows an example of calling `load()` with two parameters, the URL and the callback:
 
 [source, javascript]
 ----
