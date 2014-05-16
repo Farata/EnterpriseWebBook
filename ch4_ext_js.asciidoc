@@ -1497,7 +1497,9 @@ Ext.define("SSC.view.CampaignsMap", {
 
 <4> If Google Maps is not available, display an error message, as shown in <<FIG6-10-SSC>>. This code was added after one of the authors was testing this code while sitting on a plane with no Internet connection. But checking the status of  https://developer.mozilla.org/en-US/docs/DOM/window.navigator.onLine[`navigator.onLine`] may not be a reliable indicator of the offline status, so we've wrapped it into a `try/catch` block just to be sure. 
 
-
+[[FIG6-10-SSC]]
+.If Google Maps server is not responding 
+image::images/ewdv_0417.png[image]  
 
 Next comes the second part of _CampaignsMap.js_, as shown in <<ex_campaignsmap_part2>>.
 
@@ -1585,15 +1587,11 @@ Next comes the second part of _CampaignsMap.js_, as shown in <<ex_campaignsmap_p
 ----
 ====
 
-<1> The rest of the code in this class has the same mapping functionality as described in <<mocking_up_the_app>> in the section "<<MMMMMMMMMMMMMMMM>>."
+<1> The rest of the code in this class has the same mapping functionality as described in <<mocking_up_the_app>> in the section "<<adding_geolocation_support>>."
 
-<2> The data for the campaign information are coming from the store Campaigns.js located in the folder store. The store manager can find the reference to the store either if by assigned http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.StoreManager[`storeId`] or by name `Campaigns` listed in the `stores` array in the app.js:
+<2> The data for the campaign information is coming from the store _Campaigns.js_ located in the folder _store_. The store manager can find the reference to the store either by assigned http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.StoreManager[`storeId`] or by the name `Campaigns` listed in the `stores` array in _app.js_:
 
-<3> We are configuring the mapping panel to get the information about the campaign title, location, and description from the fields with corresponding names from the store `SSC.store.Campaigns` that's shown right after app.js below.   
-
-[[FIG6-10-SSC]]
-.If Google Maps server is not responding 
-image::images/ewdv_0417.png[image]  
+<3> We configure the mapping panel to get the information about the campaign title, location, and description from the fields with corresponding names from the store `SSC.store.Campaigns` which is shown here in _app.js_:   
 
 [source, javascript]
 ----
@@ -1622,12 +1620,14 @@ Ext.application({
     autoCreateViewport: true
 }); 
 ----
-.Example 4-40 The app.js of Save The Child
 
-In Chapter 2 the information about campaigns was taken from a file with JSON formatted data. In this version the data will be taken from the class `SSC.store.Campaigns` that's shown next.  This class extends http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.JsonStore[`Ext.data.JsonStore`], which is a helper class for creating stores based on the JSON data. The class `JsonStore` is a subclass of more generic `Ext.data.Store`, which implements client side caching of model objects, can load the data via the `Proxy` object, and supports sorting and filtering. 
+In <<using_ajax_and_json>> the information about campaigns was taken from a file with JSON-formatted data. In this version, the data will be taken from the class `SSC.store.Campaigns` that's shown next. This class extends http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.JsonStore[`Ext.data.JsonStore`], which is a helper class for creating stores based on the JSON data. The class `JsonStore` is a subclass of the more generic `Ext.data.Store`, which implements client-side caching of model objects, can load the data via the `Proxy` object, and supports sorting and filtering. 
 
-Later, in the Sencha Touch Chapter, you'll see another version of our Save The Child application where all stores are inherited from `Ext.data.Store`. But  in this version of our application we are not reading the code from external JSON sources and inheriting from `Ext.data.Store` would suffice.  
+Later, in <<sencha_touch>>, you'll see another version of our Save The Child application, in which all stores are inherited from `Ext.data.Store`. But the version presented in <<ex_campaigns_store>>, we are not reading the code from external JSON sources, and inheriting from `Ext.data.Store` would suffice.  
 
+[[ex_campaigns_store]]
+.The Campaigns store
+====
 [source, javascript]
 -----
 Ext.define('SSC.store.Campaigns', {
@@ -1662,7 +1662,7 @@ Ext.define('SSC.store.Campaigns', {
     }]
 });
 -----
-.Example 4-41 The Campaigns store
+====
 
 <1> We have not created a separate model class for each campaign, because this information is used only in one place. The `fields` array defines our inline model, which consist of objects (`data`) containing the properties `title`, `description`, and `location`.
 
