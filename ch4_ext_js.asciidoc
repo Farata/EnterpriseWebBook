@@ -707,20 +707,20 @@ You'll be defining your container class as a subclass of a container by includin
 
 The process of adding a component to a container will typically consist of invoking `Ext.create()` and specifying in a configuration object where to render the component to, for example `renderTo: Ext.getBody()`.
 
-But under the hood Ext JS will do a lot more work. The framework will auto-generate a unique ID for the component, assign some event listeners, instantiate component plugins if specified, invoke the `initComponent()`, and add the component to `Ext.ComponentManager`.  
+But under the hood, Ext JS will do a lot more work. The framework will autogenerate a unique ID for the component, assign some event listeners, instantiate component plug-ins if specified, invoke the `initComponent()`, and add the component to `Ext.ComponentManager`.  
 
-WARNING: Even though you can manually assign an ID to the component via configuration object, it's not recommended because it could result in duplicate IDs.
+WARNING: Even though you can manually assign an ID to the component via a configuration object, it's not recommended because it could result in duplicate IDs.
 
 
-==== Events
+==== Working with Events
 
-Events in Ext JS are defined in the mixin `Ext.util.Observable`. Components interested in receiving events can subscribe to them using on of the following methods:
+Events in Ext JS are defined in the mixin `Ext.util.Observable`. Components interested in receiving events can subscribe to them by using one of the following methods:
 
 * By calling the method `addListener()` 
-* By using the method `on()`. 
+* By using the method `on()`
 * Declaratively
 
-The next code snippet shows two different ways of how a combobox can subscribe to the event `change`. The handler function is a callback that will be invoked if the event `change` will be dispatched on this combobox:  
+The next code snippet shows two ways by which a combo box can subscribe to the event `change`. The handler function is a callback that will be invoked if the event `change` is dispatched on this combo box:  
 
 [source, javascript]
 ----
@@ -728,18 +728,16 @@ combobox.addListener('change', myEventHandlerFunction);
 
 combobox.on('change', myEventHandlerFunction);
 ----
-.Example 4-22 Two ways of adding event listeners
 
-To unsubscribe from the event call the method `removeListener()` or its shorter version `un()`:
+To unsubscribe from the event, call the method `removeListener()` or its shorter version, `un()`:
 
 [source, javascript]
 ----
 combobox.removeListener('change', myEventHandlerFunction);
 combobox.un('change', myEventHandlerFunction);
 ----
-.Example 4-23 Two ways of removing event listeners
 
-You can also declaratively subscribe to events using the `listeners` config property of the component:
+You can also declaratively subscribe to events by using the `listeners` config property of the component:
 
 [source, javascript]
 ----
@@ -749,32 +747,31 @@ Ext.create('Ext.button.Button', {
    }
 }
 ----
-.Example 4-24 Subscribing to events in config object
 
-JavaScript support event bubbling (see Appendix A). In Ext JS event bubbling mechanism enables events dispatched by components that include `Ext.util.Observable` bubble up through all enclosing containers. For components it means that you can handle component’s event on container level. It can be handy to subscribe and handle multiple similar events in one place. To enable bubbling for selected events use the `enableBubble()` method, for example: 
+JavaScript supports event bubbling (see <<appendix_a>>). In Ext JS, an event bubbling mechanism enables events dispatched by components that include `Ext.util.Observable` to bubble up through all enclosing containers. For components, it means that you can handle a component’s event on the container level. It can be handy to subscribe and handle multiple similar events in one place. To enable bubbling for selected events, use the `enableBubble()` method, for example: 
 
 [source, javascript]
 ----
 this.enableBubble(['textchange', 'validitychange']);
 ----
 
-To define custom events use the method `addEvents()`, where you can provide one or more of the custom event names:
+To define custom events, use the method `addEvents()`, where you can provide one or more of the custom event names:
 
 [source, javascript]
 ----
 this.addEvents('messagesent', 'updatecompleted');
 ----
 
-For components you have to define custom events inside the `initComponent()` method. For controllers - inside `init()`, and for any other class – inside its constructor.
+For components, you have to define custom events inside the `initComponent()` method. For controllers--inside `init()`, and for any other class--inside its constructor.
 
 
-==== Layouts
+==== Specifying Layouts
 
-The container's property `layout` controls how its children are laid out. It does it by referring to the container's property `items`, which lists all of the child components. If you won't explicitly set the `layout` property, its default value is `Auto`, which is just placing components inside the container top to bottom regardless of the component size.
+The container's `layout` property controls how its children are laid out. It does so by referring to the container's `items` property, which lists all of the child components. If you don't explicitly set the `layout` property, its default value is `Auto`, which places components inside the container, top to bottom, regardless of the component size.
 
-Usually you'll be explicitly specifying the layout. For example, the `hbox` layout would arrange all components inside the container horizontally next to each other, but `vbox` layout would arrange them vertically. The `card` layout places the components one under another, but only the top component is visible (think of a tab folder, where the content of only one tab is visible at any given time).
+Usually, you explicitly specify the layout. For example, the `hbox` layout arranges all components inside the container horizontally next to each other, but the `vbox` layout arranges them vertically. The `card` layout places the components one under another, but only the top component is visible (think of a tabbed folder, for which the content of only one tab is visible at any given time).
 
-The `border` layout is often used to arrange the components in the main viewport (a.k.a. home page) of your application. This layout allows you to split the container's real estate into five imaginary regions: `north`, `east`, `west`, `south`, and `center`. If you need to allocate the top menu items, place them to the region `north`. The footer of the page is in the `south` as shown in the code sample below. 
+The `border` layout is often used to arrange components in the main viewport (a.k.a. home page) of your application. This layout allows you to split the container's real estate into five imaginary regions: `north`, `east`, `west`, `south`, and `center`. If you need to allocate the top menu items, place them into the region `north`. The footer of the page is in the `south`, as shown in the following code sample. 
 
 [source, javascript]
 ----
@@ -805,11 +802,10 @@ Ext.define('MyApp.view.Viewport', {
    }]
 });
 ----
-.Example 4-25 A container with the border layout
 
-===== Setting Proportional Layouts With The flex Property
+===== Setting proportional layouts by using the flex property
 
-Ext JS has a property `flex` that allows make your layout more flexible. Instead of specifying the width or height of a child component in absolute values you can split the available space proportionally. For example if the space has to be divided between two components having the `flex` values 2 and 1, this means that the 2/3 of the container's space will be allocated to the first component, and 1/3 to the second one as illustrated in the following code snippet.
+Ext JS has a `flex` property that allows you to make your layout more flexible. Instead of specifying the width or height of a child component in absolute values, you can split the available space proportionally. For example, if the space has to be divided between two components having the `flex` values 2 and 1, this means that the 2/3 of the container's space will be allocated to the first component, and 1/3 to the second one, as illustrated in the following code snippet.
 
 [source, javascript]
 ----
@@ -827,11 +823,10 @@ Ext JS has a property `flex` that allows make your layout more flexible. Instead
    flex: 1
  }]
 ----
-.Example 4-26 Setting proportional layout with `flex` property
 
-NOTE: The format of this book doesn't allow us to include detailed description of major Ext JS component. If you are planning to use Ext JS for development of enterprise Web applications, allocate some extra time to learn the data grid `Ext.grid.Panel` that's used for rendering of tabular data. You should also master working with forms with `Ext.form.Panel`.
+NOTE: The format of this book doesn't allow us to include detailed descriptions of major Ext JS components. If you plan to use Ext JS to develop enterprise web applications, allocate some extra time to learn the data grid `Ext.grid.Panel` that's used to render tabular data. You should also master working with forms with `Ext.form.Panel`.
 
-In the next section you'll see Ext JS layouts in action while working on the Save The Child application.
+In the next section, you'll see Ext JS layouts in action while working on the Save The Child application.
 
 
 [[developing_stc_with_ext_js]]
