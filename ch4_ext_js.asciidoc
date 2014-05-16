@@ -676,25 +676,30 @@ var donorsStore = Ext.getStore('SSC.store.Donors');
 The preceding `SSC.controller.Donate` doesn't use the config property `views`, but if it did, Ext JS would generate getters and setters for every view (the same is true for stores and models). It uses `refs` instead to reference components, and getters and setters will be generated for each component listed in `refs`; for example, `getDonatePanel()`. Lookup of such components is done based on the value in `selector` using the syntax compatible with http://docs-devel.sencha.com/extjs/4.2.1/#!/api/Ext.ComponentQuery[`ComponentQuery`]. The difference between `refs` and the config property `views` is that the former generates references to instances of specific components  
 from views, while the latter generates getters and setters only to the "class" (not the instance) of the entire view for further instance creation. 
 
-TIP: You can view and test Ext JS components against bundled themes browsing the Theme Viewer at the http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html[Ext JS 4.2 Examples] page.
+TIP: You can view and test Ext JS components against bundled themes by browsing the Theme Viewer at the http://cdn.sencha.com/ext/beta/4.2.0.265/examples/index.html[Ext JS 4.2 Examples] page.
 
 
 [[component_life_cycle]]
-==== Exploring a Component's Lifecycle
+==== Exploring a Component's Life Cycle
 
-In previous versions of our Save The Child application CSS was responsible for all layouts of the UI components. In Chapter 10 you'll be learning about the _responsive design_ techniques and CSS media queries, which allow to create fluid layouts that automatically adjust to the size of the viewport. But this section is about Ext JS proprietary way of creating and adding UI components to Web pages. Before the user will see a component, Ext JS framework will go through the following phases for each component:
+In previous versions of our Save The Child application, CSS was responsible for all layouts of the UI components. In <<responsive_design>>, you'll learn about _responsive web design_ techniques and CSS media queries, which allow you to create fluid layouts that automatically adjust to the size of the viewport. But this section is about the Ext JS proprietary way of creating and adding UI components to web pages. Before the user will see a component, Ext JS will go through the following phases for each component:
 
-* Load - load the required (or all) Ext JS classes and their dependencies 
-* Initialization of components when the DOM is ready
-* Layout - measuring and assigning sizes
-* Rendering  - convert components to HTML elements
-* Destruction - removing the reference from DOM, removing event listeners and unregistering from the component manager. 
+Load::
+    Load the required (or all) Ext JS classes and their dependencies.
+Initialization::
+    Initialize components when the DOM is ready.
+Layout::
+    Measure and assign sizes.
+Rendering::
+    Convert components to HTML elements.
+Destruction::
+    Remove the reference from the DOM, remove event listeners, and unregister from the component manager. 
 
-Rendering and layout are the most time consuming phases. The rendering does a lot of preparations to give the browser's rendering engine HTML elements and not Ext JS classes. The layout phase is slow because the calculation of sizes and positions (unless they are in absolute coordinates) and applying of cascading stylesheets takes time. 
+Rendering and layout are the most time-consuming phases. The rendering does a lot of preparation to give the browser's rendering engine HTML elements and not Ext JS classes. The layout phase is slow because the calculation of sizes and positions (unless they are in absolute coordinates) and applying of cascading stylesheets takes time. 
 
 There's also the issue of _reflows_, which happen when the code reads-measures-writes to the DOM and makes dynamic style modifications. Fortunately, Ext JS 4.1 was redesigned to minimize the number of reflows; now a large portion of recalculations is done in a batch before modifying the DOM.
 
-===== Components as Containers
+===== Components as containers
 
 If a component can contain other components, it's a container (e.g. `Ext.panel.Panel`) and will have http://bit.ly/13QH0TG[`Ext.container.Container`] as one of its ancestors. In Ext JS class hierarchy, `Container` is a subclass of `Component`, so all methods and properties defined for a component are available for a container too. Each Web page consists of one or more containers, which include some children components (in Ext JS they are subclasses of http://bit.ly/Zy3iZU[`Ext.Component`]), for example, `Ext.button.Button`.
 
