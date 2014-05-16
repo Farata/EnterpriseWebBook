@@ -1160,8 +1160,11 @@ In general, Ext JS substantially reduces the need for manual CSS writing by usin
 Besides SASS, there is another dynamic CSS language called http://lesscss.org/[LESS]. It adds to CSS variables, mixins, operations, and functions. However, it's not used in Ext JS, though.
 **************
 
-Now let's look at the child elements of the `SSC.view.Viewport`. The `SSC.view.Header` is the simplest view. Since Save The Child does not include a bunch of forms and grids, we'll use the lightest top-level container class `Container` where possible. The class `Container` gives you the most freedom in what to put inside and how to layout its child elements. Our `SSC.view.Header` view extends `Ext.Container` and contains child elements, some of which have the `xtype: component`, and some - `container`: 
+Now let's look at the child elements of `SSC.view.Viewport`. The `SSC.view.Header` is the simplest view. Since Save The Child does not include a bunch of forms and grids, we'll use the lightest top-level container class `Container` where possible. The class `Container` gives you the most freedom in what to put inside and how to lay out its child elements. Our `SSC.view.Header` view extends `Ext.Container` and contains child elements, some of which have the `xtype: component`, and others have `container`, as shown in <<ex_stc_header_view>> 
 
+[[ex_stc_header_view]]
+.The Header view of Save The Child
+====
 [source, javascript]
 ----
 Ext.define("SSC.view.Header", {
@@ -1185,7 +1188,7 @@ Ext.define("SSC.view.Header", {
   }, {
     xtype: 'component',
     cls: 'app-header-title',
-    html: 'SAVE The Child',
+    html: 'Save The Child',
     flex: 1
   }, {
     xtype: 'container',      // <5>
@@ -1209,20 +1212,23 @@ Ext.define("SSC.view.Header", {
   }]
 });
 ----
-.Example 4-32 The Header view of Save The Child
+====
 
-<1> We assigned `appheader` as the `xtype` value of this view, which will be used as a reference inside the `SSC.view.Viewport`. 
+<1> We assign `appheader` as the `xtype` value of this view, which will be used as a reference inside the `SSC.view.Viewport`. 
 
-<2> `cls` is a class attribute of a DOM element. In this case it the same as writing `class=app-header` in the HTML element.
+<2> `cls` is a class attribute of a DOM element. In this case, it is the same as writing `class=app-header` in the HTML element.
 
-<3> The header uses `hbox` layout with center alignment
+<3> The header uses the `hbox` layout with center alignment.
 
-<4> Child components of the top container are the logo image, the text "Save The Child", and another container with buttons
+<4> Child components of the top container are the logo image, the text "Save The Child," and another container with buttons.
 
-<5> A container with button components
+<5> A container with button components.
 
-Let's review the `DonateForm` view next, which is a subclass of `Ext.form.Panel` and contains the form with radio buttons, fields and labels. This component named `donateform` will be placed under `SSC.view.Header` inside `SSC.view.Viewport`. We've removed some of the lines code to make it more readable, but its full version is included in the source code samples accompanying the book. Here's the first part of the `SSC.view.DonateForm`.
+Let's review the `DonateForm` view next, which is a subclass of `Ext.form.Panel` and contains the form with radio buttons, fields, and labels. This component named `donateform` will be placed under `SSC.view.Header` inside `SSC.view.Viewport`. We've removed some of the lines of code to make it more readable, but its full version is included in the source code samples accompanying this book. <<ex_donateform_view_part1>> shows first part of the `SSC.view.DonateForm`.
 
+[[ex_donateform_view_part1]]
+.The DonateForm view. Part 1
+====
 [source, html]
 ----
 Ext.define('SSC.view.DonateForm', {
@@ -1270,21 +1276,23 @@ Ext.define('SSC.view.DonateForm', {
     }]
   }, 
 ----
-.Example 4-33 The DonateForm view. Part 1
+====
 
-<1> `DonateForm` depends on several classes listed in the `requires` property. The Ext JS will check to see if these classes are present in memory, and if not, the loader will load all dependencies first, and only after the DonateForm class.
+<1> `DonateForm` depends on several classes listed in the `requires` property. Ext JS checks to see whether these classes are present in memory, and if not, the loader loads all dependencies first, and only after the +DonateForm+ class.
 
-<2> Our `DonateForm` uses horizontal box (`hbox`) layout, which means that certain components or containers will be laid out next to each other horizontally. But which ones? The children of the container located in the `items[]` arrays hence they are the once that will be laid out horizontally in this case. But the above code contains several of `items[]` arrays with different level of nesting. How to identify those that belong to the topmost container `DonateForm`? This is the case that clearly shows that having a good IDE can be of great help.
+<2> Our `DonateForm` uses the horizontal box (`hbox`) layout, which means that certain components or containers will be laid out next to each other horizontally. But which ones? The children of the container located in the `items[]` arrays will be laid out horizontally in this case. But the preceding code contains several `items[]` arrays with different levels of nesting. How to identify those that belong to the topmost container `DonateForm`? This is a case that clearly demonstrates how having a good IDE can be of great help.
 +
-<<FIG6-6-SSC>> shows a snapshot from the WebStorm IDE illustrating how can you find the matching elements in the long listings. The top level `items[]` arrays starts from line 23 and we see that the first element to be laid out by in `hbox` has the xtype: `container`, which in turn has some children. If you'll move the blinking cursor of the WebStorm editor right after the firs open curly brace in line 23, you'll see a thin blue vertical line that goes down to line 60. This is where the first object literal ends.
+<<FIG6-6-SSC>> shows a snapshot from the WebStorm IDE illustrating how can you find matching elements in long listings. The top-level `items[]` arrays starts from line 23, and we see that the first element to be laid out in `hbox` has the +xtype: container+, which in turn has some children. If you move the blinking cursor of the WebStorm editor right after the first open curly brace in line 23, you'll see a thin, blue vertical line that goes down to line 60. This is where the first object literal ends.
 +
-Hence the second object to be governed by the `hbox` layout starts on line 61.  You can repeat the same trick with the cursor to see where that object ends and the `fieldcontainer` starts . This might seem like a not overly important tip, but it really saves developer's time.    
+Hence, the second object to be governed by the `hbox` layout starts on line 61.  You can repeat the same trick with the cursor to see where that object ends and the `fieldcontainer` starts. This might seem like a not overly important tip, but it really saves a developer's time.    
 
-<3> The first element of the `hbox` is a container that internally laid out as a `vbox` (see <<FIG6-7-SSC>>).Tthe `radiogroup` is on top and the `textfield` for entering Other amount at the bottom.
+<3> The first element of the `hbox` is a container that is internally laid out as a `vbox` (see <<FIG6-7-SSC>>). The `radiogroup` is on top, and the `textfield` for entering Other amount is at the bottom.
 
+The second part of the `SSC.view.DonateForm` comes next, as shown in <<ex_donateform_view_part2>>.
 
-The second part of the `SSC.view.DonateForm` comes next.
-
+[[ex_donateform_view_part2]]
+.The DonateForm view. Part 2
+====
 [source, javascript]
 ----
   {
@@ -1315,7 +1323,7 @@ The second part of the `SSC.view.DonateForm` comes next.
       cls: 'donate-form-label'
     }, {
       xtype: 'component',
-      html: 'Your payment will processed securely by PayPal...'
+      html: 'Your payment will be processed securely by PayPal...'
     }, {
       xtype: 'button',
       action: 'donate',
@@ -1328,25 +1336,25 @@ The second part of the `SSC.view.DonateForm` comes next.
   }]
 });
 ----
-.Example 4-34 The DonateForm view. Part 2
+====
 
-<1> The http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.form.FieldContainer[`fieldcontainer`] is a light-weight Ext JS container useful to group components - the donor information in this case. It's the central  element in the `hbox` container shown in <<FIG6-7-SSC>>. 
+<1> The http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.form.FieldContainer[`fieldcontainer`] is a lightweight Ext JS container useful for grouping components--the donor information, in this case. It's the central  element in the `hbox` container shown in <<FIG6-7-SSC>>. 
 
-<2> The right side of the `hbox` is another container with the `vbox` internal layout to show the "We accept Paypal" message, "Donate Now", and "I'll donate later" buttons (see <<FIG6-7-SSC>>). You can find event handlers for these buttons in the controller Donate.js.       
+<2> The right side of the `hbox` is another container with the `vbox` internal layout to show the "We accept PayPal" message, Donate Now, and I'll donate later buttons (see <<FIG6-7-SSC>>). You can find event handlers for these buttons in the controller _Donate.js_.       
 
 [[FIG6-6-SSC]]
-.Collapsed Code of Viewport.js 
+.Collapsed code of Viewport.js 
 image::images/ewdv_0413.png[image]
 
-TIP: Debugging of frameworks that are extensions of JavaScript in Web browsers can be difficult, because while you may be operating with, say Ext JS classes, the browser will receive regular `<div>, <p>` and other HTML tags and JavaScript. http://www.illuminations-for-developers.com/[Illuminations] is a Firebug add-on that allows to inspect elements showing not just their HTML representations, but the corresponding Ext JS classes that were used to create them. 
+TIP: Debugging frameworks that are extensions of JavaScript in web browsers can be difficult, because although you might be operating with, say, Ext JS classes, the browser will receive regular +<div>+, +<p>+ and other HTML tags and JavaScript. http://www.illuminations-for-developers.com/[Illuminations] is a Firebug add-on that allows you to inspect elements showing not just their HTML representations, but the corresponding Ext JS classes that were used to create them. 
 
 [[FIG6-7-SSC]]
 .DonateForm.js: an hbox with three vbox containers 
 image::images/ewdv_0414.png[image]
 
-The code review of the top portion of the Save The Child application is finished. Run the SSC_Top_ExtJS project and turn on the Chrome Developers Tools. Scroll to the bottom of the Network tab, and you'll see that the browser made about 250 requests to the server and downloaded 4.5Mb in total. Not too exciting isn't it? 
+The code review of the top portion of the Save The Child application is finished. Run the _SSC_Top_ExtJS_ project and turn on the Chrome Developer Tools. Scroll to the bottom of the Network tab, and you'll see that the browser made about 250 requests to the server and downloaded 4.5 MB in total. Not too exciting, is it? 
 
-On the next runs these numbers will drop to about 30 requests and 1.7Mb transferred - the browser's caching kicked in. These numbers would be better if instead of ext-all.js we'd be linking ext.js, and even better if we'd created a custom build (see Sencha CMB section above) for the Save The Child application merging the application code into one file to contain only those framework classes that were actually used. 
+On the next runs, these numbers will drop to about 30 requests and 1.7 MB transferred, as the browser's caching kicks in. These numbers would be better if instead of _ext-all.js_ we'd link _ext.js_, and even better if we created a custom build (see the section <<>> earlier in the chapter) for the Save The Child application merging the application code into one file to contain only those framework classes that were actually used. 
 
 ==== Completing Save The Child
 
