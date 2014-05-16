@@ -959,7 +959,7 @@ Ext.application({
 });
 ----
 
-In this version of the application, the controller _Donate.js_ is listening to the events from the view `DonateForm`. It's responsible just for showing and hiding the `Donate` form panel. We've implemented the same behavior as in the previous version of the Save The Child application--clicking the Donate Now button reveals the donation form. If the application needs to make Ajax calls to the server, such code would also be placed in the controller. The code of the `Donate` controller, is shown in <<ex_donate_controller>>.
+In this version of the application, the _Donate.js_ controller is listening to the events from the view `DonateForm`. It's responsible just for showing and hiding the `Donate` form panel. We've implemented the same behavior as in the previous version of the Save The Child application--clicking the Donate Now button reveals the donation form. If the application needs to make Ajax calls to the server, such code would also be placed in the controller. The code of the `Donate` controller, is shown in <<ex_donate_controller>>.
 
 [[ex_donate_controller]]
 .The Donate controller of Save The Child
@@ -1341,7 +1341,7 @@ The second part of the `SSC.view.DonateForm` comes next, as shown in <<ex_donate
 
 <1> The http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.form.FieldContainer[`fieldcontainer`] is a lightweight Ext JS container useful for grouping components--the donor information, in this case. It's the central  element in the `hbox` container shown in <<FIG6-7-SSC>>. 
 
-<2> The right side of the `hbox` is another container with the `vbox` internal layout to show the "We accept PayPal" message, Donate Now, and I'll donate later buttons (see <<FIG6-7-SSC>>). You can find event handlers for these buttons in the controller _Donate.js_.       
+<2> The right side of the `hbox` is another container with the `vbox` internal layout to show the "We accept PayPal" message, Donate Now, and I'll donate later buttons (see <<FIG6-7-SSC>>). You can find event handlers for these buttons in the _Donate.js_ controller.       
 
 [[FIG6-6-SSC]]
 .Collapsed code of Viewport.js 
@@ -1424,11 +1424,10 @@ showLoginFields: function () {
     this.getPasswordBox().show();
 }
 ----
-.Example 4-36 Processing Login clicks in the controller
 
-===== Adding the Video
+===== Adding the video
 
-The bottom portion of the Windows includes several components. The video view simply reuses the HTML `<video>` tag we used in chapters 4 and 5. Ext JS 4.2 doesn't offer any other solutions for embedding videos. On one hand, sub-classing `Ext.Component` is the lightest way of including any arbitrary HTML markup. On the other hand, turning HTML into an Ext JS component allows us to use it the same way as any other Ext JS component, e.g. participate in layouts. Here's the code of the VideoPanel.js:
+The bottom portion of the window includes several components. The video view simply reuses the HTML `<video>` tag we used in <<developing_in_ext_js>> and <<productivity_tools>>. Ext JS 4.2 doesn't offer any other solutions for embedding videos. On one hand, subclassing `Ext.Component` is the lightest way of including any arbitrary HTML markup. On the other hand, turning HTML into an Ext JS component allows us to use it the same way as any other Ext JS component (for example, participate in layouts). Here's the code for VideoPanel.js:
 
 [source, javascript]
 ----
@@ -1447,14 +1446,17 @@ Ext.define("SSC.view.VideoPanel", {
 
 });
 ----
-.Example 4-37 The VideoPanel component
 
-TIP: Ext JS has a wrapper  for the HTML5 `<video>` tag. It's called `Ext.Video`, and we'll use it in Chapter on Sencha Touch.
 
-===== Adding the Maps
+TIP: Ext JS has a wrapper for the HTML5 `<video>` tag. It's called `Ext.Video`, and we use it in <<sencha_touch>>.
 
-Adding the map takes considerably more work on our part. The mapping part is located in the view CampaignsMap.js. Initially we tried to use the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.ux.GMapPanel[`Ext.ux.GMapPanel`], but it didn't work as expected. As a workaround, we've added the HTML `<div>` element to serve as a map container. The first part of the content of CampaignsMap.js is shown below.
+===== Adding the maps
 
+Adding the map takes considerably more work on our part. The mapping part is located in the view _CampaignsMap.js_. Initially, we tried to use http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.ux.GMapPanel[`Ext.ux.GMapPanel`], but it didn't work as expected. As a workaround, we've added the HTML `<div>` element to serve as a map container. The first part of the content of _CampaignsMap.js_ is shown in <<ex_campaignsmap_part1>>.
+
+[[ex_campaignsmap_part1]]
+.The CampaignsMap component. Part 1
+====
 [source, javascript]
 ----
 Ext.define("SSC.view.CampaignsMap", {
@@ -1485,20 +1487,23 @@ Ext.define("SSC.view.CampaignsMap", {
   }
  },
 ----
-.Example 4-38 The CampaignsMap component. Part 1
+====
 
-<1>  Since we've added the map container just by including the HTML `<div>` component, Ext JS will create generated ID for this `<div>`. It's just not a good way to reference an element on the page, since the ID should be unique and we can easily run into conflicting situation. We didn't want to create an ID manually hence used the property `renderSelectors` allows to map an arbitrary name to a DOM selector.  When we reference this element somewhere inside Ext JS code using this `renderSelector`, e.g. `this.mapContainer`(`mapContainer` is an arbitrary name here), it returns `Ext.dom.Element` object - an abstraction over the plain HTML element - that eliminates cross-browser API differences. 
+<1>  Because we've added the map container just by including the HTML `<div>` component, Ext JS creates a generated ID for this `<div>`. It's just not a good way to reference an element on the page, because the ID should be unique, and we can easily run into conflicting situations. We didn't want to create an ID manually, and so we used the property `renderSelectors` to map an arbitrary name to a DOM selector. When we reference this element somewhere inside the Ext JS code by using this `renderSelector`, for example, `this.mapContainer`(`mapContainer` is an arbitrary name here), it returns `Ext.dom.Element` object--an abstraction over the plain HTML element--that eliminates cross-browser API differences. 
 
-<2> Sencha documentation states that declaring `listeners`  during `Ext.define()` is bad practice and doing it during `Ext.create()` should be preferred. This is an arguable statement. Yes, there is a possibility that the handler function will be created during `define()` but never used during `create()`, which will lead to unnecessary creation of the handler's instance in memory. But the chances are slim. The other consideration is that if listeners are defined during `create()` each instance can handle the same event differently. We'll leave it up to you to decide where's the right place for defining listeners. The good part about keeping listeners in the class definition is that the entire code of the class is located in one place. 
+<2> Sencha documentation states that declaring `listeners`  during `Ext.define()` is a bad practice, and doing it during `Ext.create()` should be preferred. This is an arguable statement. Yes, there is a possibility that the handler function will be created during `define()` but never used during `create()`, which will lead to unnecessary creation of the handler's instance in memory. But the chances are slim. The other consideration is that if listeners are defined during `create()`, each instance can handle the same event differently. We'll leave it up to you to determine the right place for defining listeners. The good part about keeping listeners in the class definition is that the entire code of the class is located in one place. 
 
-<3> Querying the DOM to find the `mapContainer` defined in the `renderSelectors` property. Note that we are getting the reference to this DOM element after the view is rendered in the event handler function `afterrender`. The object `comp` will be provided to this handler, and it points at the instance of the current component, which is `SSC.view.CampaignsMap`. Think of `comp` as `this` for the component.
+<3> Query the DOM to find the `mapContainer` defined in the `renderSelectors` property. Note that we are getting the reference to this DOM element after the view is rendered in the event handler function `afterrender`. The object `comp` will be provided to this handler, and it points at the instance of the current component, which is `SSC.view.CampaignsMap`. Think of `comp` as `this` for the component.
 
-<4> If Google Map is not available, display an error message as in <<FIG6-10-SSC>>. This code was added after one of the authors was testing this code while sitting in the plane with no Internet connection. But checking the status of  https://developer.mozilla.org/en-US/docs/DOM/window.navigator.onLine[`navigator.onLine`] may not be a reliable indicator of the offline status, so we've wrapped it into a `try/catch` block just to be sure. 
+<4> If Google Maps is not available, display an error message, as shown in <<FIG6-10-SSC>>. This code was added after one of the authors was testing this code while sitting on a plane with no Internet connection. But checking the status of  https://developer.mozilla.org/en-US/docs/DOM/window.navigator.onLine[`navigator.onLine`] may not be a reliable indicator of the offline status, so we've wrapped it into a `try/catch` block just to be sure. 
 
 
 
-Next comes the second part of the CampaignsMap.js.
+Next comes the second part of _CampaignsMap.js_, as shown in <<ex_campaignsmap_part2>>.
 
+[[ex_campaignsmap_part2]]
+.The CampaignsMap component. Part 2
+====
 [source, javascript]
 ----
  initMap: function (mapDiv) {                   // <1>
@@ -1578,9 +1583,9 @@ Next comes the second part of the CampaignsMap.js.
  }
 });
 ----
-.Example 4-39 The CampaignsMap component. Part 2
+====
 
-<1> The rest of the code in this class has the same mapping functionality as described in Chapter 1 in section "Adding Geolocation Support".
+<1> The rest of the code in this class has the same mapping functionality as described in <<mocking_up_the_app>> in the section "<<MMMMMMMMMMMMMMMM>>."
 
 <2> The data for the campaign information are coming from the store Campaigns.js located in the folder store. The store manager can find the reference to the store either if by assigned http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.StoreManager[`storeId`] or by name `Campaigns` listed in the `stores` array in the app.js:
 
