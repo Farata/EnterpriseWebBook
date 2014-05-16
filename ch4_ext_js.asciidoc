@@ -423,10 +423,9 @@ Ext.define("SSC.view.LoginBox", {
     }]
 });
 ----
-.Example 4-12 Instantiating class components with `xtype`
 
-Most of the above components use the standard Ext JS `xtype` values, so the fact that you have included them into the class `SSC.view.LoginBox` is a command for Ext JS to instantiate all these buttons and text fields.
-But the class `SSC.view.LoginBox` also includes `xtype: 'loginbox'`  - we decided to assign the value `loginbox` to serve as the `xtype` of our class. Now, you can use the statement `xtype: 'loginbox'` in any other container, it'll know how to instantiate it. For example, later in this chapter you'll see the complete code of the main window `SSC.view.ViewPort`, which includes (and instantiates) our login box as follows:
+Most of the these components use the standard Ext JS `xtype` values, so the fact that you have included them in the class `SSC.view.LoginBox` is a command for Ext JS to instantiate all these buttons and text fields.
+But the class `SSC.view.LoginBox` also includes `xtype: 'loginbox'`--we decided to assign the value `loginbox` to serve as the `xtype` of our class. Now, you can use the statement `xtype: 'loginbox'` in any other container, and it will know how to instantiate it. For example, later in this chapter, you'll see the complete code of the main window `SSC.view.ViewPort`, which includes (and instantiates) our login box as follows:
 
 [source, javascript]
 ----
@@ -440,11 +439,11 @@ But the class `SSC.view.LoginBox` also includes `xtype: 'loginbox'`  - we decide
 .Example 4-13 Instantiating the custom component `LoginBox` with `xtype`
 
 
-===== Multiple Inheritance With Mixins
+===== Supporting multiple inheritance by uisng mixins
 
-Object-oriented languages Java and C# can be considered as simpler version of pass:[C++]. One of the pass:[C++] features that didn't make it into Java and C# was support of multiple inheritance: in these languages a class can extend only one other class. This was done for a good reason - debugging of the pass:[C++] programs that were written with multiple inheritance was difficult. 
+The object-oriented languages Java and C# can be considered simpler versions of pass:[C++]. One of the pass:[C++] features that didn't make it into Java and C# was support of multiple inheritance: in these languages, a class can extend only one other class. This was done for a good reason: debugging of the pass:[C++] programs that were written with multiple inheritance was difficult. 
 
-Ext JS supports multiple inheritance via JavaScript mixins. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly. The following code snippet shows how to define a `classB` that will have features defined in classes `classA`,`classC`, and `classD`.
+Ext JS supports multiple inheritance via JavaScript mixins. A class constructor can get any object as an argument, and Ext JS will use its property values to initialize the corresponding properties defined in the class, if they exist, and the rest of the properties will be created on the fly. The following code snippet shows how to define a `classB` that will have features defined in the classes `classA`, `classC`, and `classD`.
 
 [source, javascript]
 ----
@@ -458,31 +457,34 @@ Ext.define("MyApp.classB",{
 
   });
 ---- 
-.Example 4-14 Adding features of classC and classD to classB
 
-WARNING: If more than one mixin has a method with the same name, the first method that was applied to the resulting class wins. To avoid collisions Ext JS allows you to provide fully qualified name of the method, for example `this.mixins.classC.conflictingName(); this.mixins.classD.conflictingName();`.
+WARNING: If more than one mixin has a method with the same name, the first method that was applied to the resulting class wins. To avoid collisions, Ext JS allows you to provide the fully qualified name of the method--for example, `this.mixins.classC.conflictingName(); this.mixins.classD.conflictingName();`.
 
 
 [[best_practices_MVC]]
-==== Best Practice: MVC 
+==== Best Practice: MVC
 
-While Ext JS doesn't force you to architect your application based on the MVC paradigm, it's a really good idea to do so. Earlier in the section Generating Applications With Sencha CMD Tool you've seen how this tool generates a project, which separates model, views, controllers and stores into separate directories as in <<FIG6-1>> that depicted the structure of the Hello World project. But later in this chapter we'll build our Save The Child application the same way. <<FIG6-8>> presents a diagram illustration how the Ext JS application that contains all Model-View-Controller tiers.
+Even though Ext JS doesn't force you to architect your application based on the MVC paradigm, it's a really good idea to do so. Earlier in the section "<<sencha_cmd_tool>>," you saw how this tool generates a project, which separates model, views, controllers, and stores into separate directories (as shown earlier in <<FIG6-1>>) that depicted the structure of the Hello World project). But later in this chapter, we'll build our Save The Child application the same way. <<FIG6-8>> presents a diagram illustrating the Ext JS application that contains all Model-View-Controller tiers.
 
 [[FIG6-8]]
 .Model-View-Controller in Ext JS 
 image::images/ewdv_0405.png[image]
 
-The MVC tier have the following use:
+The MVC tier comprises the following:
 
-* Controller is an object that serves as an intermediary between the data and the views. The data has arrived to your application, and controller has to notify the appropriate view. The user changed the data on the view - the controller should pass the changes to the model (or stores in the Ext JS world). Controller is the place to write event listeners reaction to some important events of your application (e.g. a user clicked on the button). In other words, Controller maps the events to actions to be performed on the data or the view.
+Controller::
+    An object that serves as an intermediary between the data and the views. The data has arrived at your application, and the controller has to notify the appropriate view. The user changed the data on the view, and the controller should pass the changes to the model (or stores, in the Ext JS world). The controller is the place to write event listeners' reaction to some important events of your application (for example, a user clicked a button). In other words, controller maps the events to actions to be performed on the data or the view.
 
-* View is a certain portion of the UI that the user sees. The view is populated with the data from the model (or stores).
+View::
+    A certain portion of the UI that the user sees. The view is populated with the data from the model (or stores).
 
-* Model represents some business entity, e.g. Donor, Campaign, Customer, Order e.t.c. In Ext JS models are access via stores. 
+Model::
+    Represents some business entity (for example, Donor, Campaign, Customer, or Order). In Ext JS, models are accessed via stores. 
 
-* Store contains one or more model instances. Typically, a Model is a separate class that is instantiated by the store object, but in simple cases a store can have the model data embedded in its own class. A store may use more than one model if need be. Both stores and model can communicate with the data feed that in a Web application is usually provided by some server-side data feed.
+Store::
+    Contains one or more model instances. Typically, a model is a separate class that is instantiated by the store object, but in simple cases, a store can have the model data embedded in its own class. A store can use more than one model if need be. Both stores and model can communicate with the data feed that in a web application is usually provided by a server-side data feed.
 
-The application object defines its controllers, views, models, and stores. When the Save The Child will be ready, the code of its app.js will look as follows:
+The application object defines its controllers, views, models, and stores. When Save The Child is ready, the code of its _app.js_ will look as follows:
 
 [source, javascript]
 ----
@@ -509,13 +511,12 @@ Ext.application({
     ]
 });
 ----
-.Example 4-15 The final version of app.js
 
-The above code is a clean and simple to read/write code helps Ext JS framework in generating additional code required for wiring views, models, controllers and stores together. There is no explicit `models` section, because in our implementation the models were defined inside the `stores`. For better understanding of the rest of this chapter you should read the http://docs.sencha.com/extjs/4.2.0/#!/guide/application_architecture[MVC Architecture] section from Ext JS documentation. We don't want to repeat the content of Sencha product documentation, but rather will be giving you brief descriptions while doing code review of the Save The Child application. 
+This code is clean and simple to read/write and helps Ext JS to generate additional code required for wiring views, models, controllers, and stores together. There is no explicit `models` section, because in our implementation, the models were defined inside the `stores`. For better understanding of the rest of this chapter, you should read the http://docs.sencha.com/extjs/4.2.0/#!/guide/application_architecture[MVC Architecture] section from the Ext JS documentation. We don't want to repeat the content of the Sencha product documentation, but rather will be giving you brief descriptions while reviewing the Save The Child application. 
 
-===== Models and Stores
+===== Models and stores
 
-When you create a class to be served as a model, it must be a subclass of `Ext.data.Model`. A Model has the `fields` property. For example, this is how the you can represent a Donor entity using just two fields: name and location:
+When you create a class to be served as a model, it must be a subclass of `Ext.data.Model`. A model has the `fields` property. For example, you can represent a Donor entity by using just two fields, name and location:
 
 [source, javascript]
 ----
@@ -531,9 +532,8 @@ Ext.define('HR.model.Donor',{
     ]
 });
 ----
-.Example 4-16 The Donor model
 
-Think of an instance of a model is a of one record representing some business entity, e.g. Donor.  Ext JS generate getters and setters for models, so if an instance of the model is represented by a variable `sscDonor`, you can set or get its value as follows:
+Think of an instance of a model as one record representing a business entity--for example, Donor.  Ext JS generate getters and setters for models, so if an instance of the model is represented by the variable `sscDonor`, you can set or get its value as follows:
 
 [source, javascript]
 ----
@@ -541,9 +541,9 @@ sscDonor.set('name', 'Farata Systems');
 var donorName= sscDonor.get('name');
 ----
 
-A store in Ext JS holds a collection of instances of some model. For example, if you the application has retrieved the information about ten donors, it'll be represented in Ext JS as a collection of ten instances of the class `Donor`. A custom store in your application has to extend from the class `Ext.data.Store`. 
+A store in Ext JS holds a collection of instances of a model. For example, if your application has retrieved the information about 10 donors, it will be represented in Ext JS as a collection of 10 instances of the class `Donor`. A custom store in your application has to extend from the class `Ext.data.Store`. 
 
-If you need to quickly create a mock store for testing purposes, you can declare a store with inline data that you can specify using the config option `data`. The next code sample shows a declaration of the store for providing the information about the donors as inline data:
+If you need to quickly create a mock store for testing purposes, you can declare a store with inline data that you can specify using the config option `data`. The next code sample shows a declaration of the store for providing information about the donors as inline data:
 
 [source, javascript]
 ----
@@ -562,9 +562,8 @@ Ext.define('SSC.store.Donors', {
     ]
 });
 ----
-.Example 4-17 The Donors store with embedded model
 
-It's a good idea to have a mock store with the test data located right on your computer. This way you won't depend on the readiness and availability of the server-side data. But usually, a store makes some AJAX call to a server and retrieves the data via the object `Ext.data.reader.Reader` or one of its descendants, for example: 
+It's a good idea to have a mock store with the test data located right on your computer. This way, you won't depend on the readiness and availability of the server-side data. But usually, a store makes an Ajax call to a server and retrieves the data via the object `Ext.data.reader.Reader` or one of its descendants, for example: 
 
 [source, javascript]
 ----
@@ -581,13 +580,12 @@ Ext.define('SSC.store.Donors', {
     }
 });
 ----
-.Example 4-18 The Donors store with external model
 
 <1> The model `SSC.model.Donor` has to be described in your application as a separate class and contain only the fields defined, no data.
 
-<2> Unless you need to load some raw data from a third-party server provider, wrap your reader into a http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.Proxy[Proxy object]. Server proxies are used for implementing CRUD operations and include the corresponding methods - `create()`, `read()`, `update()`, `destroy()`. 
+<2> Unless you need to load some raw data from a third-party server provider, wrap your reader into a http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.proxy.Proxy[Proxy object]. Server proxies are used for implementing create, read, update, and destroy (CRUD) operations and include the corresponding methods `create()`, `read()`, `update()`, and `destroy()`. 
 
-<3> For the mockup mode, we use json-formated file that contains an array of object literals (each object represents one donor). The donors.json should look like the content of the `data` attribute in the code of `SSC.store.Donors` above. 
+<3> For the mock-up mode, we use a JavaScript Object Notation (JSON)&#8211;formated file that contains an array of object literals (each object represents one donor). The _donors.json_ should look like the content of the `data` attribute in the code of `SSC.store.Donors` above. 
 
 <4> The `Reader` object will consume JSON. Read the http://docs.sencha.com/extjs/4.2.0/#!/api/Ext.data.reader.Json[Ext JS documentation] to decide how to properly configure your JSON reader. The reader knows how to convert the data into the model.
 
