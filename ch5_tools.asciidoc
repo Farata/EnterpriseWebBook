@@ -537,12 +537,12 @@ Clear Data Builder generates two files as recommended by the http://martinfowler
 
 Now we need to create a Java service to populate the Ext JS store with the data. Let's create the Java  interface `PersonService` in the package `service`. This service will return the list of `Person` objects. This interface contains one method: `List<Person> getPersons()`. 
 
-To have CDB expose this service as a remote object, we'll use the annotation called `@JSService`.  Another annotation `@JSGenetareStore` will instruct CDB to generate the store. In this case CDB will create the _destination-aware store_. This means that store will know from where to populate its content. All configurations of the store's proxies will be handled by the code generator. With `@JSFillMethod` annotation we will identify our main read method (the "R" from CRUD).
+To have CDB expose this service as a remote object, we'll use the annotation called `@JSService`.  Another annotation, `@JSGenetareStore`, will instruct CDB to generate the store. In this case, CDB will create the _destination-aware store_. This means that the store will know from where to populate its content. All configurations of the store's proxies will be handled by the code generator. With the `@JSFillMethod` annotation, we will identify our main read method (the _R_ in CRUD).
 
-Also it would be nice to have some sort of a sample UI to test the service - the annotation `@JSGenerateSample` will help here. CDB will examine the interface `PersonService`, and based on these annotations will generate all Ext JS MVC artifacts (models, views, controller) and the sample application. 
+Also it would be nice to have some sort of sample UI to test the service; the annotation `@JSGenerateSample` will help here. CDB will examine the interface `PersonService`, and based on these annotations, will generate all Ext JS MVC artifacts (models, views, controller) and the sample application. See <<LISTING_2>>.
 
 [[LISTING_2]]
-.PersonService interface annotated with CDB annotations
+.+PersonService+ interface annotated with CDB annotations
 ====
 [source,java]
 ----------------------------------------------------------------------
@@ -557,36 +557,36 @@ public interface PersonService {
 ====
 
 
-When the code generation is complete, you'll get the implementation for the service - `PersonServiceImpl`. The store folder inside the application folder (+WebContent/app+) has the Ext JS store, which is bound to the previously generated `PersonModel`. In this case, CDB generated store that binds to the remote service. 
+When the code generation is complete, you'll get the implementation for the service: `PersonServiceImpl`. The _store_ folder inside the application folder (+WebContent/app+) has the Ext JS store, which is bound to the previously generated `PersonModel` (see <<FIG6-6-CDB>>). In this case, CDB generated the store that binds to the remote service. 
 
 [[FIG6-6-CDB]]
 .Structure of store and model folders
 image::images/ewdv_0509.png[image]
 
-All this intermediate translation from the JavaScript to Java and from Java to JavaScript is done by DirectJNgine, which is a server side implementation of the Ext Direct Protocol. You can read about this protocol in http://www.sencha.com/products/extjs/extdirect[Ext JS documentation]. 
+All this intermediate translation from JavaScript to Java, and from Java to JavaScript, is done by DirectJNgine, which is a server-side implementation of the Ext Direct protocol. You can read about this protocol in http://www.sencha.com/products/extjs/extdirect[Ext JS documentation]. 
 
-CDB has generated a sample UI for us too. Check out the samples directory shown on <<FIG6-7-CDB>>.
+CDB has generated a sample UI for us, too. Check out the _samples_ directory shown in <<FIG6-7-CDB>>.
 
 [[FIG6-7-CDB]]
 .Folder with generated UI files
 image::images/ewdv_0510.png[image]
 
-CDB has generated `SampleController.js`, `SampleGridPanel.js`, and the Ext JS application entry point `sampleApp.js`. To test this application just copy the file  `SampleController.js` into the controller folder, `SampleGridPanel.js` panel into the view folder, and the sample application in the root of the WebContent folder. Change the application entry point with to be `sampleApp.js` in the index.html of the Eclipse project as shown below.
+CDB has generated _SampleController.js_, _SampleGridPanel.js_, and the Ext JS application entry point _sampleApp.js_. To test this application, just copy the file _SampleController.js_ into the _controller_ folder, _SampleGridPanel.js_ panel into the _view folder_, and the sample application in the root of the _WebContent_ folder. Change the application entry point to be _sampleApp.js_ in _index.html_ of the Eclipse project, as shown here.
 
 [source,html]
 ----------------------------------------------------------------------
 <script type="text/javascript" src="sampleApp.js"></script>
 ----------------------------------------------------------------------
 
-This is how the generated UI of the sample application looks like <<FIG6-8-CDB>>.
+The generated UI of the sample application looks like <<FIG6-8-CDB>>.
 
 [[FIG6-8-CDB]]
-.Scaffolded CRUD application template
+.A scaffolded CRUD application template
 image::images/ewdv_0511.png[image]
-On the server side, CDB also follows the _Generation Gap Pattern_ and it generated stubs for the service methods. Override these methods when you're ready to implement the CRUD functionality, similar to the below code sample. 
+On the server side, CDB also follows the _Generation Gap Pattern_ and generates stubs for the service methods. Override these methods when you're ready to implement the CRUD functionality, similar to <<LISTING_3>>. 
 
 [[LISTING_3]]
-.Implementation of PersonService interface
+.Implementation of +PersonService+ interface
 ====
 [source,java]
 ----------------------------------------------------------------------
@@ -639,31 +639,34 @@ public class PersonServiceImpl extends _PersonServiceImpl { // <1>
 ----------------------------------------------------------------------
 ====
 
-<1> Extend the generated class and provide the actual implementation
+<1> Extend the generated class and provide the actual implementation.
 
-<2> The `getPerson()` is our retrieve (fill) method (the R in CRUD)
+<2> The `getPerson()` is our retrieve (fill) method (the _R_ in CRUD).
 
-<3> For this sample application we can use `java.util.ArrayList` class as in-memory server side storage of the `Person` objects. In the real world applications you'd use a database or other persistent storage
+<3> For this sample application, we can use the `java.util.ArrayList` class as in-memory server-side storage of the `Person` objects. In real-world applications, you'd use a database or other persistent storage.
 
-<4> +fillMethodName+ +`_doCreate()` is our create method (the C in CRUD)
+<4> +fillMethodName+ +`_doCreate()` is our create method (the _C_ in CRUD).
 
-<5> +fillMethodName+ +`_doUpdate()` is our update method (the U in CRUD)
+<5> +fillMethodName+ +`_doUpdate()` is our update method (the _U_ in CRUD).
 
-<6> +fillMethodName+ +`_doDelete()` is our delete method (the D in CRUD)
+<6> +fillMethodName+ +`_doDelete()` is our delete method (the _D_ in CRUD).
 
-Click on the +Load+ menu on the UI, and the application will retrieve four persons from our server 
+Click the +Load+ menu on the UI, and the application will retrieve four persons from our server.
 
-To test the rest of the CRUD methods, we'll ask the user to insert one new row, modify three existing ones and remove two rows using the generated Web client. The `Clear.data.DirectStore` object will automatically create a collection of six `ChangeObject`s - one to represent a new row, three to represent the modified ones, and two for the removed rows.
+To test the rest of the CRUD methods, we'll ask the user to insert one new row, modify three existing ones, and remove two rows by using the generated web client. The +Clear.data.DirectStore+ object will automatically create a collection of six ++ChangeObject`s++--one to represent a new row, three to represent the modified ones, and two for the removed rows.
 
-When the user clicks on the +Sync+ UI menu the changes will be sent to the corresponding `do...` remote method. When you `sync()` a standard `Ext.data.DirectStore` Ext JS is POST-ing new, modified and deleted items to the server. When the request is complete the server's response data is applied to the store expecting that some items can be modified by the server. In case of `Clear.data.DirectStore` instead of passing around items, we pass the deltas, wrapped in the `ChangeObject`.
+When the user clicks the Sync UI menu, the changes will be sent to the corresponding `do...` remote method. When you `sync()` a standard `Ext.data.DirectStore`, Ext JS is ++POST++-ing new, modified, and deleted items to the server. When the request is complete, the server's response data is applied to the store, expecting that some items can be modified by the server. In case of `Clear.data.DirectStore`, instead of passing around items, we pass the deltas, wrapped in `ChangeObject`.
 
 Each instance of the `ChangeOject` contains the following:
 
-- `newVersion`  - it's an instance of the newly inserted or modified item. On the Java side it's available via `getNewVersion()`.
-- `prevVersion` - it's an instance of the deleted old version of the modified item. On the Java side it's available via `getPrevVersion()`.
-- array of `changepropertyNames` if this `ChangeObject` represents an update operation.
+`newVersion`::
+    This is an instance of the newly inserted or modified item. On the Java side, it's available via `getNewVersion()`.
+`prevVersion`::
+    An instance of the deleted old version of the modified item. On the Java side it's available via `getPrevVersion()`.
+array of `changepropertyNames`::
+    An array of +changepropertyNames+ will exist with instances of `ChangeObject` if it's an update operation.
 
-The rest of `ChangeObject` details described on the https://github.com/Farata/ClearJS/wiki/Change-Object%3A-Synchronization-Keystone[Clear Toolkit Wiki].
+The rest of the `ChangeObject` details are described in the https://github.com/Farata/ClearJS/wiki/Change-Object%3A-Synchronization-Keystone[Clear Toolkit Wiki].
 
 The corresponding Java implementation of `ChangeObject` is available on the server side and Clear Toolkit passes `ChangeObject` instances to the appropriate `do*` method of the service class. Take a look at the `getPersons_doCreate()` method from <<LISTING_3>>. When the server needs to read the new or updated data arrived from the client your Java class has to invoke the method `changeObject.getNewVersion()`. This method will return the JSON object that you need to deserialize into the object `Person`. This is done in <<LISTING_3>> and looks like this.
 
