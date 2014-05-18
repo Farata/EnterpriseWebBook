@@ -207,22 +207,24 @@ You can find additional materials on CommonJS by following these links:
 [[amd_section]]
 ==== Asynchronous Module Definition
 
-The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded. 
+The AMD format itself is a proposal for defining modules, whereby both the module and dependencies can be asynchronously loaded. 
 The AMD API is based on https://github.com/amdjs/amdjs-api/wiki/AMD[this specification]. 
 
-AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further work on module's format moved to the https://github.com/amdjs[amdjs Github page].
+AMD began as a draft specification for module format in CommonJS, but because full agreement about its content was not reached, further work on the module's format moved to the https://github.com/amdjs[amdjs GitHub page].
 
-The AMD API have the following main functions:
+The AMD API has the following main functions:
 
 [[DEFINE_DESC]]
-* `define` for facilitating module definition. This function takes tree arguments:
-** The optional module id
-** An optional array of modules' IDs of dependencies
-** A callback function (a.k.a _factory function_), which will be invoked when dependencies are loaded. 
-+
+* +define+ for defining the module
+* +require+ for loading the module and its dependencies
+
+The `define` function takes three arguments, as shown in <<LISTING_define_func>>:
+* The optional module ID
+* An optional array of IDs of the dependencies
+* A callback function (a.k.a. _factory function_), which will be invoked when dependencies are loaded 
 
 [[LISTING_define_func]]
-.The signature of a `define` function
+.The signature of the `define` function
 ====
 [source,javascript]
 ----
@@ -234,15 +236,15 @@ define(
 ----
 ====
 
-<1> This string literal defines +module_id+ that will be used by the AMD loader for loading this module.
-<2> An optional array of dependencies' ids.
+<1> This string literal defines +module_id+, which will be used by the AMD loader to load this module.
+<2> An optional array of the dependencies' IDs.
 
-The factory `function{}` above will only be executed once.
+The preceding factory `function{}` will be executed only once.
 
-For example, the Save The Child application has a menu Way To Give, which in turn depends on other module called `otherContent`. If the user clicks on this menu, we can load the module that can be defined in the +wayToGive.js+ as follows:
+For example, the Save The Child application has a Way To Give menu, which in turn depends on another module called `otherContent`. If the user clicks this menu, we can load the module that can be defined in the _wayToGive.js_, as shown in <<LISTING_define_modeule>>.
 
 [[LISTING_define_modeule]]
-.The definition of the wayToGive module
+.The definition of the +wayToGive+ module
 ====
 [source,javascript]
 ----
@@ -250,18 +252,18 @@ include::include/ch7_define_wayToGive.js[]
 ----
 ====
 
-<1> This code doesn't have the optional +module_id+. The loader will use the file name without the `.js` extension as +module_id+. Our module has one dependency on the module called +otherContent+. The dependent module instance will be passed in the factory method as variable +otherContent+. 
-<2> We can start using the dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.
-<3> The module returns constructor function to be used for creation of new objects.
+<1> This code doesn't have the optional +module_id+. The loader will use the filename without the `.js` extension as +module_id+. Our module has one dependency, called +otherContent+. The dependent module instance will be passed in the factory method as the variable +otherContent+. 
+<2> We can start using the dependency object immediately. The AMD loader has taken care of loading and instantiation of this dependency.
+<3> The module returns a constructor function to be used for creation of new objects.
 
-[[REQUIRE_DESC]]
-* The `require` function takes two arguments
-** An array of module IDs to load. Module ID is a string literal.
-** A callback to be executed once those modules are available. The modules loaded by IDs are passed into the callback in order. <<LISTING_require_func,Here is example>> of the `require` function usage.
-+
+The `require` function takes two arguments:
+
+* An array of module IDs to load. The module ID is a string literal.
+* A callback to be executed after those modules are available. The modules loaded by IDs are passed into the callback in order. <<LISTING_require_func>> shows the `require` function usage.
+
 
 [[LISTING_require_func]]
-.The example of `require` function usage
+.An example of `require` function usage
 ====
 [source,javascript]
 ----
@@ -272,13 +274,13 @@ require(["main"], function() {
 ====
 
 
-[underline]#Pros to using AMD:#
+The following are pros of using AMD:
 
-* It's a very simple API that has only two functions - `require` and `define`. 
+* It's a simple API that has only two functions: `require` and `define`. 
 
 * A wide variety of loaders is available. You'll find more coverage on loaders in the <<REQUIREJS, RequireJS section>>.
 
-* The CommonJS module authoring format is supported by the majority of loaders. You'll see an example of modules later in the <<require_cjs>> section. 
+* The CommonJS module authoring format is supported by the majority of loaders. You'll see an example of modules later in <<require_cjs>> section. 
 
 * Plugins offer an immense amount of flexibility.
 
