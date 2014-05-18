@@ -113,9 +113,10 @@ Of these three, the _Module pattern_ doesn't require any additional frameworks a
 
 In software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We're able to include both public and private methods as well as variables inside a single object, thus hiding the encapsulated code from other global scope objects. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts that could be used in the same application's scope.
 
-Ultimately, it's just some code in an immediately invoked function expression (IIFE) that creates a module object in the internal scope of a function and exposes this module to the global scope by using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs (see Examples 6-2, 6-3, and 6-4).
+Ultimately, it's just some code in an immediately invoked function expression (IIFE) that creates a module object in the internal scope of a function and exposes this module to the global scope by using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs (see <<ex_hide_login_module>>, <<ex_inject_global_module>>, and <<ex_global_object_namspaces>>).
 
-.Creating a closure that hides implementation of login module
+[[ex_hide_login_module]]
+.Creating a closure that hides implementation of the login module
 ====
 [source,javascript]
 ----
@@ -123,9 +124,10 @@ include::include/ch6_iife_loginModule.js[]
 ----
 ====
 
-<1> Assigning the module object that was created in the closure to the variable `loginModule`.
-<2> Because of the JavaScript's function scoping, other parts of the code can't access the code inside the closure. With this approach you can implement encapsulation and private members.
+<1> Assign the module object that was created in the closure to the variable `loginModule`.
+<2> Because of the JavaScript's function scoping, other parts of the code can't access the code inside the closure. With this approach, you can implement encapsulation and private members.
 
+[[ex_inject_global_module]]
 .Injecting the module into the global object 
 ====
 [source,javascript]
@@ -135,8 +137,9 @@ include::include/ch6_iife_global_loginModule.js[]
 ====
 
 <1> Instead of exporting the module to a variable as in the previous example, we're passing the global object as a parameter inside the closure.
-<2> Attaching the newly created object to the global object. After that the `loginModule` object can be accessed from the external application code as `window.loginModule` or just `loginModule`.
+<2> Attach the newly created object to the global object. After that, the `loginModule` object can be accessed from the external application code as `window.loginModule` or just `loginModule`.
 
+[[ex_global_object_namspaces]]
 .Introducing namespaces in the global object
 ====
 [source,javascript]
@@ -145,52 +148,60 @@ include::include/ch6_iife_namespace_loginModule.js[]
 ----
 ====
 
-<1> Here we have modification of the approach described in previous snippet. To avoid name conflicts, create a namespace for our application called `ssc`. Note that we check for this object existence in the next line.
+<1> Here we have modification of the approach described in the previous snippet. To avoid name conflicts, create a namespace for our application called `ssc`. Note that we check for this object existence in the next line.
 <2> Now we can logically structure application code using namespaces. The global `ssc` object will contain only the code related to the Save The Child application.
 
-The Module patterns works well for implementing encapsulation in a rather small applications. It's easy to implement and is framework-agnostic. However this approach doesn't scale well because when working with an application with the large number of modules you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.
+The Module pattern works well for implementing encapsulation in rather small applications. It's easy to implement and is framework-agnostic. However, this approach doesn't scale well because, when working with an application with the large number of modules, you might find yourself adding lots of boilerplate code, checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: because you are the one who put an object into the global scope, you need to think about how to avoid accidental names conflicts.
 
-The Module pattern has a serious drawback - you  still need to deal with manual dependency management and manually arrange `<script>` tags in the HTML document. 
+The Module pattern has a serious drawback: you  still need to deal with manual dependency management and manually arrange `<script>` tags in the HTML document. 
 
 ==== CommonJS
 
-http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for various JavaScript API (similar to standard libraries in Java, Python and etc) including standards for modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of the server-side JavaScript.
+http://www.commonjs.org/[CommonJS] is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for various JavaScript APIs (similar to standard libraries in Java, Python, and so forth), including standards for modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server side. The CommonJS module format has been optimized for nonbrowser environments since the early days of server-side JavaScript.
 
-On the Web browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One of the solutions suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. On the server side separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.
+On the web-browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One solution suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which is not a concern for server-side JavaScript engines because file access is nearly instantaneous. On the server side, separation of the code allows us to dedicate each file to exactly one module for ease of development, testing, and maintainability.
 
-In brief, the CommonJS specification requires the environment to have  http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context[three free variables]: `require`, `exports`, and `module`. The syntax to define the module is called _authoring format_. To make the module loadable by a Web browser it has to be transformed into _transport format_. 
+In brief, the CommonJS specification requires the environment to have  http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context[three free variables]: `require`, `exports`, and `module` (see <<ex_commonjs_sample_module>>). The syntax to define the module is called _authoring format_. To make the module loadable by a web browser, it has to be transformed into _transport format_. 
 
+[[ex_commonjs_sample_module]]
+.A CommonJS sample module
+====
 [source,javascript]
 ----
 include::include/ch6_commonjs.js[]
 ----
-<1> If a module requires other modules, declare references to those modules inside the current module's scope by using the `require` function. You need to call `require(id)` for each module it  depends on.  The module id has slashes defining the file path or a URL to indicate namespaces for external modules. Modules are grouped into a packages.
+====
 
-<2> The `exports` object exposes the public API of a module. All objects, functions, constructors that your module exposes must be declared as properties of the `exports` object. The rest of the module's code won't be exposed.
+<1> If a module requires other modules, declare references to those modules inside the current module's scope by using the `require` function. You need to call `require(id)` for each module it depends on. The module ID has slashes defining the file path or a URL to indicate namespaces for external modules. Modules are grouped into packages.
 
-<3> The `module` variable provides the metadata about the module. It holds such properties as `id` and a unique `uri` of each module. The `module.export` exposes `exports` object as its property. Because objects in JavaScript are passed as references, the `exports` and `module.exports` point at the same object.
+<2> The `exports` object exposes the public API of a module. All objects, functions, and constructors that your module exposes must be declared as properties of the `exports` object. The rest of the module's code won't be exposed.
 
-WARNING: The snippet above may give you an impression that the module's code is executed in the global scope, but it's not. Each module is executed in its own scope which helps to isolate them. This works automatically when you write modules for NodeJS environment running on the server. But to use CommonJS module format in the Web browser you need to use an extra tool to generate transport format from _authoring format_. http://browserify.org/[Browserify] takes all your scripts and concatenates them it to one large file.  Besides the module's code the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually developers perform the _code/save/refresh browser_ routine, but it doesn't work in this case and requires an extra steps as you need to install the additional build tool and write  build scripts. 
+<3> The `module` variable provides the metadata about the module. It holds such properties as `id` and a unique `uri` for each module. The `module.export` exposes the `exports` object as its property. Because objects in JavaScript are passed as references, the `exports` and `module.export` point at the same object.
+
+WARNING: The preceding snippet might give you the impression that the module's code is executed in the global scope, but it's not. Each module is executed in its own scope, which helps to isolate them. This works automatically when you write modules for a NodeJS environment running on the server. But to use the CommonJS module format in the web browser, you need to use an extra tool to generate transport format from _authoring format_. http://browserify.org/[Browserify] takes all your scripts and concatenates them into one large file. Besides the module's code, the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually, developers perform the _code/save/refresh browser_ routine, but it doesn't work in this case and requires extra steps as you need to install the additional build tool and write  build scripts. 
 
 
-[underline]#Pros to using CommonJS:#
+The following are pros of using CommonJS:
 
 * It's a simple API for writing and using modules.
-* Such a pattern of organizing  modules is widespread in the server-side JavaScript, e.g. NodeJS.
+* Such a pattern of organizing  modules is widespread in server-side JavaScript, for example, NodeJS.
 
-[underline]#Cons to using CommonJS:#
+Cons to using CommonJS:
 
-* Web browsers don't automatically create the scoped variables `require`, `exports`, `module` hence the additional build step is required.
-* The `require` method is synchronous, but there is no exact indication if dependent module's values are fully loaded because of the asynchronous nature of Web browsers. There is no event to notify the application that 100% of the required resources is loaded. 
-* CommonJS API is suitable for loading +.js+ files, but it can't load other assets like CSS and HTML.
+* Web browsers don't automatically create the scoped variables `require`, `exports`, and `module`, so the additional build step is required.
+* The `require` method is synchronous, but there is no exact indication if a dependent module's values are fully loaded because of the asynchronous nature of web browsers. There is no event to notify the application that 100 percent of the required resources are loaded. 
+* The CommonJS API is suitable for loading _.js_ files, but it can't load other assets such as CSS and HTML.
 
-NOTE: If you want to write modules in the format that can be used in both browser and server's  environments read our suggestions in the  <<umd>> section on this chapter.
+NOTE: If you want to write modules in a format that can be used in both browser and server environments, read our suggestions in <<umd>>.
 
-Further reading:
+[NOTE]
+====
+You can find additional materials on CommonJS by following these links:
 
 * http://wiki.commonjs.org/wiki/Modules/1.1[CommonJS Modules 1.1 specification]
 * http://nodejs.org/docs/latest/api/modules.html#modules_modules[Node.js Modules Reference]
 * http://browserify.org/[Browserify]
+====
 
 
 [[amd_section]]
