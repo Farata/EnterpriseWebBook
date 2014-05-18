@@ -574,9 +574,9 @@ We are not going to dice the Save The Child application into multiple modules, b
 .The modules graph of Save The Child
 image::images/ewdv_0603.png[align="center"]
 
-To dice the application into modules you'll need the the modularization framework RequireJS, which can either be downloaded from its github repository or you can install it using a package manager Bower that was explained in previous chapter on automation tools. 
+To dice the application into modules, you need the modularization framework RequireJS, which can either be downloaded from its GitHub repository or you can install it by using the package manager Bower that was explained in <<productivity_tools>>. 
 
-Once RequireJS downloaded and placed into the project directory, add it to the index.html file as demonstrated in <<add_requirejs>> snippet.
+After RequireJS is downloaded and placed into the project directory, add it to the _index.html_ file, as demonstrated in <<add_requirejs>>.
 
 [[add_requirejs]]
 .Adding RequireJS to the web page
@@ -599,41 +599,53 @@ Once RequireJS downloaded and placed into the project directory, add it to the i
 ====
 
 [[data_main_attrib]]
-<1> Once the RequireJS library is loaded it will look for the `data-main` attribute and attempt to load the `app/config.js` script asynchronously. The `app/config.js` will become the entry point of our application.
+<1> When the RequireJS library is loaded, it will look for the `data-main` attribute and attempt to load the `app/config.js` script asynchronously. The `app/config.js` script will become the entry point of our application.
 
 
 [[inside_config]]
-==== Inside RequireJS configuration: config.js
+==== Inside the RequireJS Configuration: config.js
 
-RequiredJS uses a configuration object that includes modules and dependencies that have to be managed by the framework.
+RequireJS uses a configuration object that includes modules and dependencies that have to be managed by the framework, as shown in <<ex_stc_config-js_file>>.
 
+
+
+[[ex_stc_config-js_file]]
+.The config.js file from the Save The Child app
+====
 [source,javascript]
 ----
 include::include/ch6_require_config.js[]
 ----
+====
+
 <1> The http://requirejs.org/docs/api.html#config[RequireJS documentation] has a comprehensive overview of all configuration options. We've included some of them here. 
 
-<2> The `paths` configuration option defines the mapping for module names and their paths. The `paths` is used for module names and shouldn't contain file extensions.
+<2> The `paths` configuration option defines the mapping for module names and their paths. The `paths` option is used for module names and shouldn't contain file extensions.
 
-<3> After configuring the modules' paths we're loading the 'main' module. The navigation of our application flow starts there.
+<3> After configuring the modules' paths, we're loading the 'main' module. The navigation of our application flow starts there.
 
 
 ==== Writing AMD Modules
 
-Let's take a closer look at the module's internals that make it consumable by the RequireJS module loader.
+<<ex_generic_module_loader>> provides a closer look at the module's internals that make it consumable by the RequireJS module loader.
 
 
+[[ex_generic_module_loader]]
+.Generic module loader: +generic-module.js+
+====
 [source,javascript]
 ----
 include::include/ch7_module_contentLoader.js[]
 ----
-<1> As we discussed in the <<amd_section>> section, the code that you want to expose as a module should be wrapped in the `define()` function call. The first parameter is an array of dependencies. The location of dependencies files is defined <<inside_config, inside the config file>>. The dependency object doesn't have the same name as the dependency string id. The order of arguments in the factory function should be the same as the order in the dependencies array.
+====
 
-<2> In this module we export only in the constructor function that returns the object that uses the _render_ function to draw the visual component on the screen.  
+<1> As we discussed in the section <<amd_section>>, the code that you want to expose as a module should be wrapped in the `define()` function call. The first parameter is an array of dependencies. The location of dependency files is defined <<inside_config, inside the config file>>. The dependency object doesn't have the same name as the dependency string ID. The order of arguments in the factory function should be the same as the order in the dependencies array.
 
-<3> The `contentLoader` object loaded from _app/modules/util/new-content-loader.js_ (see the `paths` property <<inside_config, in RequireJS config object>>), is instantiated by RequireJS and is ready to use. 
+<2> In this module, we export only the constructor function, which in turn returns the _render_ function to draw the visual component on the screen.  
 
-RequreJS also supports the CommonJS module format with a slightly different signature of the `define()` function. This helps to bridge the gap between AMD and CommonJS. If your factory function accepts parameters but no dependency array, the AMD environment assumes that you wish to emulate the  CommonJS module environment. The standard `require`, `exports`, and `module` variables will be injected as parameters into the factory.
+<3> The `contentLoader` object loaded from _app/modules/util/new-content-loader.js_ (see the `paths` property <<inside_config, in the RequireJS config object>>), is instantiated by RequireJS and is ready to use. 
+
+RequireJS also supports the CommonJS module format with a slightly different signature for the `define()` function. This helps bridge the gap between AMD and CommonJS. If your factory function accepts parameters but no dependency array, the AMD environment assumes that you wish to emulate the  CommonJS module environment. The standard `require`, `exports`, and `module` variables will be injected as parameters into the factory.
 
 Here is an example of CommonJS module format with RequireJS.
 
