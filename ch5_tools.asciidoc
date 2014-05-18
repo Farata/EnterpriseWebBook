@@ -676,25 +676,25 @@ The corresponding Java implementation of `ChangeObject` is available on the serv
             (Map<String, String>) changeObject.getNewVersion(),Person.class);
 ----------------------------------------------------------------------
 
-When the new version of the `Person` object is extracted from the `ChangeObject` you can do with it whatever has to be done to persist it in the appropriate storage. In our example we just print the new person information on the server-side Java console. This is why we said earlier, that it may be a good idea to provide a pretty printing feature on the class `Person` by overriding method `toString()`. Similarly, when you need to do a delete, the `changeObject.getPrevVersion()` would give you a person to be deleted.
+When the new version of the `Person` object is extracted from `ChangeObject`, you can do with it whatever has to be done to persist it in the appropriate storage. In our example, we just print the new person information on the server-side Java console. This is why we said earlier that it might be a good idea to provide a pretty printing feature on the class `Person` by overriding the method `toString()`. Similarly, when you need to do a delete, `changeObject.getPrevVersion()` would give you a person to be deleted.
 
 
 ==== Data Pagination 
 
-The pagination feature is needed in almost every enterprise web application. Often you don't want to bring all the  data to the client at once - a page by page feed brings the data to the user a lot faster. The user can navigate back and forth between the pages using pagination UI components. To do that, we need to split our data on the server side into chunks, to send them page by page by the client request. Implementing pagination is the agenda for this section. We'll do the following:
+The pagination feature is needed in almost every enterprise web application. Often you don't want to bring all the data to the client at once; a page-by-page feed brings the data to the user a lot faster. The user can navigate back and forth between the pages by using pagination UI components. To do that, we need to split our data on the server side into chunks, to send them page by page by the client request. Implementing pagination is the agenda for this section.
 
-* Add the data pagination to our sample CRUD application:
+We'll add data pagination to our sample CRUD application by doing the following:
 
-    ** Add the `Ext.toolbar.Paging` component
-    ** Bind both _grid_ and _pagingtoolbar_ to the same store
-    ** Use `DirectOptions` class to read the pagination parameters
+    * Add the `Ext.toolbar.Paging` component.
+    * Bind both _grid_ and _pagingtoolbar_ to the same store.
+    * Use the `DirectOptions` class to read the pagination parameters.
 
 We are going to improve our CRUD application by adding the paging toolbar component bound to the same store as the grid. The class `DirectOptions` will handle the pagination parameters on the server side. 
 
-So far CDB has generated the UI from the Java back end service as well as the Ext JS store and model. We'll refactor the service code from previous example to generate more data (a thousand objects) so we have something to paginate, see below. 
+So far, CDB has generated the UI from the Java back-end service as well as the Ext JS store and model. We'll refactor the service code from the previous example to generate more data (a thousand objects) so we have something to paginate; see <<LISTING_4>>. 
 
 [[LISTING_4]]
-.Refactored implementation of PersonService Interface
+.Refactored implementation of +PersonService+ interface
 ====
 [source,java]
 ----------------------------------------------------------------------
@@ -713,10 +713,10 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 ====
 
 
-If you'll re-run the application now, the Google Chrome Console will show that `PersonStore` is populated with one thousand records. Now we'll add the the Ext JS paging `toolbarpaging` UI component to the file sampleApp.js as shown below. 
+If you rerun the application now, the Google Chrome console will show that `PersonStore` is populated with 1,000 records. Now we'll add the the Ext JS paging `toolbarpaging` UI component to the file _sampleApp.js_, as shown <<LISTING_5>>. 
 
 [[LISTING_5]]
-.Sample Application Entry
+.Sample application entry
 ====
 [source,javascript]
 -----------------------------------------------------
@@ -783,12 +783,11 @@ Ext.application({
 ====
 
 
-<1> Manual store instantiation - create a separate variable `myStore` for this store with empty `config` object 
-<2> Adding the `xtype` `pagingtoolbar` to this component docked items property to display the information and dock this element at the top.
+<1> Manual store instantiation: create a separate variable `myStore` for this store with an empty `config` object.
+<2> Add the `xtype` `pagingtoolbar` to this component's docked items property to display the information and dock this element at the top.
 <3> Now the paging toolbar is also connected to same store.
 
-The next step is to fix the automatically generated controller to take care of the loading of data on 
-click of Load button as shown in the code below. 
+The next step is to fix the automatically generated controller to take care of loading data upon clicking the Load button, as shown in <<LISTING_6>>. 
 
 [[LISTING_6]]
 .Controller for sample application
@@ -821,20 +820,20 @@ Ext.define('episode_3_pagination.controller.SampleController', {
 ====
 
 
-<1> Bind the store instance to our grid panel. In controller's `refs` property we're referencing our  `simplegrid` panel with `ThePanel` alias.
+<1> Bind the store instance to our grid panel. In the controller's `refs` property, we're referencing our  `simplegrid` panel with `ThePanel` alias.
 
-<2> In this case there is no need to explicitly retrieve the store instance by name. Instead, we can use getters `getPanel()` and `getStore()` automatically generated by the Ext JS framework.
+<2> In this case, there is no need to explicitly retrieve the store instance by name. Instead, we can use the getters `getPanel()` and `getStore()`, which were automatically generated by the Ext JS framework.
 
-When the user clicks the button _next_ or _previous_ the method `loadPage` of the underlying store is called. Let's examine the `directprovider` URL - the server side router of the remoting calls - to see how the direct request looks like.  Open Google Chrome Developer Tools from the menu View -> Developer, refresh the Web page and go to the Network tab. You'll see that each time the user clicks on the _next_ or _previous_ buttons on the pagination toolbar the component sends `directOptions` as a part of the request. 
+When the user clicks the Next or Previous button, the method `loadPage` of the underlying store is called. Let's examine the `directprovider` URL--the server-side router of the remoting calls--to see what this direct request looks like. Open Google Chrome Developer Tools by choosing View -> Developer, refresh the web page, and then go to the Network tab. You'll see that each time the user clicks the _next_ or _previous_ button on the pagination toolbar, the component sends `directOptions` as a part of the request.
+
+The default Ext Direct request doesn't carry any information about the page size. Clear JS has the client-side extension of the Ext JS framework that adds some extra functionality to the `Ext.data.DirectStore` component to pass the page `start` and `limit` values to the server side. At this point, the `directOptions` request property (see <<FIG6-9-CDB>>) can be extracted on the server side to get the information about the page boundaries. Let's add some code to _PersonServiceImpl.java_. At this point, the pagination doesn't work. The server sends the entire thousand records, because it doesn't know that the data has to be paginated. We'll fix it in <<FIG6-9-CDB>>. 
 
 [[FIG6-9-CDB]]
 .Request payload details
 image::images/ewdv_0512.png[image]
 
-The default Ext Direct request doesn't carry any information about the page size. Clear JS has the client side extension of the Ext JS framework that adds some extra functionality to `Ext.data.DirectStore` component to pass the page `start` and `limit` values to the server side. At this point, the `directOptions` request property (see <<FIG6-9-CDB>>) can be extracted on the server side to get the information about the page boundaries. Let's add some code to the PersonServiceImpl.java. At this point the pagination doesn't work. The server sends the entire thousand records, because it doesn't know that the data has to be paginated. We'll fix it in the following listing. 
-
 [[LISTING_7]]
-.Implementation of PersonService With Pagination
+.Implementation of +PersonService+ with pagination
 ====
 [source,java]
 ----------------------------------------------------------------------
@@ -868,21 +867,21 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 ----------------------------------------------------------------------
 ====
 
-<1> On the server side there is a special object called `DirectOptions`, which comes with Clear Toolkit.
+<1> On the server side, there is a special object called `DirectOptions`, which comes with Clear Toolkit.
 
-<2> We want to monitor the `start` and in `limit` values (see <<FIG6-9-CDB>>).
+<2> We want to monitor the `start` and `limit` values (see <<FIG6-9-CDB>>).
 
 <3> Calculate the actual limit. Assign the size of the data collection to the `limit` variable if it's  less than the page size (`start+limit`).
 
-<4> Notify the component about the total number of elements on the server side by using `DirectOptions.setOption()` method with `total` option.
+<4> Notify the component about the total number of elements on the server side by using the `DirectOptions.setOption()` method with the `total` option.
 
-<5> Before returning the result, create a subset, an actual page of data using the method `java.util.List.sublist()` which produces the view of the portion of this list between indexes specified by the `start` and the `limit` parameters.  
+<5> Before returning the result, create a subset, an actual page of data using the method `java.util.List.sublist()`, which produces the view of the portion of this list between indexes specified by the `start` and the `limit` parameters.  
 
-As you can see from the Network tab in <<FIG6-8-CDB>>, we've limited the data load to 25 elements per page. Clicking on `next` or `previous` buttons will get you only a page worth of data. The Google Chrome Developers Tools Network tab shows that that we are sending the `start` and `limit` values with every request, and the response contains the object with 25 elements.
+As you can see on the Network tab in <<FIG6-8-CDB>>, we've limited the data load to 25 elements per page. Clicking the Next or Previous button will get you only a page worth of data. The Google Chrome Developer Tools Network tab shows that we are sending the `start` and `limit` values with every request, and the response contains the object with 25 elements.
 
-If you'd like to repeat all of the above steps on you own, watch http://faratasystems.com/training-at-farata-youtube-chanel/[the screencasts] where we demonstrate all the actions described in the section on CDB. For the current information about CDB visit http://cleardb.io/[cleardb.io].
+If you'd like to repeat all of the preceding steps on you own, watch http://faratasystems.com/training-at-farata-youtube-chanel/[the screencasts] demonstrating all the actions described in the section on CDB. For current information about CDB, visit http://cleardb.io/[cleardb.io].
 
 === Summary
 
-Writing the enterprise web applications can be a tedious and time-consuming process. A developer needs to set up frameworks, boilerplates, abstractions, dependency management, build processes and the list of requirements for a front-end workflow appears to grow each year. In this chapter we introduced several tools that could help you with automating a lot of mundane tasks and make you more  productive.
+Writing enterprise web applications can be a tedious and time-consuming process. A developer needs to set up frameworks, boilerplates, abstractions, dependency management, and build processes, and the list of requirements for a front-end workflow appears to grow each year. In this chapter, we introduced several tools that can help you automate a lot of mundane tasks and make you more productive.
 
