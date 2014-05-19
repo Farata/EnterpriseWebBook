@@ -690,9 +690,10 @@ include::include/ch7_module_ondemand.js[]
 <3> Setting the module into the intermediate state until it's fully loaded. 
 <4> After the `whereWeWork` module is loaded, the callback will receive the reference to this module--instantiate `whereWeWork` and render it on the page.
 
-Let's apply the technique demonstrated in <<load_ondemand_snippet>> snippet for Save The Child application to lazy load the "Who We Are", "What We Do", "Where We Work" and "What To Give" modules only if the user clicked on the corresponding top bar link.
+Let's apply the technique demonstrated in <<load_ondemand_snippet>> for the Save The Child application to lazy-load the Who We Are, What We Do, Where We Work, and What To Give modules only if the user clicks the corresponding top bar link. See <<ex_the_main_module>>.
 
-.The Main Module
+[[ex_the_main_module]]
+.The main module
 ====
 [source,javascript]
 ----
@@ -702,33 +703,33 @@ include::include/ch7_main_module.js[]
 
 <1> The first argument of the `define` function is an array of dependencies.
 
-<2> Here we're using the approach described in the <<load_ondemand_snippet>> section. This factory function produces the handler for the button click event. It uses RequireJS API to load the module once the  user clicked on the button.
+<2> Here, we're using the approach described in <<load_ondemand_snippet>>. This factory function produces the handler for the button click event. It uses the RequireJS API to load the module after the user clicks the button.
 
-<3> Instantiate the click handler function using `onDemandLoadingClickHandlerFactory` and assign it to the button defined in the module config.
+<3> Instantiate the click handler function by using `onDemandLoadingClickHandlerFactory` and assign it to the button defined in the module config.
 
 <4> An array of modules that can be loaded on demand.
 
-<5> In the last step, we need to initialize each module button with the lazy loading handler.
+<5> In the last step, we need to initialize each module button with the lazy-loading handler.
 
 
 [[requirejs_plugins]]
-==== RequireJS plugins
+==== Using RequireJS Plug-ins
 
-RequireJS plugins are special modules that implement specific API. For example, the _text_ plugin allows to specify a text file as a dependency, _cs!_ translates _CoffeeScript_ files into JavaScript. The plugin's module name comes before the _!_ separator. Plugins can extend the default loader's functionality.
+RequireJS plug-ins are special modules that implement a specific API. For example, the _text_ plug-in allows you to specify a text file as a dependency, and _cs!_ translates _CoffeeScript_ files into JavaScript. The plug-in's module name comes before the _!_ separator. Plug-ins can extend the default loader's functionality.
 
-In the Save The Child application we use the _order.js_ plugin that allows to specify the exact order in which the dependencies should be loaded. You can find the full list of the available RequireJS plugins at the following https://github.com/jrburke/requirejs/wiki/Plugins[wiki page].
+In the Save The Child application, we use the _order.js_ plug-in that allows us to specify the exact order in which the dependencies should be loaded. You can find the full list of available RequireJS plug-ins at https://github.com/jrburke/requirejs/wiki/Plugins[wiki page].
 
 
 [[using_reuiqrejs_optimizer]]
 ==== Using RequireJS Optimizer
 
-RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that performs module optimization. 
-Earlier in this chapter, we've specified the dependencies as an array of string literals that are passed to the top-level <<REQUIRE_DESC,require>> and <<DEFINE_DESC,define>> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
+RequireJS comes with the optimization tool called http://requirejs.org/docs/optimization.html[_r.js_], which is a utility that performs module optimization. Earlier in this chapter, we specified the dependencies as an array of string literals that are passed to the top-level +require+ and +define+ calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.
 
-Furthermore, r.js integrates with other optimization tools like https://github.com/mishoo/UglifyJS2[`UglifyJS`] and https://developers.google.com/closure/compiler/[`Closure Compiler`] to minify the content of script files. We are going to use the JavaScript task runner http://gruntjs.com/[Grunt] that you learned in previous chapter on automation tools. 
+Furthermore, _r.js_ integrates with other optimization tools such as https://github.com/mishoo/UglifyJS2[`UglifyJS`] and https://developers.google.com/closure/compiler/[`Closure Compiler`] to minify the content of script files. We are going to use the JavaScript task runner http://gruntjs.com/[Grunt] that you learned about in <<productivity_tools>>. 
 
-Let's configure our Grunt project to enable the optimization task. Here's the command to install RequireJS, and Grunt's task packages clean, concat and uglify and save them as development dependencies in the file package.json:
+Let's configure our Grunt project to enable the optimization task. <<ex_adding_dependencies>> shows the command to install RequireJS, and Grunt's task packages +clean+, +concat+, and +uglify+, and save them as development dependencies in the file _package.json_.
 
+[[ex_adding_dependencies]]
 .Adding dependencies to package.json
 ====
 [source,bash]
@@ -740,35 +741,37 @@ grunt-contrib-uglify --saveDev
 ====
 
 
-<<rjs_gruntfile_list,The following listing>> describes the script to setup RequireJS optimizer and the related optimization tasks for Grunt. You'll need to run this script to generate optimized version of the Save The Child application. 
+<<rjs_gruntfile_list>> describes the script to set up the RequireJS optimizer and the related optimization tasks for Grunt. You'll need to run this script to generate an optimized version of the Save The Child application. 
 
 [[rjs_gruntfile_list]]
-.Script to setup RequireJS optimizer
+.Script to set up RequireJS optimizer
+====
 [source,javascript]
 ----
 include::include/ch7_rjs_Gruntfile.js[]
 ----
+====
 
-<1> The +clean+ task cleans output directory. In the `files` section of task config we specify what folder should be cleaned.
-<2> The +requirejs+ task. The configuration properties of +requrejs+ task are self-explanatory. +mainConfigFile+ points at the same file that <<data_main_attrib,`data-main` attribute>> of RequireJS script tag. +out+ parameter specifies output directory where optimized script will be created.
-<3> The +concat+ task combines/concatenates  optimized modules code and RequireJS loader code.
-<4> The +uglify+ task minifies provided files (see `src` properties) using http://lisperator.net/uglifyjs/[UglifyJS] - a compressor/minifier tool. UglifyJS produces significantly smaller version of the original script by reducing the http://en.wikipedia.org/wiki/Abstract_syntax_tree[Abstract Syntax Tree (AST)] and changing local variable names to single-letters.
-<5> Loading plugins that provide necessary tasks.
+<1> The +clean+ task cleans the output directory. In the `files` section of the task +config+, we specify folder that should be cleaned.
+<2> The +requirejs+ task. The configuration properties of the +requrejs+ task are self-explanatory. +mainConfigFile+ points at the same file as the <<data_main_attrib,`data-main` attribute>> of the RequireJS script tag. The +out+ parameter specifies the output directory where the optimized script will be created.
+<3> The +concat+ task combines/concatenates optimized module code and RequireJS loader code.
+<4> The +uglify+ task minifies provided files (see `src` properties) by using http://lisperator.net/uglifyjs/[UglifyJS]--a compressor/minifier tool. UglifyJS produces a significantly smaller version of the original script by reducing the http://en.wikipedia.org/wiki/Abstract_syntax_tree[abstract syntax tree (AST)] and changing local variable names to single letters.
+<5> Loading plug-ins that provide necessary tasks.
 <6> The default task to execute all tasks in order.
 
-Run the http://localhost:8080/ssc-requirejs[Save The Child] application built with RequireJS and monitor the network traffic in Chrome Developer Tools. You'll see  many HTTP requests that load modules asynchronously. As you can see from the <<unoptim_require_fig,from following screenshot>>, 12 out of 14 browser's requests are for loading all required modules. The modules that may be loaded on demand are not here.
+Run the http://localhost:8080/ssc-requirejs[Save The Child] application built with RequireJS and monitor the network traffic in Chrome Developer Tools. You'll see  many HTTP requests that load modules asynchronously. As you can see in <<unoptim_require_fig>>, 12 out of 24 browser's requests are for loading all required modules. The modules that may be loaded on demand are not here.
 
 [[unoptim_require_fig]]
-.Unoptimized version of the Save The Child Application
+.Unoptimized version of the Save The Child application
 image::images/ewdv_0604.png[]
 
-The next <<optim_with_rjs_fig,screenshot>> shows loading of the Save The Child application optimized with RequireJS optimizer. We've managed to pack all our modules, their dependencies and loader's code into a single file, which considerably decreased the number of the server-side calls.
+<<optim_with_rjs_fig>> shows the loading of the Save The Child application, optimized with RequireJS optimizer. We've managed to pack all our modules, their dependencies, and the loader's code into a single file, which considerably decreases the number of server-side calls.
 
 [[optim_with_rjs_fig]]
-.Loading of optimized version of the Save The Child 
+.Loading the optimized version of Save The Child 
 image::images/ewdv_0605.png[]
 
-TIP: Read more on optimization topics in the RequireJS documentation site under http://requirejs.org/docs/optimization.html[``Optimization''] section.
+TIP: You can read more on optimization topics at the RequireJS documentation site under http://requirejs.org/docs/optimization.html[Optimization].
 
 RequireJS took care of the optimal module loading, but you should properly arrange the inter-module communication. The Save The Child application doesn't have modules that heed to exchange data so we'll describe how to properly arrange inter-module communications in a separate application.
 
