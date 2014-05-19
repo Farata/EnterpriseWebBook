@@ -852,29 +852,40 @@ include::include/ch7_mediator.js[]
 ====
 
 <1> Return the private object that stores registered components.
-<2> With the `Mediator.register()` function we can store components in the associative array. The Mediator is a singleton object here.
-<3> Assigning the mediator instance to the component being registered.
-<4> Registering component in the array using  provided `name` as key.
+<2> With the `Mediator.register()` function, we can store components in the associative array. The mediator is a singleton object here.
+<3> Assign the mediator instance to the component being registered.
+<4> Register the component in the array by using the provided `name` as key.
 <5> The component can invoke `Mediator.broadcast()` when it has some information to share with other  application components.
-<6> If a component has a function property with the  name matching the pattern `"on" + event`, e.g. `onClickEvent`, the Mediator will invoke this function in the context of `source` object.
+<6> If a component has a function property with the name matching the pattern `"on" + event`--for example, `onClickEvent`--the mediator will invoke this function in the context of the `source` object.
 
-The following code sample shows the main entry point of the application that uses the above mediator.    
+<<ex_application_entry>> shows the main entry point of the application that uses the mediator.    
 
+[[ex_application_entry]]
+.The application entry point
+====
 [source,javascript]
 ----
 include::include/ch7_mediator_usage.js[]
 ----
+====
+
 <1> Required modules will be loaded by RequireJS.
-<2> Registering our components with the Mediator.
-<3> Adding the `click` event listener for the Bid Price component.
-<4> When the user clicks on the bid price the Mediator will broadcast the `BidClick` event to all registered component. Only the component that has this specific event handler with the name matching  the pattern `"on" + event` will receive this event.
+<2> Register our components with the mediator.
+<3> Add the `click` event listener for the Bid Price component.
+<4> When the user clicks the bid price, the mediator will broadcast the `BidClick` event to all registered components. Only the component that has this specific event handler with the name matching  the pattern `"on" + event` will receive this event.
 
-Let's see how the code of the `PricePanel` and `OrderPanel` components looks like.  
+<<ex_pricepanel_module>> shows the code of the `PricePanel` and `OrderPanel` components.  
 
+[[ex_pricepanel_module]]
+.The +PricePanel+ module
+
+====
 [source,javascript]
 ----
 include::include/ch7_pricepanel.js[]
 ----
+====
+
 <1> The setter of the Mediator object. Mediator injects its' instance during component registration (refer to <<mediator_impl>> snippet).
 <2> The getter of the Mediator object.
 <3> The `onBidClick` event handler. The Mediator will call this function when the `BidClick` event will be broadcast. Using getter `getMediator` we can broadcast `PlaceBid` event to all registered components.
