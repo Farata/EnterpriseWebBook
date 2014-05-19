@@ -185,13 +185,14 @@ In next sections, we will dive into testing frameworks for JavaScript.
 
 ==== Implementing TDD by Using QUnit
 
-We'll start our journey to JavaScript testing frameworks with http://qunitjs.com/[QUnit], which was originally developed by http://ejohn.org/about/[John Resig] as part of jQuery. QUnit now runs completely as a standalone and doesn't have any jQuery dependencies. Although it's still being used by the jQuery Project itself for testing jQuery, jQuery UI and jQuery Mobile code, QUnit can be used to test any generic JavaScript code.
+We'll start our journey to JavaScript testing frameworks with http://qunitjs.com/[QUnit], which was originally developed by http://ejohn.org/about/[John Resig] as part of jQuery. QUnit now runs completely as a standalone and doesn't have any jQuery dependencies. Although it's still being used by the jQuery project itself for testing jQuery, jQuery UI, and jQuery Mobile code, QUnit can be used to test any generic JavaScript code.
 
-===== Setup Grunt With Qunit
+===== Setting Up Grunt with QUnit
 
-In this section you're going learn how to automatically run the Qunit tests using Grunt. Let's setup our project by adding the Qunit framework and tests file. Start with downloading the latest version from using bower.
+In this section, you're going learn how to automatically run QUnit tests using Grunt. Let's set up our project by adding the QUnit framework and test file. Begin by downloading the latest version by using Bower, as shown in <<ex_install_qunit>>.
 
-.Installing qunit with bower
+[[ex_install_qunit]]
+.Installing QUnit with Bower
 ====
 [source,bash]
 ----
@@ -200,11 +201,15 @@ bower install qunit
 ====
  
 
-You need to get only two files - `qunit-*.js` and `qunit-*.css`.
+You need to get only two files: _qunit-*.js_ and _qunit-*.css_, as shown in <<fig_qunit_framework>>.
 
+[[fig_qunit_framework]]
 .QUnit framework in our project 
 image::images/ewdv_0702.png[]
 
+The code fragment shown in <<ex_first_qunit_test>> demonstrates a simple test function.
+
+[[ex_first_qunit_test]]
 .Our first QUnit test
 ====
 [source,javascript]
@@ -213,9 +218,9 @@ include::include/ch7/first_qunit_test.js[]
 ----
 ====
 
+You'll also need a test runner for the test setup. A test runner is an HTML file that contains links to a QUnit framework JavaScript file, as shown in <<ex_test_runner>>.
 
-You'll also need a test runner for the test setup. A test runner is an html file contains links to QUnit framework JavaScript file.
-
+[[ex_test_runner]]
 .A test runner
 ====
 [source,html]
@@ -224,17 +229,18 @@ include::include/ch7/qunit-runner.htm[]
 ----
 ====
 
-<1> In this section we continue working on the jQuery-based version of the Save The Child application. Hence our "production environment" depends on availability of jQuery, so we need to include jQuery in the test runner.
+<1> In this section, we continue working on the jQuery-based version of the Save The Child application. Hence, our "production environment" depends on the availability of jQuery, so we need to include jQuery in the test runner.
 
-<2> Test files are included too.
+<2> Test files are included, too.
 
 <3> QUnit fills this block with results.
 
-<4> Any HTML you want to be present in each test. It will be reset for each test.
+<4> Any HTML you want to be present in each test is placed here. It will be reset for each test.
 
-To run all our tests we need to open the `qunit-runner.html` in browser.  (See <<FIG_8_06>>).
+To run all our tests, we need to open _qunit-runner.html_ in a browser. (See <<FIG_8_06>>.) <<ex_config_for_qunit_test>> shows a sample Grunt task for executing the QUnit tests by using the provided HTML runner.
 
-.Grunt config for qunit test runner
+[[ex_config_for_qunit_test]]
+.Grunt config for QUnit test runner
 ====
 [source,javascript]
 ----
@@ -242,13 +248,13 @@ include::include/ch7/gruntfile_for_qunit.js[]
 ----
 ====
 
-<1> Grunt loads task from local NPM repository. To install this tasks in +node_modules+ directory use command 'npm install grunt-contrib-qunit'.
+<1> Grunt loads the task from the local npm repository. To install this task in the +node_modules+ directory, use the command +npm install grunt-contrib-qunit+.
 
-.A test run results in browser
+.Test results in a browser
 [[FIG_8_06]]
 image::images/ewdv_0703.png[]
 
-Now let's briefly review QUnit API components. You can find a typical QUnit script in <<QUNIT_TEST,the following listing>>.
+Now let's briefly review QUnit API components. <<QUNIT_TEST>> shows a typical QUnit script.
 
 [[QUNIT_TEST]]
 .A sample QUnint test
@@ -259,44 +265,44 @@ include::include/ch7/sample_qunit_test.js[]
 ----
 ====
 
-<1> A `module` function allows to combine related tests as group.
+<1> A `module` function allows you to combine related tests as a group.
 
-<2> Here we can run _Arrange_ phase. A `setup` function will be called before each test.
+<2> Here, we can run the Arrange phase. A `setup` function is called before each test.
 
-<3> A `teardown` function will be call after each test respectively. This is our _Reset_ phase.
+<3> A `teardown` function is called after each test, respectively. This is our Reset phase.
 
-<4> You need to place code of your test in corresponding `test` function.
+<4> You need to place the code of your test in a corresponding `test` function.
 
-<5> Typically, you need to use assertions to make sure the code being tested  gives expected results. The function http://api.qunitjs.com/ok/[`ok`] will examine the first argument to be `true`. 
+<5> Typically, you need to use assertions to make sure the code being tested gives expected results. The function http://api.qunitjs.com/ok/[`ok`] examine the first argument to be `true`. 
 
-<6> A pair of functions `equal` and `notEqual` will check for the equivalence of the first and second arguments, which could be expressions as well.
+<6> A pair of functions, `equal` and `notEqual`, check for the equivalence of the first and second arguments, which could be expressions, as well.
 
-<7> A code of the test is wrapped in IIFE and passes `jQuery` object as `$` variable.
+<7> A code of the test is wrapped in IIFE and passes the `jQuery` object as a `$` variable.
 
-You can find more details about QUnit in http://api.qunitjs.com/[product  documentation] and http://qunitjs.com/cookbook/[QUnit Cookbook].         
+You can find more details about QUnit in its http://api.qunitjs.com/[product  documentation] and http://qunitjs.com/cookbook/[QUnit Cookbook].         
 
-==== Behavior-Driven Development With Jasmine
+==== Behavior-Driven Development with Jasmine
 
-The idea behind _behavior-driven development_ (BDD) is to use the natural language constructs to describe what you think your code should be doing or more specifically, what your functions should be returning.
+The idea behind _behavior-driven development_ (BDD) is to use the natural language constructs to describe what you think your code should be doing, or more specifically, what your functions should be returning.
 
-Similarly to unit tests, with BDD you write short specifications that test one feature at a time. Specifications should be sentences. For example, "Calculator adds two positive numbers". Such sentences will help you to easy identify the failed test by simply reading this sentence in the resulting report. 
+Similarly to unit tests, with BDD you write short specifications that test one feature at a time. Specifications should be sentences. For example, "Calculator adds two positive numbers." Such sentences will help you easily identify the failed test by simply reading this sentence in the resulting report. 
 
-Now we'll demonstrate this concept using Jasmine - the BDD frameworks for JavaScript. Jasmine provides a very nice way to group, execute, and report JavaScript unit tests. 
+Now we'll demonstrate this concept using Jasmine--the BDD framework for JavaScript. Jasmine provides a nice way to group, execute, and report JavaScript unit tests. 
 
-===== Setup Grunt with Jasmine
+===== Setting up Grunt with Jasmine
 
-Now let's learn how to execute a Jasmine specification with Grunt. We will cover Jasmine basics in the next section, but for now think of Jasmine as a piece of code that should be executed by Grunt.
+Now let's learn how to execute a Jasmine specification with Grunt. We cover Jasmine basics in the next section, but for the moment think of Jasmine as a piece of code that should be executed by Grunt.
 
-Let's start with downloading the latest version of Jasmine using bower. 
+Let's begin by downloading the latest version of Jasmine by using Bower. 
 
 [source,bash]
 ----
 bower install jasmine
 ----
 
-Unzip `jasmine-standalone-2.0.0.zip` in _dist_ directory. Jasmine comes with an example spec (_spec_ folder) and an html test runner - SpecRunner.html. Let's open the file SpecRunner.html in browser <<FIG-2>>. 
+Unzip _jasmine-standalone-2.0.0.zip_ in the _dist_ directory. Jasmine comes with an example spec (_spec_ folder) and an HTML test runner, _SpecRunner.html_. Let's open this file in a browser, as shown in <<FIG-2>>. 
 
-.Running Jasmine Specs in a Browser
+.Running Jasmine specs in a browser
 [[FIG-2]]
 image::images/ewdv_0704.png["SpectRunner.html"]
 
