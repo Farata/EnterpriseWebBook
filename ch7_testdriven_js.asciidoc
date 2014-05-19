@@ -660,9 +660,9 @@ You can combine running the tests with the Testem runner with the previously int
 .Using Testem and `grunt watch` side by side 
 image::images/ewdv_0710.png[]
 
-Testem supports live reloading mode. This means that Testem will watch file system for changes and will execute tests in all connected browsers automatically. You can force to test run by switching to console and hitting the _Enter_ key.
+Testem supports live reloading mode. This means that Testem will watch the file system for changes and will execute tests in all connected browsers automatically. You can force a test to run by switching to the console and pressing the Enter key.
 
-In CI mode testem will examine system for all of the available browsers in your system and will execute tests on it. You can get list of the browsers that testem can use to run tests with the `testem launchers` command. <<TESTEM_L,Here is sample output>> after running this command. 
+In CI mode, Testem examines the system for all available browsers and executes tests on them. You can get a list of the browsers that Testem can use to run tests by using the `testem launchers` command. The following shows the sample output after running this command: 
 
 [[TESTEM_L]]
 ----
@@ -678,11 +678,14 @@ Opera         browser       ✔
 PhantomJS     browser       ✔
 ----
 
-Now you can run our test simultaneously in all browsers installed in  your computer - Google Chrome, Safari, Firefox, Opera and PhantomJS - with one command:
+Now you can run our test simultaneously in all browsers installed in  your computer--Google Chrome, Safari, Firefox, Opera, and PhantomJS--with one command:
 
 `testem ci`
 
-.An output of `testem ci` command
+Sample output of the +testem ci+ command is shown in <<ex_sample_testem_ci_output>>.
+
+[[ex_sample_testem_ci_output]]
+.Output of the `testem ci` command
 ====
 [source,bash]
 ----
@@ -723,19 +726,18 @@ ok 8 - Opera Basic Assumptions:  something truthy.
 <2> ... Firefox
 <3> ... Safari 
 <4> ... Opera
-<5> ... and on headless WebKit - PhantomJS
+<5> ... and on headless WebKit--PhantomJS
 
 Testem uses http://en.wikipedia.org/wiki/Test_Anything_Protocol[TAP] format to report test results. 
 
 ==== Testing DOM
 
-As we discussed in Chapter 1, Document Object Model is a standard browser API that allows a developer to access and manipulate page elements. Pretty often your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing DOM is the crucial part of testing your client side JavaScript. 
-By design, the DOM standard defines a browser-agnostic API. But in the real world, if you want to make sure that your code works in the particular browser you need to run the test inside this browser.
+As is discussed in <<mocking_up_the_app>>, the Document Object Model (DOM) is a standard browser API that allows a developer to access and manipulate page elements. Often, your JavaScript code needs to access and manipulate the HTML page elements in some way. Testing the DOM is a crucial part of testing your client-side JavaScript. By design, the DOM standard defines a browser-agnostic API. But in the real world, if you want to make sure that your code works in a particular browser, you need to run the test inside this browser.
 
-Earlier in this chapter we've introduced the Jasmine method `beforeEach()`, which is the right place for setting all required DOM elements and making them available in the specifications.
+Earlier in this chapter, we introduced the Jasmine method `beforeEach()`, which is the right place for setting all required DOM elements and making them available in the specifications. <<FIX-1>> illustrates the programmatic creation of the required DOM element +<input>+.
 
 [[FIX-1]]
-.Using jQuery APIs to create the required DOM elements before run the spec
+.Using jQuery APIs to create DOM elements before running the spec
 ====
 [source,javascript]
 ----
@@ -752,22 +754,24 @@ describe("spec", function() {
 ----
 ====
 
-<1> Inside the `beforeEach()` method we're using the API to manipulate the DOM programatically. Also, if you're using an HTML test runner you can add the fixture using HTML tags. But we don't recommend this approach because pretty soon you will find that the test runner will become unmaintainable and clogged with tons of fixture HTML code.
+<1> Inside the `beforeEach()` method, we use the API to manipulate the DOM programatically. Also, if you're using an HTML test runner, you can add the fixture by using HTML tags. But we don't recommend this approach, because soon you will find that the test runner will become unmaintainable and clogged with tons of fixture HTML code.
 
-<2> Create an `<input>` element using jQuery APIs, which will turn into the following HTML:   
+<2> Create an `<input>` element by using jQuery APIs, which will turn into the following HTML:   
 
 [source,html]
 ----
-<input type=​"text" id=​"password" name=​"password" placeholder=​"password" autocomplete=​"off">​
+<input type=​"text" id=​"password" name=​"password" placeholder=​"password" 
+                    autocomplete=​"off">​
 ----
 
-The jQuery selectors API is more convenient for working with DOM than a standard JavaScript DOM API. But in the future examples we will use the https://github.com/searls/jasmine-fixture[jasmine-fixture] library for easier setup of the DOM fixture. Jasmine-fixture uses similar to jQuery selectors syntax for injecting HTML fixtures. With this library you will significantly decrease the amount of repetitive code while creating the fixtures.
+The jQuery selectors API is more convenient for working with the DOM than a standard JavaScript DOM API. But in future examples, we will use the https://github.com/searls/jasmine-fixture[jasmine-fixture] library for easier setup of the DOM fixture. Jasmine-fixture uses syntax that is similar to that of jQuery selectors for injecting HTML fixtures. With this library, you will significantly decrease the amount of repetitive code while creating the fixtures.
 
 // TODO: add jasmine-fixture setup, how to download and add to jasmine Grunts's task
 
-Let's see how the example from <<FIX-1,previous code snippet>> looks like with the jasmine-fixture library.
+<<ex_using_jasmine-fixture>> shows how the example from the <<FIX-1,previous code snippet>> looks with the jasmine-fixture library.
 
-.Using jasmine-fixture to setup the DOM before spec run
+[[ex_using_jasmine-fixture]]
+.Using jasmine-fixture to set up the DOM before spec run
 ====
 [source,javascript]
 ----
