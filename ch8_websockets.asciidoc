@@ -178,7 +178,7 @@ Why upgrade from HTTP instead of starting with TCP as a protocol in the first pl
 
 TIP: <<igrigorik, 'High Performance Browser Networking'>> by Ilya Grigorik (O'Reilly) provides more information about TCP and HTTP.
 
-The protocol upgrade is initiated by the client request, which also transmits a special key with the upgrade request. The server processes this request and sends back a confirmation for the upgrade. This ensures that a WebSocket connection can be established only with an endpoint that support WebSocket. Here is what the handshake can look like in the client's request:
+The protocol upgrade is initiated by a client request, which also transmits a special key with the request. The server processes this request and sends back a confirmation for the upgrade. This ensures that a WebSocket connection can be established only with an endpoint that supports WebSocket. Here is what the handshake can look like in the client's request:
 
 ----------------------------------------------------------------------
 
@@ -193,7 +193,7 @@ The protocol upgrade is initiated by the client request, which also transmits a 
 
 ----------------------------------------------------------------------
 
-This client sends the `GET` request for the protocol upgrade. The `Sec-WebSocket-Key` is just a set of random bytes. The server takes these bytes and appends to this key a special Global Unique Identifier (GUID) string `258EAFA5-E914-47DA-95CA-C5AB0DC85B11`, then it creates the Secure Hash Algorithm `SHA1` hash from it performs the _base64_ encoding. The resulting string of bytes needs to be used by both the server and the client, and this string won't be used by the network endpoints that do not understand the WebSocket protocol. Then this value would be copied in the `Sec-WebSocket-Accept` header field. The server computes the value and sends the response back confirming the protocol upgrade.
+This client sends the `GET` request for the protocol upgrade. `Sec-WebSocket-Key` is just a set of random bytes. The server takes these bytes and appends to this key a special globally unique identifier (GUID) string `258EAFA5-E914-47DA-95CA-C5AB0DC85B11`. Then, it creates the Secure Hash Algorithm `SHA1` hash from it and performs _Base64_ encoding. The resulting string of bytes needs to be used by both the server and the client, and this string won't be used by network endpoints that do not understand the WebSocket protocol. Then, this value is copied in the `Sec-WebSocket-Accept` header field. The server computes the value and sends the response back, confirming the protocol upgrade.
 
 ----------------------------------------------------------------------
 
@@ -206,7 +206,7 @@ This client sends the `GET` request for the protocol upgrade. The `Sec-WebSocket
 
 ----------------------------------------------------------------------
 
-The WebSocket protocol uses the `400 Bad Request` HTTP error code to signal the unsuccessful upgrade. The handshake can also include a sub-protocol request and the WebSocket version information but you can't include arbitrary other headers. We can't transmit the authorization information. There are two ways around this. You can either transmit the authorization information as the first request (e.g. unique `clientId` can be passed as part of the HTTP request header or HTML wrapper) or put it into the URL as a query parameter during the initial handshake. Consider the following example:
+The WebSocket protocol uses the `400 Bad Request` HTTP error code to signal an unsuccessful upgrade. The handshake can also include a subprotocol request and the WebSocket version information, but you can't include arbitrary other headers. We can't transmit the authorization information. There are two ways around this. You can either transmit the authorization information as the first request (for example, unique `clientId` can be passed as part of the HTTP request header or HTML wrapper) or put it into the URL as a query parameter during the initial handshake. Consider the following example:
 
 [source,javascript]
 ----------------------------------------------------------------------
@@ -214,21 +214,21 @@ var clientId = "Mary1989";                                   // <1>
 ws = new WebSocket("ws://www.websocket.org/echo/"+clientID); // <2>
 ----------------------------------------------------------------------
 
-<1> The client the `clientId` value (can be obtained from some LDAP server).
-<2> The client connects to the WebSocket endpoint with an extra URI parameter which will be stored on server for future interactions.
+<1> The `clientId` value (which can be obtained from a Lightweight Directory Access Protocol (LDAP) server).
+<2> The client connects to the WebSocket endpoint with an extra URI parameter that will be stored on the server for future interactions.
 
-Because WebSocket protocol creates a bi-directional (socket-to-socket) connection, the server has access to the conversation session associated with such a connection. This session can be associated with clientId and be stored on server.
+Because the WebSocket protocol creates a bidirectional (socket-to-socket) connection, the server has access to the conversation session associated with such a connection. This session can be associated with +clientId+ and be stored on the server.
 
 [NOTE]
 ====
-A client can have as many WebSocket connections with the server as needed.  But servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections or disconnect resource-hogging connections in case of high data load.
+A client can have as many WebSocket connections with the server as needed.  But servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections or can disconnect from resource-hogging connections in case of high data load.
 ====
 
 [[FRAMES]]
-===== The WebSocket Frame Anatomy =====
+===== WebSocket Frame Anatomy =====
 
-The WebSocket handshake is the first step to switching to the message framing protocol, which will be layered over TCP. In this section we're going to explore how the WebSocket data transfer works. The WebSocket is not a stream based protocol like TCP - it's message based. With TCP a program sends stream of bytes, which has to have a specific indication that the data transfer ends.
-The WebSocket specification simplifies this by putting a frame around every chunk of data, and the size of the frame is known. JavaScript can easily handle these frames on the client because each frame arrives packaged in the event object. But the server side has to work a little harder as it needs to wrap each piece of data into a frame before sending it to the client. A frame can look like this:
+The WebSocket handshake is the first step in switching to the message framing protocol, which will be layered over TCP. In this section, we're going to explore how WebSocket data transfer works. WebSocket is not a stream-based protocol like TCP--it's message based. With TCP, a program sends a stream of bytes, which has to have a specific indication that the data transfer ends.
+The WebSocket specification simplifies this by putting a frame around every chunk of data, and the size of the frame is known. JavaScript can easily handle these frames on the client because each frame arrives packaged in the event object. But the server side has to work a little harder because it needs to wrap each piece of data into a frame before sending it to the client. A frame can look like this:
 
 ----------------------------------------------------------------------
 
@@ -254,77 +254,65 @@ The WebSocket specification simplifies this by putting a frame around every chun
 
 ----------------------------------------------------------------------
 
-- `FIN` (1 bit)
-+
+The parts of the frame are as follows:
 
-This bit indicates if this frame is the final in the message payload. If a message has under 127 bytes it fits into a single frame and this bit will always be set.
+`FIN` (1 bit)::
+    This bit indicates whether this frame is the final one in the message payload. If a message has under 127 bytes, it fits into a single frame and this bit will always be set.
 
-- `RSV1`, `RSV2`, `RSV3` (1 bit each)
-+
+`RSV1`, `RSV2`, `RSV3` (1 bit each)::
+    These bits are reserved for future protocol changes and improvements. They must contain zeros because they are not being used at this time.
 
-These bits are reserved for future protocol changes and improvements. They must contain zeros as they are not being used at this time.
+`opcode` (4 bits)::
+    The frame type is defined by using opcode. Here are the most used opcodes:
 
-- `opcode` (4 bits)
-+
+* `0x00` This frame continues the payload.
+* `0x01` This frame includes UTF-8 text data.
+* `0x02` This frame includes the binary data.
+* `0x08` This frame terminates the connection.
+* `0x09` This frame is a ping.
+* `0xA` This frame is a pong.
 
-The frame type is defined using opcode. Here are the most used opcodes:
+`mask` (1 bit)::
+    This indicates whether the frame is masked.
 
-** `0x00` This frame continues the payload.
-** `0x01` This frame includes UTF-8 text data.
-** `0x02` This frame includes the binary data.
-** `0x08` This frame terminates the connection.
-** `0x09` This frame is a Ping.
-** `0xA` This frame is a Pong.
-
-- `mask` (1 bit)
-+
-
-This indicates if the frame is masked.
-+
 
 [NOTE]
 ====
-The client must mask all the frames being sent to the server. The server must close the connection upon receiving a frame that is not masked. The server must not mask any frames that it sends to the client.  The client must close a connection if it detects a masked frame. In that case of such error, client or server can send `Close` frame with 1002 status code - protocol error. All these actions are done automatically by Web browsers and Web server that implements http://tools.ietf.org/html/rfc6455[WebSocket specification].
+The client must mask all the frames being sent to the server. The server must close the connection upon receiving a frame that is not masked. The server must not mask any frames that it sends to the client. The client must close a connection if it detects a masked frame. In case of an error, the client or server can send `Close` frame with 1002 status code - protocol error. All these actions are done automatically by web browsers and web server that implement http://tools.ietf.org/html/rfc6455[WebSocket specification].
 ====
 
-- `payload_len` (7 bits, 7+16 bits, or 7+64 bits)
-+
+`payload_len` (7 bits, 7 + 16 bits, or 7 + 64 bits)::
+    The length of the payload. WebSocket frames come in the following length brackets:
 
-The length of the payload. WebSocket frames come in the following length brackets:
+* 0&#8211;125 indicate the length of the payload.
+* 126 means that the following 2 bytes indicate the length.
+* 127 means the next 8 bytes indicate the length.
 
-** 0-125 indicate the length of the payload.
-** 126 means that the following two bytes indicate the length.
-** 127 means the next 8 bytes indicate the length.
+`masking-key` (32 bits)::
+    This key is used to _XOR_ the payload.
 
-- `masking-key` (32 bits)
-+
-
-This key is used to _XOR_ the payload with.
-
-- `payload data`
-+
-
-This indicates the actual data. The length of block is defined in the `payload_len` field.
+`payload data`::
+    This indicates the actual data. The length of the block is defined in the `payload_len` field.
 
 ===== The Heartbeats =====
 
-Properly design distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so called _heartbeats_ - a small messages that simply ask the other party, "Are you there?". For example, proxy servers and content-filtering hardware can terminate idle connections or the server could simply go down. If a client doesn't send any requests, say for 20 seconds, but the server went down, the client will know about it only when it does the next `send()`. Heartbeats will keep the connection alive to ensure that it won't look idling. In the WebSocket jargon heartbeats are implemented with _ping and pong_ frames. The browser sends the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).
+A properly designed distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so-called _heartbeats_--small messages that simply ask the other party, "Are you there?" For example, proxy servers and content-filtering hardware can terminate idle connections, or the server could simply go down. If a client doesn't send any requests, say, for 20 seconds, but the server went down, the client will know about it only when it does the next `send()`. Heartbeats will keep the connection alive to ensure that it won't look idling. In WebSocket jargon, heartbeats are implemented with _ping and pong_ frames. The browser sends the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).
 
-The Web browser can ping the server when required, but a pong may be sent at server's discretion. If the  endpoint receives a ping frame before responding the the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (can be up to 125 bytes) and pong must have identical data in its message body.
+A web browser can ping the server when required, but a pong may be sent at the server's discretion. If the  endpoint receives a ping frame before responding to the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (up to 125 bytes), and pong must have identical data in its message body.
 
-There is no JavaScript API to send pings or receive pong http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames[frames]. Pings and pongs may or may not be supported by the user's browser. http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104[There is also no API] to enable, configure or detect whether the browser supports pings and pongs.
+There is no JavaScript API to send pings or receive pong http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames[frames]. Pings and pongs may or may not be supported by the user's browser. http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104[There is also no API] to enable, configure, or detect whether the browser supports pings and pongs.
 
 
 ===== Data Frames =====
 
-Since the WebSocket protocol allows the data to be fragmented into multiple frames, the first frame that transmits the data will be prepended with one of the following opcodes indicating the type of data being transmitted:
+Because the WebSocket protocol allows data to be fragmented into multiple frames, the first frame that transmits data will be prepended with one of the following opcodes indicating the type of data being transmitted:
 
-- The opcode `0x01` indicates the UTF-8 encoded text data.
-- The opcode `0x02` indicates the binary data.
+- The opcode `0x01` indicates UTF-8 encoded text data.
+- The opcode `0x02` indicates binary data.
 
-When your application transmits JSON over the wire the opcode is set to be `0x01`. When your code emits binary data it will be represented in a browser specific `Blob` object or an `ArrayBuffer` object and sent wrapped into a frame with the opcode `0x02`.
+When your application transmits JSON over the wire, the opcode is set to `0x01`. When your code emits binary data, it will be represented in a browser-specific `Blob` object or an `ArrayBuffer` object and sent wrapped into a frame with the opcode `0x02`. The following example shows how the WebSocket message listener checks the data type of the incoming message.
 
-NOTE: You must choose the type for the incoming binary data on the client using `webSocket.binaryType = "blob"` or `webSocket.binaryType = "arraybuffer"` before reading the data. It's a good idea to check the type of the incoming data because the opcodes are not exposed to the client.
+NOTE: You must choose the type for the incoming binary data on the client by using `webSocket.binaryType = "blob"` or `webSocket.binaryType = "arraybuffer"` before reading the data. It's a good idea to check the type of the incoming data because the opcodes are not exposed to the client.
 
 [source, javascript]
 ----------------------------------------------------------------------
@@ -338,19 +326,23 @@ webSocket.onmessage = function(messageEvent) {
 ----------------------------------------------------------------------
 
 [[CLOSING]]
-===== Closing The Connection =====
+===== Closing the Connection =====
 
-The connection is terminated by sending the frame with the close opcode `0x08`.
+The connection is terminated by sending a frame with the close opcode `0x08`.
 
-There is the pattern to exchange close opcodes first and then let the server to shut down. The client is supposed to give the server some time to close the connection before attempting to do that on its own. The close event can also signal why it has terminated the connection.
+There is the pattern to exchange close opcodes first and then let the server shut down. The client is supposed to give the server time to close the connection before attempting to do that on its own. The close event can also signal why it has terminated the connection.
 
-A `CloseEvent` is sent to clients using WebSocket when the connection is closed. This is delivered to the listener indicated by the WebSocket object's `onclose` handler. `CloseEvent` has 3 properties - `code, reason, wasClean`.
+A `CloseEvent` is sent to clients using WebSocket when the connection is closed. This is delivered to the listener indicated by the WebSocket object's `onclose` handler. `CloseEvent` has three properties--+code+, +reason+, and +wasClean+:
 
-|===
-|code    | This property represents the close code provided by the server.
-|reason   | A string indicating the reason of why the server closed the connection.
-|wasClean| The property indicates if the connection was cleanly closed.
-|===
++code+::
+    This property represents the close code provided by the server.
++reason+::
+    A string indicating the reason why the server closed the connection.
++wasClean+::
+    This property indicates whether the connection was cleanly closed.
+    
+The following example illustrates how to handle the connection closing.
+    
 
 [source,javascript]
 ----------------------------------------------------------------------
@@ -359,17 +351,18 @@ webSocket.onclose = function(closeEvent) {
 };
 ----------------------------------------------------------------------
 
-=== WebSocket Frameworks ===
+=== Using WebSocket Frameworks ===
 
-Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on you own. For example, if the client's browser doesn't support WebSocket natively, you need to make sure that your code falls back to the legacy HTTP protocol. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. We've included brief reviews of two frameworks that can streamline your Web application development with WebSocket.
+Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on you own. For example, if the client's browser doesn't support WebSocket natively, you need to make sure that your code falls back to the legacy HTTP. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. In this section, we include brief reviews of two frameworks that can streamline your web application development with WebSocket.
 
-The frameworks mentioned below try to utilize the best supported transport by the current Web browser and server while sparing the developer from knowing internals of the used mechanism. The developer can concentrate on programming the application logic making calls to frameworks API when the data transfer is needed. The rest will be done by framework.
+These frameworks try to utilize the best supported transport by the current web browser and server while sparing the developer from knowing the internals of the used mechanism. The developer can concentrate on programming the application logic, making calls to the framework API when the data transfer is needed. The rest will be done by framework.
 
 
 ==== The Portal ====
 
-The https://github.com/flowersinthesand/portal[Portal] is a server agnostic JavaScript library. It aims to utilize a WebSocket protocol and provides a unified API for various transports (long polling, HTTP streaming, WebSocket). Currently, once you've decided to use WebSocket API for your next project, you need to remember about those users who still use old browsers like Internet Explorer 9 or older, which don't natively support WebSockets. In this case, your application should gracefully fall back to the best available networking alternative. Manually writing code to support all possible browsers and versions requires lots of time especially for testing and maintaining the code for different platforms. The +Portal+ library could help as illustrated in the following brief code sample.
+The https://github.com/flowersinthesand/portal[Portal] is a server-agnostic JavaScript library. It aims to utilize a WebSocket protocol and provides a unified API for various transports (long polling, HTTP streaming, WebSocket). Currently, after you've decided to use WebSocket for your next project, you need to remember about those users who still use earlier browsers such as Internet Explorer 9 or older, which don't natively support WebSocket. In this case, your application should gracefully fall back to the best available networking alternative. Manually writing code to support all possible browsers and versions requires lots of time, especially for testing and maintaining the code for different platforms. The +Portal+ library could help, as illustrated in <<ex_asynch_app>>.
 
+[[ex_asynch_app]]
 .Simple asynchronous web application client with Portal
 ====
 [source,javascript]
@@ -378,7 +371,8 @@ portal.defaults.transports = ["ws", "sse", "stream", "longpoll"];    // <1>
 
 portal.open("child-auction/auction").on({       // <2>
     connecting: function() {
-        console.log("The connection has been tried by '" + this.data("transport") + "'");
+        console.log("The connection has been tried by '" 
+                                        + this.data("transport") + "'");
     },
     open: function() {                          // <3>
         console.log("The connection has been opened");
@@ -398,39 +392,38 @@ portal.open("child-auction/auction").on({       // <2>
 ====
 
 
-<1> The Portal framework supports different transports and can fall back from WebSocket connection to streaming or long polling. The server also has to support some fall-back strategy, but no additional code required on the client side.
+<1> The Portal framework supports different transports and can fall back from a WebSocket connection to streaming or long polling. The server also has to support a fall-back strategy, but no additional code is required on the client side.
 
 <2> Connecting to the WebSocket endpoint.
 
-<3> The Portal API is event-based similarly to W3C WebSocket API.
+<3> The Portal API is event-based, similar to the W3C WebSocket API.
 
-The Portal framework generalizes the client-side programming. With defining an array of transports, you don't have to worry about how to handle message sent by server with different transport.
-The Portal doesn't depend on any JavaScript library.
+The Portal framework generalizes client-side programming. When defining an array of transports, you don't have to worry about how to handle messages sent by a server with a different transport. The Portal doesn't depend on any JavaScript library.
 
 ==== Atmosphere ====
 
-A Web application that has to be deployed on several different servers (e.g. WebSphere, JBoss, WebLogic)
-may need to support different WebSocket APIs. At the time of this writing, there is a plethora of different implementations of the server-side libraries supporting WebSockets, and each of them uses their own proprietary APIs. The Java EE 7 specification intends to change the situation. But Atmosphere is a framework that allows you to write portable Web applications today.
+A web application that has to be deployed on several different servers (for example, WebSphere, JBoss, and WebLogic)
+might need to support different WebSocket APIs. At the time of this writing, a plethora of implementations of server-side libraries support WebSocket, and each uses its own proprietary API. The Java EE 7 specification intends to change the situation. But Atmosphere is a framework that allows you to write portable web applications today.
 
-https://github.com/Atmosphere/atmosphere[Atmosphere] is a *portable* WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere Framework contains both client and server components for building Asynchronous Web Applications. The Atmosphere transparently supports WebSocket, Server Side Events, long-polling, HTTP streaming, and JSONP.
+https://github.com/Atmosphere/atmosphere[Atmosphere] is a _portable_ WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere framework contains both client and server components for building asynchronous web applications. Atmosphere transparently supports WebSocket, server-side events, long polling, HTTP streaming, and JSONP.
 
-The client side component https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] uses The Portal framework internally and simplifies the development of Web applications that require a fall back from the WebSocket protocol to long polling or HTTP streaming. The Atmosphere Framework hides the complexity of the asynchronous APIs, which differ from server to server and makes your application portable among them. Treat Atmosphere as a compatibility layer that allows to select best available on server transport for all major Java application servers.
+The client-side component https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] uses the Portal framework internally and simplifies the development of web applications that require a fallback from the WebSocket protocol to long polling or HTTP streaming. Atmosphere hides the complexity of the asynchronous APIs, which differ from server to server, and makes your application portable among them. Treat Atmosphere as a compatibility layer that allows you to select the best available transport for all major Java application servers.
 
-The Atmosphere framework supports wide range of Java based server-side technologies via a set of https://github.com/Atmosphere/atmosphere/wiki/Atmosphere-PlugIns-and-Extensions[extensions and plugins]. The Atmosphere https://github.com/Atmosphere/atmosphere-jsr356[supports] Java API for WebSocket, so you can have best of two worlds - the standard API and application portability.
+The Atmosphere framework supports a wide range of Java-based server-side technologies via a set of https://github.com/Atmosphere/atmosphere/wiki/Atmosphere-PlugIns-and-Extensions[extensions and plugins]. Atmosphere https://github.com/Atmosphere/atmosphere-jsr356[supports] the Java API for WebSocket, so you can have the best of two worlds--the standard API and application portability.
 
 [NOTE]
 ====
-WebSockets can be used not only in for the Web, but in any applications that use networking. If you're developing native iOS or OSX applications check https://github.com/square/SocketRocket[the SocketRocket] library developed by http://corner.squareup.com/[Square Engineering Team].
+WebSocket can be used not only for the Web, but in any applications that use networking. If you're developing native iOS or OS X applications, check https://github.com/square/SocketRocket[the SocketRocket] library developed by the http://corner.squareup.com/[Square engineering team].
 
-Square uses SocketRocket in their mobile payments application. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.
+Square uses SocketRocket in its mobile payments application. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices, check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.
 
 ====
 
-=== Application-level Messages Format Considerations
+=== Choosing the Format for Application-Level Messages
 
-While WebSocket is a great solution for a real-time data transmission over the web, it has the downside too: the WebSocket specification defines only the protocol for transporting frames, but it doesn't include the application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from protocol modeling perspective.
+Although WebSocket is a great solution for real-time data transmission over the Web, it has a downside, too: the WebSocket specification defines only a protocol for transporting frames, but it doesn't include an application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from a protocol-modeling perspective.
 
-Selecting a message format for your application's data communications is important. The most common text formats are CSV, XML, and JSON. They are easy to generate, parse, and are widely supported by many frameworks in the most development platforms. While XML and JSON allow you to represent the data in a hierarchical and easily readable by humans form, they create a lot of overhead by wrapping up each data element into additional text identifiers. Sending such additional textual information requires extra bandwidth and may need additional string-to-type conversion on both the client and server's application code. Let's discuss the pros and cons of these message formats.
+Selecting a message format for your application's data communications is important. The most common text formats are CSV, XML, and JSON. They are easy to generate and parse, and are widely supported by many frameworks in most development platforms. Although XML and JSON allow you to represent data in a hierarchical form that is easily readable by humans, they create a lot of overhead by wrapping each data element into additional text identifiers. Sending this additional textual information requires extra bandwidth and might need additional string-to-type conversion on both the client and server's application code. Let's discuss the pros and cons of these message formats.
 
 ==== CSV
 
