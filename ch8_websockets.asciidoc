@@ -134,45 +134,49 @@ include::include/ws_interface.il[]
 ----------------------------------------------------------------------
 ====
 
-<1> The constructor requires an endpoint URI and optional sub-protocols names. A sub-protocol is an application-level protocol layered over the WebSocket Protocol. The client-side application can explicitly indicate which sub-protocols are acceptable for the conversation between the client and server. That string will be send to the server with the initial handshake as `Sec-WebSocket-Protocol` `GET` request header field. If the server supports one of the requested protocols it selects at most one of acceptable protocols and echoes that value in the same header parameter `Sec-WebSocket-Protocol` in the handshake's response. Thereby the server indicates that it has selected that protocol. It could be a custom protocol or one of standard application level protocols (see <<Auction_Messages_Specification>>). For example, it's possible to transfer the SOAP or XMPP messages over the WebSocket connection. We'll discuss the handshake in the <<HANDSHAKE>> section.
+<1> The constructor requires an endpoint URI and optional subprotocol names. A subprotocol is an application-level protocol layered over the WebSocket protocol. The client-side application can explicitly indicate which subprotocols are acceptable for the conversation between the client and server. That string will be sent to the server with the initial handshake in the `Sec-WebSocket-Protocol` `GET` request header field. If the server supports one of the requested protocols, it selects at most one and echoes that value in the same header parameter `Sec-WebSocket-Protocol` in the handshake's response. The server thereby indicates that it has selected that protocol. It could be a custom protocol or one of the standard application-level protocols (see <<Auction_Messages_Specification>>). For example, it's possible to transfer the SOAP or XMPP messages over the WebSocket connection. We discuss the handshake in <<HANDSHAKE>>.
 
-<2> At any given time the WebSocket can be in one of four states.
+<2> At any given time, the WebSocket can be in one of four states.
 
-<3> These are the callback functions of WebSocket object that will be invoked by the browser once the appropriate network event is dispatched.
+<3> These are the callback functions of the WebSocket object that will be invoked by the browser after the appropriate network event is dispatched.
 
-<4> This property contains the name of the sub-protocol used for the conversation. After the successful handshake this property populated by the browser with value from servers response parameter `Sec-WebSocket-Protocol` as described in <1>.
+<4> This property contains the name of the subprotocol used for the conversation. After a successful handshake, this property is populated by the browser with the value from the server's response parameter `Sec-WebSocket-Protocol`, as described in <1>.
 
-<5> The WebSocket object can send text or binary data to the server using on of the overloaded `send()` methods.
+<5> The WebSocket object can send text or binary data to the server by using one of the overloaded `send()` methods.
 
-===== The Client-Side API =====
+==== The Client-Side API
 
-After introducing the WebSocket interface lets see the code example illustrating how the client's JavaScript can use it.
+Now that we have introduced the WebSocket interface, take a look at the code in <<ex_using_websocket_in_javascript_client>>, illustrating how the client's JavaScript can use it.
 
+[[ex_using_websocket_in_javascript_client]]
+.Using WebSocket in a JavaScript client
+====
 [source,javascript]
 ----------------------------------------------------------------------
 include::include/ws_api_example.js[]
 ----------------------------------------------------------------------
+====
 
-<1> Not all Web browsers support WebSocket natively as of yet. Check if the `WebSocket` object is supported by the user's browser.
+<1> Not all web browsers support WebSocket natively as of yet. Check whether the `WebSocket` object is supported by the user's browser.
 
-<2> Instantiate the new `WebSocket` object with passing an endpoint URI as constructor parameter.
+<2> Instantiate the new `WebSocket` object by passing an endpoint URI as a constructor parameter.
 
-<3> Set the event handlers for `open`, `message`, `close` events.
+<3> Set the event handlers for `open`, `message`, and `close` events.
 
-<4> The `MessageEvent` is dispatched  when the data is received from the server. This message will be delivered to the function assigned to the WebSocket object's `onmessage` property. The `e.data` property of the message event will contain the received message.
+<4> `MessageEvent` is dispatched  when the data is received from the server. This message will be delivered to the function assigned to the WebSocket object's `onmessage` property. The `e.data` property of the message event will contain the received message.
 
-<5> Handle closing connection (more details in <<CLOSING>> section).
+<5> Handle the closing connection (more details in <<CLOSING>>).
 
 <6> Handle errors.
 
 [[HANDSHAKE]]
 ===== WebSocket Handshake
 
-Any network communications that use WebSocket protocol start with an opening "handshake". This handshake upgrades the connection from HTTP to the WebSocket protocol. It's an upgrade of HTTP protocol to a message-based communications. (We will discuss messages (a.k.a. frames) later in this chapter)
+Any network communications that use the WebSocket protocol start with an opening handshake. This handshake upgrades the connection from HTTP to the WebSocket protocol. It's an upgrade of HTTP to message-based communications. We discuss messages (a.k.a. frames) later in this chapter.
 
-Why upgrade from HTTP instead of starting with the TCP as a protocol in the first place? The reason is that the WebSocket operates on the same ports (80 and 443) as HTTP and HTTPS do. It's an important advantage that the browser's requests are routed through the same ports because arbitrary socket connections may not be allowed by the enterprise firewalls for security reasons. Also, many corporate networks only allow certain outgoing ports. And HTTP/HTTPS ports are usually included in so called _white lists_.
+Why upgrade from HTTP instead of starting with TCP as a protocol in the first place? The reason is that WebSocket operates on the same ports (80 and 443) as do HTTP and HTTPS. It's an important advantage that the browser's requests are routed through the same ports, because arbitrary socket connections may not be allowed by the enterprise firewalls for security reasons. Also, many corporate networks allow only certain outgoing ports. And HTTP/HTTPS ports are usually included in so called _white lists_.
 
-TIP: You learn more about TCP in the chapter "Building Blocks of TCP" and more about HTTP in Part III of <<igrigorik, 'High Performance Browser Networking'>>.
+TIP: <<igrigorik, 'High Performance Browser Networking'>> by Ilya Grigorik (O'Reilly) provides more information about TCP and HTTP.
 
 The protocol upgrade is initiated by the client request, which also transmits a special key with the upgrade request. The server processes this request and sends back a confirmation for the upgrade. This ensures that a WebSocket connection can be established only with an endpoint that support WebSocket. Here is what the handshake can look like in the client's request:
 
