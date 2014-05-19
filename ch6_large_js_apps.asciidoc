@@ -773,36 +773,37 @@ image::images/ewdv_0605.png[]
 
 TIP: You can read more on optimization topics at the RequireJS documentation site under http://requirejs.org/docs/optimization.html[Optimization].
 
-RequireJS took care of the optimal module loading, but you should properly arrange the inter-module communication. The Save The Child application doesn't have modules that heed to exchange data so we'll describe how to properly arrange inter-module communications in a separate application.
+RequireJS took care of the optimal module loading, but you should properly arrange the intermodule communication. The Save The Child application doesn't have modules that heed to exchange data, so we'll describe how to properly arrange intermodule communications in a separate application.
 
-TIP: Google has created https://developers.google.com/speed/pagespeed/insights/[PageSpeed Insights], a Web tool that offers suggestions for improving the performance of your Web application on all devices. Just enter the URL of your application and a second later you'll see some optimization suggestions.
+TIP: Google has created https://developers.google.com/speed/pagespeed/insights/[PageSpeed Insights], a web tool that offers suggestions for improving the performance of your web application on all devices. Just enter the URL of your application and a second later you'll see some optimization suggestions.
 
 [[mediator_section]]
-=== Loosely-Coupled Inter-Module Communications With Mediator
+=== Loosely Coupled InterModule Communications with Mediator
 
-Almost any complex enterprise Web application consists of a number of components and modules.
+Almost any complex enterprise web application consists of various components and modules. A simple approach of arranging communication among  components is to allow all components to directly access the public properties of one another. This would produce an application with tightly coupled components that know about one another, but removal of one component could lead to multiple code changes in the application.
 
-A simple approach of arranging communications between the components is to allow all these components directly accessing public properties of each other. This would produce an application with tightly coupled components that know about each other and removal of one component could lead to multiple code changes in the application.
+A better approach is to create loosely coupled components that are self-contained, do not know about one another, and can communicate with the "outside world" by sending and receiving events.
 
-A better approach is to create loosely coupled components that are self-contained, do not know about one another and can communicate with the "outside world" by sending and receiving events.
+Creating a UI from reusable components and applying messaging techniques requires creation of loosely coupled components. Say you've created a window for a financial trader. This window gets a data push from the server, showing the latest stock prices. When the trader likes the price, he may click the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate component, and establishing inter-component communications the right way is really important. 
 
-Creating UI of from reusable components applying messaging techniques requires creation of loosely coupled components. Say you've created a window for a financial trader. This window gets a data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate component  and establishing inter-component communications the right way is really important. 
+As you learned from <<using_ajax_and_json>>, _Mediator_ is a behavioral design pattern that allows you to unify communication of the application components. The Mediator pattern promotes the use of a single shared object that handles (mediates) communication between other objects. None of the components is aware of the others, but each of them knows about a single object--the mediator.
 
-As you've learned from Chapter 2, _Mediator_ is a behavioral design pattern that allows to unify communications of the application components. The Mediator pattern promotes the use of a single shared object that handles (mediates) communication between other objects. None of the components is aware of the others, but each of them knows about a single object - the mediator.
+In <<using_ajax_and_json>> we introduced an example of a small fragment of a trader's desktop. Let's reuse the same example--this time not with `postMessage`, but with the Mediator object.  
 
-In Chapter 2 we've introduced an example of a small fragment of a trader's desktop. Let's reuse the same example, but this time not with `postMessage` but with the Mediator object.  
-
-In Figure <<FIG7-6>>, the Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask button, the Pricing Panel just sends the event with the relevant trade information, e.g. a JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc.
+In <<FIG7-6>>, the Price panel on the left gets the data feed about the current prices of IBM stock. When the user clicks the Bid or Ask button, the Price panel just sends the event with the relevant trade information (for example, a JSON-formatted string containing the stock symbol, price, buy or sell flag, or date). <<FIG7-6>> shows the wire after the user clicks the Price panel.
 
 [[FIG7-6]]
-.Before the trader clicked on the Price Panel
+.Before the trader clicks the Price panel
 image::images/ewdv_0606.png[]
 
-.After the trader clicked on the Price Panel
+.After the trader clicks the Price panel
 image::images/ewdv_0607.png[]
 
-Here is a HTML code snipped that implements the above scenario.
+<<ex_implementing_trade_event>> shows an HTML code snippet that implements this scenario.
 
+[[ex_implementing_trade_event]]
+.NEED TITLE FOR THIS EXAMPLE
+====
 [source,html]
 ----
 <!DOCTYPE html>
@@ -834,13 +835,15 @@ Here is a HTML code snipped that implements the above scenario.
 </body>
 </html>
 ----
-<1> This `div` element contains _Pricing Panel_ with Bid and Ask controls.
-<2> This `div` element contains _Order Panel_ with Quantity, Go and Cancel controls.
+====
 
-As we stated before, we need a Mediator to handle communication between the application components. The components need to register themselves with the  Mediator so it knows about them and can route communications. The following snippet is a sample  Mediator implementation (we use `define` and `require` from RequireJS here).
+<1> This `div` element contains _Price Panel_ with Bid and Ask controls.
+<2> This `div` element contains _Order Panel_ with Quantity, Go, and Cancel controls.
+
+As we stated earlier, we need a Mediator to handle communication among application components. The components need to register themselves with the  mediator so that it knows about them and can route communications. <<mediator_impl>> is a sample mediator implementation (we use `define` and `require` from RequireJS here).
 
 [[mediator_impl]]
-.The implementation of Mediator pattern.
+.The implementation of the Mediator pattern
 ====
 [source,javascript]
 ----
