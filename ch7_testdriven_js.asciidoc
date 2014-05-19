@@ -778,39 +778,40 @@ The jQuery selectors API is more convenient for working with the DOM than a stan
 describe("spec", function() {
     var usernameInput;
     beforeEach(function() {
-        usernameInput = affix('input[id="username"][type="text"][name="username]')[0]; // <1>
+        usernameInput = 
+                affix('input[id="username"][type="text"][name="username]')[0]; // <1>
     });
 
-    it("should not allow login with empty username and password and return code equals 0", function() {
-        var result = ssc.login(usernameInput, passwordInput); // <2>
-        expect(result).toBe(0);
+    it("should not allow login with empty username and password and return code 
+        equals 0", function() {
+            var result = ssc.login(usernameInput, passwordInput); // <2>
+            expect(result).toBe(0);
     });
 });
 ----
 ====
 
-<1> Using the `affix()` function provided by the _jasmine-fixture_ library and expressiveness of CSS selectors we can easily setup required DOM elements. More examples of possible selectors could be found at the https://github.com/searls/jasmine-fixture#more-examples[documentation page] of jasmine-fixture.
+<1> By using the `affix()` function provided by the _jasmine-fixture_ library and expressiveness of CSS selectors, we can easily set up required DOM elements. You can find more examples of possible selectors at the https://github.com/searls/jasmine-fixture#more-examples[documentation page] of jasmine-fixture.
 
-<2> Now when all requirements for our production code (`login()` function) are satisfied we can run it in the context of a test and assert the results.
+<2> When all requirements for our production code (`login()` function) are satisfied, we can run it in the context of a test and assert the results.
 
-As you can see, testing of the DOM manipulation code is much like any other type of unit testing. You need to prepare a fixture (a.k.a. the testing context), run the production code and assert the results.
+As you can see, testing the DOM manipulation code is much like any other type of unit testing. You need to prepare a fixture (a.k.a. the testing context), run the production code, and assert the results.
 
 // TBD Ext JS create fixture div tag, render extjs component on it
 
 // TBD faking events and user interaction
 // TBD using spies to mock code related to interaction with server
 
-=== Save The Child With TDD
+=== Building Save The Child by using TDD
 
-==== The Test-Driven ExtJS version of _SaveSickChild.org_
+We assume that you've read <<modularizing_javascript_projects>>, and in this section you'll apply your newly acquired Ext JS skills. As a reminder, the Ext JS framework encourages using MVC architecture. The separation of responsibilities between models, views, and controllers makes an Ext JS application a perfect candidate for unit testing. In this section you'll learn how to test the Ext JS version of the Save The Child application from <<modularizing_javascript_projects>>.
 
-We assume that you've read the materials from Chapter 6, and in this section you'll apply your newly acquired Ext JS skills. As a reminder, Ext JS framework encourages using MVC architecture. The separation of responsibilities between Views, Models and Controllers makes an ExtJS application a perfect candidate for unit testing. In this section you'll learn how to test the Ext JS version of the Save The Child application from Chapter 6.
+==== Harnessing the ExtJS Application
 
-===== Harnessing ExtJS application
+Let's create a skeleton application that can provide a familiar environment for our classes that should be tested (see <<ex_html_runner_extjs_application>>). 
 
-Let's create a skeleton application that can provide for our classes under the test familiar environment. 
-
-.A HTML-runner for Jasmine and ExtJS application
+[[ex_html_runner_extjs_application]]
+.An HTML runner for Jasmine and Ext JS application
 ====
 [source,html]
 ----
@@ -818,14 +819,14 @@ include::include/ch7/jasmine_runner_for_extjs.htm[]
 ----
 ====
 
-<1> Adding ExtJS framework dependencies.
+<1> Adding Ext JS framework dependencies.
 
 <2> Adding the Jasmine framework dependencies.
 
-<3> This is our skeleton ExtJS application that will setup "friendly" environment for components under the test. You can see content of test.js in the <<SKELETON_EXTJS_APP,following listing>>.
+<3> This is our skeleton Ext JS application that will set up a "friendly" environment for components under the test. You can see the content of _test.js_ in the <<SKELETON_EXTJS_APP>>.
 
 [[SKELETON_EXTJS_APP]]
-.A ExtJS testing endpoint
+.An Ext JS testing endpoint
 ====
 [source,javascript]
 ----
@@ -835,16 +836,18 @@ include::include/ch7/jasmine_extjs_runner.js[]
 
 <1> Ext JS loader needs to know the location of the testing classes...
 
-<2> ... and about location of production code.
+<2> ... and about the location of production code.
 
 <3> Create a skeleton application in the namespace of the production code to provide the execution environment.
 
-<4> The `AllSpec` class will be requesting loading of the rest of the specs. We will show code of `AllSpec` class in <<ALL_SPEC,next listing>>
+<4> The `AllSpec` class will be requesting loading of the rest of the specs. We show the code for the `AllSpec` class in <<ALL_SPEC>>
 
-<5> The skeleton application will test the controllers from the production application code
+<5> The skeleton application will test the controllers from the production application code.
+
+By placing our spec names in a +requires+ config property, we delegate the loading of specified specs to the Ext JS loader during a fixture application startup.
 
 [[ALL_SPEC]]
-.AllSpec class
+.The AllSpec class
 [source,javascript]
 ----
 Ext.define('Test.spec.AllSpecs', {
@@ -853,10 +856,11 @@ Ext.define('Test.spec.AllSpecs', {
     ]
 });
 ----
-<1> The `requires` property includes an array of Jasmine suites. All further tests will be added to this array. Ext JS framework will be responsible for loading and instantiation all test classes.
+<1> The `requires` property includes an array of Jasmine suites. All further tests will be added to this array. Ext JS will be responsible for loading and instantiating all test classes.
 
-Here is how our typical test suite will be look like.
+<<ex_basicassumptions_class>> shows how our typical test suite will look.
 
+[[ex_basicassumptions_class]]
 .A BasicAssumptions class
 ====
 [source,javascript]
@@ -876,16 +880,16 @@ Ext.define('Test.spec.BasicAssumptions', {}, function() {   // <1>
 
 <1> Wrap the Jasmine suite into an Ext JS class.
 
-<2> The rest of the code is very similar to the Jasmine code sample shown earlier in this chapter.
+<2> The rest of the code is similar to the Jasmine code sample shown earlier in this chapter.
 
-After setting up the testing harness for Save The Child application we will suggest testing strategy for ExtJS applications. Let's start with testing the models and controllers followed by testing the views.
+After setting up the testing harness for the Save The Child application, we will suggest a testing strategy for Ext JS applications. Let's begin by testing the models and controllers, followed by testing the views.
 
 [[testing_the_models]]
-===== Testing the Models
+==== Testing the Models
 
-_SaveSickChild.org_ home page displays the information about fund raising campaigns using chart and table views backed by collection of `Campaign` models. A `Campaign` model should have three properties: `title`, `description`, and `location`. The `title` property of the model should have a default value - `Default Campaign Title`. The `location` property of the model is required field.
+The _SaveSickChild.org_ home page displays information about fundraising campaigns by using chart and table views backed by a collection of `Campaign` models. A `Campaign` model should have three properties: `title`, `description`, and `location`. The `title` property of the model should have a default value: `Default Campaign Title`. The `location` property of the model is a required field.
 
-In a spirit of TDD, let's write the <<CAMPMOD_SPEC,specification>> what will meet the requirements described above.
+In the spirit of TDD, let's write a <<CAMPMOD_SPEC,specification>> that will meet the requirements described, as shown in <<CAMPMOD_SPEC>>.
 
 [[CAMPMOD_SPEC]]
 .CampaignModelAssumptions specification
@@ -896,11 +900,11 @@ include::include/CampaignModelAssumptions.js[]
 ----
 ====
 
-<1> By default, `Ext.data.Model` caches every model created by the application in a global in-memory array. We need to clean up the ExtJS model cache after each test run.
+<1> By default, `Ext.data.Model` caches every model created by the application in a global in-memory array. We need to clean up the Ext JS model cache after each test run.
 
 <2> Instantiate the `Campaign` model class to check that it exists.
 
-<3> Next we need to check if model has all required properties. 
+<3> We need to check whether the model has all required properties. 
 
 <4> The property `title` has a default value.
 
@@ -913,9 +917,9 @@ include::include/Campaign.js[]
 
 
 [[CONTROLLER_TEST]]
-===== Testing The Controllers
+==== Testing the Controllers
 
-Controllers in ExtJS are classes like any others and should be tested the same way. In the next example, let's test _Donate Now_ functionality. When the user clicks _Donate Now_ button of the `Donate` panel controller's code should validate the user input and submit the data to the server. Since we are just  testing controller's behavior, we're not going to submit the actual data. We'll use Jasmine spies instead. 
+Controllers in Ext JS are classes like any others and should be tested the same way. In the next example, let's test _Donate Now_ functionality. When the user clicks _Donate Now_ button of the `Donate` panel controller's code should validate the user input and submit the data to the server. Since we are just  testing controller's behavior, we're not going to submit the actual data. We'll use Jasmine spies instead. 
 
 .Donate controller specification
 ====
