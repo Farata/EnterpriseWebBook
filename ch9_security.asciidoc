@@ -233,35 +233,37 @@ On this website, you can drill down into each list item to see the selected secu
 
 If a bad guy can _inject_ a piece of code that will run inside your web application, that code could steal or damage data from the  application. In the world of compiled libraries and executables, injecting malicious code is a rather difficult task. But if an application uses interpreted languages (for example, JavaScript or clear-text SQL), the task of injecting malicious code becomes a lot easier than you might think. Let's look at a typical example of SQL injection.
 
-Say your application can search for data based on some keywords the user enters into a text input field. For example, to find all donors in the city of New York the user will enter the following: 
+Suppose that your application can search for data based on keywords a user enters into a text input field. For example, to find all donors in the city of New York, a user enters the following: 
 
-_"New York"; delete from donors;_ 
++"New York"; delete from donors;+ 
 
-If the server side code of your application would be simply attaching the entered text to the SQL statement, this could result in execution of the following command:
+If the server-side code of your application simply attaches the entered text to the SQL statement, this could result in execution of the following command:
 
-_Select * from donors where city="New York"; delete from donors;_
++Select * from donors where city="New York"; delete from donors;+
 
-This command doesn't require any additional comments, does it? Is there a way to prevent the users of you Web application from entering something like this? The first thing that comes to mind is to not allow the user to enter the city, but force him to select it from the list. But such a list of possible values might be huge. Besides, the hacker can modify the HTTP request after the browser sends it to the server.
+This command doesn't require any additional comments, does it? Is there a way to prevent users of your web application from entering something like this? The first thing that comes to mind is to not allow the user to enter the city, but force her to select it from a list. But such a list of possible values might be huge. Besides, the hacker can modify the HTTP request after the browser sends it to the server.
 
-TIP: Always use pre-compiled SQL statements that use parameters to pass the user's input into the database query (e.g. the _PreparedStatement_ in Java).  
+TIP: Always use precompiled SQL statements that use parameters to pass the user's input into the database query (for example, +PreparedStatement+ in Java).  
 
-The importance of the server-side validation shouldn't be underestimated. In some scenarios you can come up with a regular expression that checks for the matching patterns in the data received from the clients. In other cases you can write a regular expression that invalidate the data if it contains SQL (or other) keywords that leads to modifications  of the data on the server. 
+The importance of server-side validation shouldn't be underestimated. In some scenarios, you can come up with a regular expression that checks for matching patterns in data received from clients. In other cases, you can write a regular expression that invalidates data if it contains SQL (or other) keywords that lead to modifications of data on the server. 
 
 TIP: Always minimize the interval between validating and using the data.  
 
-In the ideal world the client-side code should not even send the non-validated data to the server. But in real-world you'll end up with duplicating some of the validation code in both the client and server. 
+In an ideal world, client-side code should not even send nonvalidated data to the server. But in the real-world, you'll end up duplicating some of the validation code in both the client and the server. 
 
 ==== Cross-Site Scripting
 
-Cross-site scripting (XSS) is when an attacker injects the malicious code into a browser-side script of your Web application.  The user was accessing a trusted Web site, but got an injection from a malicious server that reached the user via the trusted server (hence cross-site).
-Single-page AJAX-based applications make lots of under-the-hood requests to the servers, which increases the attack surface comparing to traditional legacy Web sites that would be downloading Web pages a lot less frequently.  
+_Cross-site scripting (XSS)_ occurs when an attacker injects malicious code into a browser-side script of your web application. The user is accessing a trusted website, but gets an injection from a malicious server that reaches the user via the trusted server (hence, _cross-site_). Single-page Ajax-based applications make lots of under-the-hood requests to servers, which increases the attack surface compared to traditional legacy websites that download web pages a lot less frequently.  
 XSS can happen in three ways: 
 
-* Reflected (a.k.a. phishing) - the Web page contains a link that seems valid, but when the user clicks on it, the user's browser receives and executes the the script created by the attacker.
+Reflected (a.k.a. phishing)::
+    The web page contains a link that seems valid, but when the user clicks it, the user's browser receives and executes the script created by the attacker.
 
-* Stored - the external attacker managed to store the malicious script on the server that hosts someone's  Web application so every user will get it as a part of the Web page and their Web browser will execute it. For example, if a user's forum allows posting texts that include JavaScript code, a malicious code typed by a "bad guy" can be saved in the server's database and executed by users' browsers visited this forum afterward.
+Stored::
+    The external attacker manages to store a malicious script on a server that hosts someone's web application, so every user gets the script as a part of that web page, and their web browser executes it. For example, if a user's forum allows posting texts that include JavaScript code, malicious code typed by a "bad guy" can be saved in the server's database and executed by users' browsers visiting this forum afterward.
 
-* Local - no server is involved. Web page A opens Web page B with malicious code, which in turn modifies the code of the page A. If your application uses a hash-tag(#) in URLs (e.g. http://savesickchild.org#something), make sure that before processing this _something_ doesn't contain anything like "_javascript:somecode_", which may have been attached to the URL by an attacker. 
+Local::
+    No server is involved. Web page A opens web page B with malicious code, which in turn modifies the code of page A. If your application uses a hash tag (#) in URLs (for example, http://savesickchild.org#something), make sure that before processing, this _something_ doesn't contain anything like +_javascript:somecode_+, which might have been attached to the URL by an attacker. 
 
 W3C has published the draft of the https://dvcs.w3.org/hg/content-security-policy/raw-file/tip/csp-specification.dev.html[Content Security Policy] document - "a mechanism web applications can use to mitigate a broad class of content injection vulnerabilities, such as cross-site scripting".
 
