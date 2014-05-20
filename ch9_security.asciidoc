@@ -287,42 +287,42 @@ Elevation of privilege::
 NOTE: While we were working on a section of this book describing Apple's developer certificates (Chapter 14), its website was hacked, and was not available for about two weeks. 
 ******* 
 
-IMPORTANT: One of the OWASP guides is titled https://www.owasp.org/index.php/Web_Application_Penetration_Testing[Web Application Penetration Testing]. In about 350 pages it explains the methodology of testing a Web application for each vulnerability. OWASP defines _penetration test_ as a method of evaluating the security of a computer systems by simulating an attack. Hundreds of security experts from around the world have contributed to this guide. Running penetration tests should become a part of your development process, and the sooner you start running them the better.
+IMPORTANT: One of the OWASP guides is titled https://www.owasp.org/index.php/Web_Application_Penetration_Testing[Web Application Penetration Testing]. In about 350 pages, it explains the methodology of testing a web application for each vulnerability. OWASP defines _penetration test_ as a method of evaluating the security of a computer system by simulating an attack. Hundreds of security experts from around the world have contributed to this guide. Running penetration tests should become part of your development process, and the sooner you start running them, the better.
 
 For example, the Payment Card Industry published a Data Security Standard, which includes a https://www.pcisecuritystandards.org/documents/information_supplement_11.3.pdf[Requirement 11.3] of penetration testing.
 
 === Regulatory Compliance and Enterprise Security 
 
-So far in this chapter we've been discussing security vulnerabilities from the technical perspective. But there is another aspect that can't be ignored - the regulatory compliance of the business you automate.
+So far in this chapter, we've been discussing security vulnerabilities from a technical perspective. But another aspect can't be ignored: the regulatory compliance of the business you automate.
 
-During the last four years the authors of this book  develop, deploy, support, and market the software that automates certain workflows for insurance agents. We serve more several hundreds of insurance agencies and more than 100K agents.  In this section we'll share with you our real-world experience of dealing with security while running our company, which sells software as service.  In addition to developing the application we had to set up the data centers and take care of security issues too. 
+During the last four years, the authors of this book have developed, deployed, supported, and marketed software that automates certain workflows for insurance agents. We serve several hundred insurance agencies and more than 100,000 agents. In this section, we'll share our real-world experience of dealing with security while running our company, which sells software as a service. In addition to developing the application, we had to set up data centers and take care of security issues, too. 
 
-Our customers are insurance agencies and carriers. We charge for our services, and our customers pay using credit cards using our application. This opens up a totally different category of security concerns:
+Our customers are insurance agencies and carriers. We charge for our services, and our customers pay by using credit cards via our application. This opens up a totally different category of security concerns:
 
-* Where the credit card numbers are stored?
-* What if they get stolen?
-* How secure is the payment portion of your application? 
-* How the card holder's data is protected?
-* Is there a firewall protecting customer's data?
-* How the data is encrypted?
+* Where are the credit card numbers stored?
+* What if they are stolen?
+* How secure is the payment portion of the application? 
+* How is the card holder's data protected?
+* Is there a firewall protecting each customer's data?
+* How is the data encrypted?
  
-One of the first questions our perspective customers ask if our application is _PCI compliant_. They won't work with us until they review the _application-level security_ implemented in our system. As per the http://www.pcicomplianceguide.org/pci-basics.php[PCI Compliance Guide], "the Payment Card Industry Data Security Standard is used by all card brands to assure the security of the data gathered while an employee is making a transaction at a bank or participating vendor".
+One of the first questions our prospective customers ask is whether our application is _PCI compliant_. They won't work with us until they review the _application-level security_ implemented in our system. As per the http://www.pcicomplianceguide.org/pci-basics.php[PCI Compliance Guide], "The Payment Card Industry Data Security Standard is used by all card brands to assure the security of the data gathered while an employee is making a transaction at a bank or participating vendor."
 
-If your application stores PCI data, authenticating via Facebook, Google or a similar OAuth service won't be an option. The users will be required to authenticate themselves by entering long passwords containing combinations of letters, numbers and special characters.
+If your application stores PCI data, authenticating via Facebook, Google, or a similar OAuth service isn't an option. Users are required to authenticate themselves by entering long passwords containing combinations of letters, numbers, and special characters.
 
-Even if you are not dealing with the credit card information, there are other areas where the application data must be protected. Take the human resources application - social security numbers (unique ID's of the USA residents) of employees must be encrypted.
+Even if you are not dealing with credit card information, there are other areas where application data must be protected. Take a human resources application--social security numbers (unique IDs of United States citizens) of employees must be encrypted.
 
-Some of our perspective customers send us a questionnaire to see if our security measures are compliant with their requirements. In some cases this document can include as many as 300 questions.
+Some of our prospective customers send us a questionnaire to establish whether our security measures are compliant with their requirements. In some cases, this document can include as many as 300 questions.
 
-You may want to implement different levels of security depending on what devices is being used to access your application - a public computer, an internal corporate computer, iPad or an Android tablet. If a desktop user forgot his password, you may implement a recovery mechanism that send an email to the user and expects to receive a certain  response from him. If the user holds a smartphone, the application can send a text message to his device.
+You might want to implement different levels of security depending on which type of device is being used to access your application--a public computer, an internal corporate computer, an iPad, or an Android tablet. If a desktop user forgets his password, you could implement a recovery mechanism that sends an email to that user and expects to receive a certain response from him. If the user has a smartphone, the application could send a text message to that device.
 
-If the user's record contains both his email and the cell phone number, the application should ask where to send the password recovery instructions. If a mobile device runs the hybrid or native version of the application, the user can be automatically switched to a messaging app of the device so he can read the text message while the main application remains at the view where authentication was required.
+If the user's record contains both his email and cell phone number, the application should ask where to send the password recovery instructions. If a mobile device runs a hybrid or native version of the application, the user could be automatically switched to a messaging app of the device so that he can read the text message while the main application remains at the view where authentication is required.
 
-In the enterprise Web applications more than one layer of security must be implemented: at the communication protocol level, at the session level, and at the application level. The HTTP server http://nginx.com/[Nginx] besides being a high-performance proxy server and load balancer can serve as a security layer too. Your Web application can offload authentication tasks and validation of SSL certificates to Nginx. 
+In enterprise web applications, more than one layer of security must be implemented: at the communication protocol level, at the session level, and at the application level. The HTTP server http://nginx.com/[NGINX], besides being a high-performance proxy server and load balancer, can serve as a security layer, too. Your web application can offload authentication tasks and validation of SSL certificates to NGINX. 
 
-Most of the enterprise Web applications are deployed on the cluster of servers, which adds another task to your project plan: how to manage sessions in a cluster. The user's session has to be shared between all servers in a cluster. High-end application servers may implement this feature out of the box. For example, IBM WebSphere server has an option to tightly integrate HTTP sessions with its application security module. Another example is Terracotta Cluster, which has the Terracotta Web Sessions module that allows session to survive the nod hops and failures. But small or mid-size applications may require some custom solutions for distributed sessions.	
+Most enterprise web applications are deployed on a cluster of servers, which adds another task to your project plan: how to manage sessions in a cluster. The user's session has to be shared among all servers in a cluster. High-end application servers might implement this feature out of the box. For example, an IBM WebSphere server has an option to tightly integrate HTTP sessions with its application security module. Another example is Terracotta clusters, which utilize Terracotta Web Sessions to allow sessions to survive node hops and failures. But small or mid-sized applications might require custom solutions for distributed sessions.	
 
-TIP: Minimize the amount of data stored in the user's session to simplify session replication. Store the data in the application cache, that can be replicated quickly and efficiently using open source or commercial products (e.g. JGroups, Terracotta et al).
+TIP: Minimize the amount of data stored in a user's session, to simplify session replication. Store the data in an application cache that can be replicated quickly and efficiently by using open-source or commercial products (for example,s JGroups or Terracotta).
 
 Here's another topic to consider: multiple data centers when each one runs a cluster of servers. To speed up the disaster recovery process, your Web application has to be deployed in more than one data centers located in different geographical regions. The user authentication must work even if one of the data centers becomes not operational.
 
