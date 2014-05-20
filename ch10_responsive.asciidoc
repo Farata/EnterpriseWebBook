@@ -91,57 +91,60 @@ image::images/ewdv_1003.png[]
 
 Have you ever tried to share the link of a website specifically designed for smartphones? It's so easy! Just press the button and enter the email of the person with whom you want to share the site. Many mobile websites shared this way won't look pretty on the large screen. It might just show a wider version of what you see on your mobile screen. 
 
-Maintaining two versions of the application code requires more effort than maintaining one: you need to have two sets of HTML, CSS, JavaScript, and images. Besides, most likely your web application will use a  third-party JavaScript framework. At some point, you might run into a bug and will need to upgrade the mobile version to use the latest version of, say jQuery framework. But the desktop version works just fine. In case of having two separate versions of the application you'll have to either upgrade jQuery and thoroughly test both mobile and desktop versions of Save The Child, or live with two different versions of the framework. 
+Maintaining two versions of the application code requires more effort than maintaining one: you need to have two sets of HTML, CSS, JavaScript, and images. Besides, most likely your web application will use a third-party JavaScript framework. At some point, you might run into a bug and will need to upgrade the mobile version to use the latest version of, say, the jQuery framework. But the desktop version works just fine. If you have two separate versions of the application, you'll have to either upgrade jQuery and thoroughly test both mobile and desktop versions of Save The Child, or live with two versions of the framework. 
 
-Responsive design allows you to create one version of the Web application, which includes multiple sections of CSS controlling page layouts for different screen sizes. In this chapter we'll create yet another version of the  Save The Child application that will render UI differently on desktop and mobile devices. All these version will share the same HTML and JavaScript code, but will include several versions of styling using _CSS media queries_. 
+Responsive design makes it possible for you to create one version of the web application, which includes multiple sections of CSS controlling page layouts for different screen sizes. In this chapter, we'll create yet another version of the  Save The Child application that will render its UI differently on desktop and mobile devices. All these version, will share the same HTML and JavaScript code, but will include several screen layouts using _CSS media queries_. 
 
-There is a number of Web sites that were built using responsive design. Visit the following Web sites first from the desktop computer and then from smart phones (or just lower the width of the desktop browser window) to experience such fluid responsive design:
+Many websites have been built using responsive design. The list that follows presents several examples. Take a few moments to look at them, first from a desktop computer and then from a smartphone (or just lower the width of the desktop browser window), to experience fluid responsive design:
 
-1. http://bostonglobe.com/[Boston Globe]
-2. http://mashable.com/[Mashable]
-3. http://cafeevoke.com/[Cafe Evoke]
-4. http://www.fork-cms.com/[Fork CMS]
-5. http://mediaqueri.es/[a lot more examples]
+* http://bostonglobe.com/[Boston Globe]
+* http://mashable.com/[Mashable]
+* http://cafeevoke.com/[Cafe Evoke]
+* http://www.fork-cms.com/[Fork CMS]
+* http://mediaqueri.es/[A lot more examples]
 
 
-Note that each of these Web pages displays the content on the desktop in three different layouts (often in three, four, six, or twelve imaginary columns). As you make the window narrower, the layout will automatically switch to the tablet or a large smartphone mode (usually two columns layout), and then to the phone mode layout (the one column layout). 
+Note that each of these web pages displays content on the desktop in three layouts (often in three, four, six, or twelve imaginary columns). As you make the window narrower, the layout automatically switches to a tablet or a large smartphone mode (usually a two-column layout), and then to the phone mode layout (the one-column layout). 
 
-This sounds like a great solution, but if you put all your media queries in the same CSS files, your users will be downloading unnecessary bytes - the entire CSS file that includes all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what's necessary for a particular device category.
+This sounds like a great solution, but if you put all your media queries in the same CSS files, your users will be downloading unnecessary bytes--the entire CSS file that includes all versions of screen layouts. This is not the case in the BBC example, which has different versions of the code that load only what's necessary for a particular device category.
 
-You can have several CSS files for different devices. Include these files using the media attributes. But Web browsers were not designed to selectively download only those CSS that are needed. For example, the following HTML will load both CSS files (http://www.igvita.com/2012/06/14/debunking-responsive-css-performance-myths/[without blocking rendering]) on any user's device:
+You can have several CSS files for different devices. Include these files by using the media attributes. But web browsers were not designed to selectively download only those CSS files that are needed. For example, the following HTML loads both CSS files (http://www.igvita.com/2012/06/14/debunking-responsive-css-performance-myths/[without blocking rendering]) on any user's device:
 
 [source, html]
 ----
-<link media="only screen and (max-width: 480px)" href="css/smartphone.css"rel="stylesheet">
+<link media="only screen and (max-width: 480px)" 
+      href="css/smartphone.css"rel="stylesheet">
 
-<link media="only screen and (max-width: 768px)" href="css/tablet.css"rel="stylesheet">
+<link media="only screen and (max-width: 768px)" 
+      href="css/tablet.css"rel="stylesheet">
 ----
 
-NOTE: Using the `Window.matchMedia` attribute may allow you to http://christianheilmann.com/2012/12/19/conditional-loading-of-resources-with-mediaqueries/[conditionally load] CSS in JavaScript. 
-There JavaScript utility https://github.com/scottjehl/eCSSential[eCSSential] can help Web browser to download CSS faster. 
+NOTE: Using the `Window.matchMedia` attribute can make it possible for you to http://christianheilmann.com/2012/12/19/conditional-loading-of-resources-with-mediaqueries/[conditionally load] CSS in JavaScript. 
+The JavaScript utility https://github.com/scottjehl/eCSSential[eCSSential] can help web browsers download CSS faster. 
  
-NOTE: Consider combining Responsive Design on the client with some device-specific components (a.k.a. http://www.lukew.com/ff/entry.asp?1392[RESS]) optimization on the server.
+NOTE: Consider combining responsive design on the client with some device-specific component (a.k.a. http://www.lukew.com/ff/entry.asp?1392[RESS]) optimization on the server.
 
-IMPORTANT: While Responsive Design allows to re-arrange the content based on the screen size, it may not be a good idea to show the same amount of content on desktop and smartphones. Making a Web application look good on mobile devices must involve not only Web designers and developers, but also people who are responsible for content management. 
+TIP: Although responsive design allows you to rearrange content based on the screen size, it might not be a good idea to show the same amount of content on desktops and smartphones. Making a web application look good on mobile devices must involve not only web designers and developers, but also people who are responsible for content management. 
 
-Now comes the million dollar question, "Do we need to create two different versions of the Web application or twenty two?  Why not two hundred and twenty two?" How many different mobile devices are there today and will be there tomorrow?
+Now comes the million-dollar questions: Do we need to create 2 versions of the web application or 22?  Why not 222? How many different mobile devices are there today, and will there be tomorrow?
 
 
 ==== How Many User Agents Are There
 
-The HTTP header's attribute `User-Agent` contains information about the user agent originating request. Should you decide to create several versions of the UI based on the value in the `User-Agent` field, you can refer to the Web site http://useragentstring.com[http://useragentstring.com]. It lists not two, but hundreds of strings representing possible content of the `User-Agent` attribute for a variety of desktop and mobile devices. For example, <<FIG11-3>> shows how the `User-Agent` string from  iPhone 5 is reported and explained by http://useragentstring.com/[useragentstring.com]. But this information might become unreliable after iOS upgrades. 
+The HTTP header's attribute `User-Agent` contains information about the user agent originating the request. Should you decide to create several versions of the UI based on the value in the `User-Agent` field, you can refer to the website http://useragentstring.com[http://useragentstring.com]. It lists not two, but hundreds of strings representing possible content of the `User-Agent` attribute for a variety of desktop and mobile devices. For example, <<FIG11-3>> shows how the `User-Agent` string from iPhone 5 is reported and explained by http://useragentstring.com/[useragentstring.com]. But this information might become unreliable after iOS upgrades. 
 
 
 [[FIG11-3]]
-.The User-Agent String from iPhone 5
+.The User-Agent string from iPhone 5
 image::images/ewdv_1004.png[]
 
 
-There is an easier  way to detect on the server that the request came from a mobile device. http://wurfl.sourceforge.net/[Wireless Universal Resource File (WURF)] is a database of thousands of supported devices and their properties. Such Internet giants as Facebook and Google rely on this service and your application could too, if need be. WURF offers APIs from several programming languages to detect specific capabilities of the user devices. For example, the following code snippet is how you could access the WURF data from a Java servlet.
+There is an easier way to detect on the server that the request came from a mobile device. http://wurfl.sourceforge.net/[_Wireless Universal Resource File_ (WURF)] is a database of thousands of supported devices and their properties. Such Internet giants as Facebook and Google rely on this service, and your application could, too, if need be. WURF offers APIs from several programming languages to detect specific capabilities of user devices. For example, the following code snippet is how you could access the WURF data from a Java servlet:
 
 [source, html]
 ----
- protected void processRequest(HttpServletRequest request, HttpServletResponse response) 
+ protected void processRequest(HttpServletRequest request, 
+                               HttpServletResponse response) 
           throws ServletException, IOException {
 
    WURFLHolder wurfl = (WURFLHolder)getServletContext()
@@ -155,23 +158,23 @@ There is an easier  way to detect on the server that the request came from a mob
    log.debug("Capability: " + device.getCapability("preferred_markup"));
 ----
 
-It's impossible to create different layouts of a Web application for thousands of user agents. Market fragmentation in the mobile world is a challenge. People are using 2500 different devices to connect to Facebook. Android market is extremely fragmented. The Figure <<FIG11-3-1>> is taken from the report http://opensignal.com/reports/fragmentation-2013/[Android Fragmentation Visualized (July 2013)] by Open Signal.  
+It's impossible to create different layouts of a web application for thousands of user agents. Market fragmentation in the mobile world is a challenge. People are using 2,500 different devices to connect to Facebook. The Android market in particular is extremely fragmented. <<FIG11-3-1>> is taken from the report http://opensignal.com/reports/fragmentation-2013/[Android Fragmentation Visualized (July 2013)] by Open Signal.  
 
 [[FIG11-3-1]]
-.Android Device Fragmentation
+.Android device fragmentation
 image::images/ewdv_1005.png[]
 
-Of course, device fragmentation doesn't equal Android OS version fragmentation, but this situation is similar to the challenge that Microsoft was always facing - making sure that Windows works fine on thousands different types of hardware. It's not an easy job to do. In this regard Apple is in much better position because they are the only hardware and software vendor of all devices running iOS. 
+Of course, device fragmentation doesn't equal Android OS version fragmentation, but this situation is similar to the challenge that Microsoft has always faced--making sure that Windows works fine on thousands of types of hardware. It's not an easy job to do. In this regard, Apple is in a much better position because they are the only hardware and software vendor of all devices running iOS. 
 
-It's great for the consumers that Android can be used on thousand devices, but what about us, the developers? Grouping devices by screen sizes may be a more practical approach for lowering the number of UI layouts supported by your application. The responsive design is a collection of techniques based upon these main pillars:
+It's great for consumers that Android can be used on thousands of devices, but what about us, the developers? Grouping devices by screen sizes might be a more practical approach for lowering the number of UI layouts supported by your application. Responsive design is a collection of techniques based upon these main pillars:
 
-1. CSS _media queries_ 
-2. _Fluid grids_ or fluid layouts
-3. Fluid media 
+* CSS media queries 
+* Fluid grids or fluid layouts
+* Fluid media 
 
-NOTE: Typography can be also considered as one of the pillars of the responsive design. This subject belongs to publications written for Web designers and will not be covered in this book. Oliver Reichenstein's  article http://ia.net/blog/responsive-typography-the-basics/[Responsive Typography: The Basics] is a good introduction to this topic.
+NOTE: Typography can be also considered one of the pillars of responsive design. This subject belongs to publications written for web designers and will not be covered in this book. Oliver Reichenstein's article http://ia.net/blog/responsive-typography-the-basics/[Responsive Typography: The Basics] is a good introduction to this topic.
 
-https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Media_queries[Media query] is a CSS element. It consists of a media type (e.g. _@media (min-width: 700px) and (orientation: landscape)_) followed by the styles applicable to this media. Media queries allow to rearrange the sections (like `<div>`, `<section>`, `<article>` et al.) of the page based on the screen size, fluid grids allows to properly align and scale the content of these sections, and the fluid media is about resizing images or videos.
+https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Media_queries[media query] is a CSS element. It consists of a media type (for example, +@media (min-width: 700px) and (orientation: landscape)+) followed by the styles applicable to this media. Using media queries, you can rearrange sections (`<div>`, `<section>`, `<article>`, and so forth) of the page based on the screen size. Fluid grids make it possible for you to properly align and scale the content of these sections. Fluid media is about resizing images or videos.
 
 Data grid components are often included in  enterprise applications. Fluid grids are designed using relative positioning and can scale based on the screen sizes. Fluid media is about creating videos and images that react to the screen sizes. We'll talk about the above pillars in greater details later in this chapter. But before going into technical details, let's get back to the mockups to see how the UI should look like on different devices.
 
