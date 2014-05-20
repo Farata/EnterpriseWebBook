@@ -693,16 +693,16 @@ Let's review the practical use of the theory described in <<HANDSHAKE>>.  With t
 .Initial WebSocket handshake in Chrome DevTools
 image::images/ewdv_0810.png[]
 
-You can also click on +WebSocket+ at the bottom-right to show only the `WebSocket` endpoints. Click on +Frames+ in the right panel to view the actual frames being exchanged between the client and server. <<FIG9-5>>. The white colored rows represent incoming data, and the green (or gray on paper) rows - outgoing.
+You can also click WebSockets at the lower right to show only the WebSocket endpoints. Click the Frames tab in the right panel to view the actual frames being exchanged between the client and server. as shown in <<FIG9-5>>. The white-colored rows represent incoming data; those in green (or gray on paper) indicate outgoing data.
 
 [[FIG9-5]]
 .Monitoring WebSocket frames in Chrome Developer Tools
 image::images/ewdv_0811.png[]
 
-For more gore details you can navigate your Google Chrome to the secret URL - `chrome://net-internals`, which is a very useful URL showing a lot of additional information (see <<FIG9-6>> and <<FIG9-7>> ). You can find documentation about net-internal in http://www.chromium.org/developers/design-documents/network-stack/view-net-internals[Chromium Design Documents]
+For more details, you can navigate Google Chrome to the secret URL chrome://net-internals, which provides a lot of useful information (see <<FIG9-6>> and <<FIG9-7>> ). You can find documentation about net-internals in http://www.chromium.org/developers/design-documents/network-stack/view-net-internals[Chromium Design Documents].
 
 [[FIG9-6]]
-.Details of initial handshake in Chrome Net Internals
+.Details of the initial handshake in Chrome net-internals
 image::images/ewdv_0812.png[]
 
 
@@ -710,28 +710,28 @@ image::images/ewdv_0812.png[]
 .Details of the socket connection
 image::images/ewdv_0813.png[]
 
-Google Developer Tools show just the length of the data. But `chrome://net-internals` shows the actual size of the WebSocket frame too. <<FIG9-8>> compares the views of net-internals and Developer Tools. As we learned earlier in this chapter, the total size of the frame is slightly different from the size of the payload. There are few more bytes for the frame header. Moreover, all outgoing messages will be masked by the browser (see the note in the <<FRAMES>> section). This frame's mask is going to be transferred to the server as a part of the frame itself, which creates additional 32 bits (4 bytes) overhead.
+Google Developer Tools show just the length of the data. But _chrome://net-internals_ shows the size of the WebSocket frame, too. <<FIG9-8>> compares the views of net-internals and Developer Tools. As you learned earlier in this chapter, the total size of the frame is slightly different from the size of the payload. There are a few more bytes for the frame header. Moreover, all outgoing messages will be masked by the browser (see <<FRAMES>>). This frame's mask is going to be transferred to the server as a part of the frame itself, which creates an additional 32 bits (4 bytes) of overhead.
 
 [[FIG9-8]]
-.Dev tools and net-internals side by side
+.Developer Tools and net-internals, side by side
 image::images/ewdv_0814.png[]
 
 
-==== Sniffing WebSocket frames with Wireshark ====
+==== Sniffing WebSocket Frames by Using Wireshark ====
 
-Wireshark is a powerful and comprehensive monitoring tool for analyzing the network traffic.You can download it from http://www.wireshark.org[their web site]. To start capturing the WebSocket traffic on _localhost_  select the +loopback+ network interface from the left panel and click "Start" (see <<FIG9-15>>).
+_Wireshark_ is a powerful and comprehensive monitoring tool for analyzing network traffic. You can download it from http://www.wireshark.org[Wireshark's website]. To begin capturing WebSocket traffic on _localhost_,  select the loopback network interface from the left panel and click Start (see <<FIG9-15>>).
 
 [[FIG9-15]]
-.Wireshark application main view
+.The Wireshark application main view
 image::images/ewdv_0815.png[]
 
-Wireshark captures all network activity. Set up the filter to see only the data you are interested in. We want to capture HTTP and TCP traffic on the port +8080+ because our WebSocket server (Oracle's GlassFish) runs on this port <<FIG9-16>>. Enter `http && (tcp.dstport==8080)` in the filter text box and click Apply.
+Wireshark captures all network activity. You can set up a filter to see only the data in which you are interested. We want to capture HTTP and TCP traffic on port +8080+ because our WebSocket server (Oracle's GlassFish) runs on this port (see <<FIG9-16>>). Enter `http && (tcp.dstport==8080)` in the filter text box and click Apply.
 
 [[FIG9-16]]
 .Filter setup
 image::images/ewdv_0816.png[]
 
-Now the Wireshark is ready to sniff at the traffic of our application. You can start the auction session and place bids. After you're done with the auction you can return to the Wireshark window and analyze what we got. You can see the initial handshake (+GET+ request on <<FIG9-17>> and the +Upgrade+ response on <<FIG9-18>>).
+Now Wireshark is ready to sniff out the traffic of our application. You can start the auction session and place bids. After you're done with the auction, you can return to the Wireshark window and analyze the results. You can see the initial handshake (+GET+ request in <<FIG9-17>> and the +Upgrade+ response in <<FIG9-18>>).
 
 [[FIG9-17]]
 .The +GET+ request for protocol upgrade
@@ -741,13 +741,13 @@ image::images/ewdv_0817.png[]
 .The +GET+ response with protocol upgrade
 image::images/ewdv_0818.png[]
 
-After the successful connection upgrade, Wireshark captured the `http-alt` stream (this is how it reports the Websocket's traffic) on the 8080 port. Right click on this row and select +Follow TCP Stream+ <<FIG9-19>>.
+After the successful connection upgrade, Wireshark captures the `http-alt` stream (this is how it reports WebSocket's traffic) on the 8080 port. Right-click this row and select Follow TCP Stream, as shown in <<FIG9-19>>.
 
 [[FIG9-19]]
-.The +GET+ response with protocol upgrade
+.The Follow TCP Stream menu
 image::images/ewdv_0819.png[]
 
-On the next screen you can see the details of WebSocket frame <<FIG9-20>>. We took this screenshot right after the auction application started. You can see here the data with the list of available auctions. The outgoing data is marked with _red_ color and the incoming data is shown in _blue_.
+On the next screen, you can see the details of the WebSocket frame (see <<FIG9-20>>). We took this screenshot right after the auction application started. You can see the data with the list of available auctions. The outgoing data appears in red, and the incoming data is shown in blue.
 
 [[FIG9-20]]
 .WebSocket frame
