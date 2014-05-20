@@ -471,9 +471,10 @@ Google _protocol buffer_ (or protobuf) is a language and platform-neutral extens
 
 A developer needs to specify how the serializable information has to be structured by defining the protocol buffer message types in _.proto_ files. Each protocol buffer message is a small, logical record of information containing a series of name/value pairs. This protocol buffer message file is language agnostic. The `protoc` utility compiles _proto_ files and produces language-specific artifacts (for example _.java_ and _.js_ files).
 
-For example, you can create a protocol buffer _proto_ file for Save The Child to represent the information about donors, as shown in <<>>.
+For example, you can create a protocol buffer _proto_ file for Save The Child to represent the information about donors, as shown in <<ex_protocol_buffer>>.
 
-.Protocol Buffer for Donation message ( +donation.proto+ )
+[[ex_protocol_buffer]]
+.Protocol buffer for donation message (donation.proto)
 ====
 [source,java]
 ----------------------------------------------------------------------
@@ -501,17 +502,17 @@ message Donor{                                              // <3>
 
 <1> The protobuf supports packages to prevent naming conflicts among messages from different projects.
 
-<2> Here we're using Java specific protobuf option to define in what package the generated code will reside.
+<2> Here we're using a Java-specific protobuf option to define the package in which the generated code will reside.
 
 <3> Start defining our custom message with the `message` keyword.
 
-<4> Each message field can be `required`, `optional` or `repeated`. The `required` and `optional` modifiers are self explanatory. During serialization-deserization process the protobuf framework will check the message for existence of fields, and if a required property is missing it will throw a runtime exception. The `repeated` modifier is used to create dynamically sized arrays.
+<4> Each message field can be `required`, `optional`, or `repeated`. The `required` and `optional` modifiers are self-explanatory. During the serialization-deserization process, the protobuf framework checks the message for the existence of fields, and if a required property is missing, will throw a runtime exception. The `repeated` modifier is used to create dynamically sized arrays.
 
 <5> The protobuf supports nested messages.
 
-<6> There are many standard field types available in protobuf:  +string+, +int32+, +float+, +double+, and +bool+. You can also define a custom type and use it as a field type.
+<6> Many standard field types are available in protobuf:  +string+, +int32+, +float+, +double+, and +bool+. You can also define a custom type and use it as a field type.
 
-After creating the +donation.proto+ file, you can use `protoc` compiler to generate Java classes according to this file's definitions.
+After creating the _donation.proto+ file, you can use the `protoc` compiler to generate Java classes according to this file's definitions.
 
 [source,bash]
 ----------------------------------------------------------------------
@@ -528,32 +529,32 @@ protoc -I=. --java_out=src donation.proto           # <1>
 
 ----------------------------------------------------------------------
 
-<1> The Java code will be generated in +src+ directory.
+<1> The Java code will be generated in the _src_ directory.
 
-<2> All required code for serialization-deserilization of +Donation+ message will be included in +Donation.java+. We're not going to publish the generated code here, but you can generate this code by yourself from the provided above message declaration.
+<2> All required code for serialization-deserilization of the +Donation+ message will be included in +Donation.java+. We're not going to publish the generated code here, but you can generate this code by yourself from the previous message declaration.
 
-Check the availability of the protobuf compiler for your preferred language at the http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[protobuf wiki page]. To make yourself familiar with protobuf technology check https://developers.google.com/protocol-buffers/docs/overview[documentation] and https://developers.google.com/protocol-buffers/docs/tutorials[tutorials]. Here some protobuf pros and cons:
+Check the availability of the protobuf compiler for your preferred language at the http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[protobuf wiki page]. To become familiar with protobuf technology, check the https://developers.google.com/protocol-buffers/docs/overview[documentation] and https://developers.google.com/protocol-buffers/docs/tutorials[tutorials].
 
-Pros:
+Here are some protobuf pros:
 
-- The message is encoded into a compact and optimized binary format. You can find the details of the encoding format at https://developers.google.com/protocol-buffers/docs/encoding[Protocol Buffers documentation website].
-- Google supports Protocol Buffers for a wide range of programming languages (Java, C++, Python). The   http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[developer's community] supports it too.
-- The use of Protocol Buffers is well documented.
+- The message is encoded into a compact and optimized binary format. You can find details of the encoding format at the https://developers.google.com/protocol-buffers/docs/encoding[Protocol Buffers documentation website].
+- Google supports protocol buffers for a wide range of programming languages (Java, C++, Python). The http://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[developer's community] supports it too.
+- The use of protocol buffers is well documented.
 
-Cons:
+The following are some of the cons:
 
 - The binary format is not human readable.
-- Although Protobuf is compact, especially when a lot of numeric values are transferred https://developers.google.com/protocol-buffers/docs/encoding[by an encoding algorithm], the JSON is natively supported by the JavaScript and doesn't require any additional parser implementation.
-- Protobuf requires the Web browser to support the binary format, but not all of them do it just yet. You can find which browser support raw binary data at http://caniuse.com/#search=binary.
+- Although protobuf is compact, especially when a lot of numeric values are transferred https://developers.google.com/protocol-buffers/docs/encoding[by an encoding algorithm], the JSON is natively supported by the JavaScript and doesn't require any additional parser implementation.
+- Protobuf requires web browsers to support binary format, but not all of them do just yet. You can find which browsers support raw binary data at http://caniuse.com/#search=binary.
 
 
-=== WebSockets and Proxies
+=== Using WebSocket with Proxies
 
-The WebSocket protocol itself is unaware of intermediaries such as proxy servers, firewalls, content filters. The proxy servers are commonly used for content caching, security and enterprise content filtering.
+The WebSocket protocol itself is unaware of intermediaries such as proxy servers, firewalls, and content filters. Proxy servers are commonly used for content caching, security, and enterprise content filtering.
 
-HTTP always supported protocol upgrades, but many proxy servers seem to have ignored that part of the specification. Until the WebSocket came around the `Upgrade` attribute was not used. The problem with Web applications that use long-lived connection like WebSocket is that the proxy servers may choose to close streaming or idle WebSocket connections, because they appear to be trying to connect to the unresponsive HTTP server. Additionally, proxy servers may buffer unencrypted HTTP responses assuming that the browser needs to receive the HTTP response in its entirety.
+HTTP has always supported protocol upgrades, but many proxy servers seem to have ignored that part of the specification. Until WebSocket came around, the `Upgrade` attribute was not used. The problem with web applications that use a long-lived connection like WebSocket is that the proxy servers might choose to close streaming or idle WebSocket connections because they appear to be trying to connect to the an unresponsive HTTP server. Additionally, proxy servers might buffer unencrypted HTTP responses, assuming that the browser needs to receive the HTTP response in its entirety.
 
-If you want to get more details on how a WebSocket-enabled application has to deal with proxies there is comprehensive research paper by Google's Peter Lubbers http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/[WebSocket and proxy servers].
+If you want more details on how a WebSocket-enabled application has to deal with proxies, check out the comprehensive research paper by Google's Peter Lubbers, http://www.infoq.com/articles/Web-Sockets-Proxy-Servers/[WebSocket and Proxy Servers].
 
 TIP: The author of this book use http://nginx.com/[NGINX], a hugely popular load balancer and proxy and HTTP server to serve static resources (e.g. images and text files), balance the load between Java servers, and for SSL offloading (turning Web browser's HTTPS requests into HTTP). NGINX uses a very small number threads to support thousands concurrent users as opposed to traditional Web servers that use one worker thread per connection. Recently NGINX started supporting WebSockets protocol.
 
