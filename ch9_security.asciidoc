@@ -71,50 +71,49 @@ With SSO, when the user logs on to your application, the logon request is interc
 
 Future access to the protected web application is handled automatically by the SSO server, without even displaying a logon window, as long as the user's session is active. SSO servers also log all login attempts in a central place, which can be important in meeting enterprise regulatory requirements (for example, Sarbanes-Oxley in the financial industry or medical confidentiality in the insurance business).
 
-In the consumer-oriented Internet space, single (or reduced) sign-on solutions have become more and more popular. For example, some web applications allow you to reuse your Twitter or Facebook credentials (provided that you've logged in to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegate authentication procedures to Facebook, Twitter, Google, and other authorization services, which we'll discuss later in <<MMMMMMMMMMMMMMMM>>. 
+In the consumer-oriented Internet space, single (or reduced) sign-on solutions have become more and more popular. For example, some web applications allow you to reuse your Twitter or Facebook credentials (provided that you've logged in to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegate authentication procedures to Facebook, Twitter, Google, and other authorization services, which we'll discuss later in <<oath_authentication_and_authorization>>. 
 
-Back in 2010, Facebook has introduced their https://www.facebook.com/pages/Single-sign-on/108568432501463#[SSO solution] that still helps millions of people to log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking the user to enter credentials, your application can show the button "Login with Facebook". 
+Back in 2010, Facebook introduced its https://www.facebook.com/pages/Single-sign-on/108568432501463#[SSO solution] that still helps millions of people log in to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking a user to enter credentials, your application can provide a Login with Facebook button. 
 
-Facebook has published JavaScript API that allows implementing Facebook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit online documentation on https://developers.facebook.com/docs/facebook-login/[FaceBook Login API].
+Facebook has published a JavaScript API with which you can implement Facebook Login in your web applications (it also offers native APIs for iOS and Android apps). For more details, read the online documentation on the https://developers.facebook.com/docs/facebook-login/[FaceBook Login API].
 
-Besides Facebook other popular social networks offer authentication across the applications: 
+Besides Facebook, other popular social networks offer authentication across applications: 
 
-* If you want your application to have a button "Login with Twitter", refer to the Sign in with Twitter API https://dev.twitter.com/docs/auth/sign-twitter[documentation].
+* If you want your application to have a Login with Twitter button, refer to the Sign in with Twitter API https://dev.twitter.com/docs/auth/sign-twitter[documentation].
 
-* LinkedIn is a popular social network for professionals. It also offers API to create the button "Sign in with LinkedIn". For details visit LinkedIn http://developer.linkedin.com/javascript[online documentation] for developers.
+* LinkedIn is a popular social network for professionals. It also offers an API for creating a Sign In with LinkedIn button. For details, visit LinkedIn http://developer.linkedin.com/javascript[online documentation] for developers.
 
-* Google also offers the OAuth-based authentication API. Details about their client library for JavaScript are published https://developers.google.com/api-client-library/javascript/features/authentication[online]. For implementing SAML-based SSO with Google, visit  https://developers.google.com/google-apps/sso/saml_reference_implementation[this Web page].
+* Google also offers the OAuth-based authentication API. Details about their client library for JavaScript are published https://developers.google.com/api-client-library/javascript/features/authentication[online]. To implement SAML-based SSO with Google, visit  https://developers.google.com/google-apps/sso/saml_reference_implementation[this web page].
 
-* Mozilla offers a new way to sign-in using any of your existing email addresses using http://www.mozilla.org/en-US/persona/[Persona]. 
-* Several large organizations (e.g. Google, Yahoo!, Microsoft, Facebook) either issue or accept http://openid.net/[OpenID], which allows to sign in to more than 50000 Web sites.  
+* Mozilla offers a new way to sign in with any of your existing email addresses by using http://www.mozilla.org/en-US/persona/[Persona]. 
+* Several large organizations (for example, Google, Yahoo!, Microsoft, and Facebook) either issue or accept http://openid.net/[OpenID], which makes it possible for users to sign in to more than 50,000 websites.  
 
-Typically, large enterprises would not want users  to use logins from social networks. But some organizations started integrating their applications with social networks.  Especially now, with the spread of mobile devices, the users may need to be able to get authenticated and authorized while being outside of the enterprise perimeter. We'll discuss it in more detail in the section on OAuth.
+Typically, large enterprises don't want users to use logins from social networks. But some organizations have started integrating their applications with social networks. Especially now, with the spread of mobile devices, users might need to be authenticated and authorized while being outside the enterprise perimeter. We discuss this in more detail in the <<oath_authentication_and_authorization>>.
 
 ===== Save The Child and SSO
 
-Is there a use of SSO for our charity application Save The Child? Certainly. In this book we're mostly concerned about developing the UI for the consumer-facing part of this application. But there is also a back office team that is involved with the content management that produces the information for the consumer. 
+Does our Save The Child application have a use of SSO? Certainly. In this book, we're concerned mostly about developing a UI for the consumer-facing part of this application. But there is also a back-office team that is involved with content management and that produces information for the consumer. 
 
-For example, the employees of our charity organization create fund-raising campaigns in different cities. If an employee of this firm logged in to his desktop, our Save The Child Web application shouldn't ask him to login. SSO can be a solution here.
+For example, the employees of our charity organization create fundraising campaigns in different cities. If an employee of this firm logged in to his desktop, our Save The Child web application shouldn't ask him to log in. SSO can be a solution here.
 
 
-==== Dealing With Passwords
+==== Handling Passwords
 
-It might sound obvious, but we'll still remind you  that the Web client should never send passwords in clear text. Use http://en.wikipedia.org/wiki/Secure_Hash_Algorithm[Secure Hash Algorithms] (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters (a http://en.wikipedia.org/wiki/Brute-force_attack[_brute-force attack_]), it'll take a lot more time with long passwords. Periodic changing of the passwords makes the hacker's work more difficult too. 
-Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client's computer. Then, on each subsequent request to the server the Web browser will place the session id in the HTTP request object and send it along with each request. Technically, the user's identity is  always known at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource. 
+It might sound obvious, but we'll still remind you that the web client should never send passwords in clear text. You should always use a http://en.wikipedia.org/wiki/Secure_Hash_Algorithm[Secure Hash Algorithm] (SHA). Longer passwords are more secure, because if an attacker tries to guess the password by using dictionaries to generate every possible combination of characters (a http://en.wikipedia.org/wiki/Brute-force_attack[_brute-force attack_]), it will take a lot more time with long passwords. Periodically changing passwords makes the hacker's work more difficult, too. Typically, after successful authentication, the server creates and sends to the web client the session ID, which is stored as a cookie on the client's computer. Then, on each subsequent request to the server, the web browser places the session ID in the HTTP request object and sends it along with each request. Technically, the user's identity is  always known at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it), whenever the web client requests the protected resource. 
 
-TIP: Salted hashes increase security by adding _salt_ - a randomly generated data that's concatenated with the password and then processed by a hash function. 
+TIP: Salted hashes increase security by adding _salt_--randomly generated data that's concatenated with the password and then processed by a hash function. 
 
-Have you ever wondered why Automated Teller Machines (ATM) often ask you to enter PIN more then once? Say, you've deposited a check and then want to see  the balance on your account. After the check deposit has been completed your ATM session was invalidated to protect the careless users who may rush out from the bank in a hurry as soon as the transaction is finished. Otherwise the next person by the ATM could have requested a cash withdrawal from your bank account. 
+Have you ever wondered why automated teller machines (ATMs) often ask you to enter your PIN more then once? Say you've deposited a check and then want to see the balance on your account. After the check deposit is completed, your ATM session is invalidated to protect careless users who might rush out from the bank in a hurry as soon as the transaction is finished. This prevents the next person at the ATM from requesting a cash withdrawal from your bank account. 
 
-On the same note, if the Web application's session is idling more than allowed time interval, the session should be automatically invalidated.  For example, if a trader in a brokerage house is not interacting with the Web trading application for some time, invalidate the session programmatically to exclude the situation when the trader stepped out, and someone else is buying financial products on his behalf.
+On the same note, if a web application's session is idling for more than the allowed time interval, the session should be automatically invalidated.  For example, if a trader in a brokerage house stops interacting with a web trading application for some time, invalidate the session programmatically to prevent someone else from buying financial products on his behalf when he steps out for a coffee.
 
 === Authorization
 
-_Authorization_ is a way to determine which operations the user can perform and what data he can access. For example, the owner of the company can perform money withdrawals and transfers from the online business bank account, while the company accountant is provided with the read-only access. 
+_Authorization_ is a way to determine which operations the user can perform and what data he can access. For example, the owner of a company can perform money withdrawals and transfers from an online business bank account, while the company accountant is provided with read-only access. 
 
-NOTE: Similarly to authentication the user's authorization can be checked more than once during the user's session. As a matter of fact, authorization can even change during the session (e.g. a financial application can allow trades only during business hours of the stock exchange).
+NOTE: Similar to authentication, the user's authorization can be checked more than once during that user's session. As a matter of fact, authorization can even change during a session (for example, a financial application can allow trades only during business hours of the stock exchange).
 
-Users of the application are grouped by roles, and each role comes with a set of privileges. The user can be given a privilege to read and modify certain data, while other can be hidden. In the relational DBMS realm there is a term _row-level security_, which means that the same query can produce different results to different users. Such security policies are implemented at the data source level. 
+Users of an application are grouped by roles, and each role comes with a set of privileges. A user can be given a privilege to read and modify certain data, whereas other data can be hidden. In the relational DBMS realm, the term _row-level security_ means that the same query can produce different results for different users. Such security policies are implemented at the data-source level. 
 
 A simple use case where row-level security is really useful is a salary report. While the employee can see only his salary report, the head of department can see the data of all subordinates.
 
@@ -122,6 +121,7 @@ Authorization is usually linked with the user's session. HTTP is stateless proto
 
 NOTE: Session tracking is usually controlled on the server side. If you'd like to get familiar with session tracking options in greater details, consult the product documentation for the server or technology being used with your Web application. For example, if you use Java, you can read Oracle's documentation for their http://docs.oracle.com/cd/E13222_01/wls/docs103/webapp/sessions.html[WebLogic server] that describes the options for  session management.
 
+[[oath_authentication_and_authorization]]
 ==== OAuth-Based Authentication and Authorization 
 
 To put it simple, OAuth is a mechanism of delegated authorization. OpenID Connect is a OAuth-based mechanism for authentication. 
