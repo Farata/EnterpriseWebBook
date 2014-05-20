@@ -379,70 +379,67 @@ This CSS mandates changing page layouts if the screen size is at or is smaller t
 }
 ----
 
-<1>	 This media query controls layouts for devices with viewports having the max width of 768px.
+<1>	 This media query controls layouts for devices with viewports having a maximum width of 768 pixels.
 
-<2>  Split the width fifty-fifty between the HTML elements with ID's `main-top-section` and `main-bottom-section`. 
+<2>  Split the width fifty-fifty between the HTML elements with the IDs `main-top-section` and `main-bottom-section`. 
 
-<3> Allocate main-top-section and main-bottom-section next to each other (`float: left;`) as in <<FIG11-9>>. To better understand how the CSS `float` property works, visualize a book page having an small image on the left with the text floating on the right (a text wrap) - this is what `float: left;` can do on a Web page. 
+<3> Allocate +main-top-section+ and +main-bottom-section+ next to each other (`float: left;`), as in <<FIG11-9>>. To better understand how the CSS `float` property works, visualize a book page that has a small image on the left with the text floating on the right (a text wrap). This is what `float: left;` can do on a web page. 
 
-<4>  Turn the floating off so the charts, maps, and video containers will start one under another as in <<FIG11-9>>.
+<4>  Turn the floating off so the charts, maps, and video containers will start one under another, as in <<FIG11-9>>.
 
-<5>	 The media query controlling layouts for devices with viewports with the max width of 640px starts here.
+<5>	 The media query controlling layouts for devices with viewports with a maximum width of 640 pixels starts here.
 
-<6> Let the containers main-top-section, main-bottom-section take the entire width and be displayed one under another (`float: none;`) as in <<FIG11-10>>.
+<6> Let the containers +main-top-section+ and +main-bottom-section+ take the entire width and be displayed one under another (`float: none;`), as in <<FIG11-10>>.
 
 TIP: Internet Explorer 8 and older don't natively support media queries. Consider using Modernizr to detect support of this feature, and load the https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill[Media Queries Polyfill], if needed. 	
 
 .The Viewport Concept
 *****************************
 
-Mobile browsers use a concept of _viewport_, which is a virtual window where they render the Web page content. This virtual window can be wider than the actual width of the display of the user's mobile device. For example, by default iOS Safari and Opera Mobile render the page to the width of 980px, and then shrinks it down to the actual width (320px on old iPhones and 640px on iPhone 4 and 5). That's why your iPhone renders the entire Web page of, say New York Times (yes, the fonts are tiny), and not just its top left section.
+Mobile browsers use the concept of a _viewport_, which is a virtual window that renders the web page content. This virtual window can be wider than the actual width of the display of the user's mobile device. For example, by default iOS Safari and Opera Mobile render the page to the width of 980 pixels, and then shrink it down to the actual width (320 pixels on old iPhones and 640 pixels on iPhone 4 and 5). That's why your iPhone renders the entire web page of, say, _The New York Times_ (yes, the fonts are tiny), and not just its upper-left section.
 
-By using the meta tag `viewport` your Web page overrides this default and renders itself according to the actual device size.  All code samples in this chapter include the `viewport` meta tag in index.html. All mobile browsers support it even though it's not a part of the HTML standard yet. Desktop browsers ignore the tag `viewport`.
+By using the meta tag `viewport`, your web page overrides this default and renders itself according to the actual device size.  All code samples in this chapter include the `viewport` meta tag in _index.html_. All mobile browsers support it even though it's not a part of the HTML standard yet. Desktop browsers ignore the tag `viewport`.
 
 [source, html]
 ----
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 ----
 
-This meta tag tells the browser that the width of the virtual viewport should be the same as the width of the display. This setting will produce good results if your responsive Web design includes a version of the page layout optimized for the width of the current user's device. But if you'd be rendering a page with a fixed width, which is narrower than the default width of the display (e.g. 500 pixels) setting the attribute `content="width=500"` would instruct the mobile Web browser to scale the page to occupy the entire display real estate. In other words, setting a fixed width is like saying, "Dear mobile browser, I don't have a special layout for this device width - do the best you can ans scale the content".
+This meta tag tells the browser that the width of the virtual viewport should be the same as the width of the display. This setting will produce good results if your responsive web design includes a version of the page layout optimized for the width of the current user's device. But if you are rendering a page with a fixed width, which is narrower than the default width of the display (for example, 500 pixels), setting the attribute `content="width=500"` would instruct the mobile web browser to scale the page to occupy the entire display real estate. In other words, setting a fixed width is like saying, "Dear mobile browser, I don't have a special layout for this device width--do the best you can and scale the content."
 
-Setting the initial scaling to 1.0 ensures that the page will be rendered as close to the physical device size as possible. If you don't want to allow the user scale the Web page, add the attribute `user-scalable=no` to the meta tag `viewport`. 
+Setting the initial scaling to 1.0 ensures that the page will render as close to the physical device size as possible. If you don't want to allow the user to scale the web page, add the attribute `user-scalable=no` to the meta tag `viewport`. 
 
-WARNING: If you'll apply the initial scale to be 1.0, but to a Web page that was not build using responsive design principles, users will need to zoom or pan to see the entire page. 
+WARNING: If you set the initial scale to 1.0 but apply it to a web page that was not built using responsive design principles, users will need to zoom or pan to see the entire page. 
 
-For details about configuring the viewport refer to https://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/UsingtheViewport/UsingtheViewport.html[Apple's] or http://dev.opera.com/articles/view/an-introduction-to-meta-viewport-and-viewport/[Opera's] documentation.
+For details about configuring the viewport, refer to https://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/UsingtheViewport/UsingtheViewport.html[Apple's] or http://dev.opera.com/articles/view/an-introduction-to-meta-viewport-and-viewport/[Opera's] documentation.
 
 *****************************
 
-Some of the important concepts to take away from this example are to switch from pixels to percentages when specifying width. In the next examples you'll see how to switch from using rigid `px` to more flexible `em` units. The CSS `float` property you can control relative (not absolute) positioning of your page components.  There are also such CSS measure units as `vw` and `vh`, which represent percentages of the viewport width and height respectively.
-But the best practice here is to use http://css-tricks.com/theres-more-to-the-css-rem-unit-than-font-sizing/[`rem` units]. The app can set the font size on BODY and then specify everything in relative-ems that scale only from that number. `Ems` cascade their scale down from their parent, meaning lots of extra math the developer and the browser has to do.
+An important concept to take away from this example is to switch from pixels to percentages when specifying width. In the next examples, you'll see how to switch from using the rigid `px` to more flexible `em` units. In addition, with the CSS `float` property, you can control relative (not absolute) positioning of your page components. There are also such CSS units of measure as `vw` and `vh`, which represent percentages of the viewport width and height, respectively. But the best practice here is to use http://css-tricks.com/theres-more-to-the-css-rem-unit-than-font-sizing/[`rem` units]. The app can set the font size on +BODY+ and then specify everything in relative-ems that scale only from that number. ++em++s cascade their scale down from their parent, meaning lots of extra math for the developer and the browser to do.
 
-TIP: Install an Add-On for Google Chrome called https://chrome.google.com/webstore/detail/window-resizer/kkelicaakdanhinjdeammmilcgefonfh?hl=en[Window Resizer]. It'll add an icon to the toolbar for easy switch between the browser screen sizes. This way you can quickly test how your Web page looks on different viewports. There is another handy Add-On for Chrome called https://chrome.google.com/webstore/detail/responsive-inspector/memcdolmmnmnleeiodllgpibdjlkbpim?hl=en[Responsive Inspector], which allows you to see the various media queries for a page and automatically resize to them. 
+TIP: Install an add-on for Google Chrome called https://chrome.google.com/webstore/detail/window-resizer/kkelicaakdanhinjdeammmilcgefonfh?hl=en[Window Resizer]. It adds an icon to the toolbar for easy switching between the browser screen sizes. This way, you can quickly test how your web page looks in different viewports. Another handy add-on for Chrome called https://chrome.google.com/webstore/detail/responsive-inspector/memcdolmmnmnleeiodllgpibdjlkbpim?hl=en[Responsive Inspector] allows you to see the various media queries for a page and automatically resize to them. 
 
-TIP: Google Chrome Developer Tools offer you a way to test a Web page on various emulators of mobile devices. you just need to check off the "Show Emulation view in console drawer" in Settings, and then you'll see the Emulation tab under the Elements menu (hit the Esc key if it's not shown). 
+TIP: Google Chrome Developer Tools offer you a way to test a web page on various emulators of mobile devices. You just need to select the "Show Emulation view in console drawer" in Settings, and then you'll see the Emulation tab under the Elements menu (press the Esc key if it's not shown). 
 
 ==== How Many Breakpoints? 
 
-How many media queries is too many? It all depends on the Web page you're designing. In the sample CSS shown in this section above we've used the breakpoint of 768px to represent the width of the tablet in the portrait mode, and this is fine for the iPad. But several tablets (e.g. 10.1" Samsung Galaxy) have 800px-wide viewport while Microsoft Surface Pro is 1080px wide. 
+How many media queries is too many? It all depends on the web page you're designing. In the sample CSS shown previously, we used the breakpoint of 768 pixels to represent the width of a tablet in portrait mode, and this is fine for the iPad. But several tablets (for example, the 10.1-inch Samsung Galaxy) have 800-pixel-wide viewports, whereas Microsoft Surface Pro is 1080 pixels wide. 
 
-There is no general rule as to how many breakpoint is needed for a typical Web page. Let the content of your page (and where it breaks) dictate where you add breakpoints. Just create a simple Lorem Ipsum prototype of your Web site and start changing its size. At a certain point (viewport size) your design starts to break. This is where you need to put your breakpoint and define a media query for it. 
-It is recommended to start with designing for the smallest viewports (the "Mobile First" principle). As the viewport width increases you may decide to render more content hence define a new breakpoint.
-Technically this means that the content of your CSS should default to the smaller viewports and only if the screen is larger, apply media queries. Such approach will reduce the CSS handling by the browser of the mobile device (no need to switch from large to smaller layouts).  
+There is no general rule as to how many breakpoints are needed for a typical web page. Let the content of your page (and where it breaks) dictate where you add breakpoints. Just create a simple Lorem Ipsum prototype of your website and start changing its size. At a certain point (viewport size), your design begins to break. This is where you need to put your breakpoint and define a media query for it. It is recommended to start by designing for the smallest viewports (the Mobile First principle). As the viewport width increases, you might decide to render more content, and hence define a new breakpoint. Technically, this means that the content of your CSS should default to the smaller viewports and only if the screen is larger, apply media queries. This approach will reduce the CSS handling by the browser of the mobile device (no need to switch from large to smaller layouts).  
 
 TIP: Use Google Chrome Developer Tools to find out the current width of the viewport. Just type in the console `window.innerWidth` and you'll see the width in pixels.
 
-Don't try to create a pixel perfect layout using responsive design. Use common sense and remember, the more different media queries you provide the heavier your CSS file will become. But in mobile world you should try to create Web applications as slim as possible.  
+Don't try to create a pixel-perfect layout by using responsive design. Use common sense, and remember, the more media queries you provide, the larger your CSS file will become. But in a mobile world, you should try to create web applications that are as small as possible.  
 
-Warning: Be prepared to see inconsistencies among the desktop browsers in measuring the width of the viewport. Our tests showed that WebKit-based browsers add about 15px to the width, supposedly accounting for the width of the scrollbar. So if you have a media query that has to change the layout at 768px, it'll change it at about 783px. Do more testing on different viewports and adjust your CSS as needed.  
+NOTE: Be prepared to see inconsistencies among desktop browsers in measuring the width of the viewport. Our tests showed that WebKit-based browsers add about 15 pixels to the width, supposedly accounting for the width of the scrollbar. So if your media query has to change the layout at 768 pixels, it will change it at about 783 pixels. Do more testing on different viewports and adjust your CSS as needed.  
 
 
 [[fluid_grids]]
 === Fluid Grids
 
-Fluid grids is a very important technique in the responsive design. Grids were used by Web designers for ages - a web page was divided by a number of imaginary rows and columns. But the fluid grid, as the name implies, is flexible and can scale based on the screen sizes.
+Fluid grids is a very important technique in responsive design. Grids have been used by web designers for ages: a web page is divided by a number of imaginary rows and columns. But the fluid grid, as its name indicates, is flexible and can scale based on screen sizes.
 
-==== Moving Away From Absolute Sizing
+==== Moving Away from Absolute Sizing
 
 When a browser displays text it uses its default font size unless it was overruled by the `font-size` property. Typically, the default font size is 16 pixels. But instead of using the absolute font size, you can use the relative one by using so called _em_ units. The default browser's font size can be represented by 1em. Since the font size happens to be 16px then 1em is 16 px. 
 
