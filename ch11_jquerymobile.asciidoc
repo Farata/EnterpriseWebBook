@@ -194,12 +194,15 @@ You can learn about creating custom themes with ThemeRoller by visiting http://l
 [[adding_page_nav]]
 ==== Adding Page Navigation
 
-In jQuery Mobile page navigation is defined by using the HTML anchor tag `<a href="">`, where the `href` attribute can either point at a page defined as a section in the same HTML document or at a page defined in a separate HTML document. Accordingly, you can say that that we're using either a _multi-page template_ or a _single-page template_. 
+In jQuery Mobile, page navigation is defined by using the HTML anchor tag `<a href="">`, where the `href` attribute can point at either a page defined as a section in the same HTML document or a page defined in a separate HTML document. Accordingly, you can say that that we're using either a _multipage template_ or a _single-page template_. 
 
-===== Multi-Page Template
+===== MultiPage Template
 
-With multi-page template each page is a `<div>` (or other HTML container) with an id, and  the `href` attribute responsible for navigation will include the hash tag followed by the corresponding id.  
+With a multipage template (see <<ex_multipage_template>>) each page is a `<div>` (or other HTML container) with an ID. The `href` attribute responsible for navigation includes a hash character (#) followed by the corresponding ID.  
 
+[[ex_multipage_template]]
+.Organizing code with a multipage template
+====
 [source,html]
 ----
     <body> 
@@ -216,13 +219,17 @@ With multi-page template each page is a `<div>` (or other HTML container) with a
 		</div>
 	</body>		
 ----
+====
 
-If you use multi-page document, the ID of the page with a hash (#) will be added to the URL. For example, if the name of the above document is navigation1.html, when the Stats page is open the browser's URL may look like this:
+If you use a multipage document, the ID of the page with a hash character will be added to the URL. For example, if the name of the above document is _navigation1.html_, when the Statistics page is open, the browser's URL will look like this:
 
 _http://127.0.0.1/navigation1.html#Stats_
 
-Let's say that the only way to navigate from the Stats page is to go back to the page Donate. Now we'll turn the above code fragment into a working 2-page document with the Back button support. Both pages in the following HTML document have a designated areas with the `data-role="header"`, and the Stats page has yet another custom property `data-add-back-btn="true"`. This is all it takes to ensure that the Back button is displayed in the left side of the page header, and when the user will _tap_ on it, the application will navigate to the Donate page.
+Let's say that the only way to navigate from the Statistics page is to go back to the Donate page. Now we'll turn the preceding code fragment into a working two-page document with Back-button support. Both pages in the HTML document in <<ex_2-page_with_back_button>> have a designated area with `data-role="header"`, and the Stats page has yet another custom property, `data-add-back-btn="true"`. This is all it takes to ensure that the Back button displays at the left side of the page header, and that when the user _taps_ on it, the application navigates to the Donate page.
 
+[[ex_2-page_with_back_button]]
+.NEED EXAMPLE TITLE HERE
+====
 [source, html]
 ----
 <!DOCTYPE html>
@@ -230,7 +237,8 @@ Let's say that the only way to navigate from the Stats page is to go back to the
  <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css"/>
+  <link rel="stylesheet" 
+        href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css"/>
  </head>
 <body> 
     <!--  Page 1    -->	
@@ -251,24 +259,29 @@ Let's say that the only way to navigate from the Stats page is to go back to the
        </div>
 
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-  <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js">
+  </script>
 
   </body>
 </html>	
 ----
+====
 
-<<FIG12-5>> shows a snapshot of the Ripple emulator after the user clicked on the link on the Donate page. The Statistics page now includes the fully functional Back button.
+<<FIG12-5>> shows a snapshot of the Ripple emulator after the user clicks the link on the Donate page. The Statistics page now includes the fully functional Back button.
 
 [[FIG12-5]]
-.The Stats page with the Back button
+.The Statistics page with the Back button
 image::images/ewdv_1104.png[]
 
-NOTE: The attribute `data-add-back-btn` works the same way in both the multi-page and single-page cases. The back button will appear only if the current page is not the first one and there is a previous page to navigate to. 
+NOTE: The attribute `data-add-back-btn` works the same way in both the multipage and single-page cases. The Back button appears only if the current page is not the first one and there is a previous page to navigate to. 
 
-===== Single-Page Template
+===== Single-page template
 
-Now let's re-arrange the code of the above sample using a single-page template. We'll create a folder pages, which can contain multiple HTML files - one per page. In our case, we'll create there one file stats.html to represent the Statistics page. Accordingly, we'll remove the section marked as Page 2 from the main HTML file. The stats.html will look as follows:
+Now let's rearrange the code in <<ex_2-page_with_back_button> by using a single-page template. We'll create a folder of pages, which can contain multiple HTML files--one per page. In our case, we'll create one file, _stats.html_, to represent the Statistics page. Accordingly, we'll remove the section marked as Page 2 from the _main.html_ file. The _stats.html_ file is shown in <<ex_statistics_page_code>>
 
+[[ex_statistics_page_code]]
+.The HTML code of the Statistics webpage
+====
 [source, html]
 ----
 <!DOCTYPE html>
@@ -288,18 +301,23 @@ Now let's re-arrange the code of the above sample using a single-page template. 
   </body>
 </html>	
 ----
+====
 
-The main HTML file will contain only one home page, which is a Donate page in this example. The anchor tag will simply refer to the URL of the stats.html - there is no need to use hash tags or section ID any longer. In his case jQuery Mobile will load the stats.html using internal AJAX request. This is how the main page will look like:
+The main HTML file contains only one home page, which is the Donate page in this example. The anchor tag simply refers to the URL of _stats.html_; there is no need to use hash characters or section IDs any longer. In this case, jQuery Mobile loads _stats.html_ by using an internal Ajax request. <<ex_main_page_html>> shows the main page:
 
+[[ex_main_page_html]]
+.The HTML of the main page
+====
 [source, html]
 ----
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
-	</head>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" 
+          href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+</head>
 <body> 
     <!--  Main page  -->	
 		<div data-role="page" id="Donate">
@@ -312,25 +330,27 @@ The main HTML file will contain only one home page, which is a Donate page in th
 		</div>
 	
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-  <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js">
+  </script>
 
   </body>
 </html>	
 ----
+====
 
-Running this version of our simple two-page application will produce the same results and the second page will look exactly as in <<FIG12-5>>.
+Running this version of our simple two-page application produces the same results. The second page looks exactly like <<FIG12-5>>.
 
-If you use single-page documents, the name of the file with the  page will be added to the URL. For example, when the Stats page is open the browser's URL may look like this:
+If you use single-page documents, the name of the file with the page will be added to the URL. For example, when the Statisticss page is open, the browser's URL will look like this:
 
 _http://127.0.0.1/pages/stats.html_
 
 //Since in a single-page mode jQuery Mobile uses AJAX to load pages, make sure that if these pages use some custom CSS files they are pre-loaded on the application start otherwise you'll lose the styling.
 
-===== Multi or Single-Page Template
+===== Multipage or single-page template
 
-So which template style should you use?  Both have their pros and cons. If the code base of your application is large, use single-page template. The code will be split into multiple pages, will be easier to read and will give you a feeling of being modular without implementing any additional libraries for cutting the application into pieces. The home page of the application comes quicker because you don't need to load the entire code base.
+So which template style should you use?  Both have their pros and cons. If the code base of your application is large, use a single-page template. The code will be split into multiple pages, will be easier to read, and will give you a feeling of being modular without implementing any additional libraries for cutting the application into pieces. The home page of the application loads quicker because you don't need to load the entire code base.
 
-This all sounds good, but be aware that with single-page templates whenever you'll navigate from one page to another your mobile device makes a new request to the server. They user will see the wait cursor until the to-page has not arrived to the device. Even if the size of each page is small, additional requests to the server are costlier with mobile devices as they need another second just re-establish a radio link to the cell tower. After the communication with the server is done, the phone lowers its power consumption. The new request to the server for loading the page will start with increasing the power consumption again. Hence using the multi-page template may provide smoother navigation. 
+This all sounds good, but be aware that with single-page templates, whenever you navigate from one page to another, your mobile device makes a new request to the server. The user will see the wait cursor until the page arrives at the device. Even if the size of each page is small, additional requests to the server are costlier with mobile devices because they need another second just to re-establish a radio link to the cell tower. After communication with the server is done, the phone lowers its power consumption. However a new request to the server for loading the page starts increasing power consumption again. Hence, using the multipage template might provide smoother navigation. 
 
 On the other hand, there is a way to http://view.jquerymobile.com/1.3.1/dist/demos/widgets/pages/[pre-fetch pages] into the DOM even in a single-page mode so the number of the server request id minimized. This can be done either with the HTML attribute `data-prefetch="true"` or programmatically using `$.mobile.loadPage()`. You can also ask the browser to cache previously visited pages with `$.mobile.page.prototype.options.domCache = true;`.
 
