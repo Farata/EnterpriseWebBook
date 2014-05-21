@@ -3,7 +3,8 @@ var myEventSource = (function() {
     var eventSource;
     if ( !! window.EventSource) {
         eventSource =
-            new EventSource('http://localhost:8080/donate_web/api/donations/events'); // <1>
+            new EventSource
+                ('http://localhost:8080/donate_web/api/donations/events'); // <1>
     } else {
         // notify use that her browser doesn't support SSE
     }

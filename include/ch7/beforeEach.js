@@ -29,11 +29,13 @@
             expect(usernameInput.id).toBe("username");
             expect(passwordInput.id).toBe("password");
         });
-        it("should not allow login with empty username and password and return code equals 0", function() {
+        it("should not allow login with empty username and password and return code 
+            equals 0", function() {
             var result = ssc.login(usernameInput, passwordInput); // <4>
             expect(result).toBe(0);
         });
-        it("should allow login with user admin and password 1234 and return code equals 1", function() {
+        it("should allow login with user admin and password 1234 and return code 
+            equals 1", function() {
             usernameInput.value = "admin"; // <5>
             passwordInput.value = "1234";
             var result = ssc.login(usernameInput, passwordInput);

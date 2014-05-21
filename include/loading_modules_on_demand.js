@@ -1,7 +1,8 @@
 require([], function() { // <1>
   'use strict';
   return (function() {
-    var lazyLoadingEventHandlerFactory, wayToGiveHandleClick, wayToGiveModule, way_to_give;
+    var lazyLoadingEventHandlerFactory, wayToGiveHandleClick, wayToGiveModule, 
+        way_to_give;
     way_to_give = document.getElementById('way-to-give');
 
     wayToGiveModule = null; // <2>
@@ -25,7 +26,8 @@ require([], function() { // <1>
       };
       return clickEventHandler;
     };
-    wayToGiveHandleClick = lazyLoadingEventHandlerFactory(wayToGiveModule, 'modules/way-to-give');
+    wayToGiveHandleClick = lazyLoadingEventHandlerFactory(wayToGiveModule, 
+                                                          'modules/way-to-give');
 
     way_to_give.addEventListener('click', wayToGiveHandleClick, false); // <8>
   })();

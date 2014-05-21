@@ -6,9 +6,9 @@ module.exports = function (grunt) {
     grunt.initConfig({
         // Task configuration.
         clean: {
-            files: ["dist"] // <1>
+            files: ["dist"] <1>
         },
-        requirejs: {        // <2>
+        requirejs: {         <2>
             compile: {
                 options: {
                     name: "config",
@@ -18,13 +18,14 @@ module.exports = function (grunt) {
                 }
             }
         },
-        concat: {       // <3>
+        concat: {       <3>
             dist: {
-                src: ["components/requirejs/require.js", "<%= concat.dist.dest %>"],
+                src: ["components/requirejs/require.js", 
+                      "<%= concat.dist.dest %>"],
                 dest: "dist/require.js"
             }
         },
-        uglify: {       // <4>
+        uglify: {       <4>
             dist: {
                 src: "<%= concat.dist.dest %>",
                 dest: "dist/require.min.js"
@@ -32,10 +33,10 @@ module.exports = function (grunt) {
         }
     });
 
-    grunt.loadNpmTasks("grunt-contrib-clean");      // <5>
+    grunt.loadNpmTasks("grunt-contrib-clean");      <5>
     grunt.loadNpmTasks("grunt-contrib-requirejs");
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-uglify");
 
-    grunt.registerTask("default", ["clean", "requirejs", "concat", "uglify"]);  // <6>
+    grunt.registerTask("default", ["clean", "requirejs", "concat", "uglify"]); <6>
 };

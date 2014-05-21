@@ -1,4 +1,4 @@
-(function(global) {     //<1>
+(function(global) {     // <1>
     "use strict";
     var module = {};
 
