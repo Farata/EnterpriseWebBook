@@ -11,7 +11,8 @@
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
-        console.log("login implementation for " + userNameValue + "and" + userPasswordValue + "omitted");
+        console.log("login implementation for " + userNameValue + "and" + 
+                    userPasswordValue + "omitted");
     };
 
     module.logout = function() {
