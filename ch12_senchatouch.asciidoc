@@ -1107,18 +1107,21 @@ Ext.define('SSC.view.DonateForm', {
 ----
 ====
 
-<1> Defining event listeners for the `segmentedbutton` and the field for entering other amount. When the control section is used not in a controller, but in a component it's scoped to the object in which it was defined. Hence the `ComponentQuery` will be looking for `segmentedbutton` and `numberfield[name=amount]` only within the DonateForm instance. If these event handlers would be defined in the controller, the scope would be global.
+<1> Defining event listeners for the `segmentedbutton` and the field for entering another amount. When the control section is used not in a controller, but in a component, it's scoped to the object in which it was defined. Hence the `ComponentQuery` will be looking for `segmentedbutton` and `numberfield[name=amount]` only within the +DonateForm+ instance. If these event handlers were defined in the controller, the scope would be global.
 
-<2> Borrowing the class that Sencha Touch uses for all `fieldset` container so our title looks the same.
+<2> Borrowing the class that Sencha Touch uses for all `fieldset` container, so our title looks the same.
 
-<3> The `segmentedbutton` is defined here. By default, its config property `allowToggle=true`, which allows only one button to be pressed at a time.
+<3> The `segmentedbutton` is defined here. By default, its config property is `allowToggle=true`, which allows only one button to be pressed at a time.
 
-<4> The `segmentedbutton` has no property to store the value of each of its button. But any  sublcass of `Ext.Component` has a property `data`. We are extending the `data` property to store the button's `value`. It'll be available in the event handler in `button.getData().value`.
+<4> The `segmentedbutton` has no property to store the value of each button. But any  sublcass of `Ext.Component` has the property `data`. We are extending the `data` property to store the button's `value`. It will be available in the event handler in `button.getData().value`.
  
-<5> Since the buttons in the `segmentedbutton` are not input fields, we define a hidden field to remember the currently selected amount. 
+<5> Because the buttons in the `segmentedbutton` are not input fields, we define a hidden field to remember the currently selected amount. 
 
-The second half of `SSC.view.DonateForm` comes next.  
+<<ex_final_version_donateform-js_part2>> presents the second half of `SSC.view.DonateForm`.  
 
+[[ex_final_version_donateform-js_part2]]
+.The final version of DonateForm.js, part 2
+====
 [source, javascript]
 ----
 
@@ -1230,32 +1233,33 @@ The second half of `SSC.view.DonateForm` comes next.
    this.updateHiddenAmountField(null);
  }
 });
-----   
+---- 
+====
 
 
-<1> This `numberfield` stores the _other amount_ if entered. Note that it has the same name `amount` as the hidden field. The methods `clearAmountField()` and `clearHiddenAmountField()` will ensure that only one of the amounts has a value.
+<1> This `numberfield` stores the _other amount_, if entered. Note that it has the same name `amount` as the hidden field. The methods `clearAmountField()` and `clearHiddenAmountField()` ensure that only one of the amounts has a value.
 
-<2>  When the `toggle` event is fired it comes with an object that contains the reference to the button that was toggled, and if the button becomes pressed as the result of this event.
+<2>  When the `toggle` event is fired, it comes with an object that contains a reference to the button that was toggled, and whether the button becomes pressed as the result of this event.
 
-<3> The toggle event is dispatched twice - one for the button that becomes pressed, and another for the button that was pressed before. If the button becomes pressed (`isPressed=true`), clean the previously selected amount and store a new one in the hidden field. 
+<3> The toggle event is dispatched twice: once for the button that is pressed, and again for the button that was pressed before. If the button is clicked (`isPressed=true`), clean the previously selected amount and store a new one in the hidden field. 
 
-<4> Change the style of the button to make it visibly highlighted. We use the predefine`confirm` style (see the http://dev.sencha.com/deploy/touch/examples/production/kitchensink/#demo/buttons[Kitchen Sink] application for other button styles).
+<4> Change the style of the button to make it visibly highlighted. We use the predefined +confirm+ style (see the http://dev.sencha.com/deploy/touch/examples/production/kitchensink/#demo/buttons[Kitchen Sink] application for other button styles).
 
 <5> When the _other amount_ field loses focus, this event handler is invoked. The code cleans up the hidden field and removes the pressed state from all buttons.  
 
-<6> Temporarily suspend dispatching events while setting the  value of the amount `numberfield` to null. Otherwise setting to null would cause unnecessary dispatching of the `change` event. 
+<6> Temporarily suspend dispatching events while setting the  value of the amount `numberfield` to null. Otherwise, setting to null would cause unnecessary dispatching of the `change` event. 
 
 <7> Resume event dispatching.  The `true` argument is for discarding all the queued events.
 
-Previous versions of the Save The Child application illustrated how to submit the Donate form to the server for further processing. The Sencha Touch version of this application doesn't include this code.  If you'd like to experiment with this, just create a new controller class that extends `Ext.app.Controller` and define there an event handler for the button Donate (see the Login controller as an example). 
+Previous versions of the Save The Child application illustrated how to submit the Donate form to the server for further processing. The Sencha Touch version of this application doesn't include this code. If you'd like to experiment with this, just create a new controller class that extends `Ext.app.Controller` and define an event handler for the Donate Now button (see the Login controller as an example). 
 
-On the `tap` event invoke `donateform.submit()` specifying the URL of the server that knows how to process this form. You can find details on submitting and populating forms in the online documentation for http://docs.sencha.com/touch/2.3.1/#!/api/Ext.form.Panel[`Ext.form.Panel`] - the ancestor of the `DonateForm`.
+On the `tap` event, invoke `donateform.submit()`, specifying the URL of the server that knows how to process this form. You can find details on submitting and populating forms in the online documentation for http://docs.sencha.com/touch/2.3.1/#!/api/Ext.form.Panel[`Ext.form.Panel`]--the ancestor of the "DonateForm".
 
-TIP: If you want to use the AJAX-based form submission, use `submit()`, otherwise use the method `standardSubmit()`, which will do a standard HTML form submission.
+TIP: If you want to use Ajax-based form submission, use `submit()`. Otherwise, use the method `standardSubmit()`, which performs a standard HTML form submission.
 
 ===== Charts
 
-The charting support is just great in Sencha Touch (and similar to Ext JS). It's JavaScript based, the charts are live and can get the data from the stores and model. The Figure <<FIG13-19>> shows  how the chart looks on iPhone when the user selects the Stats page: 
+The charting support is just great in Sencha Touch (and similar to Ext JS). It's JavaScript based, and the charts are live and can get the data from the stores and model. <<FIG13-19>> shows how the chart looks on an iPhone when the user selects the Stats page. 
 
 [[FIG13-19]]
 .Donor's statistics chart
