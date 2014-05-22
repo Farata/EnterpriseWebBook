@@ -974,8 +974,11 @@ TIP: If you add the Save The Child application as an icon to the home screen on 
 
 ===== DonateForm
 
-We wanted to make the Donate view look as per our Web designer's mockup shown on Figure <<FIG12-13>>. With jQuery Mobile it was simple - the HTML container `<fieldset data-role="controlgroup" data-type="horizontal" id="radio-container">` with a bunch of `<input type="radio">` rendered the horizontal button bar shown on Figure <<FIG12-28>>. Here the fragment from the initial Sencha Touch version of DonateForm.js. 
+We want to make the Donate view look like the mock-up that our web designer, Jerry, supplied for us (See <<FIG12-13>>). With jQuery Mobile, it's simple: the HTML container `<fieldset data-role="controlgroup" data-type="horizontal" id="radio-container">` with a bunch of `<input type="radio">` rendered the horizontal button bar shown in <<FIG12-28>>. <<ex_initial_version_of_donateform-js>> shows the fragment from the initial Sencha Touch version of _DonateForm.js_. 
 
+[[ex_initial_version_of_donateform-js]]
+.The fragment of the initial version of DonateForm.js
+====
 [source, javascript]
 ----
  config: {
@@ -1015,22 +1018,26 @@ We wanted to make the Donate view look as per our Web designer's mockup shown on
               }
           ]
       }
-----  
+----
+====
 
-It's also a `fieldset` with several radio buttons - `xtype: 'radiofield'`. But the result was not what we expected. These four radio buttons occupied half of the screen and looked as on Figure <<FIG13-17>>:
+It's also a `fieldset` with several radio buttons, `xtype: 'radiofield'`. But the result is not what we expected. These four radio buttons occupy half of the screen, which looks like <<FIG13-17>>.
 
 [[FIG13-17]]
-.Rendering of xtype radiofield 
+.Rendering of xtype radio field 
 image::images/ewdv_1215.png[] 
 
-After doing some research, we found out that Sencha Touch has the UI component called http://docs.sencha.com/touch/2.3.1/#!/api/Ext.SegmentedButton[`Ext.SegmentedButton`] that allows create horizontal bar with a number of toggle buttons, which is exactly what was needed from the rendering perspective. The resulting Donate screen is shown on Figure <<FIG13-18>>. 
+After doing some research, we discovered that Sencha Touch has a UI component called http://docs.sencha.com/touch/2.3.1/#!/api/Ext.SegmentedButton[`Ext.SegmentedButton`] with which you can create a horizontal bar with toggle buttons, which is exactly what is needed from the rendering perspective. The resulting Donate screen is shown in <<FIG13-18>>. 
 
 [[FIG13-18]]
 .Donate form with SegmentedButton
 image::images/ewdv_1216.png[]
 
-This looks nice, but as opposed to regular HTML form with inputs, the `SegmentedButton` is not an HTML `<input>` field and its value won't be automatically submitted to the server. This required a little bit of a manual coding, which will be explained as a part of the `DonateForm` code review, which follows (we've split it into two fragments for better readability).
+This looks nice, but as opposed to a regular HTML form with inputs, the `SegmentedButton` is not an HTML `<input>` field and its value won't be automatically submitted to the server. This requires a little bit of a manual coding, which will be explained as a part of the `DonateForm` code review that follows (we've split it into two fragments for better readability). <<ex_final_version_donateform-js_part1>> shows the first part.
 
+[[ex_final_version_donateform-js_part1]]
+.The final version of DonateForm.js, part 1
+====
 [source, javascript]
 ----
 Ext.define('SSC.view.DonateForm', {
@@ -1098,6 +1105,7 @@ Ext.define('SSC.view.DonateForm', {
            name: 'amount'
          },
 ----
+====
 
 <1> Defining event listeners for the `segmentedbutton` and the field for entering other amount. When the control section is used not in a controller, but in a component it's scoped to the object in which it was defined. Hence the `ComponentQuery` will be looking for `segmentedbutton` and `numberfield[name=amount]` only within the DonateForm instance. If these event handlers would be defined in the controller, the scope would be global.
 
