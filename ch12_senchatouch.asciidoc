@@ -1107,9 +1107,9 @@ Ext.define('SSC.view.DonateForm', {
 ----
 ====
 
-<1> Defining event listeners for the `segmentedbutton` and the field for entering another amount. When the control section is used not in a controller, but in a component, it's scoped to the object in which it was defined. Hence the `ComponentQuery` will be looking for `segmentedbutton` and `numberfield[name=amount]` only within the +DonateForm+ instance. If these event handlers were defined in the controller, the scope would be global.
+<1> Define event listeners for the `segmentedbutton` and the field for entering another amount. When the control section is used not in a controller, but in a component, it's scoped to the object in which it was defined. Hence the `ComponentQuery` will be looking for `segmentedbutton` and `numberfield[name=amount]` only within the +DonateForm+ instance. If these event handlers were defined in the controller, the scope would be global.
 
-<2> Borrowing the class that Sencha Touch uses for all `fieldset` container, so our title looks the same.
+<2> Borrow the class that Sencha Touch uses for all `fieldset` container, so our title looks the same.
 
 <3> The `segmentedbutton` is defined here. By default, its config property is `allowToggle=true`, which allows only one button to be pressed at a time.
 
@@ -1265,8 +1265,11 @@ The charting support is just great in Sencha Touch (and similar to Ext JS). It's
 .Donor's statistics chart
 image::images/ewdv_1217.png[]
 
-The code that support the UI part of the chart is located in the view DonorsChart that's shown next. It uses he classes located in the Sencha Touch framework in the folder _src/chart_. 
+The code that supports the UI part of the chart is located in the view +DonorsChart+ that's shown in <<ex_view_donorschart-js>>. It uses the classes located in the Sencha Touch framework in the folder _src/chart_. 
 
+[[ex_view_donorschart-js]]
+.The view DonorsChart.js
+====
 [source, javascript]
 ----
 Ext.define('SSC.view.DonorsChart', {
@@ -1303,21 +1306,25 @@ Ext.define('SSC.view.DonorsChart', {
     }
 });
 ----
+====
 
 <1> Create a chart that uses polar coordinates.
 
 <2> The `Rotate` class allows the user to rotate (with a finger) a polar chart around its central point.
 
-<3> The data shown on the chart come from the store named Donors, which is shown in the section "Stores and Models". 
+<3> The data shown on the chart comes from the store named +Donors+, which is shown in the section <<stores_and_models>>. 
 
 <4> The legend is a bar at the bottom of the screen. The user can horizontally scroll it with a finger.  
 
 ===== Media
 
-The Media page of our application displays the list of available videos. When the user taps on one of them, the new page opens where the user have to tap on the button play. We use the http://docs.sencha.com/touch/2.3.1/#!/api/Ext.dataview.List[`Ext.dataview.List`] component to display video titles from the `Videos` store.
+The Media page of our application displays the list of available videos. When the user taps one of them, a new page opens on which the user must tap the Play button. We use the http://docs.sencha.com/touch/2.3.1/#!/api/Ext.dataview.List[`Ext.dataview.List`] component to display video titles from the `Videos` store.
 
-The `Media` view extends `Ext.NavigationView`, which is a container with the card layout that also allows to push a new view into this container - we use it to create a view for the selected from the list video. The code of the `Media` view is shown in the next listing.
+The `Media` view extends `Ext.NavigationView`, which is a container with the card layout that also allows pushing a new view into this container. We use it to create a view for the selected video from the list. The code of the `Media` view is shown in <<ex_view_media-js>>.
 
+[[ex_view_media-js]]
+.The view Media.js
+====
 [source, javascript]
 ----
 Ext.define('SSC.view.Media', {
@@ -1353,7 +1360,8 @@ Ext.define('SSC.view.Media', {
               variableHeights: true,
               itemTpl: [                         // <4>
                   '<div class="preview" 
-                  style="background-image:url(resources/media/{thumbnail});"></div>',
+                  style="background-image:url(resources/media/{thumbnail});">
+                  </div>',
                   '{title}',
                   '<span>{description}</span>'
               ]
@@ -1370,37 +1378,42 @@ Ext.define('SSC.view.Media', {
       }));
   }
 });
-----    
+----  
+====
 
-<1> Sencha Touch offers `Ext.Video` a wrapper for the HTML5 `<video>` tag. In Chapter 4 we used the HTML5 tag `<video>` directly.
+<1> Sencha Touch offers `Ext.Video` a wrapper for the HTML5 `<video>` tag. In <<developing_in_ext_js>>, we used the HTML5 tag `<video>` directly.
 
-<2> Defining the event listener for the `itemtap` event, which fires whenever the list item is tapped.
+<2> Define the event listener for the `itemtap` event, which fires whenever the list item is tapped.
 
-<3> When the video player's view will be pushed to the Media page, we want its Back button to display the previous view's title, which is "Media". It's a config property in the `NavigationView`.    
+<3> When the video player's view is pushed to the Media page, we want its Back button to display the previous view's title, which is Media. It's a config property in `NavigationView`.    
 
-<4>  The list with descriptions of videos is populated from the store Videos using the list's config property`itemTpl`. This is an HTML template for rendering each item. We decided to use the `<div>` showing the content of store's properties `title`, `description` with a background image from the property `thumbnail`, and the video located at the specified `url`. The source code of the store Videos is included in the section "Stores and Models" below.
+<4>  The list with descriptions of videos is populated from the store +Videos+ by using the list's config property `itemTpl`. This is an HTML template for rendering each item. We decided to use the `<div>` showing the content of the store's properties `title`, `description` with a background image from the property `thumbnail`, and the video located at the specified `url`. The source code of the store +Videos+ is included in the section <<stores_and_models>>.
 
-<5> Create a video player and push it into the `NavigationView`. When the `itemtap` event is fired, it passes several values to the function handler. We just use the `model` that corresponds to the tapped list item. For all available config properties refer to the http://docs.sencha.com/touch/2.3.1/#!/api/Ext.Video[`Ext.Video` documentation].
+<5> Create a video player and push it into `NavigationView`. When the `itemtap` event is fired, it passes several values to the function handler. We just use the `model` that corresponds to the tapped list item. For all available config properties, refer to the http://docs.sencha.com/touch/2.3.1/#!/api/Ext.Video[`Ext.Video` documentation].
 
-NOTE: A template [`Ext.Template`] represents an HTML fragment. The values in curly braces are being passed to the template from the outside. In the above example the values are coming from the store Videos. The class http://docs.sencha.com/touch/2.3.1/#!/api/Ext.XTemplate[`Ext.XTemlate`] offers advanced templating, e.g. auto-filling HTML with the data from an array, which is used here.
+NOTE: A template [`Ext.Template`] represents an HTML fragment. The values in square braces are passed to the template from the outside. In the preceding example, the values are coming from the store +Videos+. The class http://docs.sencha.com/touch/2.3.1/#!/api/Ext.XTemplate[`Ext.XTemlate`] offers advanced templating--for example, auto-filling HTML with the data from an array, which is used here.
 
 ===== Maps
 
-Integration with Google Maps is a pretty straightforward task in Sencha Touch, which comes with http://docs.sencha.com/touch/2.3.1/#!/api/Ext.Map[`Ext.Map`] - a wrapper class for Google Maps API. Our view `CampainsMap` is a subclass of `Ext.Map`. Note that we've imported Google Maps API in the file index.html as follows:
+Integration with Google Maps is a pretty straightforward task in Sencha Touch, which comes with http://docs.sencha.com/touch/2.3.1/#!/api/Ext.Map[`Ext.Map`], a wrapper class for the Google Maps API. Our view `CampainsMap` is a subclass of `Ext.Map`. Note that we've imported the Google Maps API in the file _index.html_ as follows:
 
 [source, html]
 ----
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+<script type="text/javascript" 
+        src="http://maps.google.com/maps/api/js?sensor=true"></script>
 ----
 
-Figure <<FIG13-20>> shows the iPhone's screen when the button Events is pressed. 
+<<FIG13-20>> shows the iPhone's screen when the Events button is tapped. 
 
 [[FIG13-20]]
 .The Events page
 image::images/ewdv_1218.png[]
 
-Of course, some additional styling would be needed before offering this view in production environment, but our  CampaignsMap.js that supports this screen is only ninety lines of code!  
+Of course, some additional styling is needed before offering this view in a production environment, but the _CampaignsMap.js_ that supports this screen (see <<ex_view_campaignmaps-js>>) is only 90 lines of code!  
 
+[[ex_view_campaignmaps-js]]
+.The view CampaignsMap.js
+====
 [source, javascript]
 ----
 Ext.define('SSC.view.CampaignsMap', {
@@ -1476,11 +1489,14 @@ Ext.define('SSC.view.CampaignsMap', {
                      title   : location
                  });
 
-                 // adding click event to the marker to show info-bubble with data from json
-                 google.maps.event.addListener(marker, 'click', (function(marker) {
+                 // adding click event to the marker to show info-bubble 
+                 // with data from json
+                 google.maps.event.addListener(marker, 'click', (function(marker) 
+                     {
                      return function () {
                          var content = Ext.String.format(
-                             '<p class="infowindow"><b>{0}</b><br/>{1}<br/><i>{2}</i></p>',
+                             '<p class="infowindow"><b>{0}</b><br/>{1}
+                             <br/><i>{2}</i></p>',
                              title, description, location);
 
                          infowindow.setContent(content);
@@ -1488,7 +1504,8 @@ Ext.define('SSC.view.CampaignsMap', {
                      };
                  })(marker));
               } else {
-                 console.error('Error getting location data for address: ' + location);
+                 console.error('Error getting location data for address: ' + 
+                                                                location);
               }
           });
       });
@@ -1499,13 +1516,17 @@ Ext.define('SSC.view.CampaignsMap', {
   }
 });
 ----
+====
 
-<1> We just use `listeners` config here, but `Ext.Map` has 60 of them. For example, if we wanted the mobile device to identify the current location of the device and put it in the center of the map, we'd add `useCurrentLocation: true`.
+<1> We use just the `listeners` config here, but `Ext.Map` has 60 of them. For example, if we wanted the mobile device to identify its current location and put it in the center of the map, we'd add `useCurrentLocation: true`.
 
-<2> This event is fired when the map is initially rendered. We are reusing the same code as in previous chapters for initializing the map (showing the central point of the USA) and adding the campaigns information. The code of the store Campaigns is shown in the section Stores and Models below. 
+<2> This event is fired when the map is initially rendered. We are reusing the same code as in previous chapters for initializing the map (showing the central point of the United States) and adding the campaign information. The code of the store +Campaigns+ is shown in the section <<stores_and_models>>. 
 
-Sencha Touch is a framework for mobile devices, which can be on the move. http://docs.sencha.com/touch/2.3.1/#!/api/Ext.util.Geolocation[`Ext.util.Geolocation`] is a handy class for applications that require to know the current position of the mobile device. When your program instantiates `Geolocation`, it starts tracking the location of the device by firing the `locationupdate` event periodically (you can turn auto updates off). The following code fragment shows how to get the current latitude of the mobile device. 
+Sencha Touch is a framework for mobile devices, which can be on the move. http://docs.sencha.com/touch/2.3.1/#!/api/Ext.util.Geolocation[`Ext.util.Geolocation`] is a handy class for applications that require knowing the current position of the mobile device. When your program instantiates `Geolocation`, it starts tracking the location of the device by firing the `locationupdate` event periodically (you can turn auto updates off). <<ex_current_device_latitude>> shows how to get the current latitude of the mobile device. 
 
+[[ex_current_device_latitude]]
+.Getting the current latitude of the device
+====
 [source, javascript]
 ----
 var geo = Ext.create('Ext.util.Geolocation', {
@@ -1518,12 +1539,16 @@ var geo = Ext.create('Ext.util.Geolocation', {
 
 geo.updateLocation();  // start the location updates
 ----
+====
 
 [[stores_and_models]]
 ==== Stores and Models
 
-In the Sencha Touch version of the Save The Child application all the data is hard-coded. All store classes are located in the store directory (see Figure <<FIG13-14>>), and each of them has the `data` property. For example, here's the code of the Videos.js. 
+In the Sencha Touch version of the Save The Child application, all the data is hard-coded. All store classes are located in the _store_ directory (see <<FIG13-14>>), and each of them has the `data` property. <<ex_video-js_store>> presents the code of _Videos.js_. 
 
+[[ex_video-js_store]]
+.The store Video.js
+====
 [source, javascript]
 ----
 Ext.define('SSC.store.Videos', {
@@ -1538,23 +1563,27 @@ Ext.define('SSC.store.Videos', {
       ],
 
       data: [
-          { title: 'The title of a video-clip 1', description: 'Short video description 1', 
-          url: 'intro.mp4', thumbnail: 'intro.jpg' },
+          { title: 'The title of a video-clip 1', description: 'Short video 
+          description 1', url: 'intro.mp4', thumbnail: 'intro.jpg' },
 
-          { title: 'The title of a video-clip 2', description: 'Short video description 2', 
-          url: 'intro.mp4', thumbnail: 'intro.jpg' },
+          { title: 'The title of a video-clip 2', description: 'Short video 
+          description 2', url: 'intro.mp4', thumbnail: 'intro.jpg' },
 
-          { title: 'The title of a video-clip 3', description: 'Short video description 3', 
-          url: 'intro.mp4', thumbnail: 'intro.jpg' }
+          { title: 'The title of a video-clip 3', description: 'Short video 
+          description 3', url: 'intro.mp4', thumbnail: 'intro.jpg' }
       ]
   }
 });
 ----
+====
 
-WARNING: There is compatibility issue between Ext JS and Sencha Touch 2 stores and models. For example, in the above code `fields` and `data` are wrapped inside the `config` object, while in Ext JS store they are not. Until Sencha will offer a generic solution to resolve the compatibility issues, you have to come up with your own if you want to reuse the same stores.
+WARNING: There is a compatibility issue between Ext JS and Sencha Touch 2 stores and models. For example, in the preceding code, `fields` and `data` are wrapped inside the `config` object, whereas in the Ext JS store they are not. Until Sencha offers a generic solution to resolve these compatibility issues, you have to come up with your own if you want to reuse the same stores.
 
-The code of the Donors store supports the charts in the Stats page. It's self explanatory:  
+The code of the +Donors+ store supports the charts on the Stats page. It's self-explanatory, as you can see in <<ex_donors-js_store>>.  
 
+[[ex_donors-js_store]]
+.The store Donors.js
+====
 [source, javascript]
 ----
 Ext.define('SSC.store.Donors', {
@@ -1578,9 +1607,13 @@ Ext.define('SSC.store.Donors', {
   }
 });
 ----
+====
 
-The Campaigns store is used to display the markers on the map, where charity campaigns are active. Taping on the marker will show the description of the selected campaign as shown on Figure <<FIG13-20>> - we tapped on Chicago marker. The code of the store Campaigns.js is shown next.
+The +Campaigns+ store is used to display the markers on the map, where charity campaigns are active. Tapping the marker will show the description of the selected campaign, as shown in Figure <<FIG13-20>> (we tapped the Chicago marker). <<ex_campaign-js_store>> presents the code of the store _Campaigns.js_ .
 
+[[ex_campaign-js_store]]
+.The store Campaigns.js
+====
 [source, javascript]
 ----
 Ext.define('SSC.store.Campaigns', {
@@ -1601,7 +1634,7 @@ Ext.define('SSC.store.Campaigns', {
             },
             {
                 title: 'Lawyers for Children',
-                description: 'Lawyers offering free services for The Children',
+                description: 'Lawyers offering free services for the children',
                 location: 'New York, NY'
             },
             {
@@ -1616,7 +1649,7 @@ Ext.define('SSC.store.Campaigns', {
             },
             {
                 title: 'Place Called Home',
-                description: 'Adoption of The Children',
+                description: 'Adoption of the children',
                 location: 'Fargo, ND'
             }
         ]
@@ -1624,10 +1657,11 @@ Ext.define('SSC.store.Campaigns', {
 
 });
 ----
+====
 
-==== Dealing With Landscape Mode
+==== Working with Landscape Mode
 
-Handling the landscape mode with Sencha Touch is done differently depending on how you deploy your application. If you decide to http://docs.sencha.com/cmd/3.1.2/#!/guide/native_packaging[package this app as a native one], the landscape mode will supported. Sencha CMD willgenerate the file packager.json, which will include the  section dealing with orientation:
+Handling landscape mode with Sencha Touch is done differently depending on how you deploy your application. If you decide to http://docs.sencha.com/cmd/3.1.2/#!/guide/native_packaging[package this app as a native one], landscape mode will be supported. Sencha CMD will generate the file _packager.json_, which will include a section dealing with orientation:
 
 [source, javascript]
 ----
@@ -1639,7 +1673,7 @@ Handling the landscape mode with Sencha Touch is done differently depending on h
     ]
 ----
 
-If you're not planning to package your app as the native one, you'll need to do some manual coding by processing the `orientationchange` event. For example, 
+If you're not planning to package your app as a native one, you'll need to do some manual coding by processing the `orientationchange` event. For example: 
 
 [source, javascript]
 ----
@@ -1648,39 +1682,39 @@ Ext.Viewport.on('orientationchange', function() {
 });
 ----
 
-This concludes the review of the Sencha Touch version of our sample application, which consists of six nice looking screens. The amount of manual coding to achieve this was minimal. In the real world, you'd need to add business logic to this application, but comes down to inserting the JavaScript code to a well structured layers. The code to communicate with the server will go to the stores, the data will be placed in the models, the UI remains in the views, and the main glue of your application is controllers. Sencha Touch did a pretty good job for us, wouldn't you agree?     
+This concludes the review of the Sencha Touch version of our sample application, which consists of six nice-looking screens. The amount of manual coding to achieve this is minimal. In the real world, you'd need to add business logic to this application, which comes down to inserting the JavaScript code into well-structured layers. The code to communicate with the server goes to the stores, the data is placed in the models, the UI remains in the views, and the main glue of your application is controllers. Sencha Touch does a good job for us, wouldn't you agree?     
 
 
 === Comparing jQuery Mobile and Sencha Touch 
 
-In chapters 11 and 12 you've learned about two different ways of developing a mobile application. So what's better jQuery Mobile or Sencha Touch? There is no answer to this question, and you will have to make a decision on your own. But here's a quick summary of pros and cons for each library or framework.
+In <<jquery_mobile>> and this chapter, you've learned about two different ways of developing a mobile application. So, what's better, jQuery Mobile or Sencha Touch? There is no correct answer to this question, and you will have to make a decision on your own. But here's a quick summary of pros and cons for each library or framework.
 
-Use jQuery Mobile if:
+Use jQuery Mobile if the following are true:
 
-* If you are afraid of being locked up with any one vendor. The effort to replace jQuery Mobile in your application with another framework (if you decide to do so) is a magnitude lower than switching from Sencha Touch to something else. 
+* You are afraid of being locked into any one vendor. The effort to replace jQuery Mobile in your application with another framework (if you decide to do so) is a magnitude lower than switching from Sencha Touch to something else. 
 
-* If you need your application to work on most of the mobile platforms.
+* You need your application to work on most mobile platforms.
 
-* If you prefer declarative UI and hate debugging JavaScript.
+* You prefer declarative UI and hate debugging JavaScript.
 
-Use Sencha Touch if:
+Use Sencha Touch if the following are true:
 
-* If you like to have a rich library of pre-created UI.
+* You like to have a rich library of precreated UIs.
 
-* If your application needs smooth animation. Sencha Touch does automatic throttling based on the actual frames per seconds supported on the device.
+* Your application needs smooth animation. Sencha Touch performs automatic throttling based on the actual frames-per-second supported on the device.
 
-* If splitting the application code into cleanly defined architectural layers (model-view-controller-service) is important.
+* Splitting the application code into cleanly defined architectural layers (model-view-controller-service) is important.
 
-* If you believe that using code generators add value to your project.
+* You believe that using code generators adds value to your project.
 
-* If you want to be able customize and extend components to fit your application's needs perfectly. Yes, you'll be writing JavaScript, but it still may be simpler than trying to figure out the enhancements done to HTML component by jQuery Mobile under the hood. 
+* You want to be able to customize and extend components to fit your application's needs perfectly. Yes, you'll be writing JavaScript, but it still may be simpler than trying to figure out the enhancements done to an HTML component by jQuery Mobile under the hood. 
 
-* If you want to minimize the efforts required to package your application as a native one.
+* You want to minimize the effort required to package your application as a native one.
 
-* If you want your application to look as close to the native ones as possible.
+* You want your application to look as close to the native ones as possible.
 
-* If you prefer to use software that is covered by the commercial support offered by vendor.
+* You prefer to use software that is covered by the commercial support offered by a vendor.
 
-While considering support options do not just assume that paid support translates into better quality. This is not to say that Sencha won't offer you quality support, but in many cases having a large community of developers will lead to a faster solution to a problem that dealing with one assigned support engineer. Having said this, we'd like you to know that http://www.sencha.com/forum/[Sencha forum] has about half a million registered users who are actively discussing problems and offering solutions to each other.
+While considering support options, do not just assume that paid support translates into better quality. This is not to say that Sencha won't offer you quality support, but in many cases, having a large community of developers will lead to a faster solution to a problem than dealing with one assigned support engineer. Having said this, we'd like you to know that the http://www.sencha.com/forum/[Sencha forum] has about half a million registered users who are actively discussing problems and offering solutions to one another.
 
-Even if you are a developer's manager, you don't have to make the framework choice on your own. Bring your team into a conference room, order pizza, and listen to what _your team members_ have to say about these two or any other frameworks being considered. We offered you the information about two of many frameworks, but the final call is yours.
+Even if you are a developer's manager, you don't have to make the framework choice on your own. Bring your team into a conference room, order pizza, and listen to what _your team members_ have to say about these two frameworks or any other, being considered. We have offered you information about two of many frameworks, but the final call is yours.
