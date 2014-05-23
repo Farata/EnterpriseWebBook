@@ -424,7 +424,7 @@ $ sudo phonegap build ios
 $ sudo phonegap build android
 ----
 
-. Install the following PhoneGap plug-ins that are necessary for supporting such functionality as Splashscreen, Camera, Inappbrowser, File, and File-transfer:.
+. Install the following PhoneGap plug-ins that are necessary for supporting such functionality as Splashscreen, Camera, Inappbrowser, File, and File-transfer:
 +
 ----
 $ sudo phonegap local plugin add https://git-wip-us.apache.org/repos/asf/cordova-plugin-splashscreen.git_
@@ -441,19 +441,23 @@ NOTE: If you don't have some of the platforms SDKs installed locally (as we did 
 
 ==== Adding Camera Access to Save The Child
 
-Charity Web sites help millions of people to get better. When this happens, they want to share their success stories, and maybe publish photos of themselves or their families and friends. These days everyone uses smartphones and tablets to take pictures, and adding the ability to access camera of the mobile device and uploading photos seems like a useful feature for our Save The Child application. 
+Charity websites help millions of people get better. When this happens, those people want to share their success stories, and maybe publish photos of themselves or their families and friends. These days, everyone uses smartphones and tablets to take pictures, and adding the ability to access the camera of a mobile device and upload photos seems like a useful feature for our Save The Child application. 
 
-We'll add the camera access to the jQuery Mobile version of our application. The next code fragment is an extract from the file app-main.js.
+We'll add camera access to the jQuery Mobile version of our application. <<ex_phonegap_camera_api>> is an extract from the file _app-main.js_.
 
 Our next goal is to use PhoneGap to access the native API of the camera of the mobile device to  take photos. After that, the user should be able to upload images to the server. 
 
-For starting the device's default camera application and taking photos, PhoneGap offers the function  `navigator.camera.getPicture()`, which takes three arguments: the name of the function handler if the photo has been successfully taken, the handler for the error, and the object with the optional parameters describing the image. Details about the camera API are available in the http://docs.phonegap.com/en/3.0.0/cordova_camera_camera.md.html#Camera[PhoneGap documentation]. 
+For starting the device's default camera application and taking photos, PhoneGap offers the function  `navigator.camera.getPicture()`, which takes three arguments: the name of the function handler if the photo has been successfully taken, the handler for the error, and the object with optional parameters describing the image. Details about the camera API are available in the http://docs.phonegap.com/en/3.0.0/cordova_camera_camera.md.html#Camera[PhoneGap documentation]. 
 
+[[ex_phonegap_camera_api]]
+.Using the PhoneGap camera API
+====
 [source, javascript]
 ----
 var pictureSource;
 var destinationType;
-var uploadedImagesPage = "http://savesickchid.org/ssc-phonegap/uploaded-images.php";
+var uploadedImagesPage = 
+                  "http://savesickchid.org/ssc-phonegap/uploaded-images.php";
 var photo;
 
 function capturePhoto() { 
@@ -484,15 +488,19 @@ function onPhotoDataSuccess(imageURL) {
     
 }
 ----
+====
 
-Depending on the options in the third argument of the `getPicture()`, the image will be returned as either base64-encoded String, or as in our case, the URI of the file where the image is saved. If the photo was taken successfully, the application will make the `#photoUploader` button visible. 
+Depending on the options in the third argument of `getPicture()`, the image will be returned as either a Base64-encoded string, or as in our case, the URI of the file where the image is saved. If the photo was taken successfully, the application will make the `#photoUploader` button visible. 
 
-This code sample uses `quality:49` for picture quality, which allows you to request the picture quality as a number on the scale of 1 to 100 (the larger number means better quality). Based on our experience, 49 gives reasonable quality/file size ratio. The taken image can be returned as either a base64 encoded string or as a file URI - we used the latter. For the current  list of options refer to the http://docs.phonegap.com/en/1.2.0/phonegap_camera_camera.md.html[PhoneGap Camera API] documentation.  
+This code sample uses `quality:49` for picture quality; you can request the picture quality as a number on a scale of 1 to 100 (the larger number means better quality). Based on our experience, 49 gives a reasonable quality/file size ratio. For a current list of options, refer to the http://docs.phonegap.com/en/1.2.0/phonegap_camera_camera.md.html[PhoneGap Camera API] documentation.  
 
-TIP: For illustration purposes the above code uses the JavaScript `alert()` function to report a failure. For a more robust solution consider creating some custom way of reporting errors like red borders, modal dialog boxes with images or status bars. 
+TIP: For illustration purposes, the preceding code uses the JavaScript `alert()` function to report a failure. For a more robust solution, consider creating a custom way of reporting errors--for example, red borders, modal dialog boxes with images, or status bars. 
 
-The above function `capturePhoto()` should be called when the user taps the button on the application's screen. Hence we need to register an event listener for this button. Below is a fragment of the `onDeviceReady` function that registers all required event listeners. 
+The `capturePhoto()` function in <<ex_phonegap_camera_api>> should be called when the user taps the button on the application's screen. Hence, we need to register an event listener for this button. <<ex_handling_photo_capture_events>> is a fragment of the `onDeviceReady` function that registers all required event listeners. 
 
+[[ex_handling_photo_capture_events]]
+.Handling events of the button that captures photos
+====
 [source, javascript]
 ----
 function onDeviceReady() {
@@ -527,6 +535,7 @@ function onDeviceReady() {
 	  }
 	);
 ----
+====
 
 If the user clicks on the Upload Photo button, we use the `FileTransfer` object to send the image to the server side script `upload.php` for further processing. The code to support file uploading on  the client side is shown next:
 
