@@ -620,9 +620,9 @@ Note the difference in the content of the variables `__proto__` of the instances
 [[avoiding_declaration_redundancy]]
 ==== Avoiding Declaration Redundancy
 
-With prototypical inheritance, you can inherit one object from another, but it can lead to issues of redundancy and code duplication. If you take a closer look at the screenshot in <<FIG2-13>>, you'll see that the `Person` and `Employee` objects have redundant properties `name` and `title`. We'll deal with this redundancy in the section <<MMMMM>>. But first, let's introduce and cure the redundancy in method declarations when prototypal inheritance is used.
+With prototypical inheritance, you can inherit one object from another, but it can lead to issues of redundancy and code duplication. If you take a closer look at the screenshot in <<FIG2-13>>, you'll see that the `Person` and `Employee` objects have redundant properties `name` and `title`. We'll deal with this redundancy in the section <<call_and_apply>>. But first, let's introduce and cure the redundancy in method declarations when prototypal inheritance is used.
 
-Let's add a method to `addSubordinate()` to the ancestor object `Person` that will populate its array `subordinates`. Who knows, maybe an object `Contractor` (descendant of a `Person`) will need to be introduced to the application in the future, so the ancestor's method `addSubordinate()` can be reused. *First, we'll do it the wrong way to illustrate the redundancy problem*, and then we'll do it right. Consider the following code:
+Let's add a method to `addSubordinate()` to the ancestor object `Person` that will populate its array `subordinates`. Who knows, maybe an object `Contractor` (descendant of a `Person`) will need to be introduced to the application in the future, so the ancestor's method `addSubordinate()` can be reused. _First, we'll do it the wrong way to illustrate the redundancy problem_, and then we'll do it right. Consider the following code:
 
 [source, javascript]
 ----
@@ -656,21 +656,21 @@ mgr.addSubordinate(emp2);
 console.log("mgr.subordinates.length is " + mgr.subordinates.length);
 ----
 
-The method `addSubordinate()` here is declared inside the constructor function `Person`, which becomes an ancestor of the `Employee`. After instantiation of two `Employee` objects the method `addSubordinate()` is duplicated for each instance. 
+The method `addSubordinate()` here is declared inside the constructor function `Person`, which becomes an ancestor of `Employee`. After instantiation of two `Employee` objects, the method `addSubordinate()` is duplicated for each instance. 
 
-Let's use Google Chrome Developer Tools profiler to see the sizes of the objects allocated on the Heap memory. But first we'll set up two breakpoints - one before, and one after creating our instances as shown on <<FIG2-14>>.
+Let's use the Google Chrome Developer Tools profiler to see the sizes of the objects allocated on the Heap memory. But first, we'll set up two breakpoints: one before, and one after creating our instances, as shown in <<FIG2-14>>.
 
 [[FIG2-14]]
-.Preparing Breakpoints Take 1.
+.Preparing breakpoints: take 1
 image::images/ewdv_aa12.png[]
 
-When the execution of the code will stop at the first breakpoint, we'll switch to the Profiler tab and take the first Heap snapshot.  Upon reaching the second breakpoint we'll take another Heap snapshot. The dropdown at the status bar allows to view the objects allocated between the snapshots 1 and 2. <<FIG2-15>> depicts this view of the profiler. Note that the total size (the Shallow Size column) for the `Person` instances is 132 bytes. `Employee` instances _weigh_ 104 bytes.
+When the execution of the code stops at the first breakpoint, we'll switch to the Profiler tab and take the first Heap snapshot. Upon reaching the second breakpoint, we'll take another Heap snapshot. Using the drop-down at the status bar, you can view view the objects allocated between the snapshots 1 and 2. <<FIG2-15>> depicts this view of the profiler. Note that the total size (the Shallow Size column) for the `Person` instances is 132 bytes. `Employee` instances _weigh_ 104 bytes.
 
 [[FIG2-15]]
 .Objects allocated between snapshots 1 and 2
 image::images/ewdv_aa13.png[]
 
-Now we'll change the code to declare the method not inside the `Person` constructor function, but on it's prototype - and *this is the right way to declare methods in functions to avoid code duplication*. 
+Now we'll change the code to declare the method, not inside the `Person` constructor function, but on its prototype--and _this is the right way to declare methods in functions to avoid code duplication_. 
 
 [source, javascript]
 ----
@@ -706,19 +706,19 @@ mgr.addSubordinate(emp2);
 console.log("mgr.subordinates.length is " + mgr.subordinates.length);
 ---- 
 
-Similarly, we'll set up two breakpoints before and after object instantiation as shown in <<>FIG2-16>.
+Similarly, we'll set up two breakpoints before and after object instantiation, as shown in <<FIG2-16>>.
 
 [[FIG2-16]]
-.Preparing Breakpoints Take 2.
+.Preparing breakpoints: take 2.
 image::images/ewdv_aa14.png[]
 
-Let's take two more profiler snapshots upon reaching each of the breakpoint. While the weight of the `Employee` instances remained the same (104 bytes), the `Person` instances became lighter: 112 bytes. While 20 bytes may not seem like a big deal, if you'll need to create hundreds or thousands of object instances it adds up.
+Let's take two more profiler snapshots upon reaching each of the breakpoints. Although the size of the `Employee` instances remains the same (104 bytes), the `Person` instances become smaller: 112 bytes (see <<FIG2-17>>). Even though 20 bytes might not seem like a big deal, if you need to create hundreds or thousands of object instances, it adds up.
 
 [[FIG2-17]]
 .Objects allocated between snapshots 3 and 4
 image::images/ewdv_aa15.png[]
 
-So if you need to declare a method on the object that will play a role of the ancestor, do it on the prototype level. The only exception to this rule is the case when such method needs to use some object specific variable that's different for each instance - in case declare methods inside the constructors (see the section on closures for details). 
+So, if you need to declare a method on the object that will play a role of the ancestor, do it on the prototype level. The only exception to this rule occurs when the method needs to use an object-specific variable that's different for each instance; in that case, declare methods inside the constructors (for details, see the section <<closures>>MMMMMMMMMMMM). 
 
 [NOTE]
 ====
@@ -879,6 +879,7 @@ Run the above code and it'll give you the error "TypeError: this.mafiaSpecial is
 
 After learning how to hide a a function inside an object, let's see how to do something quite opposite -  allowing an external method to run inside the context of an object.
 
+[[c]]
 ==== Call and Apply
 
 Visualize the International Space Station, and add to the picture an image of a approaching space shuttle. After attaching to the docking bay of the station the shuttle's crew performs some functions on the station (a.k.a. object) and then flies to another object or back to Earth. What it has to do with JavaScript? It can serve as an analogy for creating a JavaScript function that can operate in the scope of any arbitrary object. For this purpose JavaScript offers two special functions: `call()` or `apply()`. Both `call()` and `apply()` can invoke any function on any object. The only difference between them is that `apply()` passes  parameters to a function as an array, while `call()` uses a comma-separated list.
