@@ -1261,9 +1261,9 @@ var p2 = new Person("Tony Soprano");
 var result2 = p2.doTaxes(100000);
 ----
 
-The calculated taxes in this example are the same as in the previous one: John Smith has to pay $4500, while Tony Soprano only $4000. But we used different technique for exposing the closure. We want to make sure that you didn't overlooked the parentheses at the very end of the function expression for `doTaxes`. These parenthesis force the anonymous function to self-invoke itself, it'll run into a `return` statement and will assign the code of the anonymous inner function that takes parameter `income` to the property `doTaxes`. So when the line `var result1 = p1.doTaxes(100000);` calls the closure the variable `result1` will have the value 4500. Remove these important parentheses, and the value of `result1` is not the tax amount, but the the code of the closure itself - the invocation of the closure is not happening. 
+The calculated taxes in this example are the same as in the previous one: John Smith has to pay $4,500, whereas Tony Soprano only $4,000. But we used a different technique for exposing the closure. We want to make sure that you didn't overlook the parentheses at the very end of the function expression for `doTaxes`. These parentheses force the anonymous function to self-invoke; it will run into a `return` statement and will assign the code of the anonymous inner function that takes the parameter `income` to the property `doTaxes`. So when the line `var result1 = p1.doTaxes(100000);` calls the closure, the variable `result1` will have the value 4500. Remove these important parentheses, and the value of `result1` is not the tax amount, but the the code of the closure itself--the invocation of the closure is not happening. 
 
-The following code fragment (see the file closure2.js) is yet another example of returning the closure that remembers its context.
+The following code fragment (see _closure2.js_) is yet another example of returning the closure that remembers its context.
 
 [source, javascript]
 ----
@@ -1280,18 +1280,18 @@ var yourTaxIs = doTaxes(10000);          // <3>
 console.log("Your tax is " + yourTaxIs);  // <4>
 ----
 
-<1> When the function prepareTaxes is called, it immediately hits the `return` statement and returns the code of the closure to the caller.
+<1> When the function _prepareTaxes_ is called, it immediately hits the `return` statement and returns the code of the closure to the caller.
 <2> After this line is executed, the variable `doTaxes` has the code of the closure, which remembers that `studentDeductionAmount` is equal to 300.
-<3> This is actual invocation of the closure 	
-<4> the console output is "your tax is 200"
+<3> This is the actual invocation of the closure. 	
+<4> The console output is "your tax is 200."
 
-First, the closure is returned to the caller of `prepareTaxes()`, and when the closure will be invoked it'll remember the values defined in its outer context. After looking at this code you may say that there is nothing declared in the closure's outside context! There is - by the time when the closure is created the value of the `studentDeductionAmount` will be known.	
+First, the closure is returned to the caller of `prepareTaxes()`, and when the closure is invoked, it remembers the values defined in its outer context. After looking at this code, you might say that nothing is declared in the closure's outside context! There is--by the time the closure is created, the value of `studentDeductionAmount` will be known.	
 
-TIP: Check the quality of your code with the help of the JavaScript code quality tools like http://www.jslint.com/[JSLint] or http://www.jshint.com/[JSHint]. 
+TIP: Check the quality of your code with the help of JavaScript code-quality tools such as http://www.jslint.com/[JSLint] or http://www.jshint.com/[JSHint]. 
 
-==== Closures as callbacks	
+==== Closures as Callbacks	
 
-Let's revisit the code from the section Callbacks above. That code has shown how to pass an arbitrary function to another one and invoke it there using `call()`. But if that version of the function `taxHandler` was not aware of the context it was created in, the version below will. If in classical object-oriented languages you'd need to pass a method that knows about it's context, you'd need to create an instance of an object that contains the method and the required object-level properties, and then you'd be passing this wrapper-object to another object for processing. But since the closure remembers its context anyway, we can just pass a closure as an object. Compare the code below (see the file callbackWithClosure.js) with the code from the Callbacks section.
+Let's revisit the code from the previous section. That code shows how to pass an arbitrary function to another one and invoke it there by using `call()`. But if that version of the function `taxHandler` is not aware of the context in which it was created, the following version is. If in classical object-oriented languages you'd need to pass a method that knows about its context, you create an instance of an object that contains the method and the required object-level properties, and then you pass this wrapper-object to another object for processing. But because the closure remembers its context anyway, we can just pass a closure as an object. Compare the following code (see _callbackWithClosure.js_) with the code from the section <<callbacks>>.
 
 [source, javascript]
 ----
