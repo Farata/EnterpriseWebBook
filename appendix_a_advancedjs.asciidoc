@@ -826,7 +826,7 @@ But this doesn't sound right, does it? The problem is that in JavaScript, the co
 ECMAScript 5 introduced a restricted version of JavaScript called _strict mode_, which among other things places stricter requirements to variable declarations and scope identification. Adding +use strict+ as the first statement of the method `doTax()` will make the context _undefined_, and it will print the error "this is undefined" and not 300. You can read about strict mode at http://mzl.la/N4z1QI[Mozilla's developers site]. 
 ====
 
-Let's make a slight change to this example and take to control what `this` represents. When the object `myTaxObject` was instantiated its own `this` reference was created. The following code fragment stores this reference in  additional variable `thisOfMyTaxObject` changes the game and the expression `thisOfMyTaxObject.taxDeduction` evaluates to 500. 
+Let's make a slight change to this example to control what `this` represents. When the object `myTaxObject` was instantiated, its own `this` reference was created. The following code fragment stores the reference to +this+ in an additional variable. `thisOfMyTaxObject` changes the game, and the expression `thisOfMyTaxObject.taxDeduction` evaluates to 500. 
 
 [source, javascript]
 ----
@@ -851,7 +851,7 @@ var myTaxObject = {
 myTaxObject.doTaxes();  //invoking method doTaxes 
 ----
 
-You'll see a different way of running a function in the context of the specified object using special functions `call()` and `apply()`. But for now consider one more attempt to invoke `mafiaSpecial()`shown in the following example that uses `this.mafiaSpecial()` notation.
+You'll see a different way of running a function in the context of the specified object, using special functions `call()` and `apply()`. But for now, consider one more attempt to invoke `mafiaSpecial()` shown in the following example that uses `this.mafiaSpecial()` notation.
 
 [source, javascript]
 ----
@@ -875,11 +875,11 @@ var myTaxObject = {
 myTaxObject.doTaxes();  //invoking method doTaxes 
 ---- 
 
-Run the above code and it'll give you the error "TypeError: this.mafiaSpecial is not a function" and rightly so. Take a closer look at the object `myTaxObject` represented by the variable `this`. The `myTaxObject` has only two properties: `taxDeduction` and `doTaxes`. The function `mafiaSpecial` is hidden inside the method `doTaxes` and can't be accessed via `this`.
+Run this code and you'll see the error "TypeError: this.mafiaSpecial is not a function" and rightly so. Take a closer look at the object `myTaxObject` represented by the variable `this`. The `myTaxObject` has only two properties: `taxDeduction` and `doTaxes`. The function `mafiaSpecial` is hidden inside the method `doTaxes` and can't be accessed via `this`.
 
-After learning how to hide a a function inside an object, let's see how to do something quite opposite -  allowing an external method to run inside the context of an object.
+After learning how to hide a a function inside an object, let's see how to do something quite the opposite: allowing an external method to run inside the context of an object.
 
-[[c]]
+[[call_and_apply]]
 ==== Call and Apply
 
 Visualize the International Space Station, and add to the picture an image of a approaching space shuttle. After attaching to the docking bay of the station the shuttle's crew performs some functions on the station (a.k.a. object) and then flies to another object or back to Earth. What it has to do with JavaScript? It can serve as an analogy for creating a JavaScript function that can operate in the scope of any arbitrary object. For this purpose JavaScript offers two special functions: `call()` or `apply()`. Both `call()` and `apply()` can invoke any function on any object. The only difference between them is that `apply()` passes  parameters to a function as an array, while `call()` uses a comma-separated list.
