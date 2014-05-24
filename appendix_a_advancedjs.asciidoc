@@ -578,9 +578,9 @@ console.log(emp);      // <3>
 <2>	Instante Employee.
 <3> Print the object referred by `emp` to output [object Object]. It happens because each object has a method `toString()`, and if you want it to output useful information, override it. You'll see how to do this later in this section.
 
-WARNING: The preceding code results in code duplication, because the object referenced by the variable `emp` will have a pair of `name` and a pair of `title` properties. You'll see how to avoid such duplication a bit later, in the section <<MMMMMMM>>. 
+WARNING: The preceding code results in code duplication, because the object referenced by the variable `emp` will have a pair of `name` and a pair of `title` properties. You'll see how to avoid such duplication a bit later, in the section <<avoiding_declaration_redundancy>>. 
 
-The property `prototype` exists on constructor functions. After creating specific instances of such objects you may see that these instances have another property called `proto`. At the time of this writing this property is not a standard yet and won't be supported in some older browsers, bit ECMAScript 6 will make it official. To illustrate the difference between `prototype` and `proto` let's add the following piece of code to the previous code sample:
+The property `prototype` exists on constructor functions. After creating specific instances of such objects, you might see that these instances have another property called `proto`. At the time of this writing, this property is not a standard yet and won't be supported in some older browsers, but ECMAScript 6 will make it official. To illustrate the difference between `prototype` and `proto`, let's add the following piece of code to the previous code sample:
 
 [source, javascript]
 ----
@@ -596,27 +596,28 @@ var emp2=new Employee("Joe", "Father");
 
 emp2.__proto__=p;               // <2> 
 
-console.log("The number of Employee's dependents " + emp2.dependents);          // <3>
+console.log("The number of Employee's dependents " + emp2.dependents);   // <3>
 
 ----
 
-<1> Creating an instance of `Person` and adding an extra property dependents just for this instance
+<1> Create an instance of `Person` and add an extra property, +dependents+, just for this instance.
 
-<2> Assigning this instance to the `__proto__` property of one instance
+<2> Assign this instance to the `__proto__` property of one instance.
 
 <3> The code will properly print 1 as a number of dependents of the `Employee` instance represented by the variable `emp2`.  The variable `emp` from the previous code snippet won't have the property `dependents`.
 
-To try it hands-on, open the file WhoIsYourDaddy.html (it's included in book code samples). Just for a change, this time we'll use Google Chrome Developer Tools by opening the browser's menu View | Developer | Developer Tools. Select the tab Sources and expand the panel on the left to select the file WhoIsYourDaddy.js. Set the breakpoint at the last line of the JavaScript, refresh the Web page content, and add the watch expressions (hit the + sign on top right) for the variables `p`, `emp`, and `emp2`. When the JavaScript code engine runs into `emp2.dependents` it tries to find this property in property on the `Employee` object. If not found, the engine checks all the objects in the prototypal chain (in our case it'll find it in the object `p`) all the way up to the `Object` if need be. Examine the values of these variable shown on <<FIG2-13>>. 
+For a hands-on demonstration, open the file _WhoIsYourDaddy.html_ (included in book code samples). Just for a change, this time we'll use Google Chrome Developer Tools by opening the browser's menu and choosing View->Developer->Developer Tools. Select the Sources tab and expand the panel on the left to select the file _WhoIsYourDaddy.js_. Set the breakpoint at the last line of the JavaScript, refresh the web page content, and add the watch expressions (click the + sign at the upper right) for the variables `p`, `emp`, and `emp2`. When the JavaScript code engine runs into `emp2.dependents`, it tries to find this property on the `Employee` object. If not found, the engine checks all the objects in the prototypal chain (in our case, it will find it in the object `p`) all the way up to the `Object`, if need be. Examine the values of the variable shown in <<FIG2-13>>. 
 
-TIP: If your program need to work only with those properties that are defined on the specific object (not in its ancestors in the prototyal chain) use  the method https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty[`hasOwnProperty()`]. 
+TIP: If your program needs to work only with those properties that are defined on a specific object (not in its ancestors in the prototyal chain), use the method https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty[`hasOwnProperty()`]. 
 
 [[FIG2-13]]
 .The instance-specific `__proto__` variable  
 image::images/ewdv_aa11.png[]  
 
-Please note the difference in the content of the variables `__proto__` of the instances represented by `emp` and `emp2`. These two employees are inherited from two __different__ objects `Person`. Isn't it scary? Not really.
+Note the difference in the content of the variables `__proto__` of the instances represented by `emp` and `emp2`. These two employees are inherited from two __different__ objects `Person`. Isn't it scary? Not really.
 
 
+[[avoiding_declaration_redundancy]]
 ==== Avoiding Declaration Redundancy
 
 Prototypical inheritance allows you to inherit one object from another, but it can lead to issues of redundancy and code duplication. If you take a closer look at the screenshot from <<FIG2-13>> you'll see that the `Person` and `Employee` objects have redundant properties `name` and `title`. We'll deal with this redundancy in the section titled "Call and Apply". But first let's introduce and cure the redundancy in method declarations when the prototypal inheritance is used.
