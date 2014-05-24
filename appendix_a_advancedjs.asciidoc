@@ -722,7 +722,7 @@ So, if you need to declare a method on the object that will play a role of the a
 
 [NOTE]
 ====
-All modern Web browsers support the function `Object.create()`, which creates a new object based on another prototype object creates a new object and sets that new object's prototype to be the object passed in. For example, `var objectB=Object.create(objectA);`.  What if you must support an older browser and need such "create by example" functionality? Of course, you can always create a custom arbitrarily named function with the similar functionality as the latest implementation of `Object.create()`. But the future-proof approach is to create the missing methods with the same signatures and on the same objects as the latest ECMAScript specification prescribes. In case of `Object.create()` you can use the implementation http://javascript.crockford.com/prototypal.html[offered by Douglas Crockford]:
+All modern web browsers support the function `Object.create()`, which creates a new object based on another prototype objectand sets that new object's prototype to be the object passed in--for example, `var objectB=Object.create(objectA);`.  What if you must support an older browser and need this "create by example" functionality? Of course, you can always create a custom, arbitrarily named function with similar functionality as the latest implementation of `Object.create()`. But the future-proof approach is to create the missing methods with the same signatures and on the same objects as the latest ECMAScript specification prescribes. In the case of `Object.create()`, you can use the implementation http://javascript.crockford.com/prototypal.html[offered by Douglas Crockford]:
 
 [source, javascript]
 ----
@@ -736,15 +736,15 @@ if (typeof Object.create !== 'function') {
 newObject = Object.create(oldObject);
 ----
 
-Such approach of custom implementation of missing pieces according to the latest ECMAScript specifications or W3C drafts is known as _polyfills_. People who can't wait till the browser vendors will implement the newest functionality create cross-browser polyfills and some of them submit their source code to the public domain. You can find a number of polyfills in the git repository of the https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills[Modernizr project]. The Web site http://caniuse.com[http://caniuse.com/] contains the current information about browser's support of the latest HTML5, JavaScript, and CSS features.
+This approach of custom implementation of missing pieces according to the latest ECMAScript specifications or W3C drafts is known as _polyfills_. People who can't wait until browser vendors implement the newest functionality create their own cross-browser polyfills, and some of them submit their source code to the public domain. You can find a number of polyfills in the Git repository of the https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills[Modernizr project]. The Web site http://caniuse.com[http://caniuse.com/] contains the current information about browser's support of the latest HTML5, JavaScript, and CSS features.
 
 ====
 
-TIP: In the Ext JS chapter you'll see how this frameworks offers its own class system that supports inheritance.
+TIP: In <<developing_in_ext_js>>, you can see how this frameworks offers its own class system that supports inheritance.
 
-==== Method overriding
+==== Method Overriding
 
-Method overriding allows a subclass to replace (_override_) the functionality of a method defined in a superclass. Since JavaScript allows declaring methods on an object as well as on its prototype, overriding a method becomes really simple. The following code sample (see the file overriding.js) declares the method `addSubordinate()` on the prototype of the `Person` object, but then the object `p1` overrides this method.
+Method overriding allows a subclass to replace (_override_) the functionality of a method defined in a superclass. Since JavaScript allows declaring methods on an object as well as on its prototype, overriding a method becomes really simple. The following code sample (see the file _overriding.js_) declares the method `addSubordinate()` on the prototype of the `Person` object, but then the object `p1` overrides this method.
 
 [source, javascript]
 ----
@@ -774,7 +774,7 @@ var p1=new Person("Joe", "President");
     p1.addSubordinate(p2); 
 ----
 
-Running the above code prints only one line: "I'm in addSubordinate in object [object Object]". This proves that the method `addSubordinate()` on the prototype level is overridden. We can also improve this example by overriding the method `toString()` on the `Person` object. Just add the following fragment to the prior to instantiating `p1`.
+Running this code prints only one line: "I'm in addSubordinate in object [object Object]". This proves that the method `addSubordinate()` on the prototype level is overridden. We can also improve this example by overriding the method `toString()` on the `Person` object. Just add the following fragment prior to instantiating `p1`:
 
 [source, javascript]
 ----
@@ -783,12 +783,12 @@ Person.prototype.toString=function(){
 }
 ----
 
-Now the code prints "I'm in addSubordinate in object name:Joe, title:President". Overriding the method `toString()` on objects is a common practice as it gives a textual representation of your objects.
+Now the code prints "I'm in addSubordinate in object name:Joe, title:President." Overriding the method `toString()` on objects is a common practice, as it gives a textual representation of your objects.
 
 [[scope]]
-=== Scope or who's this?
+=== Scope, or Who's This?
 
-You are about to read one of the most confusing sections in this book. The confusion is caused by some inconsistencies in JavaScript design and implementations by various browsers. Do you know what will happen if you'll remove the keywords `this` from the `toString()` method  from previous section? You'll get an error - the variable `title` is not defined. Without the keyword `this` the JavaScript engine tries to find the variable `title` in the global namespace. Declaring and initializing the variable `title` outside of the `Person` declaration get rid of this error, but this is not what we want to do. Misunderstanding of the current scope can lead to difficult to debug errors.
+You are about to read one of the most confusing sections in this book. The confusion is caused by inconsistencies in JavaScript design and implementations by various browsers. Do you know what will happen if you remove the keyword `this` from the `toString()` method  in the previous section? You'll get an error: the variable `title` is not defined. Without the keyword `this`, the JavaScript engine tries to find the variable `title` in the global namespace. Declaring and initializing the variable `title` outside the `Person` declaration eliminates this error, but this is not what we want to do. Misunderstanding the current scope can lead to errors that are difficult to debug.
 
 CAUTION: Interestingly enough replacing `this.name` with `name` doesn't generate an error, but rather initializes the variable `name` with an empty string. Although `name` is not an officially reserved JavaScript keyword, there are articles in the blogosphere that don't recommend using the word `name` as a variable name. Keep http://www.javascripter.net/faq/reserved.htm[this list of reserved words] handy to avoid running into an unpredictable behavior.
 
