@@ -982,7 +982,7 @@ A variable scope depends on where it was declared. You already had a chance to s
 
 ===== Hoisting Variables
 
-The following code snippet will print 5 even though the variable b has been declared inside the if-statement. It's declaration has been hoisted to the top:
+The following code snippet will print 5, even though the variable +b+ has been declared inside the +if+ statement. Its declaration has been hoisted to the top:
 
 [source, javascript]
 ----
@@ -999,7 +999,7 @@ function test () {
 test();
 ----
 
-Let's make a slight change to the above code to separate the variable declaration and initialization. The following code has to `console.log(b)` statements. The first one will output `undefined` and the second will print 5 just as in the previous example.
+Let's make a slight change to this code to separate the variable declaration and initialization. The following code has two `console.log(b)` statements: the first one will output `undefined`, and the second will print 5, just as in the previous example.
 
 [source, javascript]
 ----
@@ -1020,11 +1020,11 @@ function test () {
 test();
 ----
 
-Due to hoisting, JavaScript doesn't complain when the first `console.log(b)` is invoked. It knows about the variable `b`, but its value is `undefined` just yet. By the time the second `console.log(b)` is called, the variable b was initialized with the value of 5. Just remember that hoisting just applies to variable declaration and doesn't interferes with your code when it comes to initialization.
+Due to hoisting, JavaScript doesn't complain when the first `console.log(b)` is invoked. It knows about the variable `b`, but its value is `undefined` just yet. By the time the second `console.log(b)` is called, the variable +b+ was initialized with the value of 5. Just remember that hoisting applies only to variable declarations and doesn't interferes with your code when it comes to initialization.
 
-===== Hoisting Functions
+===== Hoisting functions
 
-JavaScript function declarations are hoisted too, and this is illustrated in the following code sample.
+You can hoist JavaScript function declarations, too, as is illustrated in the following code sample:
 
 [source, javascript]
 ----
@@ -1047,7 +1047,7 @@ function test () {
 test();
 ----
 
-This code will print 5. We can call the function printB() here because its declaration was hoisted to the top. But the situation changes if instead of function declaration we'll use the function expression. The following code will give you an error "PrintB is not a function".  
+This code will print 5. We can call the function +printB()+ here because its declaration was hoisted to the top. But the situation changes if instead of a function declaration we use a function expression. The following code will give you the error "PrintB is not a function":  
 
 [source, javascript]
 ----
@@ -1071,16 +1071,16 @@ function test () {
 test();
 ----
 
-Notice that it the error doesn't complain about `printB` being undefined cause the variable declaration was hoisted, but since the function expression wasn't the JavaScript engine doesn't know yet that `printB` will become a function really soon. Anyway, moving the invocation line `printB()` to the bottom of the function `test()` cures this issue. 
+Notice that the error doesn't complain about `printB` being undefined, because the variable declaration was hoisted, but because the function expression wasn't, the JavaScript engine doesn't know yet that `printB` will become a function rather soon. Anyway, moving the invocation line `printB()` to the bottom of the function `test()` cures this issue. 
 
-TIP: Function expressions are not being hoisted, but the variables they are assigned to (if any) are being hoisted.
+TIP: Function expressions are not hoisted, but the variables to which they are assigned (if any) are hoisted.
 
 
-==== Function properties
+==== Function Properties
 
-Functions as any other objects can have properties. You can attach any properties to a `Function` object and their values can be used by all instances of this object. Static variables in programming languages with the classical inheritance is the closest analogy to function properties in JavaScript. 
+Functions, like any other objects, can have properties. You can attach any properties to a `Function` object, and their values can be used by all instances of this object. Static variables in programming languages with classical inheritance is the closest analogy to function properties in JavaScript. 
 
-Let's consider an example of a constructor function `Tax`. An accounting program can create multiple instances if `Tax` - one per person. Say this program will be used in a Florida neighborhood with predominantly Spanish speaking people. The following code (see the file FunctionProperties.js) illustrates the case when the method `doTax()` can be called with or without parameters. 
+Let's consider an example of a constructor function `Tax`. Let's assume that we have an accounting program which can create multiple instances if `Tax`--one per person. Suppose that this program will be used in a Florida neighborhood with predominantly Spanish-speaking people. The following code (see the file _FunctionProperties.js_) illustrates the case in which the method `doTax()` can be called with or without parameters. 
 
 [source, javascript]
 ----
@@ -1090,10 +1090,13 @@ function Tax(income, dependents){
          
     this.doTax = function calcTax(state, language){
            if(!(state && language)){     // <1>
-              console.log("Income: " + this.income + " Dependents: "+ this.dependents
-              + " State: " + Tax.defaults.state + " language:" + Tax.defaults.language);
+              console.log("Income: " + this.income + " Dependents: "+ 
+                                                       this.dependents
+              + " State: " + Tax.defaults.state + " language:" + 
+                                                    Tax.defaults.language);
            } else{                       // <2>
-              console.log("Income: " + this.income + " Dependents: "+ this.dependents
+              console.log("Income: " + this.income + " Dependents: "+ 
+                                                       this.dependents
               + " State: " + state + " language:" + language);
            }
     }
@@ -1112,14 +1115,14 @@ var t2 = new Tax(68000, 1);
     
 ----
 
-<1> No state and language were given to the method `doTax()`
-<2> The state and language were provided as `doTax()` parameters
+<1> No state or language were given to the method `doTax()`.
+<2> The state and language were provided as `doTax()` parameters.
 <3> Assigning the object with two properties as a `defaults` property on `Tax`. The property `default` is not instance specific, which makes it static.
-<4> Invoking `doTax()` without parameters - use `defaults`
-<5>	Invoking `doTax()` with parameters
+<4> Invoking `doTax()` without parameters--use `defaults`.
+<5>	Invoking `doTax()` with parameters.
 
 
-This program will produce the following output: 
+This program produces the following output: 
 
 [source, javascript]
 ----
@@ -1127,30 +1130,30 @@ Income: 50000 Dependents: 3 State: FL language:Spanish
 Income: 68000 Dependents: 1 State: NY language:English
 ----
 
-You can add as many properties to the constructor function as needed. For example, to count the number of instances of the `Tax` object just add one more property `Tax.counter=0;`. Now add to the `Tax` function something like `console.log(Tax.counter++);` and you'll see that the counter increments on each instance creation. 
+You can add as many properties to the constructor function as needed. For example, to count the number of instances of the `Tax` object, just add one more property `Tax.counter=0;`. Now add to the `Tax` function something like `console.log(Tax.counter++);` and you'll see that the counter increments on each instance creation. 
 
 TIP: If multiple instances of a function object need to access certain HTML elements of the DOM,  add references to these elements as function properties so objects can reuse them instead of traversing the DOM (it's slow) from each instance. 
 
 [[closures]]
-=== Closures: A Formal Definition Attempt
+=== Closures
 
-A _closure_ is one of those terms that are easier explained by examples. Closures have formal definitions, which are not very helpful for the first timers. Here's the http://en.wikipedia.org/wiki/Closure_(computer_science)[definiton of a closure from Wikipedia]: 
+A _closure_ is one of those terms that is easier explained by examples. Formal definitions are not very helpful to first-timers. Here's the http://en.wikipedia.org/wiki/Closure_(computer_science)[definiton of a closure from Wikipedia]: 
 
 _"In programming languages, a closure (also lexical closure or function closure) is a function or reference to a function together with a referencing environment—a table storing a reference to each of the non-local variables (also called free variables or upvalues) of that function. A closure—unlike a plain function pointer—allows a function to access those non-local variables even when invoked outside its immediate lexical scope."_
 
-It's not a very helpful definition, is it? Let's try to give a better one. Imagine a function that contains a private variable, and a nested function. Is it possible to invoke the nested function from the outside of the outer one? And if it's possible, what this inner function knows about its surroundings? 
+It's not a very helpful definition, is it? Let's try to give a better one. Imagine a function that contains a private variable, and a nested function. Is it possible to invoke the nested function from outside the outer one? And if it's possible, what does this inner function know about its surroundings? 
 
-Larry Ullman, gives the following definition in his book "Modern Java Script": "Closure is a function call with memory". We can offer you our version of what a closure is: "Closure is a function call with strings attached". 
+Larry Ullman gives the following definition in _Modern Java Script_ (Peachpit Press): "Closure is a function call with memory." We can offer you our version of what a closure is: A closure is a function call with strings attached. 
 
-==== Why do we Need Closures? 
+==== Why Do We Need Closures? 
 
-In classical object-oriented languages you create an object with a certain state and behavior and can pass if to a method of another object for further processing. In JavaScript you can pass even a function to some object's method for further processing. But what if a function also need to remember the state (the values of external variables) of the context where the function was defined?
+In classical object-oriented languages, you create an object with a certain state and behavior and can pass it to a method of another object for further processing. In JavaScript, you can pass even a function to an object's method for further processing. But what if a function also needs to remember the state (the values of external variables) of the context where the function was defined?
 
-Think of a closure as a function that remembers  state - it's just a special type of object that can be passed between objects and use certain variables that didn't seem to be defined in the function's code. But there existed in the context where the  the function was defined.
+Think of a closure as a function that remembers  state. It's just a special type of object that can be passed between objects and use certain variables that didn't seem to be defined in the function's code. But they existed in the context where the  the function was defined.
 
-===Closures by Example
+=== Closures by Example
 
-Now it's time for the explanation of these mysterious definitions, and we'll do it by example. Consider the following code (see closure1.js) that is yet another example of implementing the tax collection functionality.
+Now it's time to explain these mysterious definitions, and we'll do it by example. Consider the following code (see _closure1.js_) that is yet another example of implementing the tax collection functionality:
 
 [source, javascript]
 ----
@@ -1186,11 +1189,11 @@ doTaxes(100000, "Tony Soprano");
 
 mafiaSpecial();        // throws an error - this function is private
 ----
-First, a self-invoking function will create an anonymous instance of an object in the global scope. It contains a private variable `taxDeduction`, a public method `doTaxes()`, and a private method `mafiaSpecial()`. Just by the virtue of declaring `doTaxes` on `this` object, this method becomes exposed to the current scope, which is global in this example. 
+First, a self-invoking function creates an anonymous instance of an object in the global scope. It contains a private variable `taxDeduction`, a public method `doTaxes()`, and a private method `mafiaSpecial()`. Just by virtue of declaring `doTaxes` on `this` object, this method becomes exposed to the current scope, which is global in this example. 
 
-After that we call the method `doTaxes()` twice. Note that the function `doTaxes()` uses the variable `taxDeduction` that was never declared there. But when `doTaxes` was initially declared, the variable `taxDeduction` with a value of 500 was already there. So the internal function "remembers" the context (the neighborhood) where it was declared and can use it for its calculations.  
+After that, we call the method `doTaxes()` twice. Note that the function `doTaxes()` uses the variable `taxDeduction` that was never declared there. But when `doTaxes` was initially declared, the variable `taxDeduction` with a value of 500 was already there. So the internal function "remembers" the context (the neighborhood) where it was declared and can use it for its calculations.  
 
-The algorithm of tax calculations makes `doTaxes()` calls the function `mafiaSpecial()` if the customer's name is "Tony Soprano". The function `mafiaSpecial()` is not visible from outside, but for insiders like `doTaxes()` it's available. Here's what the above code example will print on the console:
+The algorithm of tax calculations makes `doTaxes()` call the function `mafiaSpecial()` if the customer's name is Tony Soprano. The function `mafiaSpecial()` is not visible from outside, but for insiders like `doTaxes()`, it's available. Here's what the preceding code example prints on the console:
 
 [source, html]
 ----
@@ -1199,21 +1202,21 @@ Dear Tony Soprano, your tax is 4000
 Uncaught ReferenceError: mafiaSpecial is not defined 
 ----
 
-The <<FIG2-18>> shows the screenshot taken when `doTaxes()` hit the breakpoint inside `doTaxes` - note the right panel that shows what's visible in the Closure scope.
+<<FIG2-18>> shows a screenshot taken when `doTaxes()` hit the breakpoint inside `doTaxes`. Note the right panel that shows what's visible in the Closure scope.
 
 [[FIG2-18]]
-.Closure view in Chrome's Developer Tools.
+.Closure view in Chrome Developer Tools
 image::images/ewdv_aa16.png[]
 
-TIP: JavaScript doesn't give you an explicit way to mark an variable as private. By using closures you can get the same level of data hiding that you get from private variables in other languages. In the example above the variable `taxDeduction` is local for the object enclosed in the outermost parentheses and can't be accessed from outside. But `taxDeduction` can be visible from the object's functions `doTaxws` and `mafiaSpecial`. 
+TIP: JavaScript doesn't give you an explicit way to mark a variable as private. By using closures, you can get the same level of data hiding that you get from private variables in other languages. In the preceding example, the variable `taxDeduction` is local for the object enclosed in the outermost parentheses and can't be accessed from outside. But `taxDeduction` can be visible from the object's functions `doTaxes` and `mafiaSpecial`. 
 
-<<FIG2-19>> gives yet another visual representation of our above code sample. The self-invoked anonymous function is shown as a cloud that exposes only one thing to the rest of the world: the closure `doTaxes`.
+<<FIG2-19>> gives yet another visual representation of our code sample. The self-invoked anonymous function is shown as a cloud that exposes only one thing to the rest of the world: the closure `doTaxes`.
 
 [[FIG2-19]]
-.Closure doTaxes
+.The closure doTaxes
 image::images/ewdv_aa17.png[]
 
-Let's consider a couple of more cases of returning a closure to the outside world so it can be invoked later. If the previous code sample was exposing the closure by using `this.taxes` notation, the next two examples will simply return the code of the closure using the `return` statement. The code below declares (see closure3.js) a constructor function `Person`, adds a function `doTaxes()` to its prototype, and finally creates two instances of the `Person` calling the method `doTaxes()` on each of them. 
+Let's consider a couple of more cases of returning a closure to the outside world so it can be invoked later. Whereas the previous code sample exposes the closure by using `this.taxes` notation, the next two examples simply return the code of the closure by using the `return` statement. The following code (see _closure3.js_) declares a constructor function `Person`, adds a function `doTaxes()` to its prototype, and then finally creates two instances of the `Person` calling the method `doTaxes()` on each of them. 
 
 [source, javascript]
 ----
