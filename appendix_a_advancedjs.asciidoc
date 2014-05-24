@@ -432,10 +432,10 @@ var p2= new Person("Roberts", "Julia");
 p1.marryMe(p2);
 ----
  
-This code uses the keyword `this` which refers to the object where the code will execute. If you are familiar with the meaning of `this` in Java or C#, it's similar, but not exactly the same, and we'll illustrate it in the section <<MMMMMM>>. The method `marryMe()` of one `Person` object takes an instance of another `Person` object and makes an interesting proposition: "Will you marry me, Julia". 
+This code uses the keyword `this` which refers to the object where the code will execute. If you are familiar with the meaning of `this` in Java or C#, it's similar, but not exactly the same, and we'll illustrate it in the section <<scope>>. The method `marryMe()` of one `Person` object takes an instance of another `Person` object and makes an interesting proposition: "Will you marry me, Julia?" 
 
-This time we won't run this code in the Firebug's console, but rather will include it in the HTML file.
-In WebStorm, create a new HTML file marryme.html. Modify it to include the JavaScript file marryme.js:
+This time we won't run this code in the Firebug console but rather will include it in the HTML file.
+In WebStorm, create a new HTML file, _marryme.html_. Modify it to include the JavaScript file _marryme.js_, as shown here:
 
 [source, html]
 ----
@@ -455,25 +455,25 @@ In WebStorm, create a new HTML file marryme.html. Modify it to include the JavaS
 
 === Debugging JavaScript in Firebug
 
-Right-click on the file marryme.html and select Open in Browser. In Firefox and you'll see it open a new Web page that reads "Making Proposals". Open the Firebug using the View menu of Firefox, refresh the page and switch to the Firebug's tab Script. You'll see the split panel with the JavaScript code from marryme.js on the left.    
+Right-click the file _marryme.html_ and choose Open in Browser. In Firefox, you'll see a new web page open called Making Proposals. Open Firebug by using the View menu, refresh the page and then switch to the Firebug Script tab. A split panel appears; the JavaScript code from _marryme.js_ is on the left, as shown in <<FIG2-8>>.    
 
 [[FIG2-8]]
 .Firebug's Script panel 
 image::images/ewdv_aa06.png[]
 
-Let's set a breakpoint inside the method `marryMe()` by clicking in the Firebug's gray area to the left of the line 7. You'll see a red circle that will reveal a yellow triangle as soon as your code execution will hit this line. Refresh the content of the browser to re-run the script with a breakpoint. Now the execution stopped at line 7, the right panel contains the runtime information about the objects and variables used by your program. 
+Let's set a breakpoint inside the method `marryMe()` by clicking in the gray area to the left of line 7. You'll see a red circle that will reveal a yellow triangle as soon as your code execution hits this line. Refresh the content of the browser to rerun the script with a breakpoint. This time, the execution stops at line 7, and the right panel contains the runtime information about the objects and variables used by your program (see <<FIG2-9>>). 
 
 [[FIG2-9]]
 .Firebug's Script panel at a breakpoint
 image::images/ewdv_aa07.png[]
 
-On the top of the left panel you'll see standard  debugger buttons with curved arrows (Step Into, Step Over, Step Out) as well as triangular button to continue code execution. The right panel depicts the information related to `this` and global `Window` objects. In <<FIG2-9>> `this` represents the instance of the +Person+ object represented by the variable +p1+ (Steven Smith). To see the content of the object, received by the method `marryMe()` you can add the watch variable by clicking on the text "New watch expression..." and entering `person` - the name of the parameter of `marryMe()`. <<FIG2-10>> shows the watch variable `person` (Julia Roberts) that was used during the invocation of the method `marryMe()`.
+At the top of the left panel, you'll see standard  debugger buttons with curved arrows (Step Into, Step Over, Step Out) as well as a triangular button to continue code execution. The right panel depicts the information related to `this` and global `Window` objects. In <<FIG2-9>>, `this` represents the instance of the +Person+ object represented by the variable +p1+ (Steven Smith). To see the content of the object received by the method `marryMe()` you can add a watch variable by clicking the text "New watch expression..." and entering `person`--the name of the parameter of `marryMe()`. <<FIG2-10>> shows the watch variable `person` (Julia Roberts) that was used during the invocation of the method `marryMe()`.
 
 [[FIG2-10]]
-.Firebug's Script panel at a breakpoint
+.Watching the +person+ variable in the debugger
 image::images/ewdv_aa08.png[]
 
-Now click on the Firebug's Net panel, which shows what goes over the network during communication between the Web browser and Web server. Figure 2-11 shows a screen shot of the Net panel where we clicked on the Headers tab for marryme.html and the Response tab of marryme.js. The code 200 for both files means that they arrived successfully to the browser. It also shows the IP address of the Web server they came from, their sizes, and plenty of other useful information.  Both Script and Net panels of Firebug or any other developers tools are your best friends of any Web developer.   
+Now click Firebug's Net panel, which shows what goes over the network during communication between the web browser and web server. <<FIG2-11>> shows a screenshot of the Net panel, in which we clicked the Headers tab for _marryme.html_ and the Response tab of _marryme.js_. The code 200 for both files means that they arrived successfully to the browser. It also shows the IP address of the web server they came from, their sizes, and plenty of other useful information. Both the Script and Net panels of Firebug, or any other developers tools, are the best friends of any web developer.   
 
 [[FIG2-11]]
 .Firebug's Net panel
@@ -784,6 +784,7 @@ Person.prototype.toString=function(){
 
 Now the code prints "I'm in addSubordinate in object name:Joe, title:President". Overriding the method `toString()` on objects is a common practice as it gives a textual representation of your objects.
 
+[[scope]]
 === Scope or who's this?
 
 You are about to read one of the most confusing sections in this book. The confusion is caused by some inconsistencies in JavaScript design and implementations by various browsers. Do you know what will happen if you'll remove the keywords `this` from the `toString()` method  from previous section? You'll get an error - the variable `title` is not defined. Without the keyword `this` the JavaScript engine tries to find the variable `title` in the global namespace. Declaring and initializing the variable `title` outside of the `Person` declaration get rid of this error, but this is not what we want to do. Misunderstanding of the current scope can lead to difficult to debug errors.
