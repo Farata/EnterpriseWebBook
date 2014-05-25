@@ -890,7 +890,7 @@ TIP: You can browse the data from your IndexedDB database in Chrome Developer To
 
 ===== Retrieving the data 
 
-IndexedDB doesn't support SQL. You'll be using cursors to iterate through the object store. First, you open the transaction. Then you open invoke `openCursor()` on the object store. While opening the cursor you can specify optional parameters like the range of object keys you'd like to iterate and the direction of the cursor movement: `IDBCursor.PREV` or `IDBCursor.NEXT`. If none of the parameters is specified, the cursor will iterate all objects in the store in the ascending order. The following code snippet iterates through all Visit objects printing just contact names.
+IndexedDB doesn't support SQL. You'll be using cursors to iterate through the object store. First, you open the transaction. Then, you invoke `openCursor()` on the object store. While opening the cursor, you can specify optional parameters like the range of object keys you'd like to iterate and the direction of the cursor movement: `IDBCursor.PREV` or `IDBCursor.NEXT`. If none of the parameters is specified, the cursor will iterate all objects in the store in ascending order. The following code snippet iterates through all +Visit+ objects, printing just contact names.
 
 [source, javascript]
 ----
@@ -905,14 +905,14 @@ visitsStore.openCursor().onsuccess == function(event){
     }
 }
 ----
-If you want to iterate through a limited key range of objects you can specify the from-to values. The next line creates a cursor for iterating the first five objects from the store:
+If you want to iterate through a limited key range of objects, you can specify the from-to values. The next line creates a cursor for iterating the first five objects from the store:
 
 [source, javascript]
 ----
 var visitsCursor == visitsStore.openCursor(IDBKeyRange.bound(1, 5));
 ----
 
-You can also create a cursor on indexes - this allows working with sorted sets of objects. In one of the earlier examples we've created an index on `officeID`. Now we can get a reference to this index and create a cursor on the specified range of sorted office IDs as in the following code snippet:
+You can also create a cursor on indexes. This makes it possible to work with sorted sets of objects. In one of the earlier examples we created an index on `officeID`. Now we can get a reference to this index and create a cursor on the specified range of sorted office IDs, as in the following code snippet:
 
 [source, javascript]
 ----
@@ -925,14 +925,14 @@ officeIdIndex.openCursor().onsuccess == function(event){
 }
 ----
 
-To limit the range of offices to iterate through, you could open the cursor on the `officeIdIndex` differently. Say you need to create a filter to iterate the offices with the numbers between 123 and 250. This is how you can open such a cursor: 
+To limit the range of offices to iterate through, you could open the cursor on the `officeIdIndex` differently. Suppose that you need to create a filter to iterate the offices with numbers between 123 and 250. This is how you can open such a cursor: 
 
 [source, javascript]
 ----
 officeIdIndex.openCursor(IDBKeyRange.bound(123, 250, false, true);
 ----
 
-The `false` in the third argument of `bound()` means that 123 should be included in the range, and the `true` in the fourth parameter excludes the object with `officeID=250` from the range. The methods `lowerbound()` and `upperbound()` are other variations of the method `bound()` - consult the http://www.w3.org/TR/IndexedDB/#dfn-key-range[online documentation] for details.
+The `false` in the third argument of `bound()` means that 123 should be included in the range, and the `true` in the fourth parameter excludes the object with `officeID=250` from the range. The methods `lowerbound()` and `upperbound()` are other variations of the method `bound()`--consult the http://www.w3.org/TR/IndexedDB/#dfn-key-range[online documentation] for details.
 
 If you need to fetch just one specific record, restrict the selected range to only one value using the method `only()`:
 
