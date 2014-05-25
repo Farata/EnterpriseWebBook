@@ -699,11 +699,11 @@ http://www.w3.org/TR/IndexedDB/[Indexed Database API] (a.k.a. IndexedDB) is a so
 
 Using IndexedDB, you can access data asynchronously, so UI freezes won't occur while accessing large objects on disk. You make a request to the database and define the event handlers that should process the errors or the result when ready. IndexedDB uses DOM events for all notifications. Success events don't bubble, whereas error events do.
 
-The users will have a feeling that the application is pretty responsive, which wouldn't be the case if you'll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy. 
+Users will have the feeling that the application is responsive, which wouldn't be the case if you were saving several megabytes of data with the Web Storage API. Similar to Web Storage, access to the IndexedDB databases is regulated by the same origin policy. 
 
-TIP: In the future, Web browsers may implement https://developer.mozilla.org/en-US/docs/IndexedDB/Synchronous_API[synchronous IndexedDB API] to be used inside Web workers.
+TIP: In the future, web browsers might implement https://developer.mozilla.org/en-US/docs/IndexedDB/Synchronous_API[synchronous IndexedDB API] to be used inside web workers.
 
-Since not every browser supports IndexedDB yet, you can use Modernizr (see Chapter 1) to detect if your browsers supports it. If it does, you still may need to account for the fact that browser vendors name the IndexedDB related object differently. Hence to be on the safe side, at the top of your script include the statements to account for the prefixed vendor-specific implementations of `indexedDB` and related objects:
+Because not every browser supports IndexedDB yet, you can use Modernizr (see <<mocking_up_the_app>>) to detect whether your browser supports it. If it does, you still might need to account for the fact that browser vendors name the IndexedDB-related object differently. To be on the safe side, at the top of your script include statements to account for the prefixed vendor-specific implementations of `indexedDB` and related objects:
 
 [source, javascript]
 ----
@@ -714,21 +714,22 @@ medicalDB.indexedDB == window.indexedDB || window.mozIndexedDB
 if (!window.indexedDB){
    // this browser doesn't support IndexedDB
 } else {
-  medicalDB.IDBTransaction == window.IDBTransaction || window.webkitIDBTransaction;
+  medicalDB.IDBTransaction == window.IDBTransaction || 
+                              window.webkitIDBTransaction;
   medicalDB.IDBCursor == window.IDBCursor || window.webkitIDBCursor;
   medicalDB.IDBKeyRange == window.IDBKeyRange || window.webkitIDBKeyRange;
 }
 ----
 
-In the above code snippet the https://developer.mozilla.org/en-US/docs/Web/API/IDBKeyRange[`IDBKeyRange`] is an object that allows to restrict the range for the continuous keys while iterating through the objects. https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction[`IDBTransaction`] is an implementation of transaction support. The https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor[`IDBCursor`] is an object that represents a cursor for traversing over multiple objects in the database.
+In this code snippet, the https://developer.mozilla.org/en-US/docs/Web/API/IDBKeyRange[`IDBKeyRange`] is an object that allows you to restrict the range for the continuous keys while iterating through the objects. https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction[`IDBTransaction`] is an implementation of transaction support. https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor[`IDBCursor`] is an object that represents a cursor for traversing over multiple objects in the database.
 
-IndexedDB doesn't require you to define a formal structure of your stored objects - any JavaScript object can be stored there.  Not having a formal definition of a database scheme is an advantage comparing to the relational databases where you can't store the data until the structure of the tables is defined.
+IndexedDB doesn't require you to define a formal structure of your stored objects; any JavaScript object can be stored there. Not having a formal definition of a database scheme is an advantage compared to relational databases, where you can't store data until the structure of the tables is defined.
 
-Your Web application can have one or more databases, and each of them can contain one or more _object stores_.  Each of the object stores will contain similar objects, e.g. one store is for salesman's visits, while another stores upcoming promotions.
+Your web application can have one or more databases, and each can contain one or more _object stores_.  Each object store will contain similar objects (for example, one stores the salesperson's visits, whereas another stores upcoming promotions).
 
-Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide if you want to maintain the value in this property manually, or use the the `autoIncrement` option where the values to this property will be assigned automatically. Coming back to our Visits example, you can either maintain the unique values of the `officeId` on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as surrogate keys never decreases, and starts with the value of 1 in each object store.
+Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide whether you want to maintain the value in this property manually, or use the the `autoIncrement` option, where the values of this property will be assigned automatically. Coming back to our +Visits+ example, you can either maintain the unique values of the `officeId` on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as a surrogate keys never decreases, and starts with the value of 1 in each object store.
 
-Similarly to relational databases you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the Visits store, create an index on the property `contactPerson` of the `Visit` objects. But if in relational databases creation of indexes is done for performance reasons, with IndexedDB you can't run a query unless the index on the relevant property exists. The following code sample shows how to connect to the existing or create a new object store `Visits` in a database called Medical_DB.   
+As with relational databases, you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the +Visits+ store, create an index on the property `contactPerson` of the `Visit` objects. Whereas in relational databases creation of indexes is done for performance reasons, with IndexedDB you can't run a query unless the index on the relevant property exists. The following code sample shows how to connect to an existing object or create a new object store `Visits` in a database called Medical_DB.   
 
 [source, javascript]
 ----
@@ -750,7 +751,7 @@ request.onupgradeneeded == function(event){  // <4>
 };
 ----
 
-<1> The browser invokes the method `open()` asynchronously requesting to establish the connection with the database. It doesn't wait for the  completion of this request, and the user can continue working with the Web page without any delays or interruptions. The method `open()` returns an instance of the https://developer.mozilla.org/en-US/docs/Web/API/IDBRequest[`IDBRequest`] object.
+<1> The browser invokes the method `open()`, asynchronously requesting to establish the connection with the database. It doesn't wait for the  completion of this request, and the user can continue working with the web page without any delays or interruptions. The method `open()` returns an instance of the https://developer.mozilla.org/en-US/docs/Web/API/IDBRequest[`IDBRequest`] object.
 
 <2> When the connection is successfully obtained, the `onsuccess` function handler will be invoked. The result is available through the `IDBRequest.result` property.  
 
