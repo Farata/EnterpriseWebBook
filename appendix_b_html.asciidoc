@@ -1182,28 +1182,28 @@ The `pushState()` takes three arguments (the values from the first two might be 
 
 <2> Prepare the custom state object to be used in server-side requests. The information about _who we are_ depends on the location ID. 
 
-<3> Call `pushState()` to remember the customer ID, and add the suffix _/who_we_are_ to serve as a path to the server-side RESTful request.
+<3> Call `pushState()` to remember the customer ID, and add the suffix _/who_we_are_ to serve as a path to the server-side RESTful request. The page title is empty; the History API currently ignores it.
 
 <4> Prepare the custom state object to be used in server side requests. The information about _what we do_ depends on customer id. 
 
-<5> Call `pushState()` to remember the customer ID, and add the suffix _/what_we_do_ will serve as a path to the server-side RESTful request. The page title is empty; the History API currently ignores it.
+<5> Call `pushState()` to remember the customer ID, and add the suffix _/what_we_do_ to serve as a path to the server-side RESTful request. The page title is empty; the History API currently ignores it. The page title is empty; the History API currently ignores it.
 
-This above sample is a simplified example and would require more code to properly form the server request, but our goal here is just to clearly illustrate the use of History API.
+This preceding sample is a simplified example and would require more code to properly form the server request, but our goal here is just to clearly illustrate the use of the History API.
 
-<<FIG1-11>> depicts the view after the user clicked on the button Who We Are. The URL now looks as http://127.0.0.1:8020/HistoryAPI/who_we_are, but keep in mind that if you try to reload the page while this URL is shown, the browser will give you a Not Found error and rightly so. There is no resource that represents the URL that ends with _who_we_are_ - it's just the name of the view in the browser's history.
+<<FIG1-11>> depicts the view after the user clicks the Who We Are button. The URL now shows http://127.0.0.1:8020/HistoryAPI/who_we_are, but keep in mind that if you try to reload the page while this URL is shown, the browser will give you a Not Found error, and rightly so. There is no resource that represents the URL that ends with _who_we_are_--it's just the name of the view in the browser's history.
 
 [[FIG1-11]]
 .Testing pushState()
 image::images/ewdv_ab08.png[]
 
-Using the `replaceState()` you can technically "change the history". We are talking about the browser's history, of course.
+Using `replaceState()`, you can technically change history. We are talking about the browser's history, of course.
 
 
 ==== Processing the popstate Event
 
-But changing the URL when the user clicks on the Back or Forward button is just the half of the job to be done. The content of the page has to be refreshed accordingly. The browser dispatches the event `window.popstate` whenever the browser's navigation history changes either on initial page load, as a result of clicking on the Back/Forward buttons, or by invoking `history.back()` or `history.forward()`. 
+But changing the URL when the user clicks the Back or Forward button is just half of the job to be done. The content of the page has to be refreshed, accordingly. The browser dispatches the event `window.popstate` whenever the browser's navigation history changes either on initial page load, as a result of clicking the Back/Forward buttons, or by invoking `history.back()` or `history.forward()`. 
 
-Your code has to include an event handler function that will  perform the actions that must be dome whenever the application gets into the state represented by the current suffix, e.g. make a server request to retrieve the data associated with the state _who_we_are_. The `popstate` event will contain a copy of the history's entry state object. Let's add the following event listener to the `<script>` part of the code sample from previous section:
+Your code has to include an event handler function that will  perform the actions that must be done whenever the application gets into the state represented by the current suffix (for example, make a server request to retrieve the data associated with the state _who_we_are_). The `popstate` event will contain a copy of the history's entry state object. Let's add the following event listener to the `<script>` part of the code sample from the previous section:
 
 [source, javascript]
 ----
@@ -1212,18 +1212,18 @@ addEventListener('popstate',function (evt){
 });
 ----	  
 
-<<FIG1-12>> depicts the view of the Chrome Developers Tool when the debugger stopped in the listener of the `popstate` event after the user clicked on the buttons Who We Are, then What We Do, and then the browser's button Back. On the right hand side you can see that the event object contains the `evt.state` object with the right values of `locID` and `uri`. In the real world scenario these values could have been used in, say AJAX call to the server to recreate the view for the location ID 123.
+<<FIG1-12>> depicts the view of the Chrome Developer Tools when the debugger stops in the listener of the `popstate` event after the user clicks the Who We Are and then the What We Do buttons, and then the browser's Back button. On the righthand side, you can see that the event object contains the `evt.state` object with the right values of `locID` and `uri`. In real-world scenarios these values could have been used in, say, an Ajax call to the server to re-create the view for the location ID 123.
 
 [[FIG1-12]]
 .Monitoring popState with Chrome Developers Tool
 image::images/ewdv_ab09.png[]
 
-TIP: If you'll run into a browser that doesn't support HTML5 History API, consider using the https://github.com/browserstate/History.js[History.js] library.
+TIP: If you run into a browser that doesn't support the HTML5 History API, consider using the https://github.com/browserstate/History.js[History.js] library.
 
 
 .Custom Data Attributes
 *****
-We've included this sidebar in this appendix, even though it's not API. But we're talking about HTML here and don't want to miss this important feature of the HTML5 specification - you can add to any HTML tag any number of http://bit.ly/9Udecy[custom non-visible attributes] as long as they start with `data-` and have at least one character after the hyphen. For example, this is absolutely legal in HTML5:
+We've included this sidebar in this appendix, even though it's not an API. But we're talking about HTML here and don't want to miss this important feature of the HTML5 specification: you can add to any HTML tag any number of http://bit.ly/9Udecy[custom nonvisible attributes] as long as they start with `data-` and have at least one character after the hyphen. For example, this is absolutely legal in HTML5:
 
 [source, html]
 ----
@@ -1234,19 +1234,19 @@ We've included this sidebar in this appendix, even though it's not API. But we'r
 </ol> 
 ----
 
-Behind the scenes, a custom framework can find all elements that have the `data-phone` attribute and generate some additional code for processing of the provided phone number. If this example doesn't impress you, wait till Chapter 10, where you'll learn how to use jQuery Mobile. The creators of this library use these `data-` attributes in a very smart way.
+Behind the scenes, a custom framework can find all elements that have the `data-phone` attribute and generate additional code for processing the provided phone number. If this example doesn't impress you, go to <<responsive_design>>, where you'll learn how to use jQuery Mobile. The creators of this library use these `data-` attributes in a very smart way.
 *****
 
 === Summary
 
-In this appendix you've got introduced to a number of useful HTML5 APIs. You know how to check if a particular API is supported by your Web browser. But what if you are one of many enterprise developers that must use Internet Explorer of the versions earlier than 10.0? Google used to offer a nice solution:  http://www.google.com/chromeframe[Google Chrome Frame], which was a plugin for Internet Explorer.
+In this appendix, you were introduced to a number of useful HTML5 APIs. You know how to check whether a particular API is supported by your web browser. But what if you are one of many enterprise developers who must use an Internet Explorer version earlier than 10.0? Google used to offer a nice solution:  http://www.google.com/chromeframe[Google Chrome Frame], which was a plug-in for Internet Explorer.
 
-The users had to install Chrome Frame on their machines, and Web developers just needed to add the following line to their Web pages:
+Users had to install Chrome Frame on their machines, and web developers just needed to add the following line to their web pages:
 
 [source, html]
 ----
 <meta http-equiv="X-UA-Compatible" content="chrome=1" />
 ----
 
-After that the Web page rendering would be done by Chrome Frame while your Web application would run in Internet Explorer. Unfortunately, Google decided not to support the Chrome project as of January 2014. They are recommending to prompt the user of your application to upgrade the Web browser, which may not be something that the users will be willing to do. But let's hope for the best. 
+After that, the web page rendering would be done by Chrome Frame, whereas your web application would run in Internet Explorer. Unfortunately, Google decided to discontinue supporting the Chrome Frame project as of January 2014. They are recommending to prompt the user of your application to upgrade the web browser, which might not be something users are willing to do. But let's hope for the best. 
   
