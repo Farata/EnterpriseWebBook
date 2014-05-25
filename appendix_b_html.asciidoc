@@ -636,23 +636,23 @@ var removeAllVisitInfo == function (){             // <3>
 </html>
 ----
 
-<1> The function `saveVisitInfo()` uses JSON object to turn the visit object into a string with `JSON.stringify()`, and then saves this string in the local storage. This function also increments the total number of visits and saves it in the local storage under the key `Visits:total`.
+<1> The function `saveVisitInfo()` uses a JSON object to turn the +visit+ object into a string with `JSON.stringify()` It then saves this string in local storage. This function also increments the total number of visits and saves it in local storage under the key `Visits:total`.
 
-<2> The function `readVisitInfo()` gets the total number of visits from the local storage and then reads each visit record recreating the JavaScript object from JSON srting using `JSON.parse()`.
+<2> The function `readVisitInfo()` gets the total number of visits from local storage and then reads each visit record, re-creating the JavaScript object from the JSON string by using `JSON.parse()`.
 
-<3> The function `removeAllVisitInfo()` reads the number of visit records, removes each of them, and then removed the `Visits:total` too.  
+<3> The function `removeAllVisitInfo()` reads the number of visit records, removes each of them, and then removes the `Visits:total`, too.  
 
-<4> Creating and saving the first visit record
+<4> Creates and saves the first visit record.
 
-<5> Creating and saving the second visit record
+<5> Creates and saves the second visit record.
 
-<6> Reading saved visit info
+<6> Reads saved visit info.
 
-<7> Removing saved visit info. To remove the entire content that was saved for a specific origin call the method `localStorage.clear()`.
+<7> Removes saved visit info. To remove the entire content that was saved for a specific origin, call the method `localStorage.clear()`.
 
-<8> Re-reading visit info after removal
+<8> Rereads visit info after removal.
 
-<<FIG1-4>> shows the output on the console of Chrome Developers Tools. Two visit records were saved in local storage, then they were retrieved and removed from the storage. Finally, the program attempted to read the value of the previously saved `Visits:total`, but it's null now - we've removed from the `localStorage` all the records related to visits.
+<<FIG1-4>> shows the output on the console of Chrome Developer Tools. Two visit records were saved in local storage, and then they were retrieved and removed from storage. Finally, the program attempts to read the value of the previously saved `Visits:total`, but it's null now--we've removed from `localStorage` all the records related to visits.
 
 [[FIG1-4]]
 .Chrome's console after running the Visits sample
@@ -660,12 +660,12 @@ image::images/ewdv_ab04.png[]
 
 TIP: If you are interested in intercepting the moments when the content of local storage gets modified, listen to the DOM `storage` event, which carries the old and new values and the URL of the page whose data is being changed. 
 
-TIP: Another good example of a use case when  `locaStorage` becomes handy is when the user is booking air tickets using more than one browser's tab.
+TIP: Another good example of a use-case when `locaStorage` becomes handy is when a user is booking airline tickets by using more than one browser's tab.
 
 
 ===== sessionStorage API
 
-The `sessionStorage` life is short - it's only available for a Web page while the browser stays open. If the user decides to refresh the page, the `sessionStorage` will survive, but opening a page in a new browser's tab or window will create a new `sessionStorage` object. Working with the session storage is pretty straightforward, for example 
+The `sessionStorage` life is short; it's available for a web page only while the browser stays open. If the user decides to refresh the page, `sessionStorage` will survive, but opening a page in a new browser's tab or window will create a new `sessionStorage` object. Working with session storage is fairly straightforward; for example: 
 
 [source, javascript]
 ----
@@ -674,31 +674,30 @@ sessionStorage.setItem("userID","jsmith");
 var userID == sessionStorage.getItem("userID");
 ---- 
 
-Chrome Developer Tools include the tab Resources that allows browsing the local or session storage if a Web page uses it. For example, <<FIG1-0>> shows the storage used by cnn.com.
+Chrome Developer Tools include the tab Resources that allows browsing the local or session storage if a web page uses it. For example, <<FIG1-0>> shows the storage used by _cnn.com_.
 
 [[FIG1-0]]
 .Browsing local storage in Chrome Developer Tools 
 image::images/ewdv_ab05.png[]
 
-===== localStorage and sessionStorage Commonalities 
+===== localStorage and sessionStorage commonalities 
 
-Both `localStorage` and `sessionStorage` are subject to the same-origin policy, meaning that saved data will be available only for the Web pages that came from the same host, port and via the same protocol.
+Both `localStorage` and `sessionStorage` are subject to the same-origin policy, meaning that saved data is available only for web pages that come from the same host, from the same port, and via the same protocol.
 
-Both `localStorage` and `sessionStorage` are browser-specific. For example, if the Web application stored the data from Firefox, the data won't be available if the user opens the same application from Safari.
+Both `localStorage` and `sessionStorage` are browser-specific. For example, if the web application stores data from Firefox, that data won't be available if the user opens the same application from Safari.
 
-The APIs from Web Storage specification are pretty simple to use, but their major drawbacks are that they don't give you a way to put any structure to the stored data, you always have to store strings, and the API is synchronous, which may case delays in the user interaction when your application is accessing the disk. 
+The APIs from the Web Storage specification are simple to use, but their major drawbacks are that they don't give you a way to structure the stored data, you always have to store strings, and the API is synchronous, which can case delays in the user interaction when your application accesses the disk. 
 
-There is no actual limits for the size of local storage, but the browsers usually default this size to 5Mb. If the application tries to store more data that the browser permits, the `QUOTA_EXCEEDED_ERR`exception will be thrown - always use the try-catch blocks when saving data. 
+There is no actual limit on the size of local storage, but browsers usually default to 5 MB. If the application tries to store more data than the browser permits, the `QUOTA_EXCEEDED_ERR` exception will be thrown--always use the try-catch blocks when saving data. 
 
-Even if the user's browser allows increasing this setting (e.g. via _about:config_ URL in Firefox), access to such data may be slow. Consider using http://www.w3.org/TR/FileAPI/[File API] or IndexedDB that will be introduced in the in the next section. 
+Even if the user's browser allows increasing this setting (for example, via _about:config_ URL in Firefox), access to such data might be slow. Consider using the http://www.w3.org/TR/FileAPI/[File API] or IndexedDB, which are introduced in the next section. 
 
 
 ==== Introduction to IndexedDB
 
-http://www.w3.org/TR/IndexedDB/[Indexed Database API] (a.k.a. IndexedDB) is a solution based on the NoSql database. Like with the `Storage` interface, IndexedDB stores data as key-value pairs, but it also offers  transactional handling of objects. IndexedDB creates indexes of the stored objects for fast retrieval.
-With Web Storage you can only store strings, and we had to do these tricks with JSON `stingify()` and `parse()` to give some structure to these strings. With IndexedDB you can directly store and index regular JavaScript objects. 
+http://www.w3.org/TR/IndexedDB/[Indexed Database API] (a.k.a. IndexedDB) is a solution based on the NoSQL database. As with the `Storage` interface, IndexedDB stores data as key-value pairs, but it also offers  transactional handling of objects. IndexedDB creates indexes of the stored objects for fast retrieval. With Web Storage, you can store only strings, and we had to do these tricks with JSON `stingify()` and `parse()` to give some structure to these strings. With IndexedDB, you can directly store and index regular JavaScript objects. 
 
-IndexedDB allows you to accesses data asynchronously, so there won't be UI freezes while accessing large objects on disk. You make a request to the database and define the event handlers that should process errors or result when ready. IndexedDB uses DOM events for all notifications. Success events don't bubble, while error events do.
+Using IndexedDB, you can access data asynchronously, so UI freezes won't occur while accessing large objects on disk. You make a request to the database and define the event handlers that should process the errors or the result when ready. IndexedDB uses DOM events for all notifications. Success events don't bubble, whereas error events do.
 
 The users will have a feeling that the application is pretty responsive, which wouldn't be the case if you'll be saving several megabytes of data with Web Storage API. Similarly to Web Storage, access to the IndexedDB databases is regulated by the same origin policy. 
 
