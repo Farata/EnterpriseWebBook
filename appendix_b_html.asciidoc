@@ -103,7 +103,7 @@ The iFrame has two buttons, emulating a trading system with two buttons: Buy and
 .Message exchange between the window and iFrame
 image::images/ewdv_ab01.png[]
 
-The source code of this example is shown next. It's just two HTML files: mainWindow.html and myFrame.html. Here's the code of mainWindow.html
+The source code of this example is shown next. It's just two HTML files: _mainWindow.html_ and _myFrame.html_. Here's the code of _mainWindow.html_:
 
 [source, html]
 ----
@@ -159,11 +159,11 @@ The source code of this example is shown next. It's just two HTML files: mainWin
 </html>
 ----
 
-<1> This function is an event handler for messages received from the iFrame window. The main window is the parent of iFrame, and whenever the latter will invoke `parent.postMessage()` this even handler will be engaged.
+<1> This function is an event handler for messages received from the iFrame window. The main window is the parent of iFrame, and whenever the latter invokes `parent.postMessage()`, this event handler will be engaged.
 
-<2> Depending on the content of the message payload (`event.data`)	respond back to the sender with acknowledgment.  If the payload is `loaded`, this means that the iFrame has finished loading. If it's `buy` or `sell` - this means that the corresponding button in the iFrame has been clicked. As an additional precaution, you can ensure that `event.origin` has the expected URI before even starting processing received events.
+<2> Depending on the content of the message payload (`event.data`),	respond to the sender with an acknowledgment. If the payload is `loaded`, this means that the iFrame has finished loading. If it's `buy` or `sell, this means that the corresponding button in the iFrame has been clicked. As an additional precaution, you can ensure that `event.origin` has the expected URI before even starting processing received events.
 
-<3> While this code shows how a window sends a message to an iPrame, you can send messages to any other windows as long as you have a reference to it. For example:
+<3> Although this code shows how a window sends a message to an iFrame, you can send messages to any other window as long as you have a reference to it. For example:
 +
 
 [source, javascript]
@@ -172,11 +172,11 @@ The source code of this example is shown next. It's just two HTML files: mainWin
   myPopupWindow.postMessage("Hello Popup", "*");
 ----
 +
-<4>	On load the main window starts listening to the messages from other windows and loads the content of the iFrame. 
+<4>	On loading, the main window starts listening to messages from other windows and loads the content of the iFrame. 
 
 TIP: To implement error processing add a handler for the `window.onerror` property. 
 
-The code of the myFrame.html comes next. This frame contains two buttons Buy and Sell, but there is no business logic to buy or sell anything. The role of these buttons is just to deliver the message to the creator of thie iFrame that it's time to buy or sell.
+The code of _myFrame.html_ comes next. This frame contains two buttons, Buy and Sell, but there is no business logic to buy or sell anything. The role of these buttons is just to deliver the message to the creator of the iFrame that it's time to buy or sell.
 
 [source, html]
 ----
@@ -216,23 +216,23 @@ The code of the myFrame.html comes next. This frame contains two buttons Buy and
 
 <1> When the iFrame receives the first message from the parent, store the reference to the sender's origin.
 
-<2> Notify the parent that the iFrame is loaded. The target origin is specified as `"*"` here as an illustration of how to send messages without worrying about malicious sites-interceptors - always specify the target URI as it's done in the function `sendToParent()`.
+<2> Notify the parent that the iFrame is loaded. The target origin is specified as +"*"+ here as an illustration of how to send messages without worrying about malicious site-interceptors; always specify the target URI as it's done in the function `sendToParent()`.
 
-<3> Send the message to parent window when the user clicks on Buy or Sell button.
+<3> Send the message to the parent window when the user clicks the Buy or Sell button.
 
-If you need to build a UI of the application from reusable components, applying messaging techniques allows you to create loosely coupled components. Say you've created a window for a financial trader. This window receives the data push from the server showing the latest stock prices. When a trader likes the price he may click on the Buy or Sell button to initiate a trade. The order to trade can be is implemented in a separate  window and establishing inter-window communications in a loosely coupled manner is really important. 
+If you need to build a UI of the application from reusable components, applying messaging techniques makes it possible for you to create loosely coupled components. Suppose that you've created a window for a financial trader. This window receives the data push from the server, showing the latest stock prices. When a trader likes the price, he can click the Buy or Sell button to initiate a trade. The order to trade can is implemented in a separate window, and establishing interwindow communications in a loosely coupled manner is really important. 
 
 ==== Applying the Mediator Design Pattern
 
-Three years ago O'Reilly has published another book written by us. That book was titled "Enterprise Development with Flex", and in particular, we've described there how to apply the Mediator design pattern for creating a UI where components can communication with each other by sending-receiving events from the _mediator_ object.  The Mediator pattern remains very important in developing UI using any technologies or programming languages, and importance of the HTML5 messaging can't be underestimated. 
+Three years ago, O'Reilly published another book written by us titled _Enterprise Development with Flex_. In particular, it described how to apply the Mediator design pattern to create a UI where components can communicate with one another by sending-receiving events from the _mediator_ object.  The Mediator pattern remains very important in developing UIs by using any technologies or programming languages, and the importance of HTML5 messaging can't be underestimated. 
 
-<<FIG1-2>> is an illustration from that Enterprise Flex book. The Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask panel, the Pricing Panel just sends the event with the relevant information like JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc. In this particular case the window that contained these two panels served as a mediator, In HTML5 realm, we can say that the Pricing Panel invokes `parent.postMessage()` and shoots the message to the mediator (a.k.a. main window).    
+<<FIG1-2>> is an illustration from that Enterprise Flex book. The Price panel on the left gets the data feed about current prices of IBM stock. When the user clicks the Bid or Ask button, the Price panel just sends the event with the relevant information (for example, a JSON-formatted string containing the stock symbol, price, buy or sell flag, or date). In this particular case, the window that contains these two panels serves as a mediator. In the HTML5 realm, we can say that the Price panel invokes `parent.postMessage()` and shoots the message to the mediator (a.k.a. main window).    
 
 [[FIG1-2]]
-.Before and after the trader clicked on the Price Panel
+.Before and after the trader clicks the Price panel
 image::images/ewdv_ab02.png[]
 
-The Mediator receives the message and re-post it to its another child - the Order Panel that knows how to place orders to purchase stocks. The main takeaway from such design is that the Pricing and Order panels do not know about each other and are communication by sending-receiving messages to/from a mediator. Such a loosely coupled design allows reuse the same code in different applications. For example, the Pricing Panel can be reused in some portal that's used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it's easy to reuse the existing code in such a dashboard.
+The Mediator receives the message and reposts it to its other child--the Order panel--that knows how to place orders to purchase stocks. The main takeaway from this design is that the Price and Order panels do not know about each other and are communicating by sending-receiving messages to/from a mediator. Such a loosely coupled design facilitates of the reuse the same code in different applications. For example, the Pricing Panel can be reused in some portal that's used by a company executives in a dashboard showing prices without the need to place orders. Since the Price Panel has no string attached to Order Panel, it's easy to reuse the existing code in such a dashboard.
 
 You'll see a more advanced example of the inter-component communication techniques that uses  _Mediator Design Pattern_ in <<mediator_section,corresponding section>> of Chapter 6 of this book.
 
