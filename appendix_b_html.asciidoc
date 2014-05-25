@@ -288,21 +288,21 @@ When you start a web browser or any other application on your computer or other 
 
 A typical web application has a UI part (HTML) and a processing part (JavaScript). If a user clicks a button, which starts a JavaScript function that runs, say, for a hundred miliseconds, there won't be any noticeable delays in user interaction. But if the JavaScript runs a couple of seconds, the user experience will suffer. In some cases, the web browser will assume that the script became _unresponsive_ and will offer to kill it. 
 
-Imagine an HTML5 game where a click on the button has to do some major recalculation of coordinates and repainting of multiple images in the browser's window. Ideally, we'd like to parallelize the execution of UI interactions and background JavaScript functions as much as possible, so the user won't notice any delays.  Another example is a CPU-intensive spell checker function that find errors while the user keeps typing. Parsing JSON object is yet another candidate to be done in background. Web workers are also good at polling a server data. 
+Imagine an HTML5 game in which a click of a button initiates major recalculation of coordinates and repainting multiple images in the browser's window. Ideally, we'd like to parallelize the execution of UI interactions and background JavaScript functions as much as possible, so the user won't notice any delays.  Another example is a CPU-intensive spell checker function that finds errors while the user keeps typing. Parsing the JSON object is yet another candidate to be done in the background. Web workers are also good at polling server data. 
 
-In other words, use Web workers when you want to be able to run multiple parallel _threads of execution_ within the same task. 
-On a multi-processor computer parallel threads can run on different CPU’s.On a single-processor computer, threads will take turn in getting _slices_ of CPU's time. Since switching CPU cycles between threads happens fast, the user won’t notice tiny delays in each thread’s execution getting a feeling of smooth interaction.
+In other words, use web workers when you want to be able to run multiple parallel _threads of execution_ within the same task. 
+On a multiprocessor computer, parallel threads can run on different CPUs. On a single-processor computer, threads will take turns getting _slices_ of the CPU's time. Because switching CPU cycles between threads happens fast, the user won’t notice tiny delays in each thread’s execution, getting a feeling of smooth interaction.
 
 ==== Creating and Communicating with Workers
 
-HTML5 offers http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers[a solution] for multi-threaded execution of a script with the help of the `Worker` object. To start a separate thread of execution you'll need to create an instance of a `Worker` object passing it the name of the file with the script to run in a separate thread, for example:
+HTML5 offers http://www.whatwg.org/specs/web-apps/current-work/multipage/workers.html#workers[a solution] for multithreaded execution of a script with the help of the `Worker` object. To start a separate thread of execution, you'll need to create an instance of a `Worker` object, passing it the name of the file with the script to run in a separate thread, for example:
 
 [source, javascript]
 ----
 var mySpellChecker == new Worker("spellChecker.js");
 ---- 
 
-The `Worker` thread runs asynchronously and can't directly communicate with the UI components (i.e. DOM elements) of the browser. When the `Worker`s script finishes execution, it can send back a message using the `postMessage()` method. Accordingly, the script that created the worker thread can listen for the event from the worker and process its responses in the event handler. Such event object will contain the data received from the worker in its property `data`, for example: 
+The `Worker` thread runs asynchronously and can't directly communicate with the UI components (that is, DOM elements) of the browser. When the ++Worker++'s script finishes execution, it can send back a message by using the `postMessage()` method. Accordingly, the script that created the worker thread can listen for the event from the worker and process its responses in the event handler. This event object will contain the data received from the worker in its `data` property; for example: 
 
 [source, javascript]
 ----
@@ -326,7 +326,7 @@ var mySpellChecker == new Worker("spellChecker.js");
     });
 ----  
 
-On the other hand, the HTML page can also send any message to the worker forcing it to start performing its duties like start the spell checking process:
+On the other hand, the HTML page can also send any message to the worker, forcing it to start performing its duties (for example, starting the spell checking process):
 
 [source, javascript]
 ----
@@ -335,7 +335,7 @@ On the other hand, the HTML page can also send any message to the worker forcing
 
 The argument of `postMessage()` can contain any object, and it's  being passed by value, not by reference.
 
-Inside the worker you also need to define an event handler to process the data sent from outside. To continue the previous example the spellChecker.js will have inside the code that receives the text to check, performs the spell check, and returns the result back:
+Inside the worker, you also need to define an event handler to process the data sent from outside. To continue the previous example, _spellChecker.js_ will have inside it the code that receives the text to check, performs the spell check, and returns the result:
 
 [source, javascript]
 ----
@@ -352,9 +352,9 @@ self.onmesage == function(event){
 };
 ----
 
-If you want to run a certain code in the background repeatedly, you can create a wrapper function (e.g. `doSpellCheck()`) that internally invokes `postMesage()` and then gives such a wrapper to `setTimeout()` or `setInterval()`to run every second or so: `var timer == setTimout(doSpellCheck, 1000);`.
+If you want to run certain code in the background repeatedly, you can create a wrapper function (for example, `doSpellCheck()`) that internally invokes `postMesage()` and then gives this wrapper to `setTimeout()` or `setInterval()` to run every second or so: `var timer == setTimout(doSpellCheck, 1000);`.
 
-If an error occurs in a worker thread, your Web application will get a notification in a form of an event, and you need to provide a function handler for `onerror`:
+If an error occurs in a worker thread, your web application will get a notification in the form of an event, and you need to provide a function handler for `onerror`:
 
 [source, javascript]
 ----
@@ -365,18 +365,18 @@ mySpellChecker.onerror == function(event){
 
 ==== Dedicated and Shared Workers
 
-If a window's script creates a worker thread for its own use, we call it _a dedicated worker_.  A window creates an event listener, which gets the messages from the worker. On the other hand, the worker can have a listener too to react to the events received from its creator.   
+If a window's script creates a worker thread for its own use, we call it _a dedicated worker_.  A window creates an event listener, which gets the messages from the worker. On the other hand, the worker can have a listener, too, to react to the events received from its creator.   
 
-A _shared worker_ thread can be used by several scripts as long as they have the same origin. For example, if you want to reuse a spell checker feature in several views of your Web application, you can create a shared worker as follows:
+A _shared worker_ thread can be used by several scripts, as long as they have the same origin. For example, if you want to reuse a spell-checker feature in several views of your web application, you can create a shared worker as follows:
 
 [source, javascript]
 ----
 var mySpellChecker == new SharedWorker("spellChecker.js");
 ---- 
 
-Another use case is funneling all requests from multiple windows to the server through a shared worker. You can also place into a shared worker a number of reusable utility function that may be needed in several windows - such architecture can reduce or eliminate repeatable code. 
+Another use case is funneling all requests from multiple windows to the server through a shared worker. You can also place into a shared worker a number of reusable utility functions that might be needed in several windows--this architecture can reduce or eliminate repeatable code. 
 
-One or more scripts can communicate with a shared worker, and it's done slightly different that with the dedicated one. Communication is done through the `port` property and the `start()` method has to be invoked to be able to use `postMessage()` first time:
+One or more scripts can communicate with a shared worker, and it's done slightly differently than with a dedicated one. Communication is done through the `port` property, and the `start()` method has to be invoked to be able to use `postMessage()` the first time:
 
 [source, javascript]
 ----
@@ -387,18 +387,18 @@ var mySpellChecker == new SharedWorker("spellChecker.js");
     mySpellChecker.port.start()
 ----
 
-The event handler becomes connected to the `port` property, and now you can post the message to this shared worker using the same `postMessage()` method.
+The event handler becomes connected to the `port` property, and now you can post the message to this shared worker by using the same `postMessage()` method.
 
 [source, javascript]
 ----
     mySpellChecker.postMessage(wordToCheckSpelling);
 ---- 
 
-Each new script that will connect to the shared worker by attaching an event handler to the port results in incrementing the number of active connections that the shared worker maintains.  If the script of the shared worker will invoke `port.postMessage("Hello scripts!")`, all listeners that are connected to this port will get it. 
+Each new script that will connect to the shared worker by attaching an event handler to the port results in incrementing the number of active connections that the shared worker maintains.  If the script of the shared worker invokes `port.postMessage("Hello scripts!")`, all listeners that are connected to this port will get it. 
 
-TIP: if a shared thread is interesting in processing the moments when a new script connects to it, add an event listener to the `connect` event in the code of the shared worker.
+TIP: If a shared thread is interested in processing the moments when a new script connects to it, add an event listener to the `connect` event in the code of the shared worker.
 
-If a worker needs to stop communicating with the external world it can call `self.close()`. The external script can kill the worker thread by calling the method `terminate()`, for example:
+If a worker needs to stop communicating with the external world, it can call `self.close()`. The external script can kill the worker thread by calling the method `terminate()`; for example:
 
 [source, javascript]
 ----
@@ -407,56 +407,56 @@ mySpellChecker.terminate();
 
 // TIP: Using JavaScript `apply()` you can pass the name of the method to call along with its arguments.
 
-TIP: Since the script running inside the `Worker` thread doesn't have access to the browser's UI components, you can't debug such scripts by printing messages onto browser's console with `console.log()`. In <<appendix_a, Appendix A>> we've used Firefox browser for development, but now we'll illustrate how to use Chrome Browser Developer Tools, which includes the http://blog.chromium.org/2012/04/debugging-web-workers-with-chrome.html[_Workers_ panel] that can be used for debugging the code that's launched in worker threads. You'll see multiple examples of using Chrome Developers Tools going forward.   
+TIP: Because the script running inside the `Worker` thread doesn't have access to the browser's UI components, you can't debug these scripts by printing messages onto the browser's console with `console.log()`. In <<appendix_a, Appendix A>> we used the Firefox browser for development, but now we'll illustrate how to use Chrome Browser Developer Tools, which includes the http://blog.chromium.org/2012/04/debugging-web-workers-with-chrome.html[_Workers_ panel] that can be used for debugging code that's launched in worker threads. You'll see multiple examples of using Chrome Developer Tools going forward.   
 
-To get a more detailed coverage of Web Workers, read the O'Reilly book by Ido Green titled "Web Workers".
+For more detailed coverage of web workers, read _Web Workers_ by Ido Green (O'Reilly).
 
-TIP: When the user switches to another page in a browser and the current Web page loses focus you may want to stop running some processes that would unnecessary use CPU cycles. To catch this moment use the https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Using_the_Page_Visibility_API[Page Visibility API].  
+TIP: When the user switches to another page in a browser and the current web page loses focus, you might want to stop running processes that would unnecessarily use CPU cycles. To catch this moment, use the https://developer.mozilla.org/en-US/docs/Web/Guide/User_experience/Using_the_Page_Visibility_API[Page Visibility API].  
 
-=== WebSockets API
+=== The WebSocket API
 
-For many years Web applications were associated with HTTP as the main protocol for communication between Web browsers and servers. HTTP is a request-response based protocol that adds hundreds of additional bytes to the application data being sent between browsers and the servers. WebSocket is not a request-response, but a bi-directional full-duplex socket-based protocol, which adds only a couple of bytes (literally) to the application data . WebSockets can become a future replacement for HTTP, but Web applications that require the near-real-time communications (e.g. financial trading applications, online games or auctions) can benefit from this protocol today.  Authors of this book believe that WebSocket API is so important, that we dedicated the entire Chapter 8 of this book to this API. In this section we'll just introduce this API very briefly.
+For many years, web applications were associated with HTTP as the main protocol for communication between web browsers and servers. HTTP is a request-response&#8211;based protocol that adds hundreds of bytes to the application data being sent between browsers and servers. WebSocket is not a request-response, but a bidirectional, full-duplex, socket-based protocol, which adds only a couple of bytes (literally) to the application data. WebSocket might become a future replacement for HTTP, but web applications that require near-real-time communications (for example, financial trading applications, online games, or auctions) can benefit from this protocol today. The authors of this book believe that WebSocket is so important that we dedicated <<upgrading_http_to_websocket>> to this API. In this section, we just introduce this API very briefly.
 
-This is how the WebSockets workflow  goes:
+This is how the WebSocket workflow proceeds:
 
-* A Web application tries to establish a socket connection between the client and the server using HTTP only for the initial handshake.
+* A web application tries to establish a socket connection between the client and the server, using HTTP only for the initial handshake.
 
-* If the server supports WebSockets, it switches the communication protocol from HTTP to a socket-based protocol.
+* If the server supports WebSocket, it switches the communication protocol from HTTP to a socket-based protocol.
 
-* From this point on both client and server can send messages in both directions simultaneously (i.e. in full duplex mode).
+* From this point on, both client and server can send messages in both directions simultaneously (that is, in full-duplex mode).
 
-* This is not a request-response model as both the server and the client can initiate the data transmission which enables the real server-side push.
+* This is not a request-response model, because both the server and the client can initiate the data transmission that enables the real server-side push.
 
-* Both the server and the client can initiate disconnects too.
+* Both the server and the client can initiate disconnects, too.
 
-This is a very short description of what WebSocket API is about. We encourage you to read Chapter 8   and find the use of this great API in one of your projects.
+This is a very short description of what WebSocket API is about. We encourage you to read <<upgrading_http_to_websocket>> and find a use of for great API in one of your projects.
 
 === Offline Web Applications
 
-The common misconception about Web applications is that they are useless if there is no connection to the Internet. Everyone knows that native application can be written in a way that they have everything they need installed on your device's data storage - both the application code and the data storage.  With HTML5, Web applications can be designed to be functional even when the user's device is disconnected. The offline version of a Web application may not offer full functionality, but certain functions can still be available. 
+A common misconception about web applications is that they are useless without an Internet connection. Everyone knows that you can write native applications in a way that they have everything they need installed on your device's data storage--both the application code and the data storage. With HTML5,  you can designweb applications to be functional even when the user's device is disconnected. The offline version of a web application might not offer full functionality, but certain functions can still be available. 
 
-==== Prerequisites for developing Offline Web Applications 
+==== Prerequisites for Developing Offline Web Applications 
 
-To be useful in a disconnected mode, HTML-based application needs to have access to some local storage on the device, in which case the data entered by the user in the HTML windows can be saved locally with further synchronization with the server when connection becomes available. Think of a salesman of a pharmaceutical visiting medical offices trying to sell new pills. What if connection is not available at certain point? She can still use her tablet demonstrate the marketing materials and more importantly, collect some data about this visit and save them locally. When the Internet connection becomes  available again, the Web application should support automatic or manual data synchronization so the information about the salesman activity will be stored in a central database.
+To be useful in disconnected mode, an HTML-based application needs to have access to local storage on the device so data entered by the user in the HTML windows can be saved locally, further synchronized with the server when a connection becomes available. Think of a salesman of a pharmaceutical company visiting medical offices and trying to sell new pills. What if a connection is not available at a certain point? She can still use her tablet to demonstrate the marketing materials, and more important, collect data about this visit and save it locally. When the Internet connection becomes available again, the web application should support automatic or manual data synchronization so the information about the sales activity is stored in a central database.
 
-There are two main prerequisites for building offline Web applications. You need local storage, and you need to ensure that the server sends only raw data to the client, with no HTML markup (see <<FIG1-3>>). So all these server-side frameworks that prepare the data heavily sprinkled with HTML markup should not be used. For example, the front-end should be developed in HTML/JavaScript/CSS, the back end in your favorite language (Java, .Net, PHP, etc.), and the JSON-formatted data are being sent from the server to the client and back.
+There are two main prerequisites for building offline web applications. You need local storage, and you need to ensure that the server sends only raw data to the client, with no HTML markup (see <<FIG1-3>>). So all these server-side frameworks that prepare data heavily sprinkled with HTML markup should not be used. For example, the front end should be developed in HTML/JavaScript/CSS, the back end in your favorite language (Java, .NET, PHP), and the JSON-formatted data should be sent from the server to the client and back.
 
 [[FIG1-3]]
-.Design with Offline Use in Mind 
+.Design with offline use in mind 
 image::images/ewdv_ab03.png[]
 
-The business logic that supports the client's offline functionality should be developed in JavaScript and run in the Web browser. While most of the business logic of Web applications remains on the server side, the Web client is not as thin as it used to be in legacy HTML-based applications. The client becomes fatter and it can have state. 
+The business logic that supports the client's offline functionality should be developed in JavaScript and run in the web browser. Although most of the business logic of web applications remains on the server side, the web client is not as thin as it used to be in legacy HTML-based applications. The client becomes fatter and it can have state. 
 
-It's a good idea to create a data layer in your JavaScript code that will be responsible for all data communications. If the Internet connection is available, the data layer will be making  requests to the server, otherwise it'll get the data from the local storage. 
+It's a good idea to create a data layer in your JavaScript code that will be responsible for all data communications. If the Internet connection is available, the data layer will make requests to the server; otherwise, it will get the data from the local storage. 
 
 [[application_cache]]
 ==== Application Cache API
 
-First of all, application's cache is not related to the Web browser's cache. It's main reason for existence is to allow creating applications that can run even if there is no Internet connection available. The user will still go to her browser and enter the URL, but the trick is that the browser will load some previously saved Web pages from the local _application cache_. So even if the user is not online, the application will start anyway. 
+First, an application's cache is not related to the web browser's cache. Its main reason for existence is to facilitate creating applications that can run even without an Internet connection available. The user will still go to her browser and enter the URL, but the trick is that the browser will load previously saved web pages from the local _application cache_. So even if the user is not online, the application will start anyway. 
 
-If your Web application consists of multiple files, you need to specify which ones have to be present on the user's computer in the offline mode. A file called _Cache Manifest_ is a plain text file that lists such resources. 
+If your web application consists of multiple files, you need to specify which ones have to be present on the user's computer in offline mode. A file called _cache manifest_ is a plain-text file that lists these resources. 
 
-Storing some resources in the application cache can be a good idea not only in the disconnected mode, but also to lower the amount of code that has to be downloaded from the server each time the user starts your application. Here's an example of the file mycache.manifest, which includes one CSS file, two JavaScript files, and one image to be stored locally on the user's computer:
+Storing resources in the application cache can be a good idea not only in disconnected mode, but also to lower the amount of code that has to be downloaded from the server each time the user starts your application. Here's an example of the file _mycache.manifest_, which includes one CSS file, two JavaScript files, and one image to be stored locally on the user's computer:
 
 [source, html]
 ----
@@ -467,7 +467,7 @@ CACHE MANIFEST
 /resources/images/header_image.png
 ----
 
-The manifest file has to start with the line CACHE MANIFEST and can be optionally divided into sections. The landing page of your Web application has to specify an explicit reference to the location of the manifest. If the above file is located in the document root directory of your application, the main HTML file can refer to the manifest as follows: 
+The manifest file has to start with the line +CACHE MANIFEST+ and can be optionally divided into sections. The landing page of your web application has to specify an explicit reference to the location of the manifest. If the preceding file is located in the document root directory of your application, the main HTML file can refer to the manifest as follows: 
 
 [source, html]
 ----
@@ -477,16 +477,16 @@ The manifest file has to start with the line CACHE MANIFEST and can be optionall
 </html>
 ----
 
-The Web server must serve the manifest file with a MIME type "text/cache-manifest", and you need to refer to the documentation of your Web server to see how to see where to make a configuration change so all files with extension .manifest are served as "text/cache-manifest".
+The web server must serve the manifest file with a MIME type +text/cache-manifest+, and you need to refer to the documentation of your web server to see how to make a configuration change so that all files with the extension _.manifest_ are served as +text/cache-manifest+.
 
-On each subsequent application load the browser makes a request to the server and retrieves the manifest file to see if it has been updated, in which case it reloads all previously cached files. It's a responsibility of Web developers to modify manifest on the server if any of the cacheable resources changed. 
+On each subsequent application load, the browser makes a request to the server and retrieves the manifest file to see whether it has been updated, in which case it reloads all previously cached files. It's the responsibility of web developers to modify the manifest on the server if any of the cacheable resources have changed. 
 
 
 ==== Is Your Application Offline?
 
-Web browsers have a `boolean` property `window.navigator.onLine`, which should be used to check if there is no connection to the Internet. The HTML5 specification states that _"The navigator.onLine attribute must return false if the user agent will not contact the network when the user follows links or when a script requests a remote page (or knows that such an attempt would fail), and must return true otherwise."_ Unfortunately, major Web browsers deal with this property differently so you need to do a thorough testing to see if it works as expected with the browser you care about. 
+Web browsers have a `boolean` property, `window.navigator.onLine`, which should be used to check for a connection to the Internet. The HTML5 specification states that _"The navigator.onLine attribute must return false if the user agent will not contact the network when the user follows links or when a script requests a remote page (or knows that such an attempt would fail), and must return true otherwise."_ Unfortunately, major web browsers deal with this property differently, so you need to do a thorough testing to see if it works as expected with the browser you care about. 
 
-To intercept the changes in the connectivity status, you can also assign event listeners to the `online` and `offline` events, for example:
+To intercept changes in the connectivity status, you can also assign event listeners to the `online` and `offline` events, for example:
 
 [source, javascript]
 ----
@@ -500,40 +500,42 @@ window.addEventListener("online", function(e) {
 });
 ----
 
-You can also add the `onoffline` and `ononline` event handlers to the `<body>` tag of your HTML page or to the `document` object. Again, test the support of these event in your browsers.
+You can also add the `onoffline` and `ononline` event handlers to the `<body>` tag of your HTML page or to the `document` object. Again, test the support of these events in your browsers.
 
-What if the browser's support of the offline/online events is still not stable? In this you'll have to write your own script that will periodically make an AJAX call (see Chapter 2) trying to connect to a remote server that's always up and running, e.g. google.com. If this request fails, it's a good indication that your application is disconnected from the Internet.
+What if the browser's support of the offline/online events is still not stable? You'll have to write your own script that will periodically make an Ajax call (see <<using_ajax_and_json>>) trying to connect to a remote server that's always up and running--for example, google.com. If this request fails, it's a good indication that your application is disconnected from the Internet.
 
 
 ==== Options for Storing Data Locally 
 
-In the past, Web browsers could only store their own cache and application's cookies on the user's computer. 
+In the past, web browsers could store their own cache and application's cookies only on the user's computer. 
 
-NOTE: Cookies are small files (up to 4Kb) that a Web browser would automatically save locally if the server's `HTTPResponse` would include them. On the next visit of the same URL, the Web browser would send all non-expired cookies back to the browser as a part of `HTTPRequest` object. Cookies were used for arranging HTTP session management and couldn't be considered a solution for setting up a local storage. 
+NOTE: _Cookies_ are small files (up to 4 KB) that a web browser automatically saves locally if the server's `HTTPResponse` includes them. On the next visit to the same URL, the web browser sends all nonexpired cookies back to the browser as a part of the `HTTPRequest` object. Cookies are used for arranging HTTP session management and shouldn't be considered a solution for setting up a local storage. 
 
 HTML5 offers a lot more advanced solutions for storing data locally, namely: 
 
-* http://www.w3.org/TR/webstorage/[Web Storage] which offers Local Storage for long-term storing data and Session Storage for storing a single session data. 
+http://www.w3.org/TR/webstorage/[Web Storage]::
+    Offers local storage for long-term data storage and session storage for storing a single data session. 
 
-* http://www.w3.org/TR/IndexedDB/[IndexedDB]: a NoSQL database that stores key-value pairs.
+http://www.w3.org/TR/IndexedDB/[IndexedDB]::
+    A NoSQL database that stores key-value pairs.
 
-NOTE: There is another option worth mentioning - http://www.w3.org/TR/webdatabase/[Web SQL Database]. The specification was based on the open source SQLite database. But the work on this specification is stopped and future versions of the browsers may not support it. That's why we are not going to discuss Web SQL Database in this book. 
+NOTE: There is another option worth mentioning: http://www.w3.org/TR/webdatabase/[Web SQL Database]. The specification was based on the open-source SQLite database. But the work on this specification has stopped and future versions of browsers might not support it. That's why we don't discuss Web SQL Database in this book. 
 
-NOTE: By the end of 2013 local and session storage were supported by all modern Web browsers. Web SQL database is not supported by Firefox and Internet Explorer and most likely will never be. IndexedDB is the Web storage format of the future, but Safari doesn't support it yet, so if your main development platform is iOS, you may need to stick to Web SQL database. Consider using a polyfill for indexedDB using Web SQL API called https://github.com/axemclion/IndexedDBShim[IndexedDBShim].
+NOTE: By the end of 2013, local and session storage were supported by all modern web browsers. Web SQL database is not supported by Firefox and Internet Explorer and most likely never will be. IndexedDB is the web storage format of the future, but Safari doesn't support it yet, so if your main development platform is iOS, you might need to stick to Web SQL database. Consider using a polyfill for indexedDB by using a Web SQL API called https://github.com/axemclion/IndexedDBShim[IndexedDBShim].
 
-NOTE: To get the current status visit caniuse.com and search for the API you're interested in.
+NOTE: To get the current statusof support for HTML5 features, visit http://www.caniuse.com[caniuse.com] and search for the API you're interested in.
 
-IMPORTANT: Although Web browsers send cookies to the Web server, they  don't send there the data saved in a local storage. The saved data is used only on the user's device. Also, the data saved in the local storage never expire. A Web application has to programmatically clean up the storage if need be, which will be illustrated below.
+Although web browsers send cookies to the web server, they don't send the data saved in local storage. The saved data is used only on the user's device. Also, the data saved in the local storage never expires. A web application has to programmatically clean up the storage, if need be, which will be illustrated next.
 
 ==== Web Storage Specification APIs
 
-With `window.localStorage` or `window.sessionStorage` (a.k.a. Web Storage) you can store any objects on the local disk as key-value pairs. Both objects implement the `Storage` interface. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, the Web browser or restart the computer - the data saved with `window.localStorage` will survive while the data saved via `window.sessionStorage` won't.
+With `window.localStorage` or `window.sessionStorage` (a.k.a. web storage), you can store any objects on the local disk as key-value pairs. Both objects implement the `Storage` interface. The main difference between the two is that the lifespan of the former is longer. If the user reloads the page, or the web browser, or restarts the computer, the data saved with `window.localStorage` will survive, whereas the data saved via `window.sessionStorage` won't.
 
-Another distinction is that the data from `window.localStorage` is available for any page loaded from the same origin as the page that saved the data.  In case of `window.sessionStorage`, the data is available only to the window or a browser's tab that saved it.  
+Another distinction is that the data from `window.localStorage` is available for any page loaded from the same origin as the page that saved the data.  With `window.sessionStorage`, the data is available only to the window or a browser's tab that saved it.  
 
 ===== localStorage API
 
-Saving the application state is the main use of the local storage. Coming back to a use case with the pharmaceutical salesman, in the offline mode you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for example:
+Saving the application state is the main use of local storage. Coming back to the use-case of the pharmaceutical salesperson, in offline mode, you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for example:
 
 [source, javascript]
 ----
@@ -542,7 +544,7 @@ localStorage.setItem('contactPerson', 'Mary Lou');
 localStorage.setItem('notes', 'Drop the samples of XYZin on 12/15/2013');
 ----
 
-Accordingly, to retrieve the saved information you'd need to use the method `getItem()`.
+Accordingly, to retrieve the saved information, you'd need to use the method `getItem()`.
 
 [source, javascript]
 ----
@@ -551,9 +553,9 @@ var contact == localStorage.getItem('contactPerson');
 var notes == localStorage.getItem('notes');
 ----
 
-This code sample are pretty simple as they store single values. In the real life scenarios we often need to store multiple objects. What it our salesperson has visited several medical offices and needs to save the information about all these visits in the Web Store?  For each visit we can create a key-value combination, where a _key_ will include the unique id (e.g. office ID), and the _value_ will be a JavaScript object (e.g. Visit) turned into a JSON-formatted string (see Chapter 2  for details) using `JSON.stringify()`. 
+These code samples are fairly simple because they store single values. In real-life scenarios, we often need to store multiple objects. What if our salesperson visits several medical offices and needs to save information about all these visits in the web store?  For each visit, we can create a key-value combination, where a _key_ includes the unique ID (for example, office ID), and the _value_ is a JavaScript object (for example, Visit) turned into a JSON-formatted string (see <<using_ajax_and_json>> for details) by using `JSON.stringify()`. 
 
-The following code sample illustrates how to store and retrieve the custom `Visit` objects. Each visit to a medical office is represented by on instance of the `Visit` object. To keep the code simple, we've have not included there any HTML components - its JavaScript functions get invoked and print their output on the browser's console.  
+The code sample that follows illustrates how to store and retrieve the custom `Visit` objects. Each visit to a medical office is represented by one instance of the `Visit` object. To keep the code simple, we haven't included any HTML components. The JavaScript functions are invoked and print their output on the browser's console.  
 
 [source, javascript]
 ----
