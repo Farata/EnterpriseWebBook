@@ -759,24 +759,24 @@ request.onupgradeneeded == function(event){  // <4>
 
 <4> The `onupgradeneeded` handler is the place to create or upgrade the storage to a new version. This is explained next.  
 
-TIP: There are several scenarios to consider while deciding if you need to use the `autoIncrement` property with the store key or not. Kristof Degrave described the article http://www.kristofdegrave.be/2012/02/indexed-db-to-provide-key-or-not-to.html[Indexed DB: To provide a key or not to provide a key.     
+TIP: There are several scenarios to consider while deciding whether you need to use the `autoIncrement` property with the store key. Kristof Degrave described the article http://www.kristofdegrave.be/2012/02/indexed-db-to-provide-key-or-not-to.html[Indexed DB: To provide a key or not to provide a key].     
 
-===== Object Stores and Versioning
+===== Object stores and versioning
 
-In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the _new version_ of the database. With IndexedDB it works differently. Each database has a version, and when the new version of the database (e.g. Medical_DB) is created, the `onupgradeneeded` is dispatched, which is where object store(s) are created. But if you already had object stores in the older version of the database, and they don't need to be changed - there is no need to re-create them.
+In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the _new version_ of the database. With IndexedDB, it works differently. Each database has a version, and when the new version of the database (for example, Medical_DB) is created, the `onupgradeneeded` is dispatched, which is where object store(s) are created. But if you already had object stores in the older version of the database, and they don't need to be changed, there is no need to re-create them.
 
 After successful connection to the database, the version number is available in `IDBRequest.result.version` property. The starting version of any database is 1.
 
-The method `open()` takes a second parameter - the database version to be used. If you don't specify the version - the latest one will be used. The following line shows how the application's code can request connect to the version 3 of the database `Medical_DB`:
+The method `open()` takes a second parameter: the database version to be used. If you don't specify the version, the latest one will be used. The following line shows how the application's code can request a connection to version 3 of the database `Medical_DB`:
 
 [source, javascript]
 ----
 var request == indexedDB.open('Medical_DB',3);
 ----
 
-If the user's computer has already the `Medical_DB` database of one of the earlier versions (1 or 2), the `onupgradeneeded` handler will be invoked.  The initial creation of the database is triggered the same way - the absence of the database also falls under the "upgrade is needed" case, and the  `onupgradeneeded` handler has to invoke the `createObjectStore()` method. If upgrade is needed, the `onupgradeneeded` will be invoked before the `onsuccess` event. 
+If the user's computer already has the `Medical_DB` database of one of the earlier versions (1 or 2), the `onupgradeneeded` handler will be invoked.  The initial creation of the database is triggered the same way--the absence of the database also falls under the "upgrade is needed" case, and the  `onupgradeneeded` handler has to invoke the `createObjectStore()` method. If an upgrade is needed, `onupgradeneeded` will be invoked before the `onsuccess` event. 
 
-The following code snippet creates a new or initial version of the object store `Visits`, requesting auto-generation of the surrogate keys named `id`. It also creates indexes to allow search by office ID, contact name and notes. Indexes are updated automatically as soon as the Web application makes any changes to the stored data. If you wouldn't create indexes, you'd be able to look up objects only by the value of key.
+The following code snippet creates a new or initial version of the object store `Visits`, requesting autogeneration of the surrogate keys named `id`. It also creates indexes to allow searching by office ID, contact name, and notes. Indexes are updated automatically, as soon as the web application makes any changes to the stored data. If you couldn't create indexes, you'd be able to look up objects only by the value of the key.
 
 [source, javascript]
 ----
@@ -805,27 +805,27 @@ Note that while creating the object store for visits, we could have used a uniqu
          {keypath='officeID'});
 ----
 
-The `event.currentTarget.result` (as well as `IDBRequest.result`) points at the instance of the `IDBDatabase` object, which has a number of useful properties such as `name`, that contains the name of the current database and the array `objectStoreNames`, which has the names of all object stores that exist in this database. Its property `version` has the database version number. If you'd like to create a new database, just call the method `open()` specifying the version number that's higher than the current one.  
+The `event.currentTarget.result` (as well as `IDBRequest.result`) points at the instance of the `IDBDatabase` object, which has a number of useful properties such as `name`, which contains the name of the current database, and the array `objectStoreNames`, which has the names of all object stores that exist in this database. Its property `version` has the database version number. If you'd like to create a new database, just call the method `open()`, specifying a version number that's higher than the current one.  
 
-To remove the existing database, call the method `indexedDB.deleteDatabase()`. To delete the existing object store invoke `indexedDB.deleteObjectStore()`.
+To remove the existing database, call the method `indexedDB.deleteDatabase()`. To delete the existing object store, invoke `indexedDB.deleteObjectStore()`.
 
-WARNING: IndexedDB doesn't offer a secure way of storing data. Anyone who has access to the user's computer can get a hold of the data stored in IndexedDB. Do not store any sensitive data locally. Always use secure "https" protocol with your Web application.  
+WARNING: IndexedDB doesn't offer a secure way of storing data. Anyone who has access to the user's computer can get a hold of the data stored in IndexedDB. Do not store any sensitive data locally. Always use the secure HTTPS protocol with your web application.  
 
 ===== Transactions
 
-Transaction is a logical unit of work. Executing several database operation in one transaction guarantees that the changes will be committed to the database only if all operations finished successfully. If at least one of the operations fails, the entire transaction will be rolled back (undone). IndexDB supports three transaction modes: `readonly`, `readwrite`, and `versionchange`. 
+A _transaction_ is a logical unit of work. Executing several database operations in one transaction guarantees that the changes will be committed to the database only if all operations finished successfully. If at least one of the operations fails, the entire transaction will be rolled back (undone). IndexDB supports three transaction modes: `readonly`, `readwrite`, and `versionchange`. 
 
-To start any manipulations with the database you have to open a transaction in one of these modes. The `readonly` transaction (the  default one) allows multiple scripts to read from the database concurrently. This statement may raise a question - why would the user need a concurrent access to his local database is he's the only user of the application on his device?  The reason being that the same application can be opened in more than one tab, or spawning more than one worker thread that need to access the local database. The `readonly` is the least restrictive mode and more than one script can open a `readonly` transaction.
+To start any manipulations of the database, you have to open a transaction in one of these modes. The `readonly` transaction (the  default one) allows multiple scripts to read from the database concurrently. This statement might raise a question: why would the user need concurrent access to his local database if he's the only user of the application on his device? The reason is that the same application can be opened in more than one tab, or by spawning more than one worker thread that needs to access the local database. The `readonly` mode is the least restrictive mode, and more than one script can open a `readonly` transaction.
 
-If the application needs to modify or add objects to the database, open transaction in the `readwrite` mode - only one script can have it open on any particular object store. But you can have more than one `readwrite` transactions open at the same time on different stores. And if the database/store/index creation or upgrade has to be done, use the `versionchange` mode. 
+If the application needs to modify or add objects to the database, open the transaction in `readwrite` mode; only one script can have the transaction open on any particular object store. But you can have more than one `readwrite` transactions open at the same time on different stores. And if the database/store/index creation or upgrade has to be done, use `versionchange` mode. 
 
-When a transaction is created, you should assign listeners to its `complete`, `error`, and `abort` events. If the `complete` event is fired, transaction is automatically commited - manual commits are not supported. If the `error` event is dispatched, the entire transaction is rolled back. Calling the method `abort()` will fire the `abort` event and will roll back transaction too.
+When a transaction is created, you should assign listeners to its `complete`, `error`, and `abort` events. If the `complete` event is fired, the transaction is automatically commited; manual commits are not supported. If the `error` event is dispatched, the entire transaction is rolled back. Calling the method `abort()` will fire the `abort` event and will roll back the transaction, too.
 
-Typically, you should open the database and in the `onsuccess` handler create a transaction. Then open a transaction by calling the method `objectStore()` and perform data manipulations. In the next section you'll see how to add objects to an object store using transactions.
+Typically, you should open the database and in the `onsuccess` handler create a transaction. Then, open a transaction by calling the method `objectStore()` and perform data manipulations. In the next section, you'll see how to add objects to an object store by using transactions.
 
-===== Modyfying the Object Store Data
+===== Modyfying the object store data
 
-The following code snippet creates the transaction that allows updates of the store `Visits` (you could create a transaction for more than one store) and add two visit object by invoking the method `add()`:
+The following code snippet creates a transaction that allows updates of the store `Visits` (you could create a transaction for more than one store) and adds two +visit+ objects by invoking the method `add()`:
 
 [source, javascript]
 ----
@@ -864,22 +864,22 @@ request.onsuccess == function(event) {       // <1>
 
 <2> Create a sample array of `visitsData` to illustrate adding more than one object to an object store.
 
-<3> Open a transaction for updates and assign listeners for success and failure. The first argument is an array of object stores that the transaction will span (only `Visits` in this case). When all visits are added the `complete` event is fired and transaction commits. If adding of any visit failed, the `error` event is dispatched and transaction rolls back.
+<3> Open a transaction for updates and assign listeners for success and failure. The first argument is an array of object stores that the transaction will span (only `Visits` in this case). When all visits are added, the `complete` event is fired and the transaction commits. If adding any visit fails, the `error` event is dispatched and the transaction rolls back.
 
 <4> Get a reference to the object store `visits`.
 
 <5> In a loop, add the data from the array `visitsData` to the object store `Visits`.  
 
-NOTE: In the above code sample, the each object that represents a visit has a property `notes`, which is a string. If later on you'll decide to allow storing more than one note per visit, just turn the property `notes` into an array in your JavaScript - no changes in the object stores is required.
+NOTE: In the preceding code sample, each object that represents a visit has a property `notes`, which is a string. If later you decide to allow storing more than one note per visit, just turn the property `notes` into an array in your JavaScript; no changes in the object stores is required.
 
-The method `put()` allows you to update an existing object in a record store. It takes two parameters: the new object and the key of the existing object to be replaced, for example:
+The method `put()` allows you to update an existing object in a record store. It takes two parameters: the new object and the key of the existing object to be replaced; for example:
 
 [source, javascript]
 ----
 var putRequest == visitsStore.put({officeID: 123, contactName: "Mary Lee"}, 1);
 ----
 
-To remove all objects from the store use the method `clear()`. To delete an object specify its id:
+To remove all objects from the store, use the method `clear()`. To delete an object, specify its ID:
 
 [source, javascript]
 ----
@@ -888,7 +888,7 @@ var deleteRequest == visitsStore.delete(1);
 
 TIP: You can browse the data from your IndexedDB database in Chrome Developer Tools under the tab Resources (see <<FIG1-0>>).
 
-===== Retrieving the Data 
+===== Retrieving the data 
 
 IndexedDB doesn't support SQL. You'll be using cursors to iterate through the object store. First, you open the transaction. Then you open invoke `openCursor()` on the object store. While opening the cursor you can specify optional parameters like the range of object keys you'd like to iterate and the direction of the cursor movement: `IDBCursor.PREV` or `IDBCursor.NEXT`. If none of the parameters is specified, the cursor will iterate all objects in the store in the ascending order. The following code snippet iterates through all Visit objects printing just contact names.
 
