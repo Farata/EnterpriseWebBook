@@ -661,7 +661,7 @@ TIP: Another good example of a use-case when `locaStorage` becomes handy is when
 
 ===== sessionStorage API
 
-The `sessionStorage` life is short; it's available for a web page only while the browser stays open. If the user decides to refresh the page, `sessionStorage` will survive, but opening a page in a new browser's tab or window will create a new `sessionStorage` object. Working with session storage is fairly straightforward; for example: 
+The `sessionStorage` life is short; it's available for a web page only while the browser stays open. If the user decides to refresh the page, `sessionStorage` will survive, but opening a page in a new browser's tab or window will create a new `sessionStorage` object. Working with session storage is fairly straightforward; for(((sessionStorage API, overview of))) example: 
 
 [source, javascript]
 ----
@@ -678,7 +678,7 @@ image::images/ewdv_ab05.png[]
 
 ===== localStorage and sessionStorage commonalities 
 
-Both `localStorage` and `sessionStorage` are subject to the same-origin policy, meaning that saved data is available only for web pages that come from the same host, from the same port, and via the same protocol.
+Both `localStorage` and `sessionStorage` are subject to the same-origin policy, meaning that saved data is available only for web pages that come from the same host, from the same port, and via the same protocol.(((localStorage API, vs. sessionStorage)))(((sessionStorage API, vs. localStorage)))
 
 Both `localStorage` and `sessionStorage` are browser-specific. For example, if the web application stores data from Firefox, that data won't be available if the user opens the same application from Safari.
 
@@ -691,7 +691,7 @@ Even if the user's browser allows increasing this setting (for example, via _abo
 
 ==== Introduction to IndexedDB
 
-http://www.w3.org/TR/IndexedDB/[Indexed Database API] (a.k.a. IndexedDB) is a solution based on the NoSQL database. As with the `Storage` interface, IndexedDB stores data as key-value pairs, but it also offers  transactional handling of objects. IndexedDB creates indexes of the stored objects for fast retrieval. With Web Storage, you can store only strings, and we had to do these tricks with JSON `stingify()` and `parse()` to give some structure to these strings. With IndexedDB, you can directly store and index regular JavaScript objects. 
+http://www.w3.org/TR/IndexedDB/[Indexed Database API] (a.k.a. IndexedDB) is a solution based on the NoSQL database. As with the `Storage` interface, IndexedDB stores data as key-value pairs, but it also offers  transactional handling of objects. IndexedDB creates indexes of the stored objects for fast retrieval. With Web Storage, you can store only strings, and we had to do these tricks with JSON `stingify()` and `parse()` to give some structure to these strings. With IndexedDB, you can directly store and index regular JavaScript objects.(((IndexedDB, overview of))) 
 
 Using IndexedDB, you can access data asynchronously, so UI freezes won't occur while accessing large objects on disk. You make a request to the database and define the event handlers that should process the errors or the result when ready. IndexedDB uses DOM events for all notifications. Success events don't bubble, whereas error events do.
 
@@ -721,7 +721,7 @@ In this code snippet, the https://developer.mozilla.org/en-US/docs/Web/API/IDBKe
 
 IndexedDB doesn't require you to define a formal structure of your stored objects; any JavaScript object can be stored there. Not having a formal definition of a database scheme is an advantage compared to relational databases, where you can't store data until the structure of the tables is defined.
 
-Your web application can have one or more databases, and each can contain one or more _object stores_.  Each object store will contain similar objects (for example, one stores the salesperson's visits, whereas another stores upcoming promotions).
+Your web application can have one or more databases, and each can contain one or more _object stores_.  Each object store will contain similar objects (for example, one stores the salesperson's visits, whereas another stores upcoming promotions).(((object stores, basics of)))
 
 Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide whether you want to maintain the value in this property manually, or use the the `autoIncrement` option, where the values of this property will be assigned automatically. Coming back to our +Visits+ example, you can either maintain the unique values of the `officeId` on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as a surrogate keys never decreases, and starts with the value of 1 in each object store.
 
@@ -759,7 +759,7 @@ TIP: There are several scenarios to consider while deciding whether you need to 
 
 ===== Object stores and versioning
 
-In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the _new version_ of the database. With IndexedDB, it works differently. Each database has a version, and when the new version of the database (for example, Medical_DB) is created, the `onupgradeneeded` is dispatched, which is where object store(s) are created. But if you already had object stores in the older version of the database, and they don't need to be changed, there is no need to re-create them.
+In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the _new version_ of the database. With IndexedDB, it works differently. Each database has a version, and when the new version of the database (for example, Medical_DB) is created, the `onupgradeneeded` is dispatched, which is where object store(s) are created. But if you already had object stores in the older version of the database, and they don't need to be changed, there is no need to re-create them.(((object stores, versioning and)))(((IndexedDB, object stores and versioning)))
 
 After successful connection to the database, the version number is available in `IDBRequest.result.version` property. The starting version of any database is 1.
 
@@ -809,7 +809,7 @@ WARNING: IndexedDB doesn't offer a secure way of storing data. Anyone who has ac
 
 ===== Transactions
 
-A _transaction_ is a logical unit of work. Executing several database operations in one transaction guarantees that the changes will be committed to the database only if all operations finished successfully. If at least one of the operations fails, the entire transaction will be rolled back (undone). IndexDB supports three transaction modes: `readonly`, `readwrite`, and `versionchange`. 
+A _transaction_ is a logical unit of work. Executing several database operations in one transaction guarantees that the changes will be committed to the database only if all operations finished successfully. If at least one of the operations fails, the entire transaction will be rolled back (undone). IndexDB supports three transaction modes: `readonly`, `readwrite`, and `versionchange`.(((IndexedDB, transactions)))(((transactions, basics of))) 
 
 To start any manipulations of the database, you have to open a transaction in one of these modes. The `readonly` transaction (the  default one) allows multiple scripts to read from the database concurrently. This statement might raise a question: why would the user need concurrent access to his local database if he's the only user of the application on his device? The reason is that the same application can be opened in more than one tab, or by spawning more than one worker thread that needs to access the local database. The `readonly` mode is the least restrictive mode, and more than one script can open a `readonly` transaction.
 
@@ -821,7 +821,7 @@ Typically, you should open the database and in the `onsuccess` handler create a 
 
 ===== Modyfying the object store data
 
-The following code snippet creates a transaction that allows updates of the store `Visits` (you could create a transaction for more than one store) and adds two +visit+ objects by invoking the method `add()`:
+The(((IndexedDB, modifying object store data)))(((object stores, modifying data in))) following code snippet creates a transaction that allows updates of the store `Visits` (you could create a transaction for more than one store) and adds two +visit+ objects by invoking the method `add()`:
 
 [source, javascript]
 ----
@@ -886,7 +886,7 @@ TIP: You can browse the data from your IndexedDB database in Chrome Developer To
 
 ===== Retrieving the data 
 
-IndexedDB doesn't support SQL. You'll be using cursors to iterate through the object store. First, you open the transaction. Then, you invoke `openCursor()` on the object store. While opening the cursor, you can specify optional parameters like the range of object keys you'd like to iterate and the direction of the cursor movement: `IDBCursor.PREV` or `IDBCursor.NEXT`. If none of the parameters is specified, the cursor will iterate all objects in the store in ascending order. The following code snippet iterates through all +Visit+ objects, printing just contact names.
+IndexedDB doesn't support SQL. You'll be using cursors to iterate through the object store. First, you open the transaction. Then, you invoke `openCursor()` on the object store. While opening the cursor, you can specify optional parameters like the range of object keys you'd like to iterate and the direction of the cursor movement: `IDBCursor.PREV` or `IDBCursor.NEXT`. If none of the parameters is specified, the cursor will iterate all objects in the store in ascending order. The following code snippet iterates through all +Visit+ objects, printing just contact names.(((IndexedDB, retrieving data)))
 
 [source, javascript]
 ----
@@ -939,7 +939,7 @@ contactNameIndex.openCursor(IDBKeyRange.only("Mary Lou");
 
 ===== Runninng the sample code
 
-Let's bring together all of the previous code snippets into one runnable HTML file. While doing this, we'll be watching the script execution in the Chrome Developer Tools panel. We'll do it in two steps. The first version of this file will create a database of a newer version than the one that currently exists on the user's device. Here's the code that creates the database +Medical_DB+ with an empty object store +Visits+:
+Let's bring together all of the previous code snippets into one runnable HTML file. While doing this, we'll be watching the script execution in the Chrome Developer Tools panel. We'll do it in two steps.(((IndexedDB, sunning sample code))) The first version of this file will create a database of a newer version than the one that currently exists on the user's device. Here's the code that creates the database +Medical_DB+ with an empty object store +Visits+:
 
 [source, javascript]
 ----
@@ -1114,7 +1114,7 @@ This concludes our brief introduction to IndexedDB. Those of you who have experi
 
 === The History API
 
-To put this simply, the http://www.w3.org/TR/html5/browsers.html#the-history-interface[History API] is about ensuring that the Back/Forward  buttons on the browser toolbar can be controlled programmatically. Each web browser has the `window.history` object. The History API is not new to HTML5. The `history` object has been around for many years, with methods like `back()`, `forward()`, and `go()`. But HTML5 adds new methods, `pushState()` and `replaceState()`, with which you can modify the browser's address bar without reloading the web page. 
+To put this simply, the http://www.w3.org/TR/html5/browsers.html#the-history-interface[History API] is about ensuring that the Back/Forward  buttons on the browser toolbar can be controlled programmatically. Each web browser has the `window.history` object. The History API is not new to HTML5. The `history` object has been around for many years, with methods like `back()`, `forward()`, and `go()`. But HTML5 adds new methods, `pushState()` and `replaceState()`, with which you can modify the browser's address bar without reloading the web page.(((HTML5 APIs, History, overview of)))(((History API, overview of))) 
 
 Imagine a single-page application (SPA) that has a navigational menu to open various views, based on the user's interaction. Because these views represent URLs loaded by making Ajax calls from your code, the web browser still shows the original URL of the home page of your web application. 
 
@@ -1124,7 +1124,7 @@ TIP: Not writing any code that would process clicks on the Back and Forward butt
 
 ==== Modifying the Browser's History by Using pushState()
 
-Imagine that you have a customer-management application with the URL http://myapp.com. The user clicks the menu item Get Customers, which makes an Ajax call loading the customers. You can programmatically change the URL on the browser's address line to http://myapp.com/customers without asking the web browser to make a request to this URL. You do this by invoking the `pushState()` method. 
+Imagine that you have a customer-management application with the URL http://myapp.com. The user clicks the menu item Get Customers, which makes an Ajax call loading the customers. You can programmatically change the URL on the browser's address line to http://myapp.com/customers without asking the web browser to make a request to this URL. You do this by invoking the `pushState()` method.(((HTML5 APIs, History, modifying browser history))) 
 
 The browser will just remember that the current URL is http://myapp.com/customers, while the previous was http://myapp.com. So pressing the Back button changes the address back to http://myapp.com, and not some unrelated web application. The Forward button will also behave properly, as per the history chain set by your application.
 
