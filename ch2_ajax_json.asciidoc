@@ -647,13 +647,13 @@ Web browsers support GZipping, too, and your application can set `Content-Ecodin
 
 Let's consider yet another use case for JSON in Save The Child. We want to display charts with statistics about donations. By now, our application doesn't look exactly like the original mock-up from <<FIG3-2>>, but it's pretty close. There is an empty space to the left of the maps, and the charts showing donation statistics can fit right in. Now we need to decide how to draw the charts by using nothing but HTML5 elements. Note that we are not talking about displaying static images by using the `<img>` element. The goal is to draw the images dynamically in the client's code. You can accomplish this by using the HTML5 elements `<canvas>` or `<svg>`.((("JSON (JavaScript Object Notation)", "charts", "dynamic display of"))) 
 
-The http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides a bitmap canvas, where your scripts can draw graphs, game graphics, or other visual images on the fly without using any plug-ins such as Flash Player or Silverlight. To put it simply, `<canvas>` defines a rectangular area that consists of pixels, where you can draw. Keep in mind that the DOM object can't peek inside the canvas and access specific pixels. So if you are planning to create an area with dynamically changing graphics, you might want to consider using `<svg>`. 
+The http://www.w3.org/wiki/HTML/Elements/canvas[`<canvas>`] element provides a bitmap canvas, where your scripts can draw graphs, game graphics, or other visual images on the fly without using any plug-ins such as Flash Player or Silverlight. To put it simply, `<canvas>` defines a rectangular area that consists of pixels, where you can draw. Keep in mind that the DOM object can't peek inside the canvas and access specific pixels. So if you are planning to create an area with dynamically changing graphics, you might want to consider using `<svg>`.((("<canvas> tag")))((("<svg> tag"))) 
 
-The `<svg>` element supports http://www.w3.org/TR/SVG11/[Scalable Vector Graphics (SVG)], the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images, and so forth. 
+The `<svg>` element supports http://www.w3.org/TR/SVG11/[Scalable Vector Graphics (SVG)], the XML-based language for describing two-dimensional graphics. Your code has to provide commands to draw the lines, text, images, and so forth.((("Scalable Vector Graphics (SVG)")))(((vector graphics images)))(((images, vector graphics)))(((fonts, vector graphics)))(((graphics, raster vs. vector))) 
 
 ==== Adding a Chart with the Canvas Element
 
-Let's review some code fragments from _project-04-canvas-pie-chart-json_. The HTML section defines `<canvas>` as 260 x 240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your `<canvas>` element so your JavaScript code can access it.
+Let's review some code fragments from _project-04-canvas-pie-chart-json_. The HTML section defines `<canvas>` as 260 x 240 pixels. If the user's browser doesn't support `<canvas>`, the user won't see the chart, but will see the text "Your browser does not support HTML5 Canvas" instead. You need to give an ID to your `<canvas>` element so your JavaScript code can access it.((("JSON (JavaScript Object Notation)", "charts", "adding with canvas element")))((("pie charts", see="charts")))
 
 [source, html]
 ----
@@ -824,7 +824,7 @@ TIP: To minimize the amount of manual coding, consider using one of the JavaScri
 
 ==== Adding a Chart by Using SVG
 
-What if we want to make this chart dynamic and reflect the changes in donations every 5 minutes? If you're using `<canvas>`, you'll need to redraw each and every pixel of our canvas with the pie.	With SVG, each element of the drawing would be the DOM element so we would have to redraw only those elements that have changed. If with `<canvas>` your script draws using pixels, the SVG drawings are done with vectors. 
+What if we want to make this chart dynamic and reflect the changes in donations every 5 minutes? If you're using `<canvas>`, you'll need to redraw each and every pixel of our canvas with the pie.	With SVG, each element of the drawing would be the DOM element so we would have to redraw only those elements that have changed. If with `<canvas>` your script draws using pixels, the SVG drawings are done with vectors.((("JSON (JavaScript Object Notation)", "charts", "adding with scalable vector graphics")))((("Scalable Vector Graphics (SVG)"))) 
 
 To implement the same donation statistics pie with the `<svg>` element, you'd need to replace the `<canvas>` element with the following markup:
 
@@ -956,7 +956,7 @@ TIP: SVG supports animations and transformation effects, while canvas doesn't.
 
 === Loading Data from Other Servers by Using JSONP
 
-Imagine that a web page was loaded from the domain _abc.com_, and it needs JSON-formatted data from another domain (_xyz.com_). As mentioned earlier, Ajax has cross-origin restrictions, which prevent this. JSONP is a technique used to relax the cross-origin restrictions.  With JSONP, instead of sending plain JSON data, the server wraps it up into a JavaScript function and then sends it to the web browser for execution as a callback. The web page that was originated from _abc.com_ might send the request `http://xyz.com?callback=myDataHandler`, technically requesting the server _xyz.com_ to invoke the JavaScript callback named `myDataHandler`. This URL is a regular HTTP +GET+ request, which may have other parameters so that you can send some data to the server, too.
+Imagine that a web page was loaded from the domain _abc.com_, and it needs JSON-formatted data from another domain (_xyz.com_). As mentioned earlier, Ajax has cross-origin restrictions, which prevent this. JSONP is a technique used to relax the cross-origin restrictions.  With JSONP, instead of sending plain JSON data, the server wraps it up into a JavaScript function and then sends it to the web browser for execution as a callback. The web page that was originated from _abc.com_ might send the request `http://xyz.com?callback=myDataHandler`, technically requesting the server _xyz.com_ to invoke the JavaScript callback named `myDataHandler`. This URL is a regular HTTP +GET+ request, which may have other parameters so that you can send some data to the server, too.((("JSONP", "loading external data with")))(((data, loading external with JSONP)))((("Cross-Origin Resource Sharing (CORS)")))
 
 The server then sends to the browser the JavaScript function that might look as follows:
 
@@ -996,7 +996,7 @@ If you decide to use JSONP, don't forget about error handling. Most likely you'l
 
 ==== Beer and JSONP
 
-In this section, you'll see a small code example illustrating the data retrieval from the publicly available http://openbeerdatabase.com/[Open Beer DataBase], which exists to help software developers test code that makes RESTful web service calls and works with JSON and JSONP data. Our Save The Child page won't display beer bottles, but we want to show that in addition to the retrieval of the donations and charts data from one domain, we can get the data from a third-party domain _openbeerdatabase.com_. 
+In this section, you'll see a small code example illustrating the data retrieval from the publicly available http://openbeerdatabase.com/[Open Beer DataBase], which exists to help software developers test code that makes RESTful web service calls and works with JSON and JSONP data. Our Save The Child page won't display beer bottles, but we want to show that in addition to the retrieval of the donations and charts data from one domain, we can get the data from a third-party domain _openbeerdatabase.com_.((("JSONP", "data retrieval example")))(((Open Beer DataBase))) 
 
 First, enter the URL `http://api.openbeerdatabase.com/v1/breweries.json` in the address bar of your web browser; it will return the following JSON data (only two out of seven breweries are shown for brevity):
 
