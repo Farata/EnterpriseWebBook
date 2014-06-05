@@ -1,7 +1,7 @@
 [[upgrading_http_to_websocket]]
 == Upgrading HTTP To WebSocket
 
-This chapter is about upgrading from HTTP to the more responsive HTML5 WebSocket. It begins with a brief overview of the existing legacy web networking, and then you'll learn why and how to use WebSocket.
+This chapter is about upgrading from HTTP to the more responsive HTML5 WebSocket. It begins with a brief overview of the existing legacy web networking, and then you'll learn why and how to use WebSocket.(((WebSocket protocol, applications based on)))
 
 We're going to show that the WebSocket protocol has literally no overhead compared to HTTP. You might consider using WebSocket to develop the following types of applications:
 
@@ -14,7 +14,7 @@ We're going to show that the WebSocket protocol has literally no overhead compar
 
 For the next version of the Save The Child application, we're going to use WebSocket to implement an online auction communication layer. The goal is to let individuals and businesses purchase handmade arts and crafts made by children. All proceeds will go to Save The Child.
 
-The goal is to let you see the advantages of changing the protocol for client-server communications on the Web. You'll clearly see the advantages of WebSocket over regular HTTP by monitoring network traffic with such tools as Wireshark and Google Chrome Developer Tools.
+The goal is to let you see the advantages of changing the protocol for client-server communications on the Web. You'll clearly see the advantages of WebSocket over regular HTTP by monitoring network traffic with such tools as Wireshark and Google Chrome Developer Tools.(((WebSocket protocol, advantages of)))
 
 All the server-side functionality supporting this chapter is written in Java, using the Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which is a part of the Java EE 7 specification. We are using the http://dlc.sun.com.edgesuite.net/glassfish/4.0/release/[latest release of the GlassFish application server]. If you don't know Java, just treat this server-side setup as a service that supports the WebSocket protocol. For Java developers interested in diving into the server side, we provide the source code and brief comments as a part of the code samples that come with this book.
 
@@ -22,11 +22,11 @@ We show and compare the server-side data push done with server-sent events and W
 
 === Using HTTP for Near Real-Time Applications
 
-The HTTP protocol is the lingua franca of today's web applications, whereby client-server communications are based on the request-response paradigm. On a low level, web browsers establish a TCP/IP connection for each HTTP session. Currently there are three basic options that developers use for browser-server communication: polling, long polling, and streaming. These options are hacks on top of a half-duplex (a one-way street) HTTP protocol to simulate real-time behavior. (By _real-time_ we mean the ability to react to some event as it happens. Let's discuss each of them).
+The HTTP protocol is the lingua franca of today's web applications, whereby client-server communications are based on the request-response paradigm. On a low level, web browsers establish a TCP/IP connection for each HTTP session. Currently there are three basic options that developers use for browser-server communication: polling, long polling, and streaming. These options are hacks on top of a half-duplex (a one-way street) HTTP protocol to simulate real-time behavior. (By _real-time_ we mean the ability to react to some event as it happens. Let's discuss each of them).(((HTTP protocol, real-time behavior simulation)))(((WebSocket protocol, vs. HTTP protocol)))
 
 ==== Polling
 
-With _polling_, your client code sends requests to the server based on some preconfigured interval (for example, by using the JavaScript `setInterval()` function). Some of the server's responses will be empty, if the requested data is not ready yet, as illustrated in <<FIG9-1>>. For example, if you're running an online auction and send a request to see the updated bids, you won't receive any data back unless someone placed a new bid. 
+With _polling_, your client code sends requests to the server based on some preconfigured interval (for example, by using the JavaScript `setInterval()` function). Some of the server's responses will be empty, if the requested data is not ready yet, as illustrated in <<FIG9-1>>. For example, if you're running an online auction and send a request to see the updated bids, you won't receive any data back unless someone placed a new bid.(((HTTP protocol, polling)))(((polling techniques))) 
 
 Visualize a child sitting in the back seat of your car and asking every minute, "Have we arrived yet?" And you politely reply, "Not just yet." This is similar to an empty server response. There is no valuable payload for this kid, but she's still receiving some "metadata." HTTP polling can result in receiving verbose HTTP response headers bearing no data load, let alone distracting the driver (think, the server) from performing other responsibilities.
 
@@ -36,11 +36,11 @@ image::images/ewdv_0801.png[image]
 
 ==== Long Polling
 
-_Long polling_ (see <<FIG9-2>> ) begins similarly to polling: the client sends the HTTP request to the server. But in this case, instead of sending an empty response back, the server waits until the data for the client becomes available. If the requested information is not available within the specified time interval, the server sends an empty response to the client, closes, and re-establishes the connection.
+_Long polling_ (see <<FIG9-2>> ) begins similarly to polling: the client sends the HTTP request to the server. But in this case, instead of sending an empty response back, the server waits until the data for the client becomes available. If the requested information is not available within the specified time interval, the server sends an empty response to the client, closes, and re-establishes the connection.(((HTTP protocol, long polling)))(((long polling)))
 
 We'll give you one more analogy to compare polling and long polling. Imagine a party at the top floor of a building equipped with a smart elevator that goes up every minute and opens the door just in case one of the guests wants to go down to smoke a cigarette. If no one enters the elevator, it goes to the ground level and in 60 seconds goes up again. This is the polling scenario. But if this elevator went up and waited until someone would actually decided to go down (or got tired of waiting), we could call it a long polling mode.
 
-From the HTTP specification perspective, it's legitimate: the long polling mode might seem as if we deal with a slow-responding server. That is why this technique also is referred to as _Hanging GET_. If you see an online auction that automatically modifies prices as people bid on items, it looks as if the server pushes the data to you. But the chances are, this functionality was implemented by using long polling, which is not a real server-side data push, but its emulation.
+From the HTTP specification perspective, it's legitimate: the long polling mode might seem as if we deal with a slow-responding server. That is why this technique also is referred to as _Hanging GET_. If you see an online auction that automatically modifies prices as people bid on items, it looks as if the server pushes the data to you. But the chances are, this functionality was implemented by using long polling, which is not a real server-side data push, but its emulation.(((Hanging GET)))
 
 [[FIG9-2]]
 .Long polling
@@ -48,7 +48,7 @@ image::images/ewdv_0802.png[image]
 
 ==== HTTP Streaming 
 
-In HTTP streaming (see <<FIG9-3>>), a client sends a request for data. As soon as the server gets the data ready, it starts streaming (adding more and more data to the response object) without closing the connections. The server pushes the data to the client, pretending that the response never ends. For example, requesting a video from YouTube.com results in streaming data (frame after frame) without closing the HTTP connection.
+In HTTP streaming (see <<FIG9-3>>), a client sends a request for data. As soon as the server gets the data ready, it starts streaming (adding more and more data to the response object) without closing the connections. The server pushes the data to the client, pretending that the response never ends. For example, requesting a video from YouTube.com results in streaming data (frame after frame) without closing the HTTP connection.(((HTTP protocol, streaming)))(((streaming)))
 
 [[FIG9-3]]
 .HTTP streaming
@@ -58,7 +58,7 @@ Polling and streaming can be used as a fallback for legacy browsers that don't s
 
 === Implementing Server-Sent Events
 
-Before diving into the WebSocket protocol, let's become familiar with the standardized way of implementing http://dev.w3.org/html5/eventsource/[server-sent events (SSE)]. The World Wide Web Consortium (W3C) has published an API for web browsers to allow them to subscribe to events sent by a server. All modern browsers support the `EventSource` object, which can handle events arriving in the form of DOM events. This is not a request-response paradigm, but rather a unidirectional data push, from server to browser. <<ex_subscribing_server_sent_events>> shows how a web browser can subscribe and listen to server-sent events.
+Before diving into the WebSocket protocol, let's become familiar with the standardized way of implementing http://dev.w3.org/html5/eventsource/[server-sent events (SSE)]. The World Wide Web Consortium (W3C) has published an API for web browsers to allow them to subscribe to events sent by a server. All modern browsers support the `EventSource` object, which can handle events arriving in the form of DOM events. This is not a request-response paradigm, but rather a unidirectional data push, from server to browser. <<ex_subscribing_server_sent_events>> shows how a web browser can subscribe and listen to server-sent events.(((WebSocket protocol, server-sent events)))((("server-sent events (SSEs)")))
 
 [[ex_subscribing_server_sent_events]]
 .Subscribing to server-sent events
@@ -109,7 +109,7 @@ Reducing kilobytes of data to 2 bytes is more than "a little more byte efficient
 source: http://ietf.org/mail-archive/web/hybi/current/msg00784.html
 ____
 
-WebSocket is a bidirectional, full-duplex, frame-based protocol. According to http://tools.ietf.org/html/rfc6455[RFC 6455]--the Internet Engineering Task Force (IETF) standard document--the goal of WebSocket technology is to provide a mechanism for web applications that need two-way communication with servers. This technology doesn't rely on HTTP hacks or on opening multiple connections by using `XMLHttpRequest` or `<iframe>` and long polling. The idea behind WebSocket is not overly complicated:
+WebSocket is a bidirectional, full-duplex, frame-based protocol. According to http://tools.ietf.org/html/rfc6455[RFC 6455]--the Internet Engineering Task Force (IETF) standard document--the goal of WebSocket technology is to provide a mechanism for web applications that need two-way communication with servers. This technology doesn't rely on HTTP hacks or on opening multiple connections by using `XMLHttpRequest` or `<iframe>` and long polling.(((WebSocket protocol, goal of))) The idea behind WebSocket is not overly complicated:
 
 - Establish a socket connection between the client and the server using HTTP for the initial handshake.
 - Switch the communication protocol from HTTP to a socket-based protocol.
@@ -119,11 +119,11 @@ WebSocket is a bidirectional, full-duplex, frame-based protocol. According to ht
 
 You will get a better understanding of each of the preceding statements after reading the section <<the_websocket_api>>.
 
-The WebSocket protocol defines two new http://en.wikipedia.org/wiki/URI_scheme[URI schemes], `ws` and `wss`, for unencrypted and encrypted connections, respectively. The `ws` (WebSocket) URI scheme is similar to the HTTP URI scheme and identifies that a WebSocket connection will be established by using TCP/IP without encryption. The wss (WebSocket Secure) URI scheme identifies that the traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides such benefits over TCP connection as data confidentiality, integrity, and endpoint authentication. Apart from the scheme name, WebSocket URI schemes use generic URI syntax.
+The WebSocket protocol defines two new http://en.wikipedia.org/wiki/URI_scheme[URI schemes], `ws` and `wss`, for unencrypted and encrypted connections, respectively. The `ws` (WebSocket) URI scheme is similar to the HTTP URI scheme and identifies that a WebSocket connection will be established by using TCP/IP without encryption. The wss (WebSocket Secure) URI scheme identifies that the traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides such benefits over TCP connection as data confidentiality, integrity, and endpoint authentication. Apart from the scheme name, WebSocket URI schemes use generic URI syntax.(((WebSocket protocol, URI schemes introduced in)))((("ws (WebScoket) URI scheme")))((("wss (WebScoket Secure) URI scheme")))
 
 ==== The WebSocket Interface ====
 
-The W3C expert group uses http://en.wikipedia.org/wiki/Interface_description_language[Interface Description Language] to describe what the WebSocket interface should look like. <<ex_websocket_interface>> shows how it is defined.
+The W3C expert group uses http://en.wikipedia.org/wiki/Interface_description_language[Interface Description Language] to describe what the WebSocket interface should look like. <<ex_websocket_interface>> shows how it is defined.(((WebSocket protocol, WebSocket interface)))(((Interface Description Language)))
 
 [[ex_websocket_interface]]
 .The WebSocket interface
@@ -146,7 +146,7 @@ include::include/ws_interface.il[]
 
 ==== The Client-Side API
 
-Now that we have introduced the WebSocket interface, take a look at the code in <<ex_using_websocket_in_javascript_client>>, illustrating how the client's JavaScript can use it.
+Now that we have introduced the WebSocket interface, take a look at the code in <<ex_using_websocket_in_javascript_client>>, illustrating how the client's JavaScript can use it.(((WebSocket protocol, client-side API, illustration of)))
 
 [[ex_using_websocket_in_javascript_client]]
 .Using WebSocket in a JavaScript client
@@ -172,9 +172,9 @@ include::include/ws_api_example.js[]
 [[HANDSHAKE]]
 ===== WebSocket Handshake
 
-Any network communications that use the WebSocket protocol start with an opening handshake. This handshake upgrades the connection from HTTP to the WebSocket protocol. It's an upgrade of HTTP to message-based communications. We discuss messages (a.k.a. frames) later in this chapter.
+Any network communications that use the WebSocket protocol start with an opening handshake. This handshake upgrades the connection from HTTP to the WebSocket protocol. It's an upgrade of HTTP to message-based communications. We discuss messages (a.k.a. frames) later in this chapter.(((WebSocket protocol, client-side API, WebSocket handsake)))
 
-Why upgrade from HTTP instead of starting with TCP as a protocol in the first place? The reason is that WebSocket operates on the same ports (80 and 443) as do HTTP and HTTPS. It's an important advantage that the browser's requests are routed through the same ports, because arbitrary socket connections may not be allowed by the enterprise firewalls for security reasons. Also, many corporate networks allow only certain outgoing ports. And HTTP/HTTPS ports are usually included in so called _white lists_.
+Why upgrade from HTTP instead of starting with TCP as a protocol in the first place? The reason is that WebSocket operates on the same ports (80 and 443) as do HTTP and HTTPS. It's an important advantage that the browser's requests are routed through the same ports, because arbitrary socket connections may not be allowed by the enterprise firewalls for security reasons. Also, many corporate networks allow only certain outgoing ports. And HTTP/HTTPS ports are usually included in so called _white lists_.(((HTTP protocol, upgrade to WebSocket)))(((white lists)))
 
 TIP: pass:[<emphasis><ulink url="http://shop.oreilly.com/product/0636920028048.do" role="orm:hideurl">High Performance Browser Networking</ulink></emphasis>] by Ilya Grigorik (O'Reilly) provides more information about TCP and HTTP.
 
@@ -227,7 +227,7 @@ A client can have as many WebSocket connections with the server as needed.  But 
 [[FRAMES]]
 ===== WebSocket Frame Anatomy =====
 
-The WebSocket handshake is the first step in switching to the message framing protocol, which will be layered over TCP. In this section, we're going to explore how WebSocket data transfer works. WebSocket is not a stream-based protocol like TCP--it's message based. With TCP, a program sends a stream of bytes, which has to have a specific indication that the data transfer ends.
+The WebSocket handshake is the first step in switching to the message framing protocol, which will be layered over TCP. In this section, we're going to explore how WebSocket data transfer works. WebSocket is not a stream-based protocol like TCP--it's message based. With TCP, a program sends a stream of bytes, which has to have a specific indication that the data transfer ends.(((WebSocket protocol, client-side API, WebSocket fram anatomy)))(((WebSocket protocol, vs. TCP)))
 The WebSocket specification simplifies this by putting a frame around every chunk of data, and the size of the frame is known. JavaScript can easily handle these frames on the client because each frame arrives packaged in the event object. But the server side has to work a little harder because it needs to wrap each piece of data into a frame before sending it to the client. A frame can look like this:
 
 ----------------------------------------------------------------------
@@ -296,7 +296,7 @@ The client must mask all the frames being sent to the server. The server must cl
 
 ===== The Heartbeats =====
 
-A properly designed distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so-called _heartbeats_--small messages that simply ask the other party, "Are you there?" For example, proxy servers and content-filtering hardware can terminate idle connections, or the server could simply go down. If a client doesn't send any requests, say, for 20 seconds, but the server went down, the client will know about it only when it does the next `send()`. Heartbeats will keep the connection alive to ensure that it won't look idling. In WebSocket jargon, heartbeats are implemented with _ping and pong_ frames. The browser sends the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).
+A properly designed distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so-called _heartbeats_--small messages that simply ask the other party, "Are you there?" For example, proxy servers and content-filtering hardware can terminate idle connections, or the server could simply go down. If a client doesn't send any requests, say, for 20 seconds, but the server went down, the client will know about it only when it does the next `send()`. Heartbeats will keep the connection alive to ensure that it won't look idling. In WebSocket jargon, heartbeats are implemented with _ping and pong_ frames. The browser sends the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).(((WebSocket protocol, client-side API, heartbeats)))(((heartbeats)))(((ping and pong frames)))
 
 A web browser can ping the server when required, but a pong may be sent at the server's discretion. If the  endpoint receives a ping frame before responding to the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (up to 125 bytes), and pong must have identical data in its message body.
 
@@ -305,7 +305,7 @@ There is no JavaScript API to send pings or receive pong http://www.whatwg.org/s
 
 ===== Data Frames =====
 
-Because the WebSocket protocol allows data to be fragmented into multiple frames, the first frame that transmits data will be prepended with one of the following opcodes indicating the type of data being transmitted:
+Because the WebSocket protocol allows data to be fragmented into multiple frames, the first frame that transmits data will be prepended with one of the following opcodes indicating the type of data being(((WebSocket protocol, client-side API, data frames))) transmitted:
 
 - The opcode `0x01` indicates UTF-8 encoded text data.
 - The opcode `0x02` indicates binary data.
@@ -328,7 +328,7 @@ webSocket.onmessage = function(messageEvent) {
 [[CLOSING]]
 ===== Closing the Connection =====
 
-The connection is terminated by sending a frame with the close opcode `0x08`.
+The connection is terminated by sending a frame with the close opcode `0x08`.(((WebSocket protocol, client-side API, connection termination))))))
 
 There is the pattern to exchange close opcodes first and then let the server shut down. The client is supposed to give the server time to close the connection before attempting to do that on its own. The close event can also signal why it has terminated the connection.
 
@@ -353,7 +353,7 @@ webSocket.onclose = function(closeEvent) {
 
 === Using WebSocket Frameworks ===
 
-Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on you own. For example, if the client's browser doesn't support WebSocket natively, you need to make sure that your code falls back to the legacy HTTP. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. In this section, we include brief reviews of two frameworks that can streamline your web application development with WebSocket.
+Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on you own. For example, if the client's browser doesn't support WebSocket natively, you need to make sure that your code falls back to the legacy HTTP. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. In this section, we include brief reviews of two frameworks that can streamline your web application development with WebSocket.(((WebSocket protocol, frameworks for, Portal)))(((Portal library)))
 
 These frameworks try to utilize the best supported transport by the current web browser and server while sparing the developer from knowing the internals of the used mechanism. The developer can concentrate on programming the application logic, making calls to the framework API when the data transfer is needed. The rest will be done by framework.
 
@@ -403,7 +403,7 @@ The Portal framework generalizes client-side programming. When defining an array
 ==== Atmosphere ====
 
 A web application that has to be deployed on several different servers (for example, WebSphere, JBoss, and WebLogic)
-might need to support different WebSocket APIs. At the time of this writing, a plethora of implementations of server-side libraries support WebSocket, and each uses its own proprietary API. The Java EE 7 specification intends to change the situation. But Atmosphere is a framework that allows you to write portable web applications today.
+might need to support different WebSocket APIs. At the time of this writing, a plethora of implementations of server-side libraries support WebSocket, and each uses its own proprietary API. The Java EE 7 specification intends to change the situation. But Atmosphere is a framework that allows you to write portable web applications today.(((WebSocket protocol, frameworks for, Atmosphere)))(((Atmosphere framework)))(((servers, deployment on different)))
 
 https://github.com/Atmosphere/atmosphere[Atmosphere] is a _portable_ WebSocket framework supporting Java, Groovy, and Scala. The Atmosphere framework contains both client and server components for building asynchronous web applications. Atmosphere transparently supports WebSocket, server-side events, long polling, HTTP streaming, and JSONP.
 
@@ -415,13 +415,13 @@ The Atmosphere framework supports a wide range of Java-based server-side technol
 ====
 WebSocket can be used not only for the Web, but in any applications that use networking. If you're developing native iOS or OS X applications, check https://github.com/square/SocketRocket[the SocketRocket] library developed by the http://corner.squareup.com/[Square engineering team].
 
-Square uses SocketRocket in its mobile payments application. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices, check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.
+Square uses SocketRocket in its mobile payments application. If you're developing native Android applications and want to use WebSocket protocol goodies in Android-powered devices, check https://github.com/AsyncHttpClient/async-http-client[the AsyncHttpClient] framework.(((SocketRocket library)))
 
 ====
 
 === Choosing the Format for Application-Level Messages
 
-Although WebSocket is a great solution for real-time data transmission over the Web, it has a downside, too: the WebSocket specification defines only a protocol for transporting frames, but it doesn't include an application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from a protocol-modeling perspective.
+Although WebSocket is a great solution for real-time data transmission over the Web, it has a downside, too: the WebSocket specification defines only a protocol for transporting frames, but it doesn't include an application-level protocol. Developers need to invent the application-specific text or binary protocols. For example, the auction bid has to be presented in a form agreed upon by all application modules. Let's discuss our options from a protocol-modeling perspective.(((WebSocket protocol, application-level message format)))(((data, choosing format for)))(((XML data format)))(((comma-separated value (CSV) format)))((("JSON (JavaScript Object Notation)", "vs. XML")))
 
 Selecting a message format for your application's data communications is important. The most common text formats are CSV, XML, and JSON. They are easy to generate and parse, and are widely supported by many frameworks in most development platforms. Although XML and JSON allow you to represent data in a hierarchical form that is easily readable by humans, they create a lot of overhead by wrapping each data element into additional text identifiers. Sending this additional textual information requires extra bandwidth and might need additional string-to-type conversion on both the client and server's application code. Let's discuss the pros and cons of these message formats.
 
@@ -467,7 +467,7 @@ As explained in <<using_ajax_and_json>>, _JSON_ stands for JavaScript Object Not
 
 ==== Google Protocol Buffers
 
-Google _protocol buffer_ (or protobuf) is a language and platform-neutral extensible mechanism for structured data serialization. After you define how you want your data to be structured, you can use special generated source code to easily write and read your structured data to and from a variety of data streams. Developers can use the same schemas across https://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[diverse environments].
+Google _protocol buffer_ (or protobuf) is a language and platform-neutral extensible mechanism for structured data serialization. After you define how you want your data to be structured, you can use special generated source code to easily write and read your structured data to and from a variety of data streams. Developers can use the same schemas across https://code.google.com/p/protobuf/wiki/ThirdPartyAddOns[diverse environments].(((Google protocol buffer language)))
 
 A developer needs to specify how the serializable information has to be structured by defining the protocol buffer message types in _.proto_ files. Each protocol buffer message is a small, logical record of information containing a series of name/value pairs. This protocol buffer message file is language agnostic. The `protoc` utility compiles _proto_ files and produces language-specific artifacts (for example _.java_ and _.js_ files).
 
