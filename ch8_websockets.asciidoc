@@ -560,9 +560,9 @@ TIP: The authors of this book use http://nginx.com/[NGINX], a hugely popular loa
 
 === Adding an Auction to Save The Child ===
 
-We gave you just enough theory to whet your appetite for implementing WebSocket in our Save The Child application. The goal is to create an auction so that people can bid and purchase various goods and have the proceeds go to Save The Child. Auctions require real-time communications: everyone interested in the particular auction item must be immediately notified of being overbid or of winnin. So we'll use WebSocket as a means for bidding and providing notifications of the changes in the auction.
+We gave you just enough theory to whet your appetite for implementing WebSocket in our Save The Child application. The goal is to create an auction so that people can bid and purchase various goods and have the proceeds go to Save The Child. Auctions require real-time communications: everyone interested in the particular auction item must be immediately notified of being overbid or of winnin. So we'll use WebSocket as a means for bidding and providing notifications of the changes in the auction.((("WebSocket protocol", "auction application using", id="ix_WSauct", range="startofrange")))
 
-To start the auction, the user has to select the Auction option under the menu Way To Give (see <<FIG9-9>>). We realize that only a small number of users will decide to participate in the auction, which from an architectural point of view means that the code supporting the auction should be loaded _on demand_ only if the user chooses to visit the auction. This is why we need to write this code as a loadable module, and you will get a practical example of how a web application can be modularized.
+To start the auction, the user has to select the Auction option under the menu Way To Give (see <<FIG9-9>>). We realize that only a small number of users will decide to participate in the auction, which from an architectural point of view means that the code supporting the auction should be loaded _on demand_ only if the user chooses to visit the auction. This is why we need to write this code as a loadable module, and you will get a practical example of how a web application can be modularized.(((auction application, loading modules on demand)))
 
 In this chapter, we continue to use RequireJS (see <<modularizing_javascript_projects>>) as a framework for modularization. Using RequireJS, we're going to lazy-load some modules if and only if they are requested by the user.
 
@@ -687,7 +687,7 @@ image::images/ewdv_0809.png[]
 
 ==== Monitoring WebSocket Traffic by Using Chrome Developer Tools ====
 
-Let's review the practical use of the theory described in <<HANDSHAKE>>.  With the help of Chrome Developer Tools, you can monitor information about the initial handshake, as shown in <<FIG9-4>>. Monitoring WebSocket traffic in Chrome Developer Tools is, in some ways, not that different from monitoring HTTP requests. The traffic can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint in the left panel.
+Let's review the practical use of the theory described in <<HANDSHAKE>>.  With the help of Chrome Developer Tools, you can monitor information about the initial handshake, as shown in <<FIG9-4>>. Monitoring WebSocket traffic in Chrome Developer Tools is, in some ways, not that different from monitoring HTTP requests. The traffic can be viewed in the Network tab after selecting the path of the `WebSocket` endpoint in the left panel.(((auction application, traffic monitoring with Chrome)))
 
 [[FIG9-4]]
 .Initial WebSocket handshake in Chrome DevTools
@@ -719,7 +719,7 @@ image::images/ewdv_0814.png[]
 
 ==== Sniffing WebSocket Frames by Using Wireshark ====
 
-_Wireshark_ is a powerful and comprehensive monitoring tool for analyzing network traffic. You can download it from http://www.wireshark.org[Wireshark's website]. To begin capturing WebSocket traffic on _localhost_,  select the loopback network interface from the left panel and click Start (see <<FIG9-15>>).
+_Wireshark_ is a powerful and comprehensive monitoring tool for analyzing network traffic. You can download it from http://www.wireshark.org[Wireshark's website]. To begin capturing WebSocket traffic on _localhost_,  select the loopback network interface from the left panel and click Start (see <<FIG9-15>>).(((auction application, traffic monitoring with Wireshark)))(((Wireshark)))
 
 [[FIG9-15]]
 .The Wireshark application main view
@@ -763,7 +763,7 @@ image::images/ewdv_0821.png[]
 [[Auction_Messages_Specification]]
 ==== Creating the Save The Child Auction Protocol
 
-Since WebSocket is just a transport protocol, we need to come up with application-level protocol indicating how auction messages should be formatted in the client-server interaction. This is how we decided to do it:
+Since WebSocket is just a transport protocol, we need to come up with application-level protocol indicating how auction messages(((auction application, messaging protocol))) should be formatted in the client-server interaction. This is how we decided to do it:
 
 1. The client's code connects to the WebSocket endpoint on the server.
 2. The client's code sends the `AUCTION_LIST` message to retrieve the list of currently running auctions:
@@ -858,7 +858,7 @@ This is the outgoing message. When user clicks the Bid! button, the value from t
 
 After the auction ends, the server broadcasts the message with the final auction results. If the wining user is online and connected to the auction server, that user will receive a message with congratulations. Other participants will get the "Sorry, you didn't win" notification.
 --
-This is pretty much it. The amount of code needed to implement the client's side of the auction is minimal. After the connection and upgrade are done, most of the processing is done in the message handler of the WebSocket object's `onmessage`.
+This is pretty much it. The amount of code needed to implement the client's side of the auction is minimal. After the connection and upgrade are done, most of the processing is done in the message handler of the WebSocket object's `onmessage`.(((range="endofrange", startref="ix_WSauct")))
 
 
 === Summary
