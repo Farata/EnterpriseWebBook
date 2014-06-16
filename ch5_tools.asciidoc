@@ -660,7 +660,7 @@ To test the rest of the CRUD methods, we'll ask the user to insert one new row, 
 
 When the user clicks the Sync UI menu, the changes will be sent to the corresponding `do...` remote method. When you `sync()` a standard `Ext.data.DirectStore`, Ext JS is ++POST++-ing new, modified, and deleted items to the server. When the request is complete, the server's response data is applied to the store, expecting that some items can be modified by the server. In case of `Clear.data.DirectStore`, instead of passing around items, we pass the deltas, wrapped in `ChangeObject`.
 
-Each instance of the `ChangeOject` contains the following:
+Each instance of the `ChangeObject` contains the following:
 
 +newVersion+::
     This is an instance of the newly inserted or modified item. On the Java side, it's available via `getNewVersion()`.
@@ -694,10 +694,10 @@ We'll add data pagination to our sample CRUD application by doing the following:
 
 We are going to improve our CRUD application by adding the paging toolbar component bound to the same store as the grid. The class `DirectOptions` will handle the pagination parameters on the server side. 
 
-So far, CDB has generated the UI from the Java back-end service as well as the Ext JS store and model. We'll refactor the service code from the previous example to generate more data (a thousand objects) so we have something to paginate; see <<LISTING_4>>. 
+So far, CDB has generated the UI from the Java backend service as well as the Ext JS store and model. We'll refactor the service code from the previous example to generate more data (a thousand objects) so we have something to paginate; see <<LISTING_4>>. 
 
 [[LISTING_4]]
-.Refactored implementation of +PersonService+ interface
+.Refactored implementation of PersonService interface
 ====
 [source,java]
 ----------------------------------------------------------------------
@@ -716,7 +716,7 @@ public class PersonServiceImpl extends _PersonServiceImpl {
 ====
 
 
-If you rerun the application now, the Google Chrome console will show that `PersonStore` is populated with 1,000 records. Now we'll add the the Ext JS paging `toolbarpaging` UI component to the file _sampleApp.js_, as shown <<LISTING_5>>. 
+If you rerun the application now, the Google Chrome console will show that `PersonStore` is populated with 1,000 records. Now we'll add the Ext JS paging `toolbarpaging` UI component to the file _sampleApp.js_, as shown <<LISTING_5>>. 
 
 [[LISTING_5]]
 .Sample application entry
@@ -788,7 +788,7 @@ Ext.application({
 
 <1> Manual store instantiation: create a separate variable `myStore` for this store with an empty `config` object.
 <2> Add the `xtype` `pagingtoolbar` to this component's docked items property to display the information and dock this element at the top.
-<3> Now the paging toolbar is also connected to same store.
+<3> Now the paging toolbar is also connected to the same store.
 
 The next step is to fix the automatically generated controller to take care of loading data upon clicking the Load button, as shown in <<LISTING_6>>. 
 
@@ -829,7 +829,7 @@ Ext.define('episode_3_pagination.controller.SampleController', {
 
 When the user clicks the Next or Previous button, the method `loadPage` of the underlying store is called. Let's examine the `directprovider` URL--the server-side router of the remoting calls--to see what this direct request looks like. Open Google Chrome Developer Tools by choosing View -> Developer, refresh the web page, and then go to the Network tab. You'll see that each time the user clicks the _next_ or _previous_ button on the pagination toolbar, the component sends `directOptions` as a part of the request.
 
-The default Ext Direct request doesn't carry any information about the page size. Clear JS has the client-side extension of the Ext JS framework that adds some extra functionality to the `Ext.data.DirectStore` component to pass the page `start` and `limit` values to the server side. At this point, the `directOptions` request property (see <<FIG6-9-CDB>>) can be extracted on the server side to get the information about the page boundaries. Let's add some code to _PersonServiceImpl.java_. At this point, the pagination doesn't work. The server sends the entire thousand records, because it doesn't know that the data has to be paginated. We'll fix it in <<FIG6-9-CDB>>. 
+The default Ext Direct request doesn't carry any information about the page size. Clear JS has the client-side extension of the Ext JS framework that adds some extra functionality to the `Ext.data.DirectStore` component to pass the page `start` and `limit` values to the server side. At this point, the `directOptions` request property (see <<FIG6-9-CDB>>) can be extracted on the server side to get the information about the page boundaries. Let's add some code to _PersonServiceImpl.java_. At this point, the pagination doesn't work. The server sends the entire thousand records, because it doesn't know that the data has to be paginated. We'll fix it in <<LISTING_7>>. 
 
 [[FIG6-9-CDB]]
 .Request payload details
