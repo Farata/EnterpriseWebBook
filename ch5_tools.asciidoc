@@ -416,14 +416,14 @@ Such enterprise applications are known as _CRUD applications_ because they perfo
 
 NOTE: Familiarity with core Java concepts such as classes, constructors, getters and setters, and annotations is required for understanding the materials of this section.
 
-The phrase _to be more productive_ means to write less code while producing results faster. This is what CDB is for, and you'll see it helps you integrate the client side with the back end by using the remote procedure call (RPC) style and how to implement data pagination for your application. To be more productive, you need to have the proper tools installed. We'll cover this next.((("Clear Data Builder (CDB)", "increasing productivity with")))((("productivity tools", "Clear Data Builder (CDB)", "increasing productivity with")))
+The phrase _to be more productive_ means to write less code while producing results faster. This is what CDB is for, and you'll see it helps you integrate the client side with the backend by using the remote procedure call (RPC) style and how to implement data pagination for your application. To be more productive, you need to have the proper tools installed. We'll cover this next.((("Clear Data Builder (CDB)", "increasing productivity with")))((("productivity tools", "Clear Data Builder (CDB)", "increasing productivity with")))
 
 ==== Ext JS MVC Application Scaffolding 
 
 This section covers the following topics:
 
 - Using Clear Toolkit for Ext JS 
-- Creating an Ext JS MVC front end for a Java-based project
+- Creating an Ext JS MVC frontend for a Java-based project
 - Deploying and running your first Ext JS and Java application on an Apache Tomcat server
 
 Clear Toolkit for Ext JS includes the following:
@@ -453,15 +453,15 @@ image::images/ewdv_0505.png[image]
 
 Name the new project +episode_1_intro+. CDB supports different ways of linking the Ext JS framework to the application. CDB automatically copies the Ext JS framework under the web server (Apache Tomcat, in our case). We're going to use this local Ext JS URL, but you can specify any folder in your machine, and CDB will copy the Ext JS file from there into your project. You can also use Ext JS from the Sencha content delivery network (CDN), if you don't want to store these libraries inside your project. Besides, using a common CDN will allow web browsers to reuse the cached version of Ext JS. 
 
-For this project, we are not going to use any server-side persistence frameworks like MyBatis or Hibernate. Just click the Finish button, and you'll see some some initial CDB messages on the Eclipse console. When CDB runs for the first time, it creates in your project's +WebContent+ folder the directory structure recommended by Sencha for Model-View-Controller (MVC) applications. It also generates +index.html+ for this application, which contains the link to the entry point of our Ext JS application. 
+For this project, we are not going to use any server-side persistence frameworks like MyBatis or Hibernate. Just click the Finish button, and you'll see some some initial CDB messages on the Eclipse console. When CDB runs for the first time, it creates in your project's _WebContent_ folder the directory structure recommended by Sencha for Model-View-Controller (MVC) applications. It also generates _index.html_ for this application, which contains the link to the entry point of our Ext JS application. 
 
-CDB generates an empty project with one sample controller and one view, +Viewport.js+. To run this application, you need to add the newly generated dynamic web project to Tomcat and start the server (right-click Tomcat in the Servers view of Eclipse). See <<FIG6-3-CDB>>.
+CDB generates an empty project with one sample controller and one view, _Viewport.js_. To run this application, you need to add the newly generated dynamic web project to Tomcat and start the server (right-click Tomcat in the Servers view of Eclipse). See <<FIG6-3-CDB>>.
 
 [[FIG6-3-CDB]]
 .Adding the web project to Tomcat
 image::images/ewdv_0506.png[image]
 
-Open this application in your web browser at +http://localhost:8080/episode_1_intro+ . Voilà! In less than a couple of minutes, we've created a new dynamic web project with the Ext JS framework and one fancy button, as shown in <<FIG6-4-CDB>>.
+Open this application in your web browser at _http://localhost:8080/episode_1_intro_ . Voilà! In less than a couple of minutes, we've created a new dynamic web project with the Ext JS framework and one fancy button, as shown in <<FIG6-4-CDB>>.
 
 [[FIG6-4-CDB]]
 .Running the scaffolded application
@@ -490,7 +490,7 @@ Now let's use CDB to create a CRUD application. You'll learn how turn a POJO int
 First, we'll extend the application from Part 1--the CRUD application needs a Java POJO.  To start, create a Java class `Person` in the package `dto`. Then add to this class the properties (as well as getters and setters) `firstName`, `lastName`, `address`, `ssn`, `phone`, and `id`. Add the class  constructor that initializes these properties, as shown in <<LISTING_1>>. 
 
 [[LISTING_1]]
-.+Person+ data transfer object
+.Person data transfer object
 ====
 [source,java]
 -----------------------------------------------------
@@ -528,7 +528,7 @@ public class Person {
 
 You may also add a `toString()` method to the class. Now you'll need the same corresponding Ext JS model for  the Java class `Person`. Just annotate this Java class with the annotation `@JSClass`, and CDB generates the Ext JS model. 
 
-NOTE: CDB integrates into standard Eclipse a build life-cycle. You don't need to trigger a code generation procedure manually. If you have the Build Automatically option selected in the Project menu, code generation starts immediately after you've saved the file.
+NOTE: CDB integrates into standard Eclipse a build lifecycle. You don't need to trigger a code generation procedure manually. If you have the Build Automatically option selected in the Project menu, code generation starts immediately after you've saved the file.
 
 The next step is to annotate the `id` field with the CDB annotation `@JSGeneratedId`. This annotation  instructs CDB to treat this field as an autogenerated ID. Let's examine the directory of the Ext JS MVC application to see what's inside the _model_ folder. In the JavaScript section is the folder _dto_, which corresponds to the Java +dto+ package where the `PersonModel` resides, as illustrated in <<FIG6-5-CDB>>. 
 
@@ -536,7 +536,7 @@ The next step is to annotate the `id` field with the CDB annotation `@JSGenerate
 .Generated from Java class Ext JS model
 image::images/ewdv_0508.png[image]
 
-Clear Data Builder generates two files as recommended by the http://martinfowler.com/dslCatalog/generationGap.html[Generation Gap pattern], which is about keeping the generated and handwritten parts separate by putting them in different classes linked by inheritance. Let's open the person model. In our case, `PersonModel.js` is extended from the generated `_PersonModel.js`. Should we need to customize this class, we'll do it inside +Person.js+, but this underscore-prefixed file will be regenerated each and every time when we change something in our model. CDB follows this pattern for all generated artifacts--Java services, Ext JS models, and stores. This model contains all the fields from our Person data transfer object (DTO).(((Generation Gap pattern)))(((design patterns, Generation Gap))) 
+Clear Data Builder generates two files as recommended by the http://martinfowler.com/dslCatalog/generationGap.html[Generation Gap pattern], which is about keeping the generated and handwritten parts separate by putting them in different classes linked by inheritance. Let's open the person model. In our case, _PersonModel.js_ is extended from the generated _PersonModel.js_. Should we need to customize this class, we'll do it inside _Person.js_, but this underscore-prefixed file will be regenerated each and every time when we change something in our model. CDB follows this pattern for all generated artifacts--Java services, Ext JS models, and stores. This model contains all the fields from our +Person+ data transfer object (DTO).(((Generation Gap pattern)))(((design patterns, Generation Gap))) 
 
 Now we need to create a Java service to populate the Ext JS store with the data. Let's create the Java  interface `PersonService` in the package `service`. This service will return the list of `Person` objects. This interface contains one method: `List<Person> getPersons()`. 
 
@@ -545,7 +545,7 @@ To have CDB expose this service as a remote object, we'll use the annotation cal
 Also it would be nice to have some sort of sample UI to test the service; the annotation `@JSGenerateSample` will help here. CDB will examine the interface `PersonService`, and based on these annotations, will generate all Ext JS MVC artifacts (models, views, controller) and the sample application. See <<LISTING_2>>.
 
 [[LISTING_2]]
-.+PersonService+ interface annotated with CDB annotations
+.PersonService interface annotated with CDB annotations
 ====
 [source,java]
 ----------------------------------------------------------------------
