@@ -794,7 +794,7 @@ You are about to read one of the most confusing sections in this book. The confu
 
 CAUTION: Interestingly enough, replacing `this.name` with `name` doesn't generate an error but rather initializes the variable `name` with an empty string. Although `name` is not an officially reserved JavaScript keyword, there are articles in the blogosphere that don't recommend using the word `name` as a variable name. Keep http://www.javascripter.net/faq/reserved.htm[this list of reserved words] handy to avoid running into unpredictable behavior.
 
-Let's consider several examples that illustrate the meaning of the `this` variable in JavaScript. The code sample that follows defines an object `myTaxObject` and calls its method `doTaxes()`. Notice two variables with the same name, ++taxDeduction++—one of them has global scope and another belongs to `myTaxObject`. This little script is titled _ThisMafia.js_, and it was written for the mafia and will apply some under-the-table deductions for those who belong to Cosa Nostra.
+Let's consider several examples that illustrate the meaning of the `this` variable in JavaScript. The code sample that follows defines an object `myTaxObject` and calls its method `doTaxes()`. Notice two variables with the same name, ++taxDeduction++—one of them has global scope and another belongs to `myTaxObject`. This little script is titled _ThisMafia.js_, and it was written for the mafia and will apply some under-the-table deductions for those who belong to Cosa Nostra:
 
 [source, javascript]
 ----
@@ -819,7 +819,7 @@ myTaxObject.doTaxes();  //invoking method doTaxes
 
 ---- 
 
-This code fragment illustrates the use of _nested functions_. The object method `doTaxes()` has a nested function `mafiaSpecial()`, which is not visible from outside the `myTaxObject`, but it can certainly be invoked inside `doTaxes()`. What number do you think this code will print after the words "Will deduct"? Will it print three, four, or five hundred? Run this code in Firebug, Chrome Developer Tools, or any other way and, you'll see that it will print 300!(((nested functions)))(((functions, nested functions))) 
+This code fragment illustrates the use of _nested functions_. The object method `doTaxes()` has a nested function `mafiaSpecial()`, which is not visible from outside `myTaxObject`, but it can certainly be invoked inside `doTaxes()`. What number do you think this code will print after the words "Will deduct"? Will it print three, four, or five hundred? Run this code in Firebug, Chrome Developer Tools, or any other way, and you'll see that it will print 300!(((nested functions)))(((functions, nested functions))) 
 
 But this doesn't sound right, does it? The problem is that in JavaScript, the context where the function executes depends on the way it was invoked. In this case, the function `mafiaSpecial()` was invoked as a function (not a method) without specifying the object it should apply to, and JavaScript makes it operate in the global object; hence, the global variable `taxDeduction` having the value of 300 is used. So in the expression `this.taxDeduction`  the variable `this` means global unless the code is operated in strict mode.
 
@@ -828,7 +828,7 @@ But this doesn't sound right, does it? The problem is that in JavaScript, the co
 ECMAScript 5 introduced a restricted version of JavaScript called _strict mode_, which among other things places stricter requirements to variable declarations and scope identification. Adding +use strict+ as the first statement of the method `doTax()` will make the context _undefined_, and it will print the error "this is undefined" and not 300. You can read about strict mode at http://mzl.la/N4z1QI[Mozilla's developers site].(((ECMAScript 5)))(((strict mode)))
 =====================================================================
 
-Let's make a slight change to this example to control what `this` represents. When the object `myTaxObject` was instantiated, its own `this` reference was created. The following code fragment stores the reference to +this+ in an additional variable. `thisOfMyTaxObject` changes the game, and the expression `thisOfMyTaxObject.taxDeduction` evaluates to 500. 
+Let's make a slight change to this example to control what `this` represents. When the object `myTaxObject` was instantiated, its own `this` reference was created. The following code fragment stores the reference to +this+ in an additional variable. `thisOfMyTaxObject` changes the game, and the expression `thisOfMyTaxObject.taxDeduction` evaluates to 500: 
 
 [source, javascript]
 ----
