@@ -111,13 +111,13 @@ WebSocket is a bidirectional, full-duplex, frame-based protocol. According to ht
 
 - Establish a socket connection between the client and the server using HTTP for the initial handshake.
 - Switch the communication protocol from HTTP to a socket-based protocol.
-- Send messages in both directions simultaneously (a.k.a. full-duplex mode).
-- Send messages independently. This is not a request-response model, as both the server and the client can initiate the data transmission that enables the real server-side push.
+- Send messages in both directions simultaneously (a.k.a., full-duplex mode).
+- Send messages independently. This is not a request-response model because both the server and the client can initiate the data transmission that enables the real server-side push.
 - Both the server and the client can initiate disconnects, too.
 
-You will get a better understanding of each of the preceding statements after reading the section <<the_websocket_api>>.
+You will get a better understanding of each of the preceding statements after reading this section.
 
-The WebSocket protocol defines two new http://en.wikipedia.org/wiki/URI_scheme[URI schemes], `ws` and `wss`, for unencrypted and encrypted connections, respectively. The `ws` (WebSocket) URI scheme is similar to the HTTP URI scheme and identifies that a WebSocket connection will be established by using TCP/IP without encryption. The wss (WebSocket Secure) URI scheme identifies that the traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides such benefits over TCP connection as data confidentiality, integrity, and endpoint authentication. Apart from the scheme name, WebSocket URI schemes use generic URI syntax.(((WebSocket protocol, URI schemes introduced in)))((("ws (WebScoket) URI scheme")))((("wss (WebScoket Secure) URI scheme")))
+The WebSocket protocol defines two new http://en.wikipedia.org/wiki/URI_scheme[URI schemes], `ws` and `wss`, for unencrypted and encrypted connections, respectively. The `ws` (WebSocket) URI scheme is similar to the HTTP URI scheme and identifies that a WebSocket connection will be established by using TCP/IP without encryption. The +wss+ (WebSocket Secure) URI scheme identifies that the traffic over that connection will be protected via Transport Layer Security (TLS). The TLS connection provides such benefits over TCP connection, as data confidentiality, integrity, and endpoint authentication. Apart from the scheme name, WebSocket URI schemes use generic URI syntax.(((WebSocket protocol, URI schemes introduced in)))((("ws (WebScoket) URI scheme")))((("wss (WebScoket Secure) URI scheme")))
 
 ==== The WebSocket Interface ====
 
@@ -168,7 +168,7 @@ include::include/ws_api_example.js[]
 <6> Handle errors.
 
 [[HANDSHAKE]]
-===== WebSocket Handshake
+===== WebSocket handshake
 
 Any network communications that use the WebSocket protocol start with an opening handshake. This handshake upgrades the connection from HTTP to the WebSocket protocol. It's an upgrade of HTTP to message-based communications. We discuss messages (a.k.a. frames) later in this chapter.(((WebSocket protocol, client-side API, WebSocket handsake)))
 
@@ -191,7 +191,7 @@ The protocol upgrade is initiated by a client request, which also transmits a sp
 
 ----------------------------------------------------------------------
 
-This client sends the `GET` request for the protocol upgrade. `Sec-WebSocket-Key` is just a set of random bytes. The server takes these bytes and appends to this key a special globally unique identifier (GUID) string `258EAFA5-E914-47DA-95CA-C5AB0DC85B11`. Then, it creates the Secure Hash Algorithm `SHA1` hash from it and performs _Base64_ encoding. The resulting string of bytes needs to be used by both the server and the client, and this string won't be used by network endpoints that do not understand the WebSocket protocol. Then, this value is copied in the `Sec-WebSocket-Accept` header field. The server computes the value and sends the response back, confirming the protocol upgrade.
+This client sends the `GET` request for the protocol upgrade. `Sec-WebSocket-Key` is just a set of random bytes. The server takes these bytes and appends to this key a special globally unique identifier (GUID) string `258EAFA5-E914-47DA-95CA-C5AB0DC85B11`. Then, it creates the Secure Hash Algorithm `SHA1` hash from it and performs _Base64_ encoding. The resulting string of bytes needs to be used by both the server and the client, and this string won't be used by network endpoints that do not understand the WebSocket protocol. Then, this value is copied in the `Sec-WebSocket-Accept` header field. The server computes the value and sends the response back, confirming the protocol upgrade:
 
 ----------------------------------------------------------------------
 
@@ -204,7 +204,7 @@ This client sends the `GET` request for the protocol upgrade. `Sec-WebSocket-Key
 
 ----------------------------------------------------------------------
 
-The WebSocket protocol uses the `400 Bad Request` HTTP error code to signal an unsuccessful upgrade. The handshake can also include a subprotocol request and the WebSocket version information, but you can't include arbitrary other headers. We can't transmit the authorization information. There are two ways around this. You can either transmit the authorization information as the first request (for example, unique `clientId` can be passed as part of the HTTP request header or HTML wrapper) or put it into the URL as a query parameter during the initial handshake. Consider the following example:
+The WebSocket protocol uses the `400 Bad Request` HTTP error code to signal an unsuccessful upgrade. The handshake can also include a subprotocol request and the WebSocket version information, but you can't include other arbitrary headers. We can't transmit the authorization information. There are two ways around this. You can either transmit the authorization information as the first request (for example, the unique `clientId` can be passed as part of the HTTP request header or HTML wrapper) or put it into the URL as a query parameter during the initial handshake. Consider the following example:
 
 [source,javascript]
 ----------------------------------------------------------------------
@@ -212,7 +212,7 @@ var clientId = "Mary1989";                                   // <1>
 ws = new WebSocket("ws://www.websocket.org/echo/"+clientID); // <2>
 ----------------------------------------------------------------------
 
-<1> The `clientId` value (which can be obtained from a Lightweight Directory Access Protocol (LDAP) server).
+<1> The `clientId` value, which can be obtained from a Lightweight Directory Access Protocol (LDAP) server.
 <2> The client connects to the WebSocket endpoint with an extra URI parameter that will be stored on the server for future interactions.
 
 Because the WebSocket protocol creates a bidirectional (socket-to-socket) connection, the server has access to the conversation session associated with such a connection. This session can be associated with +clientId+ and be stored on the server.
@@ -223,7 +223,7 @@ A client can have as many WebSocket connections with the server as needed.  But 
 ====
 
 [[FRAMES]]
-===== WebSocket Frame Anatomy =====
+===== WebSocket frame anatomy =====
 
 The WebSocket handshake is the first step in switching to the message framing protocol, which will be layered over TCP. In this section, we're going to explore how WebSocket data transfer works. WebSocket is not a stream-based protocol like TCP--it's message based. With TCP, a program sends a stream of bytes, which has to have a specific indication that the data transfer ends.(((WebSocket protocol, client-side API, WebSocket fram anatomy)))(((WebSocket protocol, vs. TCP)))
 The WebSocket specification simplifies this by putting a frame around every chunk of data, and the size of the frame is known. JavaScript can easily handle these frames on the client because each frame arrives packaged in the event object. But the server side has to work a little harder because it needs to wrap each piece of data into a frame before sending it to the client. A frame can look like this:
@@ -261,14 +261,14 @@ The parts of the frame are as follows:
     These bits are reserved for future protocol changes and improvements. They must contain zeros because they are not being used at this time.
 
 `opcode` (4 bits)::
-    The frame type is defined by using opcode. Here are the most used opcodes:
+    The frame type is defined by using opcode. Here are the most-used opcodes:
 
-* `0x00` This frame continues the payload.
-* `0x01` This frame includes UTF-8 text data.
-* `0x02` This frame includes the binary data.
-* `0x08` This frame terminates the connection.
-* `0x09` This frame is a ping.
-* `0xA` This frame is a pong.
+`0x00`:: This frame continues the payload.
+`0x01`:: This frame includes UTF-8 text data.
+`0x02`:: This frame includes the binary data.
+`0x08`:: This frame terminates the connection.
+`0x09`:: This frame is a ping.
+`0xA`:: This frame is a pong.
 
 `mask` (1 bit)::
     This indicates whether the frame is masked.
