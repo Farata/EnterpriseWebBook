@@ -276,7 +276,7 @@ The parts of the frame are as follows:
 
 [NOTE]
 ====
-The client must mask all the frames being sent to the server. The server must close the connection upon receiving a frame that is not masked. The server must not mask any frames that it sends to the client. The client must close a connection if it detects a masked frame. In case of an error, the client or server can send the `Close` frame containing the status code 1002 (the protocol error). All these actions are done automatically by web browsers and web server that implement http://bit.ly/1uDjE1n[WebSocket specification].
+The client must mask all the frames being sent to the server. The server must close the connection upon receiving a frame that is not masked. The server must not mask any frames that it sends to the client. The client must close a connection if it detects a masked frame. In case of an error, the client or server can send the `Close` frame containing the status code 1002 (the protocol error). All these actions are done automatically by web browsers and web servers that implements http://bit.ly/1uDjE1n[WebSocket specification].
 ====
 
 `payload_len` (7 bits, 7 + 16 bits, or 7 + 64 bits)::
@@ -292,13 +292,13 @@ The client must mask all the frames being sent to the server. The server must cl
 `payload data`::
     This indicates the actual data. The length of the block is defined in the `payload_len` field.
 
-===== The Heartbeats =====
+===== The heartbeats =====
 
-A properly designed distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so-called _heartbeats_--small messages that simply ask the other party, "Are you there?" For example, proxy servers and content-filtering hardware can terminate idle connections, or the server could simply go down. If a client doesn't send any requests, say, for 20 seconds, but the server went down, the client will know about it only when it does the next `send()`. Heartbeats will keep the connection alive to ensure that it won't look idling. In WebSocket jargon, heartbeats are implemented with _ping and pong_ frames. The browser sends the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).(((WebSocket protocol, client-side API, heartbeats)))(((heartbeats)))(((ping and pong frames)))
+A properly designed distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so-called __heartbeats__—small messages that simply ask the other party, "Are you there?" For example, proxy servers and content-filtering hardware can terminate idle connections, or the server could simply go down. If a client doesn't send any requests, say, for 20 seconds, but the server went down, the client will know about it only when it does the next `send()`. Heartbeats will keep the connection alive to ensure that it won't look idling. In WebSocket jargon, heartbeats are implemented with _ping and pong_ frames. The browser sends the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).(((WebSocket protocol, client-side API, heartbeats)))(((heartbeats)))(((ping and pong frames)))
 
-A web browser can ping the server when required, but a pong may be sent at the server's discretion. If the  endpoint receives a ping frame before responding to the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (up to 125 bytes), and pong must have identical data in its message body.
+A web browser can ping the server when required, but a pong can be sent at the server's discretion. If the  endpoint receives a ping frame before responding to the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (up to 125 bytes), and pong must have identical data in its message body.
 
-There is no JavaScript API to send pings or receive pong http://www.whatwg.org/specs/web-apps/current-work/multipage/network.html#ping-and-pong-frames[frames]. Pings and pongs may or may not be supported by the user's browser. http://www.w3.org/Bugs/Public/show_bug.cgi?id=13104[There is also no API] to enable, configure, or detect whether the browser supports pings and pongs.
+There is no JavaScript API to send pings or receive pong http://bit.ly/1uDjLtE[frames]. Pings and pongs may or may not be supported by the user's browser. http://bit.ly/1soFv0D[There is also no API] to enable, configure, or detect whether the browser supports pings and pongs.
 
 
 ===== Data Frames =====
