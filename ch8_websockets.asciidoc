@@ -7,7 +7,7 @@ We're going to show that the WebSocket protocol has literally no overhead compar
 
 - Live trading/auctions/sports notifications
 - Live collaborative writing
-- Controlling medical equipment over the web
+- Controlling medical equipment over the Web
 - Chat applications
 - Multiplayer online games
 - Real-time updates in social streams
@@ -16,17 +16,17 @@ For the next version of the Save The Child application, we're going to use WebSo
 
 The goal is to let you see the advantages of changing the protocol for client-server communications on the Web. You'll clearly see the advantages of WebSocket over regular HTTP by monitoring network traffic with such tools as Wireshark and Google Chrome Developer Tools.(((WebSocket protocol, advantages of)))
 
-All the server-side functionality supporting this chapter is written in Java, using the Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which is a part of the Java EE 7 specification. We are using the http://dlc.sun.com.edgesuite.net/glassfish/4.0/release/[latest release of the GlassFish application server]. If you don't know Java, just treat this server-side setup as a service that supports the WebSocket protocol. For Java developers interested in diving into the server side, we provide the source code and brief comments as a part of the code samples that come with this book.
+All the server-side functionality supporting this chapter is written in Java, using the Java API for WebSocket http://java.net/projects/tyrus[reference implementation], which is a part of the Java EE 7 specification. We are using the http://bit.ly/T7x8GD[latest release of the GlassFish application server]. If you don't know Java, just treat this server-side setup as a service that supports the WebSocket protocol. For Java developers interested in diving into the server side, we provide the source code and brief comments as a part of the code samples that come with this book.
 
-We show and compare the server-side data push done with server-sent events and WebSocket. Also you'll see a brief overview of chosen frameworks such as Portal and Atmosphere that can streamline your WebSocket application development.
+We show and compare the server-side data push done with server-sent events and WebSocket. Also, you'll see a brief overview of chosen frameworks such as Portal and Atmosphere that can streamline your WebSocket application development.
 
 === Using HTTP for Near Real-Time Applications
 
-The HTTP protocol is the lingua franca of today's web applications, whereby client-server communications are based on the request-response paradigm. On a low level, web browsers establish a TCP/IP connection for each HTTP session. Currently there are three basic options that developers use for browser-server communication: polling, long polling, and streaming. These options are hacks on top of a half-duplex (a one-way street) HTTP protocol to simulate real-time behavior. (By _real-time_ we mean the ability to react to some event as it happens. Let's discuss each of them).(((HTTP protocol, real-time behavior simulation)))(((WebSocket protocol, vs. HTTP protocol)))
+The HTTP protocol is the lingua franca of today's web applications, whereby client-server communications are based on the request-response paradigm. On a low level, web browsers establish a TCP/IP connection for each HTTP session. Currently there are three basic options that developers use for browser-server communication: polling, long polling, and streaming. These options are hacks on top of a half-duplex (a one-way street) HTTP protocol to simulate real-time behavior. (By _real-time_ we mean the ability to react to some event as it happens.) Let's discuss each of them.(((HTTP protocol, real-time behavior simulation)))(((WebSocket protocol, vs. HTTP protocol)))
 
 ==== Polling
 
-With _polling_, your client code sends requests to the server based on some preconfigured interval (for example, by using the JavaScript `setInterval()` function). Some of the server's responses will be empty, if the requested data is not ready yet, as illustrated in <<FIG9-1>>. For example, if you're running an online auction and send a request to see the updated bids, you won't receive any data back unless someone placed a new bid.(((HTTP protocol, polling)))(((polling techniques))) 
+With _polling_, your client code sends requests to the server based on some preconfigured interval (for example, by using the JavaScript `setInterval()` function). Some of the server's responses will be empty if the requested data is not ready yet, as illustrated in <<FIG9-1>>. For example, if you're running an online auction and send a request to see the updated bids, you won't receive any data back unless someone placed a new bid.(((HTTP protocol, polling)))(((polling techniques))) 
 
 Visualize a child sitting in the back seat of your car and asking every minute, "Have we arrived yet?" And you politely reply, "Not just yet." This is similar to an empty server response. There is no valuable payload for this kid, but she's still receiving some "metadata." HTTP polling can result in receiving verbose HTTP response headers bearing no data load, let alone distracting the driver (think, the server) from performing other responsibilities.
 
@@ -36,9 +36,9 @@ image::images/ewdv_0801.png[image]
 
 ==== Long Polling
 
-_Long polling_ (see <<FIG9-2>> ) begins similarly to polling: the client sends the HTTP request to the server. But in this case, instead of sending an empty response back, the server waits until the data for the client becomes available. If the requested information is not available within the specified time interval, the server sends an empty response to the client, closes, and re-establishes the connection.(((HTTP protocol, long polling)))(((long polling)))
+_Long polling_ (see <<FIG9-2>> ) begins similarly to polling: the client sends the HTTP request to the server. But in this case, instead of sending an empty response back, the server waits until the data for the client becomes available. If the requested information is not available within the specified time interval, the server sends an empty response to the client, closes, and reestablishes the connection.(((HTTP protocol, long polling)))(((long polling)))
 
-We'll give you one more analogy to compare polling and long polling. Imagine a party at the top floor of a building equipped with a smart elevator that goes up every minute and opens the door just in case one of the guests wants to go down to smoke a cigarette. If no one enters the elevator, it goes to the ground level and in 60 seconds goes up again. This is the polling scenario. But if this elevator went up and waited until someone would actually decided to go down (or got tired of waiting), we could call it a long polling mode.
+We'll give you one more analogy to compare polling and long polling. Imagine a party at the top floor of a building equipped with a smart elevator that goes up every minute and opens the door just in case one of the guests wants to go down to smoke a cigarette. If no one enters the elevator, it goes to the ground level and in 60 seconds goes up again. This is the polling scenario. But if this elevator went up and waited until someone actually decided to go down (or got tired of waiting), we could call it a long polling mode.
 
 From the HTTP specification perspective, it's legitimate: the long polling mode might seem as if we deal with a slow-responding server. That is why this technique also is referred to as _Hanging GET_. If you see an online auction that automatically modifies prices as people bid on items, it looks as if the server pushes the data to you. But the chances are, this functionality was implemented by using long polling, which is not a real server-side data push, but its emulation.(((Hanging GET)))
 
@@ -48,13 +48,13 @@ image::images/ewdv_0802.png[image]
 
 ==== HTTP Streaming 
 
-In HTTP streaming (see <<FIG9-3>>), a client sends a request for data. As soon as the server gets the data ready, it starts streaming (adding more and more data to the response object) without closing the connections. The server pushes the data to the client, pretending that the response never ends. For example, requesting a video from YouTube.com results in streaming data (frame after frame) without closing the HTTP connection.(((HTTP protocol, streaming)))(((streaming)))
+In HTTP streaming (see <<FIG9-3>>), a client sends a request for data. As soon as the server gets the data ready, it starts streaming (adding more and more data to the response object) without closing the connections. The server pushes the data to the client, pretending that the response never ends. For example, requesting a video from YouTube results in streaming data (frame after frame) without closing the HTTP connection.(((HTTP protocol, streaming)))(((streaming)))
 
 [[FIG9-3]]
 .HTTP streaming
 image::images/ewdv_0803.png[image]
 
-Polling and streaming can be used as a fallback for legacy browsers that don't support the HTML5 APIs server-sent events and WebSocket.
+Polling and streaming can be used as a fallback for legacy browsers that don't support the HTML5 API's server-sent events and WebSocket.
 
 === Implementing Server-Sent Events
 
@@ -89,7 +89,7 @@ SSE is a good technique for the use cases in which the client doesn't need to se
 
 In the preceding example, the server sends two types of custom events, `create` and `update`, to notify subscribed clients about updated donation data so that the active clients can monitor the fundraising process. You can create as many custom events as needed by the application.
 
-The server sends events as text messages that start with `data:` and end with a pair of new-line characters, for example:
+The server sends events as text messages that start with `data:` and end with a pair of newline characters. For example:
 
 [source, javascript]
 ----
@@ -101,15 +101,13 @@ SSE is still HTTP based, and it requires the server's support of the combination
 [[the_websocket_api]]
 === Introducing the WebSocket API
 
-[quote, Ian Hickson, HTML spec editor at Google]
+[quote, Ian Hickson, HTML spec editor at Google (http://bit.ly/1oGOzfN)]
 ____
 
 Reducing kilobytes of data to 2 bytes is more than "a little more byte efficient," and reducing latency from 150 ms (TCP round trip to set up the connection plus a packet for the message) to 50 ms (just the packet for the message) is far more than marginal. In fact, these two factors alone are enough to make WebSocket seriously interesting to Google.
-
-source: http://ietf.org/mail-archive/web/hybi/current/msg00784.html
 ____
 
-WebSocket is a bidirectional, full-duplex, frame-based protocol. According to http://tools.ietf.org/html/rfc6455[RFC 6455]--the Internet Engineering Task Force (IETF) standard document--the goal of WebSocket technology is to provide a mechanism for web applications that need two-way communication with servers. This technology doesn't rely on HTTP hacks or on opening multiple connections by using `XMLHttpRequest` or `<iframe>` and long polling.(((WebSocket protocol, goal of))) The idea behind WebSocket is not overly complicated:
+WebSocket is a bidirectional, full-duplex, frame-based protocol. According to http://tools.ietf.org/html/rfc6455[RFC 6455]—the Internet Engineering Task Force (IETF) standard document—the goal of WebSocket technology is to provide a mechanism for web applications that need two-way communication with servers. This technology doesn't rely on HTTP hacks or on opening multiple connections by using `XMLHttpRequest` or `<iframe>` and long polling.(((WebSocket protocol, goal of))) The idea behind WebSocket is not overly complicated:
 
 - Establish a socket connection between the client and the server using HTTP for the initial handshake.
 - Switch the communication protocol from HTTP to a socket-based protocol.
