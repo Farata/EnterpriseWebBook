@@ -296,19 +296,19 @@ The client must mask all the frames being sent to the server. The server must cl
 
 A properly designed distributed application has to have a way to ensure that each tier of the system is operational even if there is no active data exchange between the client and the server. This can be done by implementing so-called __heartbeats__—small messages that simply ask the other party, "Are you there?" For example, proxy servers and content-filtering hardware can terminate idle connections, or the server could simply go down. If a client doesn't send any requests, say, for 20 seconds, but the server went down, the client will know about it only when it does the next `send()`. Heartbeats will keep the connection alive to ensure that it won't look idling. In WebSocket jargon, heartbeats are implemented with _ping and pong_ frames. The browser sends the _ping_ opcode `0x9` at any time to ask the other side to _pong_ back (the opcode `0xA`).(((WebSocket protocol, client-side API, heartbeats)))(((heartbeats)))(((ping and pong frames)))
 
-A web browser can ping the server when required, but a pong can be sent at the server's discretion. If the  endpoint receives a ping frame before responding to the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (up to 125 bytes), and pong must have identical data in its message body.
+A web browser can ping the server when required, but a pong can be sent at the server's discretion. If the  endpoint receives a ping frame before responding to the previous one, the endpoint can elect to send just one pong frame for the most recently processed ping. The ping frame may contain the application data (up to 125 bytes), and the pong must have identical data in its message body.
 
 There is no JavaScript API to send pings or receive pong http://bit.ly/1uDjLtE[frames]. Pings and pongs may or may not be supported by the user's browser. http://bit.ly/1soFv0D[There is also no API] to enable, configure, or detect whether the browser supports pings and pongs.
 
 
-===== Data Frames =====
+===== Data frames =====
 
 Because the WebSocket protocol allows data to be fragmented into multiple frames, the first frame that transmits data will be prepended with one of the following opcodes indicating the type of data being(((WebSocket protocol, client-side API, data frames))) transmitted:
 
-- The opcode `0x01` indicates UTF-8 encoded text data.
+- The opcode `0x01` indicates UTF-8–encoded text data.
 - The opcode `0x02` indicates binary data.
 
-When your application transmits JSON over the wire, the opcode is set to `0x01`. When your code emits binary data, it will be represented in a browser-specific `Blob` object or an `ArrayBuffer` object and sent wrapped into a frame with the opcode `0x02`. The following example shows how the WebSocket message listener checks the data type of the incoming message.
+When your application transmits JSON over the wire, the opcode is set to `0x01`. When your code emits binary data, it will be represented in a browser-specific `Blob` object or an `ArrayBuffer` object and sent wrapped into a frame with the opcode `0x02`. The following example shows how the WebSocket message listener checks the data type of the incoming message:
 
 NOTE: You must choose the type for the incoming binary data on the client by using `webSocket.binaryType = "blob"` or `webSocket.binaryType = "arraybuffer"` before reading the data. It's a good idea to check the type of the incoming data because the opcodes are not exposed to the client.
 
@@ -324,13 +324,13 @@ webSocket.onmessage = function(messageEvent) {
 ----------------------------------------------------------------------
 
 [[CLOSING]]
-===== Closing the Connection =====
+===== Closing the connection =====
 
 The connection is terminated by sending a frame with the close opcode `0x08`.(((WebSocket protocol, client-side API, connection termination)))
 
 There is the pattern to exchange close opcodes first and then let the server shut down. The client is supposed to give the server time to close the connection before attempting to do that on its own. The close event can also signal why it has terminated the connection.
 
-A `CloseEvent` is sent to clients using WebSocket when the connection is closed. This is delivered to the listener indicated by the WebSocket object's `onclose` handler. `CloseEvent` has three properties--+code+, +reason+, and +wasClean+:
+A `CloseEvent` is sent to clients using WebSocket when the connection is closed. This is delivered to the listener indicated by the WebSocket object's `onclose` handler. `CloseEvent` has three properties—++code++, +reason+, and +wasClean+:
 
 +code+::
     This property represents the close code provided by the server.
@@ -339,7 +339,7 @@ A `CloseEvent` is sent to clients using WebSocket when the connection is closed.
 +wasClean+::
     This property indicates whether the connection was cleanly closed.
     
-The following example illustrates how to handle the connection closing.
+The following example illustrates how to handle the connection closing:
     
 
 [source,javascript]
@@ -351,14 +351,14 @@ webSocket.onclose = function(closeEvent) {
 
 === Using WebSocket Frameworks ===
 
-Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on you own. For example, if the client's browser doesn't support WebSocket natively, you need to make sure that your code falls back to the legacy HTTP. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. In this section, we include brief reviews of two frameworks that can streamline your web application development with WebSocket.(((WebSocket protocol, frameworks for, Portal)))(((Portal library)))
+Working with the vanilla WebSocket API requires you to do some additional "housekeeping" coding on your own. For example, if the client's browser doesn't support WebSocket natively, you need to make sure that your code falls back to the legacy HTTP. The good news is that there are frameworks that can help you with this task. Such frameworks lower the development time, allowing you to do more with less code. In this section, we include brief reviews of two frameworks that can streamline your web application development with WebSocket.(((WebSocket protocol, frameworks for, Portal)))(((Portal library)))
 
-These frameworks try to utilize the best supported transport by the current web browser and server while sparing the developer from knowing the internals of the used mechanism. The developer can concentrate on programming the application logic, making calls to the framework API when the data transfer is needed. The rest will be done by framework.
+These frameworks try to utilize the best supported transport by the current web browser and server while sparing the developer from knowing the internals of the used mechanism. The developer can concentrate on programming the application logic, making calls to the framework API when the data transfer is needed. The rest will be done by the framework.
 
 
 ==== The Portal ====
 
-The https://github.com/flowersinthesand/portal[Portal] is a server-agnostic JavaScript library. It aims to utilize a WebSocket protocol and provides a unified API for various transports (long polling, HTTP streaming, WebSocket). Currently, after you've decided to use WebSocket for your next project, you need to remember about those users who still use earlier browsers such as Internet Explorer 9 or older, which don't natively support WebSocket. In this case, your application should gracefully fall back to the best available networking alternative. Manually writing code to support all possible browsers and versions requires lots of time, especially for testing and maintaining the code for different platforms. The +Portal+ library could help, as illustrated in <<ex_asynch_app>>.
+The https://github.com/flowersinthesand/portal[Portal] is a server-agnostic JavaScript library. It aims to utilize a WebSocket protocol and provides a unified API for various transports (long polling, HTTP streaming, WebSocket). Currently, after you've decided to use WebSocket for your next project, you need to remember those users who still use earlier browsers such as Internet Explorer 9 or older, which don't natively support WebSocket. In this case, your application should gracefully fall back to the best available networking alternative. Manually writing code to support all possible browsers and versions requires lots of time, especially for testing and maintaining the code for different platforms. The +Portal+ library could help, as illustrated in <<ex_asynch_app>>.
 
 [[ex_asynch_app]]
 .Simple asynchronous web application client with Portal
@@ -407,7 +407,7 @@ https://github.com/Atmosphere/atmosphere[Atmosphere] is a _portable_ WebSocket f
 
 The client-side component https://github.com/Atmosphere/atmosphere/wiki/jQuery.atmosphere.js-API[Atmosphere.js] uses the Portal framework internally and simplifies the development of web applications that require a fallback from the WebSocket protocol to long polling or HTTP streaming. Atmosphere hides the complexity of the asynchronous APIs, which differ from server to server, and makes your application portable among them. Treat Atmosphere as a compatibility layer that allows you to select the best available transport for all major Java application servers.
 
-The Atmosphere framework supports a wide range of Java-based server-side technologies via a set of https://github.com/Atmosphere/atmosphere/wiki/Atmosphere-PlugIns-and-Extensions[extensions and plugins]. Atmosphere https://github.com/Atmosphere/atmosphere-jsr356[supports] the Java API for WebSocket, so you can have the best of two worlds--the standard API and application portability.
+The Atmosphere framework supports a wide range of Java-based server-side technologies via a set of http://bit.ly/1ilP7EX[extensions and plug-ins]. Atmosphere http://bit.ly/1piiqsT[supports] the Java API for WebSocket, so you can have the best of two worlds--the standard API and application portability.
 
 [NOTE]
 ====
