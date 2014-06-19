@@ -17,7 +17,7 @@ beforeEach(function() {
                     ];
                     result.pass = agentList.indexOf(actual) !== -1; // <3>
                     if (result.pass) { // <4>
-                        result.message = actual + ' is a supper agent'; // <5>
+                        result.message = actual + ' is a super agent'; // <5>
                     } else {
                         result.message = actual + ' is not a secret agent';
                     }
