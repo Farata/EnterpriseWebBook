@@ -950,7 +950,7 @@ Let's bring together all of the previous code snippets into one runnable HTML fi
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>My Today's Visits With InsexedDB</title>
+  <title>My Today's Visits With IndexedDB</title>
 </head>
 <body>
   <script>
@@ -988,7 +988,7 @@ Let's bring together all of the previous code snippets into one runnable HTML fi
 </html>   
 ----
 
-<1> This version of the code is run when the user's computer already had a database +Medical_DB+: initially we invoke `open()` without the second argument. Running the code and specifying 2 as the version causes invocation of the callback `onupgradeneeded` even before the `onsuccess` is called.
+<1> This version of the code is run when the user's computer already had a database +Medical_DB+: initially we invoke `open()` without the second argument. Running the code and specifying 2 as the version causes invocation of the callback `onupgradeneeded` even before `onsuccess` is called.
 
 <2> Create an empty object store `Visits`.
 
@@ -998,7 +998,7 @@ Let's bring together all of the previous code snippets into one runnable HTML fi
 .Chrome's console after running the Visits sample
 image::images/ewdv_ab06.png[]
 
-The next version of our sample HTML file populates the object store +Visits+ with some data and then iterates through all the +Visit+ objects and displays the values of their properties on the console.
+The next version of our sample HTML file populates the object store +Visits+ with some data and then iterates through all the +Visit+ objects and displays the values of their properties on the console:
 
 [source, javascript]
 ----
@@ -1006,7 +1006,7 @@ The next version of our sample HTML file populates the object store +Visits+ wit
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>My Today's Visits With InsexedDB</title>
+  <title>My Today's Visits With IndexedDB</title>
 </head>
 <body>
   <script>
@@ -1121,7 +1121,7 @@ To put this simply, the http://www.w3.org/TR/html5/browsers.html#the-history-int
 
 Imagine a single-page application (SPA) that has a navigational menu to open various views, based on the user's interaction. Because these views represent URLs loaded by making Ajax calls from your code, the web browser still shows the original URL of the home page of your web application. 
 
-A perfect user always navigates your application by using the menus and controls you provided, but what if she clicks the Back button of the web browser? If the navigation controls aren't changing the URL in the browser's address bar, the browser obediently will show the web page that the user has visited before, even launching your application, which is most likely not what he intended to do. Using the History API, you can create more fine-grained bookmarks that define a specific state within the web page.
+A perfect user always navigates your application by using the menus and controls you provided, but what if she clicks the Back button of the web browser? If the navigation controls aren't changing the URL in the browser's address bar, the browser obediently will show the web page that the user has visited before, even launching your application, which is most likely not what she intended to do. Using the History API, you can create more fine-grained bookmarks that define a specific state within the web page.
 
 TIP: Not writing any code that would process clicks on the Back and Forward buttons is the easiest way to frustrate your users.
 
@@ -1137,7 +1137,7 @@ The `pushState()` takes three arguments (the values from the first two might be 
 
 * The title of the current view of the web page.   
 
-* The suffix to be associated with the current view of the page. It will be added to the address bar of the browser.  
+* The suffix to be associated with the current view of the page. It will be added to the address bar of the browser:  
 
 [source, html]
 ----
@@ -1150,8 +1150,7 @@ The `pushState()` takes three arguments (the values from the first two might be 
 
   	 <h1>Click on Link and watch the address bar...</h1>
 
-    <button type="button" onclick="whoWeAre()">Who we are</button>  
-<!--1-->
+    <button type="button" onclick="whoWeAre()">Who we are</button>  <1>
 
     <button type="button" onclick="whatWeDo()">What we do</button>	
   
@@ -1160,36 +1159,36 @@ The `pushState()` takes three arguments (the values from the first two might be 
   <script>
     
      function whoWeAre(){
-     	var locationID== {locID: 123,                            // <2>
+     	var locationID== {locID: 123,                             <2>
      		        uri: '/whoweare'};
      	
-     	history.pushState(locationID,'', 'who_we_are' );       // <3> 
+     	history.pushState(locationID,'', 'who_we_are' );          <3> 
      }
      
      function whatWeDo(){
-     	var actionID== {actID: 123,                              // <4>
+     	var actionID== {actID: 123,                               <4>
      		          uri: '/whatwedo'};
 
-     	history.pushState(actionID,'', 'what_we_do' );          // <5>
+     	history.pushState(actionID,'', 'what_we_do' );            <5>
      }	
   </script>
  </body>
 </html>
 ----
 
-<1> On a click of the button, call the event handler function. Call `pushState()` to modify the browser's history. Other processing, such as making an Ajax request to the server, can be done `in whoWeAre()`, too.
+<1> On a click of the button, call the event handler function. Call `pushState()` to modify the browser's history. Other processing, such as making an Ajax request to the server, can be done in `whoWeAre()`, too.
 
 <2> Prepare the custom state object to be used in server-side requests. The information about _who we are_ depends on the location ID. 
 
 <3> Call `pushState()` to remember the customer ID, and add the suffix _/who_we_are_ to serve as a path to the server-side RESTful request. The page title is empty; the History API currently ignores it.
 
-<4> Prepare the custom state object to be used in server side requests. The information about _what we do_ depends on customer id. 
+<4> Prepare the custom state object to be used in server-side requests. The information about _what we do_ depends on customer ID. 
 
-<5> Call `pushState()` to remember the customer ID, and add the suffix _/what_we_do_ to serve as a path to the server-side RESTful request. The page title is empty; the History API currently ignores it. The page title is empty; the History API currently ignores it.
+<5> Call `pushState()` to remember the customer ID, and add the suffix _/what_we_do_ to serve as a path to the server-side RESTful request. The page title is empty; the History API currently ignores it. 
 
 This preceding sample is a simplified example and would require more code to properly form the server request, but our goal here is just to clearly illustrate the use of the History API.
 
-<<FIG1-11>> depicts the view after the user clicks the Who We Are button. The URL now shows http://127.0.0.1:8020/HistoryAPI/who_we_are, but keep in mind that if you try to reload the page while this URL is shown, the browser will give you a Not Found error, and rightly so. There is no resource that represents the URL that ends with _who_we_are_--it's just the name of the view in the browser's history.
+<<FIG1-11>> depicts the view after the user clicks the Who We Are button. The URL now shows http://127.0.0.1:8020/HistoryAPI/who_we_are, but keep in mind that if you try to reload the page while this URL is shown, the browser will give you a Not Found error, and rightly so. There is no resource that represents the URL that ends with __who_we_are__—it's just the name of the view in the browser's history.
 
 [[FIG1-11]]
 .Testing pushState()
@@ -1247,5 +1246,5 @@ Users had to install Chrome Frame on their machines, and web developers just nee
 <meta http-equiv="X-UA-Compatible" content="chrome=1" />
 ----
 
-After that, the web page rendering would be done by Chrome Frame, whereas your web application would run in Internet Explorer. Unfortunately, Google decided to discontinue supporting the Chrome Frame project as of January 2014. They are recommending to prompt the user of your application to upgrade the web browser, which might not be something users are willing to do. But let's hope for the best. 
+After that, the web page rendering would be done by Chrome Frame, whereas your web application would run in Internet Explorer. Unfortunately, Google decided to discontinue supporting the Chrome Frame project as of January 2014. It is recommending to prompt the user of your application to upgrade the web browser, which might not be something users are willing to do. But let's hope for the best. 
   
