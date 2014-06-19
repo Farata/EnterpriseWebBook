@@ -325,7 +325,7 @@ var mySpellChecker == new Worker("spellChecker.js");
     });
 ----  
 
-On the other hand, the HTML page can also send any message to the worker, forcing it to start performing its duties (for example, starting the spell checking process):
+On the other hand, the HTML page can also send any message to the worker, forcing it to start performing its duties (for example, starting the spellchecking process):
 
 [source, javascript]
 ----
@@ -334,18 +334,18 @@ On the other hand, the HTML page can also send any message to the worker, forcin
 
 The argument of `postMessage()` can contain any object, and it's  being passed by value, not by reference.
 
-Inside the worker, you also need to define an event handler to process the data sent from outside. To continue the previous example, _spellChecker.js_ will have inside it the code that receives the text to check, performs the spell check, and returns the result:
+Inside the worker, you also need to define an event handler to process the data sent from outside. To continue the previous example, _spellChecker.js_ will have inside it the code that receives the text to check, performs the spellcheck, and returns the result:
 
 [source, javascript]
 ----
 self.onmesage == function(event){
      
-     // The code that performs spell check goes here
+     // The code that performs spellcheck goes here
 	 
 	 var resultOfSpellCheck == checkSpelling(event.data);
      
      // Send the results back to the window that listens
-     // for the messages from this spell checker
+     // for the messages from this spellchecker
 
 	 self.postMessage(resultOfSpellCheck);
 };
@@ -366,7 +366,7 @@ mySpellChecker.onerror == function(event){
 
 If a window's script creates a worker thread for its own use, we call it _a dedicated worker_.  A window creates an event listener, which gets the messages from the worker. On the other hand, the worker can have a listener, too, to react to the events received from its creator.(((HTML5 APIs, Web Workers, dedicated and shared)))(((dedicated workers)))(((Web Workers, dedicated and shared)))
 
-A _shared worker_ thread can be used by several scripts, as long as they have the same origin. For example, if you want to reuse a spell-checker feature in several views of your web application, you can create a shared worker as follows:
+A _shared worker_ thread can be used by several scripts, as long as they have the same origin. For example, if you want to reuse a spellchecker feature in several views of your web application, you can create a shared worker as follows:
 
 [source, javascript]
 ----
@@ -386,7 +386,7 @@ var mySpellChecker == new SharedWorker("spellChecker.js");
     mySpellChecker.port.start()
 ----
 
-The event handler becomes connected to the `port` property, and now you can post the message to this shared worker by using the same `postMessage()` method.
+The event handler becomes connected to the `port` property, and now you can post the message to this shared worker by using the same `postMessage()` method:
 
 [source, javascript]
 ----
@@ -428,17 +428,17 @@ This is how the WebSocket workflow proceeds:
 
 * Both the server and the client can initiate disconnects, too.
 
-This is a very short description of what WebSocket API is about. We encourage you to read <<upgrading_http_to_websocket>> and find a use of for great API in one of your projects.
+This is a very short description of what the WebSocket API is about. We encourage you to read <<upgrading_http_to_websocket>> and find a use for this great API in one of your projects.
 
 === Offline Web Applications
 
-A common misconception about web applications is that they are useless without an Internet connection. Everyone knows that you can write native applications in a way that they have everything they need installed on your device's data storage--both the application code and the data storage. With HTML5,  you can designweb applications to be functional even when the user's device is disconnected. The offline version of a web application might not offer full functionality, but certain functions can still be available.(((HTML5 APIs, offline web applications, overview of)))(((offline web applications, overview of))) 
+A common misconception about web applications is that they are useless without an Internet connection. Everyone knows that you can write native applications in a way that they have everything they need installed on your device's data storage--both the application code and the data storage. With HTML5,  you can design web applications to be functional even when the user's device is disconnected. The offline version of a web application might not offer full functionality, but certain functions can still be available.(((HTML5 APIs, offline web applications, overview of)))(((offline web applications, overview of))) 
 
 ==== Prerequisites for Developing Offline Web Applications 
 
-To be useful in disconnected mode, an HTML-based application needs to have access to local storage on the device so data entered by the user in the HTML windows can be saved locally, further synchronized with the server when a connection becomes available. Think of a salesman of a pharmaceutical company visiting medical offices and trying to sell new pills. What if a connection is not available at a certain point? She can still use her tablet to demonstrate the marketing materials, and more important, collect data about this visit and save it locally. When the Internet connection becomes available again, the web application should support automatic or manual data synchronization so the information about the sales activity is stored in a central database.(((HTML5 APIs, offline web applications, designing for)))(((offline web applications, designing for)))
+To be useful in disconnected mode, an HTML-based application needs to have access to local storage on the device so data entered by the user in the HTML windows can be saved locally, further synchronized with the server when a connection becomes available. Think of a salesperson of a pharmaceutical company visiting medical offices and trying to sell new pills. What if a connection is not available at a certain point? She can still use her tablet to demonstrate the marketing materials, and more important, collect data about this visit and save it locally. When the Internet connection becomes available again, the web application should support automatic or manual data synchronization so the information about the sales activity is stored in a central database.(((HTML5 APIs, offline web applications, designing for)))(((offline web applications, designing for)))
 
-There are two main prerequisites for building offline web applications. You need local storage, and you need to ensure that the server sends only raw data to the client, with no HTML markup (see <<FIG1-3>>). So all these server-side frameworks that prepare data heavily sprinkled with HTML markup should not be used. For example, the front end should be developed in HTML/JavaScript/CSS, the back end in your favorite language (Java, .NET, PHP), and the JSON-formatted data should be sent from the server to the client and back.
+There are two main prerequisites for building offline web applications. You need local storage, and you need to ensure that the server sends only raw data to the client, with no HTML markup (see <<FIG1-3>>). So all these server-side frameworks that prepare data heavily sprinkled with HTML markup should not be used. For example, the frontend should be developed in HTML/JavaScript/CSS, the backend in your favorite language (Java, .NET, PHP), and the JSON-formatted data should be sent from the server to the client and back.
 
 [[FIG1-3]]
 .Design with offline use in mind 
@@ -485,7 +485,7 @@ On each subsequent application load, the browser makes a request to the server a
 
 Web browsers have a `boolean` property, `window.navigator.onLine`, which should be used to check for a connection to the Internet. The HTML5 specification states that _"The navigator.onLine attribute must return false if the user agent will not contact the network when the user follows links or when a script requests a remote page (or knows that such an attempt would fail), and must return true otherwise."_ Unfortunately, major web browsers deal with this property differently, so you need to do a thorough testing to see if it works as expected with the browser you care about.(((HTML5 APIs, offline web applications, determining offline status)))(((offline web applications, determining offline status))) 
 
-To intercept changes in the connectivity status, you can also assign event listeners to the `online` and `offline` events, for example:
+To intercept changes in the connectivity status, you can also assign event listeners to the `online` and `offline` events. For example:
 
 [source, javascript]
 ----
@@ -518,11 +518,11 @@ http://www.w3.org/TR/webstorage/[Web Storage]::
 http://www.w3.org/TR/IndexedDB/[IndexedDB]::
     A NoSQL database that stores key-value pairs.(((IndexedDB, documentation)))
 
-NOTE: There is another option worth mentioning: http://www.w3.org/TR/webdatabase/[Web SQL Database]. The specification was based on the open-source SQLite database. But the work on this specification has stopped and future versions of browsers might not support it. That's why we don't discuss Web SQL Database in this book.(((Web SQL Database))) 
+NOTE: There is another option worth mentioning: http://www.w3.org/TR/webdatabase/[Web SQL Database]. The specification was based on the open source SQLite database. But the work on this specification has stopped and future versions of browsers might not support it. That's why we don't discuss Web SQL Database in this book.(((Web SQL Database))) 
 
-NOTE: By the end of 2013, local and session storage were supported by all modern web browsers. Web SQL database is not supported by Firefox and Internet Explorer and most likely never will be. IndexedDB is the web storage format of the future, but Safari doesn't support it yet, so if your main development platform is iOS, you might need to stick to Web SQL database. Consider using a polyfill for indexedDB by using a Web SQL API called https://github.com/axemclion/IndexedDBShim[IndexedDBShim].(((IndexedDBShim)))
+NOTE: By the end of 2013, local and session storage were supported by all modern web browsers. Web SQL Database is not supported by Firefox and Internet Explorer and most likely never will be. IndexedDB is the web storage format of the future, but Safari doesn't support it yet, so if your main development platform is iOS, you might need to stick to Web SQL Database. Consider using a polyfill for indexedDB by using a Web SQL API called http://bit.ly/1lZrNfP[IndexedDBShim].(((IndexedDBShim)))
 
-NOTE: To get the current statusof support for HTML5 features, visit http://www.caniuse.com[caniuse.com] and search for the API you're interested in.
+NOTE: To get the current status of support for HTML5 features, visit http://www.caniuse.com[caniuse.com] and search for the API you're interested in.
 
 Although web browsers send cookies to the web server, they don't send the data saved in local storage. The saved data is used only on the user's device. Also, the data saved in the local storage never expires. A web application has to programmatically clean up the storage, if need be, which will be illustrated next.
 
@@ -534,7 +534,7 @@ Another distinction is that the data from `window.localStorage` is available for
 
 ===== localStorage API
 
-Saving the application state is the main use of local storage. Coming back to the use-case of the pharmaceutical salesperson, in offline mode, you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place, for(((localStorage API, overview of))) example:
+Saving the application state is the main use of local storage. Coming back to the use-case of the pharmaceutical salesperson, in offline mode, you can save the name of the person she talked to in a particular medical office and the notes about the conversation that took place. For(((localStorage API, overview of))) example:
 
 [source, javascript]
 ----
@@ -543,7 +543,7 @@ localStorage.setItem('contactPerson', 'Mary Lou');
 localStorage.setItem('notes', 'Drop the samples of XYZin on 12/15/2013');
 ----
 
-Accordingly, to retrieve the saved information, you'd need to use the method `getItem()`.
+Accordingly, to retrieve the saved information, you'd need to use the method `getItem()`:
 
 [source, javascript]
 ----
@@ -554,7 +554,7 @@ var notes == localStorage.getItem('notes');
 
 These code samples are fairly simple because they store single values. In real-life scenarios, we often need to store multiple objects. What if our salesperson visits several medical offices and needs to save information about all these visits in the web store?  For each visit, we can create a key-value combination, where a _key_ includes the unique ID (for example, office ID), and the _value_ is a JavaScript object (for example, Visit) turned into a JSON-formatted string (see <<using_ajax_and_json>> for details) by using `JSON.stringify()`. ((("keys, in localStorage API")))((("values, in localStorage API")))
 
-The code sample that follows illustrates how to store and retrieve the custom `Visit` objects. Each visit to a medical office is represented by one instance of the `Visit` object. To keep the code simple, we haven't included any HTML components. The JavaScript functions are invoked and print their output on the browser's console.  
+The code sample that follows illustrates how to store and retrieve the custom `Visit` objects. Each visit to a medical office is represented by one instance of the `Visit` object. To keep the code simple, we haven't included any HTML components. The JavaScript functions are invoked and print their output on the browser's console: 
 
 [source, javascript]
 ----
@@ -635,7 +635,7 @@ var removeAllVisitInfo == function (){             // <3>
 </html>
 ----
 
-<1> The function `saveVisitInfo()` uses a JSON object to turn the +visit+ object into a string with `JSON.stringify()` It then saves this string in local storage. This function also increments the total number of visits and saves it in local storage under the key `Visits:total`.
+<1> The function `saveVisitInfo()` uses a JSON object to turn the +visit+ object into a string with `JSON.stringify()`. It then saves this string in local storage. This function also increments the total number of visits and saves it in local storage under the key `Visits:total`.
 
 <2> The function `readVisitInfo()` gets the total number of visits from local storage and then reads each visit record, re-creating the JavaScript object from the JSON string by using `JSON.parse()`.
 
@@ -659,7 +659,7 @@ image::images/ewdv_ab04.png[]
 
 TIP: If you are interested in intercepting the moments when the content of local storage gets modified, listen to the DOM `storage` event, which carries the old and new values and the URL of the page whose data is being changed. 
 
-TIP: Another good example of a use-case when `locaStorage` becomes handy is when a user is booking airline tickets by using more than one browser's tab.
+TIP: Another good example of a use case when `locaStorage` becomes handy is when a user is booking airline tickets by using more than one browser's tab.
 
 
 ===== sessionStorage API
@@ -673,7 +673,7 @@ sessionStorage.setItem("userID","jsmith");
 var userID == sessionStorage.getItem("userID");
 ---- 
 
-Chrome Developer Tools include the tab Resources that allows browsing the local or session storage if a web page uses it. For example, <<FIG1-0>> shows the storage used by _cnn.com_.
+Chrome Developer Tools includes the tab Resources that allows browsing the local or session storage if a web page uses it. For example, <<FIG1-0>> shows the storage used by _cnn.com_.
 
 [[FIG1-0]]
 .Browsing local storage in Chrome Developer Tools 
@@ -685,11 +685,11 @@ Both `localStorage` and `sessionStorage` are subject to the same-origin policy, 
 
 Both `localStorage` and `sessionStorage` are browser-specific. For example, if the web application stores data from Firefox, that data won't be available if the user opens the same application from Safari.
 
-The APIs from the Web Storage specification are simple to use, but their major drawbacks are that they don't give you a way to structure the stored data, you always have to store strings, and the API is synchronous, which can case delays in the user interaction when your application accesses the disk. 
+The APIs from the Web Storage specification are simple to use, but their major drawbacks are that they don't give you a way to structure the stored data, you always have to store strings, and the API is synchronous, which can cause delays in the user interaction when your application accesses the disk. 
 
 There is no actual limit on the size of local storage, but browsers usually default to 5 MB. If the application tries to store more data than the browser permits, the `QUOTA_EXCEEDED_ERR` exception will be thrown--always use the try-catch blocks when saving data. 
 
-Even if the user's browser allows increasing this setting (for example, via _about:config_ URL in Firefox), access to such data might be slow. Consider using the http://www.w3.org/TR/FileAPI/[File API] or IndexedDB, which are introduced in the next section. 
+Even if the user's browser allows increasing this setting (for example, via the _about:config_ URL in Firefox), access to such data might be slow. Consider using the http://www.w3.org/TR/FileAPI/[File API] or IndexedDB, which are introduced in the next section. 
 
 
 ==== Introduction to IndexedDB
@@ -698,7 +698,7 @@ http://www.w3.org/TR/IndexedDB/[Indexed Database API] (a.k.a. IndexedDB) is a so
 
 Using IndexedDB, you can access data asynchronously, so UI freezes won't occur while accessing large objects on disk. You make a request to the database and define the event handlers that should process the errors or the result when ready. IndexedDB uses DOM events for all notifications. Success events don't bubble, whereas error events do.
 
-Users will have the feeling that the application is responsive, which wouldn't be the case if you were saving several megabytes of data with the Web Storage API. Similar to Web Storage, access to the IndexedDB databases is regulated by the same origin policy. 
+Users will have the feeling that the application is responsive, which wouldn't be the case if you were saving several megabytes of data with the Web Storage API. Similar to Web Storage, access to the IndexedDB databases is regulated by the same-origin policy. 
 
 TIP: In the future, web browsers might implement https://developer.mozilla.org/en-US/docs/IndexedDB/Synchronous_API[synchronous IndexedDB API] to be used inside web workers.
 
@@ -726,9 +726,9 @@ IndexedDB doesn't require you to define a formal structure of your stored object
 
 Your web application can have one or more databases, and each can contain one or more _object stores_.  Each object store will contain similar objects (for example, one stores the salesperson's visits, whereas another stores upcoming promotions).(((object stores, basics of)))
 
-Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide whether you want to maintain the value in this property manually, or use the the `autoIncrement` option, where the values of this property will be assigned automatically. Coming back to our +Visits+ example, you can either maintain the unique values of the `officeId` on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as a surrogate keys never decreases, and starts with the value of 1 in each object store.
+Every object that you are planning to store in the database has to have one property that plays a role similar to a primary key in a relational database. You have to decide whether you want to maintain the value in this property manually, or use the `autoIncrement` option, where the values of this property will be assigned automatically. Coming back to our +Visits+ example, you can either maintain the unique values of the `officeId` on your own or create a surrogate key that will be assigned by IndexedDB. The current generated number to be used as a surrogate keys never decreases, and starts with the value of 1 in each object store.
 
-As with relational databases, you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the +Visits+ store, create an index on the property `contactPerson` of the `Visit` objects. Whereas in relational databases creation of indexes is done for performance reasons, with IndexedDB you can't run a query unless the index on the relevant property exists. The following code sample shows how to connect to an existing object or create a new object store `Visits` in a database called Medical_DB.   
+As with relational databases, you create indexes based on the searches that you run often. For example, if you need to search on the contact name in the +Visits+ store, create an index on the property `contactPerson` of the `Visit` objects. Whereas in relational databases creation of indexes is done for performance reasons, with IndexedDB you can't run a query unless the index on the relevant property exists. The following code sample shows how to connect to an existing object or create a new object store `Visits` in a database called +Medical_DB+:  
 
 [source, javascript]
 ----
@@ -758,13 +758,13 @@ request.onupgradeneeded == function(event){  // <4>
 
 <4> The `onupgradeneeded` handler is the place to create or upgrade the storage to a new version. This is explained next.  
 
-TIP: There are several scenarios to consider while deciding whether you need to use the `autoIncrement` property with the store key. Kristof Degrave described the article http://www.kristofdegrave.be/2012/02/indexed-db-to-provide-key-or-not-to.html[Indexed DB: To provide a key or not to provide a key].     
+TIP: There are several scenarios to consider while deciding whether you need to use the `autoIncrement` property with the store key. Kristof Degrave described in the article http://bit.ly/1lJjjEN["Indexed DB: To provide a key or not to provide a key."]
 
 ===== Object stores and versioning
 
-In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the _new version_ of the database. With IndexedDB, it works differently. Each database has a version, and when the new version of the database (for example, Medical_DB) is created, the `onupgradeneeded` is dispatched, which is where object store(s) are created. But if you already had object stores in the older version of the database, and they don't need to be changed, there is no need to re-create them.(((object stores, versioning and)))(((IndexedDB, object stores and versioning)))
+In the world of traditional DBMS servers, when the database structure has to be modified, the DBA will do this upgrade, the server will be restarted, and the users will work with the _new version_ of the database. With IndexedDB, it works differently. Each database has a version, and when the new version of the database (for example, +Medical_DB+) is created, `onupgradeneeded` is dispatched, which is where object store(s) are created. But if you already had object stores in the older version of the database, and they don't need to be changed, there is no need to re-create them.(((object stores, versioning and)))(((IndexedDB, object stores and versioning)))
 
-After successful connection to the database, the version number is available in `IDBRequest.result.version` property. The starting version of any database is 1.
+After successful connection to the database, the version number is available in the `IDBRequest.result.version` property. The starting version of any database is 1.
 
 The method `open()` takes a second parameter: the database version to be used. If you don't specify the version, the latest one will be used. The following line shows how the application's code can request a connection to version 3 of the database `Medical_DB`:
 
@@ -816,9 +816,9 @@ A _transaction_ is a logical unit of work. Executing several database operations
 
 To start any manipulations of the database, you have to open a transaction in one of these modes. The `readonly` transaction (the  default one) allows multiple scripts to read from the database concurrently. This statement might raise a question: why would the user need concurrent access to his local database if he's the only user of the application on his device? The reason is that the same application can be opened in more than one tab, or by spawning more than one worker thread that needs to access the local database. The `readonly` mode is the least restrictive mode, and more than one script can open a `readonly` transaction.
 
-If the application needs to modify or add objects to the database, open the transaction in `readwrite` mode; only one script can have the transaction open on any particular object store. But you can have more than one `readwrite` transactions open at the same time on different stores. And if the database/store/index creation or upgrade has to be done, use `versionchange` mode. 
+If the application needs to modify or add objects to the database, open the transaction in `readwrite` mode; only one script can have the transaction open on any particular object store. But you can have more than one `readwrite` transaction open at the same time on different stores. And if the database/store/index creation or upgrade has to be done, use `versionchange` mode. 
 
-When a transaction is created, you should assign listeners to its `complete`, `error`, and `abort` events. If the `complete` event is fired, the transaction is automatically commited; manual commits are not supported. If the `error` event is dispatched, the entire transaction is rolled back. Calling the method `abort()` will fire the `abort` event and will roll back the transaction, too.
+When a transaction is created, you should assign listeners to its `complete`, `error`, and `abort` events. If the `complete` event is fired, the transaction is automatically committed; manual commits are not supported. If the `error` event is dispatched, the entire transaction is rolled back. Calling the method `abort()` will fire the `abort` event and will roll back the transaction, too.
 
 Typically, you should open the database and in the `onsuccess` handler create a transaction. Then, open a transaction by calling the method `objectStore()` and perform data manipulations. In the next section, you'll see how to add objects to an object store by using transactions.
 
@@ -889,7 +889,7 @@ TIP: You can browse the data from your IndexedDB database in Chrome Developer To
 
 ===== Retrieving the data 
 
-IndexedDB doesn't support SQL. You'll be using cursors to iterate through the object store. First, you open the transaction. Then, you invoke `openCursor()` on the object store. While opening the cursor, you can specify optional parameters like the range of object keys you'd like to iterate and the direction of the cursor movement: `IDBCursor.PREV` or `IDBCursor.NEXT`. If none of the parameters is specified, the cursor will iterate all objects in the store in ascending order. The following code snippet iterates through all +Visit+ objects, printing just contact names.(((IndexedDB, retrieving data)))
+IndexedDB doesn't support SQL. You'll be using cursors to iterate through the object store. First, you open the transaction. Then, you invoke `openCursor()` on the object store. While opening the cursor, you can specify optional parameters like the range of object keys you'd like to iterate and the direction of the cursor movement: `IDBCursor.PREV` or `IDBCursor.NEXT`. If none of the parameters is specified, the cursor will iterate all objects in the store in ascending order. The following code snippet iterates through all +Visit+ objects, printing just contact names: (((IndexedDB, retrieving data)))
 
 [source, javascript]
 ----
@@ -931,7 +931,7 @@ To limit the range of offices to iterate through, you could open the cursor on t
 officeIdIndex.openCursor(IDBKeyRange.bound(123, 250, false, true);
 ----
 
-The `false` in the third argument of `bound()` means that 123 should be included in the range, and the `true` in the fourth parameter excludes the object with `officeID=250` from the range. The methods `lowerbound()` and `upperbound()` are other variations of the method `bound()`--consult the http://www.w3.org/TR/IndexedDB/#dfn-key-range[online documentation] for details.
+The `false` in the third argument of `bound()` means that 123 should be included in the range, and the `true` in the fourth parameter excludes the object with `officeID=250` from the range. The methods `lowerbound()` and `upperbound()` are other variations of the method ++bound()++—consult the http://bit.ly/1nR65dF[online documentation] for details.
 
 If you need to fetch just one specific record, restrict the selected range to only one value by using the method `only()`:
 
