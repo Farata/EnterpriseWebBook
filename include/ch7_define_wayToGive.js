@@ -1,4 +1,4 @@
-define(["otherContent"], function(otherContent) { // <1>
+define(["otherContent"], function(otherContent) {  <1>
     var wayToGive;
 
     console.log("otherContent module is loaded");
@@ -11,7 +11,7 @@ define(["otherContent"], function(otherContent) { // <1>
                 newContainerID = "way-to-give-container";
                 dataUrl = "assets/html-includes/way-to-give.html";
                 otherContent.getNewContent(whatWeDoButton, newContainerID, 
-                    dataUrl); // <2>
+                    dataUrl);   <2>
                 return console.log("way-to-give module is rendered");
             },
             init: function() {
@@ -19,5 +19,5 @@ define(["otherContent"], function(otherContent) { // <1>
             }
         };
     };
-    return wayToGive; // <3>
+    return wayToGive;   <3>
 });

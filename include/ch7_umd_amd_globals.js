@@ -1,11 +1,11 @@
 (function(root, factory) {
     "use strict";
-    if (typeof define === "function" && define.amd) { // <1>
+    if (typeof define === "function" && define.amd) {  <1>
         define(["login"], factory);
     } else {
-        root.ssc = factory(root.login); // <2>
+        root.ssc = factory(root.login);   <2>
     }
-}(this, function(login) { // <3>
+}(this, function(login) {   <3>
     "use strict";
     return {
         myConstant: 1984,

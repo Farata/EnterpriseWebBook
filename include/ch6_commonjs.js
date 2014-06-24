@@ -2,8 +2,8 @@
 var loginModule = {};
 var privateVariable = 42;
 
-var ldapLogin = require("login/ldap");      // <1>
-var otherImportantDep = require("modules/util/strings"); // <1>
+var ldapLogin = require("login/ldap");      <1>
+var otherImportantDep = require("modules/util/strings"); <1>
 
 var privateLogin = function(userNameValue, userPasswordValue) {
     if (userNameValue === "admin" && userPasswordValue === "secret") {
@@ -22,11 +22,11 @@ loginModule.logout = function() {
     console.log("logout implementation omitted");
 };
 
-exports.login = loginModule;        // <2>
+exports.login = loginModule;        <2>
 // or
-module.exports = loginModule;      // <3>
+module.exports = loginModule;      <3>
 
 loginModule.printMetadata = function(){
-    console.log(module.id);     // <3>
+    console.log(module.id);     <3>
     console.log(module.uri);
 };
