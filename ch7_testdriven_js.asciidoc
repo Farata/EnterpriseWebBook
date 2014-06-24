@@ -506,10 +506,10 @@ The invocation of this helper can look like this:
 [source,javascript]
 ----
 it("part of super agents", function () {
-    expect("James Bond").toBeSecretAgent();         // <1>
+    expect("James Bond").toBeSecretAgent();         <1>
     expect("Jason Bourne").toBeSecretAgent();
-    expect("Austin Powers").not.toBeSecretAgent();  // <2>
-    expect("Austin Powers").toBeSecretAgent();     // <3>
+    expect("Austin Powers").not.toBeSecretAgent();  <2>
+    expect("Austin Powers").toBeSecretAgent();     <3>
 });
 ----
 
@@ -576,9 +576,9 @@ And here is how we can test it using Jasmine's spies:
 ----
 describe("login module", function() {
     it("showAuthorizedSection has been called", function() {
-        spyOn(ssc, "showAuthorizedSection"); // <1>
-        ssc.login("admin", "1234"); // <2>
-        expect(ssc.showAuthorizedSection).toHaveBeenCalled(); // <3>
+        spyOn(ssc, "showAuthorizedSection"); <1>
+        ssc.login("admin", "1234"); <2>
+        expect(ssc.showAuthorizedSection).toHaveBeenCalled(); <3>
     });
 });
 ----
@@ -622,8 +622,8 @@ You can configure Testem to specify which files should be included in testing. T
 [source,javascript]
 ----
 {
-    "framework": "jasmine2",         // <1>
-    "src_files": [                 // <2> 
+    "framework": "jasmine2",         <1>
+    "src_files": [                 <2> 
         "ext/ext-all.js",
         "test.js"
     ]
@@ -746,8 +746,8 @@ Earlier in this chapter, we introduced the Jasmine method `beforeEach()`, which 
 ----
 describe("spec", function() {
     var usernameInput;
-    beforeEach(function() { // <1>
-        usernameInput = $(document.createElement("input")).attr({ // <2>
+    beforeEach(function() { <1>
+        usernameInput = $(document.createElement("input")).attr({ <2>
             type: 'text',
             id: 'username',
             name: 'username'
@@ -782,12 +782,12 @@ describe("spec", function() {
     var usernameInput;
     beforeEach(function() {
         usernameInput = 
-                affix('input[id="username"][type="text"][name="username]')[0]; // <1>
+                affix('input[id="username"][type="text"][name="username]')[0]; <1>
     });
 
     it("should not allow login with empty username and password and return code 
         equals 0", function() {
-            var result = ssc.login(usernameInput, passwordInput); // <2>
+            var result = ssc.login(usernameInput, passwordInput); <2>
             expect(result).toBe(0);
     });
 });
@@ -855,7 +855,7 @@ By placing our spec names in a +requires+ config property, we delegate the loadi
 [source,javascript]
 ----
 Ext.define('Test.spec.AllSpecs', {
-    requires: [         // <1>
+    requires: [         <1>
         'Test.spec.BasicAssumptions'
     ]
 });
@@ -871,8 +871,8 @@ Ext.define('Test.spec.AllSpecs', {
 ====
 [source,javascript]
 ----
-Ext.define('Test.spec.BasicAssumptions', {}, function() {   // <1>
-    describe("Basic Assumptions: ", function() {            // <2>
+Ext.define('Test.spec.BasicAssumptions', {}, function() {   <1>
+    describe("Basic Assumptions: ", function() {            <2>
         it("Ext namespace should be available loaded", function() {
             expect(Ext).toBeDefined();
         });
@@ -937,7 +937,7 @@ Ext.define("Test.spec.DonateControllerSpec", {}, function () {
         beforeEach(function () {
             // controller's setup code is omitted
         });
-        it('should exists', function () {       // <1>
+        it('should exists', function () {       <1>
             var controller = Ext.create('SSC.controller.Donate');
             expect(controller.$className).toEqual('SSC.controller.Donate');
         });
@@ -946,8 +946,8 @@ Ext.define("Test.spec.DonateControllerSpec", {}, function () {
                 var donorInfo = Ext.create('SSC.model.DonorInfo', {});
                 var donateForm = Ext.create('SSC.view.DonateForm', {});
                 var controller = Ext.create('SSC.controller.Donate');
-                spyOn(donorInfo, 'donate');     // <2>
-                spyOn(controller, 'getDonatePanel').and.callFake(function () { // <3>
+                spyOn(donorInfo, 'donate');     <2>
+                spyOn(controller, 'getDonatePanel').and.callFake(function () { <3>
                     donateForm.down = function () {
                         return {
                             isValid: function () {
@@ -960,11 +960,11 @@ Ext.define("Test.spec.DonateControllerSpec", {}, function () {
                     };
                     return donateForm;
                 });
-                spyOn(controller, 'newDonorInfo').and.callFake(function () { //<4>
+                spyOn(controller, 'newDonorInfo').and.callFake(function () { <4>
                     return donorInfo;
                 });
                 controller.submitDonateForm();  
-                expect(donorInfo.donate).toHaveBeenCalled();    // <5>
+                expect(donorInfo.donate).toHaveBeenCalled();    <5>
             });
         });
     });
@@ -1004,17 +1004,17 @@ Ext.define('SSC.controller.Donate', {
             }
         });
     },
-    newDonorInfo: function() {          // <1>
+    newDonorInfo: function() {          <1>
         return Ext.create('SSC.model.DonorInfo', {});
     },
     submitDonateForm: function() {
         var form = this.getDonatePanel().down('form');      
-        if (form.isValid()) {       //<2>
+        if (form.isValid()) {       <2>
             var donorInfo = this.newDonorInfo();
-            Ext.iterate(form.getValues(), function(key, value) {  //<3>
+            Ext.iterate(form.getValues(), function(key, value) {  <3>
                 donorInfo.set(key, value);
             }, this);
-            donorInfo.donate();   // <4>
+            donorInfo.donate();   <4>
         }
     }
 });
@@ -1045,23 +1045,23 @@ Component tests isolate independent and reusable pieces of your application to v
 [source,javascript]
 ----
 Ext.define('Test.spec.ViewsAssumptions', {}, function () {
-    function prepareDOM(obj) {      // <1>
+    function prepareDOM(obj) {      <1>
         Ext.DomHelper.append(Ext.getBody(), obj);
     }
     describe('DonateForm ', function () {
-        var donateForm = null;  // <2>
+        var donateForm = null;  <2>
         beforeEach(function () {
-            prepareDOM({tag: 'div', id: 'test-donate'}); // <3>
-            donateForm = Ext.create('SSC.view.DonateForm', {    // <4>
+            prepareDOM({tag: 'div', id: 'test-donate'}); <3>
+            donateForm = Ext.create('SSC.view.DonateForm', {    <4>
                 renderTo: 'test-donate'
             });
         });
         afterEach(function () {
-            donateForm.destroy();   // <5>
+            donateForm.destroy();   <5>
             donateForm = null;
         });
         it('should have donateform xtype', function () {
-            expect(donateForm.isXType('donateform')).toEqual(true); // <6>
+            expect(donateForm.isXType('donateform')).toEqual(true); <6>
         });
     });
 });
