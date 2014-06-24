@@ -2,8 +2,8 @@
     describe("DOM manipulation spec", function() {
         var usernameInput;
         var passwordInput;
-        beforeEach(function() { // <1>
-            usernameInput = document.createElement("input"); // <2>
+        beforeEach(function() {   <1>
+            usernameInput = document.createElement("input");   <2>
             usernameInput.setAttribute("type", "text");
             usernameInput.setAttribute("id", "username");
             usernameInput.setAttribute("name", "username");
@@ -18,7 +18,7 @@
             passwordInput.setAttribute("autocomplete", "off");
         });
 
-        afterEach(function() { // <3>
+        afterEach(function() {   <3>
 
         });
 
@@ -31,12 +31,12 @@
         });
         it("should not allow login with empty username and password and return code 
             equals 0", function() {
-            var result = ssc.login(usernameInput, passwordInput); // <4>
+            var result = ssc.login(usernameInput, passwordInput);   <4>
             expect(result).toBe(0);
         });
         it("should allow login with user admin and password 1234 and return code 
             equals 1", function() {
-            usernameInput.value = "admin"; // <5>
+            usernameInput.value = "admin";   <5>
             passwordInput.value = "1234";
             var result = ssc.login(usernameInput, passwordInput);
             expect(result).toBe(1);

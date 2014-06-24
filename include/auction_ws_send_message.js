@@ -4,8 +4,8 @@ var getAuctionsList = function() {
         type: 'AUCTIONS_LIST',
         data: 'gime',
         auctionId: '-1'
-    };  // <1>
-    if (webSocket.readyState === 1) { // <2>
+    };    <1>
+    if (webSocket.readyState === 1) {   <2>
         webSocket.send(JSON.stringify(auctionListMessage));
     } else {
         console.log('offline');

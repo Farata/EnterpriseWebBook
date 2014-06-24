@@ -1,8 +1,8 @@
-define(function(require, exports, module) { // <1>
+define(function(require, exports, module) {   <1>
     "use strict";
-    module.exports = (function() {      // <2>
+    module.exports = (function() {        <2>
 
-        var dependency = require("dependencyId");   // <3>
+        var dependency = require("dependencyId");     <3>
 
         function AuctionDTO(_arg) {
             this.auctionState = _arg.auctionState;

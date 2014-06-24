@@ -1,7 +1,7 @@
  if (window.WebSocket) {
    webSocket = new WebSocket("ws://localhost:8080/child-auction/auction");
    webSocket.onopen = function() {
-     console.log("connection open..."); //<1>
+     console.log("connection open...");  <1>
      getAuctionsList();
    };
    webSocket.onclose = function(closeEvent) {

@@ -4,20 +4,20 @@ var myEventSource = (function() {
     if ( !! window.EventSource) {
         eventSource =
             new EventSource
-                ('http://localhost:8080/donate_web/api/donations/events'); // <1>
+                ('http://localhost:8080/donate_web/api/donations/events');   <1>
     } else {
         // notify use that her browser doesn't support SSE
     }
 
-    eventSource.addEventListener('open', function() { // <2>
+    eventSource.addEventListener('open', function() {   <2>
         // Connection was opened.
     }, false);
 
-    eventSource.addEventListener('create', function() { // <3>
+    eventSource.addEventListener('create', function() {   <3>
         // do something with data
     }, false);
 
-    eventSource.addEventListener('update', function() { // <4>
+    eventSource.addEventListener('update', function() {   <4>
         // do something with data
     }, false);
 
