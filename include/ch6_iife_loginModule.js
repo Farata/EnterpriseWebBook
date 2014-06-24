@@ -1,10 +1,10 @@
-var loginModule = (function() {     // <1>
+var loginModule = (function() {       <1>
     "use strict";
 
     var module = {};
     var privateVariable = 42;
 
-    var privateLogin = function(userNameValue, userPasswordValue) {     // <2>
+    var privateLogin = function(userNameValue, userPasswordValue) {       <2>
         if (userNameValue === "admin" && userPasswordValue === "secret") {
             return privateVariable;
         }

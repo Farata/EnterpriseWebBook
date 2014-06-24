@@ -6,7 +6,7 @@ define(function () {
         function OrderPanel() {
         }
 
-        OrderPanel.prototype.getMediator = function () {      // <1>
+        OrderPanel.prototype.getMediator = function () {        <1>
             return mediator;
         };
 
@@ -14,7 +14,7 @@ define(function () {
             mediator = m;
         };
 
-        OrderPanel.prototype.onPlaceBid = function (price) {     // <2>
+        OrderPanel.prototype.onPlaceBid = function (price) {     <2>
             console.log("price updated to " + price);
             var priceTextElement = document.getElementById("priceText");
             priceTextElement.value = price;

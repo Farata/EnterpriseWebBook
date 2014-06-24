@@ -1,5 +1,5 @@
-require.config({        // <1>
-    paths: {             // <2>
+require.config({          <1>
+    paths: {              <2>
         'login': 'modules/login',
         'donation': 'modules/donation',
         'svg-pie-chart': 'modules/svg-pie-chart',
@@ -16,5 +16,5 @@ require.config({        // <1>
 });
 
 
-require(['main'], function () {     // <3>
+require(['main'], function () {       <3>
 });

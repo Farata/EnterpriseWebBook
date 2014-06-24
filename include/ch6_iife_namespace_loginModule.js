@@ -1,13 +1,13 @@
 (function(global) {
     "use strict";
 
-    var ssc = global.ssc; // <1>
+    var ssc = global.ssc;   <1>
     if (!ssc) {
         ssc = {};
         global.ssc = ssc;
     }
 
-    var module = ssc.loginModule = {}; // <2>
+    var module = ssc.loginModule = {};   <2>
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
