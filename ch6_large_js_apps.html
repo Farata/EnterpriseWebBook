@@ -570,31 +570,31 @@ p.tableblock.header { color: #6d6e71; }
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_modularizing-large-scale-javascript-projects">Modularizing Large-Scale JavaScript Projects</a></li>
+<li><a href="#modularizing_javascript_projects">Modularizing Large-Scale <phrase role="keep-together">JavaScript Projects</phrase></a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#_modularization-basics">Modularization basics</a></li>
-<li><a href="#_roads-to-modularization">Roads To Modularization</a></li>
+<li><a href="#_understanding-modularization-basics">Understanding Modularization Basics</a></li>
+<li><a href="#_exploring-roads-to-modularization">Exploring Roads to Modularization</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_the-module-pattern">The Module Pattern</a></li>
+<li><a href="#the_module_pattern">The Module Pattern</a></li>
 <li><a href="#_commonjs">CommonJS</a></li>
 <li><a href="#amd_section">Asynchronous Module Definition</a></li>
 <li><a href="#umd">Universal Module Definition</a></li>
 <li><a href="#_ecmascript-6-modules">ECMAScript 6 Modules</a></li>
 </ul>
 </li>
-<li><a href="#REQUIREJS">Dicing the Save The Child Application Into Modules</a></li>
+<li><a href="#REQUIREJS">Dicing the Save The Child Application into Modules</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#inside_config">Inside RequireJS configuration: config.js</a></li>
+<li><a href="#inside_config">Inside the RequireJS Configuration: config.js</a></li>
 <li><a href="#_writing-amd-modules">Writing AMD Modules</a></li>
-<li><a href="#_loading-modules-on-demand">Loading Modules On-Demand</a></li>
-<li><a href="#requirejs_plugins">RequireJS plugins</a></li>
+<li><a href="#_loading-modules-on-demand">Loading Modules On Demand</a></li>
+<li><a href="#requirejs_plugins">Using RequireJS Plug-ins</a></li>
 <li><a href="#using_reuiqrejs_optimizer">Using RequireJS Optimizer</a></li>
 </ul>
 </li>
-<li><a href="#mediator_section">Loosely-Coupled Inter-Module Communications With Mediator</a></li>
+<li><a href="#mediator_section">Loosely Coupled InterModule Communications with Mediator</a></li>
 <li><a href="#_summary">Summary</a></li>
 </ul>
 </li>
@@ -603,37 +603,37 @@ p.tableblock.header { color: #6d6e71; }
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_modularizing-large-scale-javascript-projects"><a class="anchor" href="#_modularizing-large-scale-javascript-projects"></a>Modularizing Large-Scale JavaScript Projects</h2>
+<h2 id="modularizing_javascript_projects"><a class="anchor" href="#modularizing_javascript_projects"></a>Modularizing Large-Scale <phrase role="keep-together">JavaScript Projects</phrase></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Reducing the application startup latency and implementing lazy loading of certain parts of the application are the main reasons for modularization.</p>
+<p>Reducing an application&#8217;s startup latency and implementing lazy loading of certain parts of an application are the main reasons for modularization.</p>
 </div>
 <div class="paragraph">
-<p>A good illustration of why you may want to consider modularization is a well designed Web application of the <a href="http://www.mbusa.com/">Mercedes Benz USA</a>. This Web application serves people who live in America and either own or consider purchasing cars from this European car manufacturer.</p>
+<p>A good illustration of why you might want to consider modularization is the well-designed web application of <a href="http://www.mbusa.com">Mercedes Benz USA</a>. This web application serves people who live in the United States and either own or are considering purchasing cars from this European car manufacturer.</p>
 </div>
 <div class="paragraph">
-<p>One of their purchasing options is called "European Delivery". An American resident who chooses this particular package can combine a vacation with her car purchase. She flies to the Mercedes Benz factory in Europe, picks up her car, and has a two week vacation, driving her new vehicle around in Europe. After the vacation is over, the car is shipped to her hometown in the US. Needless to say, this program adds several thousand dollars to the price of the car.</p>
+<p>One of the purchasing options is called European Delivery. An American resident who chooses this particular package can combine a vacation with her car purchase. She flies to the Mercedes Benz factory in Europe, picks up her car, and has a two-week vacation, driving her new vehicle throughout Europe. After the vacation is over, the car is shipped to her hometown in the US.</p>
 </div>
 <div class="paragraph">
-<p>From an application design point of view, we don&#8217;t need to include the code that supports the European Delivery to each and every user&#8217;s who decided to visit mbusa.com. <em>If</em> the user visits the menu Owners and clicks on the European Delivery link, then <em>and only then</em> the required code and resources be pushed to the user&#8217;s computer or mobile device.</p>
+<p>Needless to say, this program adds several thousand dollars to the price of the car. Of course, Mercedes Benz wants to ensure that visitors to its site view accurate vehicle prices. So, from an application design point of view, we don&#8217;t want or need to include the code that supports the European Delivery to each and every user who decides to visit <a href="http://www.mbusa.com">mbusa.com</a>. <em>If</em> the user visits the menu Owners and clicks the European Delivery link, then <em>and only then</em> the required code and resources are pushed to the user&#8217;s computer or mobile device.</p>
 </div>
 <div class="paragraph">
-<p>The snapshot in <a href="#FIG7-1">MB USA: Europian Delivery</a> was taken after clicking on this link with Chrome Developer tools panel open.</p>
+<p>The snapshot in <a href="#FIG6-1">MB USA: European Delivery</a> was taken after clicking this link with the Chrome Developer Tools panel open.</p>
 </div>
-<div id="FIG7-1" class="imageblock">
+<div id="FIG6-1" class="imageblock">
 <div class="content">
-<img src="./images/fig_07_01.png" alt="image">
+<img src="images/ewdv_0601.png" alt="image">
 </div>
-<div class="title">Figure 1. MB USA: Europian Delivery</div>
-</div>
-<div class="paragraph">
-<p>As you see, <em>1.9Mb</em> worth of code and other resources have been downloaded as a result of this click. Should the application architects of the MB USA decided to bring this code to the user&#8217;s device on the initial load of <a href="http://mbusa.com">http://mbusa.com</a>, the wait time would increase by another second or more. This  is unnecessary because only a tiny number of American drivers would be interested in exploring the European Delivery option. This example illustrates the use case where modularization and lazy loading is needed.</p>
+<div class="title">Figure 1. MB USA: European Delivery</div>
 </div>
 <div class="paragraph">
-<p>Our Save The Child application is not as big as the one by Mercedes Benz. But we&#8217;ll use it to give you an example of how to build modularized Web applications that won&#8217;t bring the large and monolithic code to the client&#8217;s machine, but will load the code on as needed basis. We&#8217;ll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.</p>
+<p>In addition, as you can see, <em>1.9 MB</em> worth of code and other resources have been downloaded as a result of this click. Were the application architects of MB USA to decide to bring this code to the user&#8217;s device on the initial load of <a href="http://mbusa.com">http://mbusa.com</a>, the wait time would increase by another second or more. This additional latency is unnecessary because only a tiny number of American drivers would be interested in exploring the European Delivery option. This example illustrates a use case for which modularization and lazy loading is needed.</p>
 </div>
 <div class="paragraph">
-<p>Users consider a Web application fast for one of two reasons: either it&#8217;s actually fast or it gives an impression of being fast. Ideally, you should do your best to create a Web application that&#8217;s very responsive.</p>
+<p>Our Save The Child application is not as big as the one by Mercedes Benz. But we&#8217;ll use it to give you an example of how to build modularized web applications that won&#8217;t bring large blocks of monolithic code to the client&#8217;s machine, but will load the code on an as-needed basis. We&#8217;ll also give an example of how to organize the data exchange between different programming modules in a loosely coupled fashion.</p>
+</div>
+<div class="paragraph">
+<p>Users consider a web application fast for one of two reasons: either it&#8217;s actually fast or it gives an impression of being fast. Ideally, you should do your best to create a web application that&#8217;s very responsive.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -642,44 +642,45 @@ p.tableblock.header { color: #6d6e71; }
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-No matter how slow your Web application is, it should never feel like it&#8217;s being frozen.
+No matter how slow your web application is, it should never feel like it&#8217;s being frozen.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>This chapter is about modularization techniques that will allow quick rendering of the first page of your Web application by the user&#8217;s browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save The Child application to illustrate using modules.</p>
+<p>This chapter covers modularization techniques that will enable quick rendering of the first page of your web application by the user&#8217;s browser while loading the rest of the application in the background or on demand. We will continue refactoring the Save The Child application to illustrate using modules.</p>
 </div>
 <div class="paragraph">
-<p>In this chapter we&#8217;re going to discuss the following frameworks for modularization of JavaScript projects:</p>
+<p>In this chapter, we&#8217;re going to discuss the following frameworks for modularization of JavaScript projects:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="http://browserify.org/">Browserify</a></p>
+<p><a href="http://browserify.org">Browserify</a></p>
 </li>
 <li>
-<p><a href="http://requirejs.org/">RequireJS</a> and RequireJS Optimizer - r.js</p>
+<p><a href="http://requirejs.org">RequireJS</a> and RequireJS Optimizer (<em>r.js</em>)</p>
 </li>
 <li>
-<p><a href="https://github.com/square/es6-module-transpiler">ECMASctipt 6 (ES6) Module Transpiler</a></p>
+<p><a href="http://bit.ly/UGOVpm">ECMASctipt 6 (ES6) Module Transpiler</a></p>
 </li>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="_modularization-basics"><a class="anchor" href="#_modularization-basics"></a>Modularization basics</h3>
+<h3 id="_understanding-modularization-basics"><a class="anchor" href="#_understanding-modularization-basics"></a>Understanding Modularization Basics</h3>
 <div class="paragraph">
-<p>Modules are code fragments that implement certain functionality and are written using a specific techniques. There is no out-of-the box modularization scheme in JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the <em>module concept</em> in the JavaScript language itself. This is the future.</p>
+<p><em>Modules</em> are code fragments that implement certain functionality and are written by using specific techniques. There is no out-of-the box modularization scheme in the JavaScript language. The upcoming ECMAScript 6 specification tends to resolve this by introducing the <em>module concept</em> in the JavaScript language itself. This is the future.</p>
 </div>
 <div class="paragraph">
-<p>You may ask, "Aren&#8217;t .js files modules already?" Of course, you can include and load each JavaScript file using the <code>&lt;script&gt;</code> tag. But this approach is error prone and slow. Developers have to manually manage dependencies and file loading order. Each <code>&lt;script&gt;</code> tag results in the additional HTTP call to the server. Moreover, the browser blocks rendering until it loads and executes JavaScript files.</p>
+<p>You might ask, "Aren&#8217;t <em>.js</em> files modules already?" Of course, you can include and load each JavaScript file by using the <code>&lt;script&gt;</code> tag. But this approach is error prone and slow. Developers have to manually manage dependencies and file-loading order. Each <code>&lt;script&gt;</code> tag results in an additional HTTP call to the server. Moreover, the browser blocks rendering until it loads and executes JavaScript files.</p>
 </div>
 <div class="paragraph">
-<p>As the application gets larger the number of script files grows accordingly, which is illustrated in the following
-<a href="#LISTING_SCRIPT_TAG">code sample</a>.</p>
+<p>As the application becomes larger, the number of script files grows accordingly, which is illustrated in <a href="#LISTING_SCRIPT_TAG">Multiple &lt;script&gt; tags complicate controlling application dependencies</a>.</p>
 </div>
-<div id="LISTING_SCRIPT_TAG" class="listingblock">
-<div class="title">Multiple <code>&lt;script&gt;</code> tags complicate controlling  application dependencies</div>
+<div id="LISTING_SCRIPT_TAG" class="exampleblock">
+<div class="title">Example 1. Multiple &lt;script&gt; tags complicate controlling application dependencies</div>
+<div class="content">
+<div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
 
@@ -696,12 +697,14 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 &lt;!-- body content is omitted --&gt;
 
     &lt;script src="components/jquery.js&gt;&lt;/script&gt;     <i class="conum" data-value="1"></i><b>(1)</b>
-    &lt;script type="text/javascript" src="app/modules/utils/load-html-content.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/modules/utils/load-html-content.js"&gt;
+    &lt;/script&gt;
     &lt;script type="text/javascript" src="app/modules/utils/show-hide-div.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" src="app/modules/svg-pie-chart.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" src="app/modules/donation.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" src="app/modules/login.js"&gt;&lt;/script&gt;
-    &lt;script type="text/javascript" src="app/modules/utils/new-content-loader.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="app/modules/utils/new-content-loader.js"&gt;
+    &lt;/script&gt;
     &lt;script type="text/javascript" src="app/modules/generic-module.js"&gt;&lt;/script&gt;
     &lt;script type="text/javascript" src="app/modules/module1.js"&gt;&lt;/script&gt; <i class="conum" data-value="2"></i><b>(2)</b>
     &lt;script type="text/javascript" src="app/modules/module2.js"&gt;&lt;/script&gt;
@@ -711,11 +714,13 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 &lt;/html&gt;</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Loading the jQuery first because all other modules depend on it.</td>
+<td>Load the jQuery script first because all other modules depend on it.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -723,7 +728,7 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The script for the main Web page should be loaded after all dependencies have finished loading.</td>
+<td>The script for the main web page should be loaded after all dependencies have finished loading.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
@@ -732,36 +737,36 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 </table>
 </div>
 <div class="paragraph">
-<p>As you can see, we need a better way to modularize applications than simply adding <code>&lt;script&gt;</code> tags. As our first step, we can use the Module design pattern and leverage the so-called "Immediately Invoked Function Expressions".</p>
+<p>As you can see, we need a better way to modularize applications than simply adding <code>&lt;script&gt;</code> tags. As our first step, we can use the Module design pattern and use the so-called immediately invoked function expressions.</p>
 </div>
 <div class="paragraph">
-<p>Next, we&#8217;ll introduce and compare two popular JavaScript solutions and modularization patterns - CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications defining sets of APIs.</p>
+<p>Next, we&#8217;ll introduce and compare two popular JavaScript solutions and modularization patterns, CommonJS and Asynchronous Module Definition (AMD), which are alternative approaches to modularization. Both CommonJS and AMD are specifications defining sets of APIs.</p>
 </div>
 <div class="paragraph">
-<p>You&#8217;ll learn pros and cons of both formats later in the chapter, but the AMD module format plays nicely with the asynchronous nature of Web. You&#8217;ll also see the use of the AMD module format and <a href="http://requirejs.org/">RequireJS</a> framework to implement the modularized version of the Save The Child application.</p>
+<p>You&#8217;ll learn the pros and cons of both formats later in the chapter, but the AMD format plays nicely with the asynchronous nature of the Web. You&#8217;ll see the use of the AMD format and <a href="http://requirejs.org/">RequireJS</a> framework to implement the modularized version of the Save The Child application.</p>
 </div>
 <div class="paragraph">
-<p>Also, you&#8217;ll see how to use the RequireJS APIs to implement on-demand ("<em>lazy</em>") loading of the application components (e.g. What We Do, Ways To Give et al.)</p>
+<p>Also, you&#8217;ll see how to use the RequireJS APIs to implement on-demand (<em>lazy</em>) loading of the application components (for example, What We Do, Ways To Give, and so forth).</p>
 </div>
 <div class="paragraph">
-<p>The upcoming ECMAScript 6 specification suggests how to handle modules, and how to start using ES6 module syntax today with the help of third-party tools like <a href="http://corner.squareup.com/2013/02/es6-module-transpiler.html">transpiler</a>. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD. You can find more details about CommonJS, AMD and the ES6 module format in the corresponding sections of this chapter.</p>
+<p>The upcoming ECMAScript 6 specification suggests how to handle modules, and how to start using ES6 module syntax today with the help of third-party tools such as <a href="http://bit.ly/1y8HR4a">transpiler</a>. The ES6 module syntax can be compiled down to existing module solutions like CommonJS or AMD. You can find more details about CommonJS, AMD, and the ES6 module format in the corresponding sections of this chapter.</p>
 </div>
 <div class="paragraph">
-<p>After application modules are asynchronously loaded, they need to communicate to each other. You can explicitly specify the components dependencies, which is fine as long as you have a handful of  components. A more generic approach is to handle inter-module communications in a loosely coupled fashion using the <em>Mediator</em> pattern, CommonJS or AMD formats. By <em>loosely coupled</em> we mean that components are not aware of each other&#8217;s existence.</p>
+<p>After application modules are asynchronously loaded, they need to communicate with one another. You can explicitly specify the component dependencies, which is fine as long as you have a handful of  components. A more generic approach is to handle inter-module communications in a loosely coupled fashion by using the <em>Mediator</em> pattern, CommonJS, or AMD formats. By <em>loosely coupled</em>, we mean that components are not aware of one another&#8217;s existence.</p>
 </div>
 <div class="paragraph">
 <p>The next section reviews various approaches and patterns of modular JavaScript applications.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_roads-to-modularization"><a class="anchor" href="#_roads-to-modularization"></a>Roads To Modularization</h3>
+<h3 id="_exploring-roads-to-modularization"><a class="anchor" href="#_exploring-roads-to-modularization"></a>Exploring Roads to Modularization</h3>
 <div class="paragraph">
-<p>Although JavaScript has no built-in language support of modules, the developers' community has managed to find a way for modularization using existing syntax constructs, libraries and conventions to emulate modules-like behavior. In this section, we&#8217;ll explore a few options for modularizing your application.</p>
+<p>Although JavaScript has no built-in language support of modules, the developers' community has managed to find a way for modularization by using existing syntax constructs, libraries, and conventions to emulate module-like behavior. In this section, we&#8217;ll explore the following options for modularizing your application:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>The Module Pattern</p>
+<p>The Module pattern</p>
 </li>
 <li>
 <p>CommonJS</p>
@@ -772,26 +777,28 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 </ul>
 </div>
 <div class="paragraph">
-<p>Of these three, the <em>Module pattern</em> doesn&#8217;t require any additional frameworks and works in any JavaScript environment. The <em>CommonJS</em> module format is widely adopted for the server-side JavaSctipt, while the <em>AMD</em> format is popular in the applications running in Web browsers.</p>
+<p>Of these three, the <em>Module pattern</em> doesn&#8217;t require any additional frameworks and works in any JavaScript environment. The <em>CommonJS</em> module format is widely adopted for server-side JavaScript, whereas the <em>AMD</em> format is popular in applications running in web browsers.</p>
 </div>
 <div class="sect3">
-<h4 id="_the-module-pattern"><a class="anchor" href="#_the-module-pattern"></a>The Module Pattern</h4>
+<h4 id="the_module_pattern"><a class="anchor" href="#the_module_pattern"></a>The Module Pattern</h4>
 <div class="paragraph">
-<p>In software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We&#8217;re able to include both public and private methods as well as variables inside the single object, thus hiding the encapsulated code from other global scope objects. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts that could be used in the same application&#8217;s scope.</p>
+<p>In software engineering, the Module pattern was originally defined as a way to implement encapsulation of reusable code. In JavaScript, the Module pattern is used to emulate the concept of classes. We&#8217;re able to include both public and private methods as well as variables inside a single object, thus hiding the encapsulated code from other global scope objects. Such encapsulation lowers the likelihood of conflicting function names defined in different scripts that could be used in the same application&#8217;s scope.</p>
 </div>
 <div class="paragraph">
-<p>Ultimately, it&#8217;s just some code in an immediate-invoked function expression (IIFE) that creates a module object in the internal scope of a function and exposes this module to the global scope using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs.</p>
+<p>Ultimately, it&#8217;s just some code in an immediately invoked function expression (IIFE) that creates a module object in the internal scope of a function and exposes this module to the global scope by using the JavaScript language syntax. Consider the following three code samples illustrating how the Module pattern could be implemented using IIFEs (see Examples <xref linkend="ex_hide_login_module" xrefstyle="select: labelnumber"/>, <xref linkend="ex_inject_global_module" xrefstyle="select: labelnumber"/>, and <xref linkend="ex_global_object_namspaces" xrefstyle="select: labelnumber"/>).</p>
 </div>
-<div class="listingblock">
-<div class="title">Creating a closure that hides implementation of login module</div>
+<div id="ex_hide_login_module" class="exampleblock">
+<div class="title">Example 2. Creating a closure that hides implementation of the login module</div>
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">var loginModule = (function() {     <i class="conum" data-value="1"></i><b>(1)</b>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">var loginModule = (function() {       <i class="conum" data-value="1"></i><b>(1)</b>
     "use strict";
 
     var module = {};
     var privateVariable = 42;
 
-    var privateLogin = function(userNameValue, userPasswordValue) {     <i class="conum" data-value="2"></i><b>(2)</b>
+    var privateLogin = function(userNameValue, userPasswordValue) {       <i class="conum" data-value="2"></i><b>(2)</b>
         if (userNameValue === "admin" &amp;&amp; userPasswordValue === "secret") {
             return privateVariable;
         }
@@ -811,20 +818,24 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 })();</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Assigning the module object that was created in the closure to the variable <code>loginModule</code>.</td>
+<td>Assign the module object that was created in the closure to the variable <code>loginModule</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Because of the JavaScript&#8217;s function scoping, other parts of the code can&#8217;t access the code inside the closure. With this approach you can implement encapsulation and private members.</td>
+<td>Because of the JavaScript&#8217;s function scoping, other parts of the code can&#8217;t access the code inside the closure. With this approach, you can implement encapsulation and private members.</td>
 </tr>
 </table>
 </div>
+<div id="ex_inject_global_module" class="exampleblock">
+<div class="title">Example 3. Injecting the module into the global object</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">Injecting the module into the global object</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">(function(global) {     <i class="conum" data-value="1"></i><b>(1)</b>
     "use strict";
@@ -851,6 +862,8 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 })(this);  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
@@ -859,27 +872,30 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Attaching the newly created object to the global object. After that the <code>loginModule</code> object can be accessed from the external application code as <code>window.loginModule</code> or just <code>loginModule</code>.</td>
+<td>Attach the newly created object to the global object. After that, the <code>loginModule</code> object can be accessed from the external application code as <code>window.loginModule</code> or just <code>loginModule</code>.</td>
 </tr>
 </table>
 </div>
+<div id="ex_global_object_namspaces" class="exampleblock">
+<div class="title">Example 4. Introducing namespaces in the global object</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">Introducing namespaces in the global object</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">(function(global) {
     "use strict";
 
-    var ssc = global.ssc; <i class="conum" data-value="1"></i><b>(1)</b>
+    var ssc = global.ssc;   <i class="conum" data-value="1"></i><b>(1)</b>
     if (!ssc) {
         ssc = {};
         global.ssc = ssc;
     }
 
-    var module = ssc.loginModule = {}; <i class="conum" data-value="2"></i><b>(2)</b>
+    var module = ssc.loginModule = {};   <i class="conum" data-value="2"></i><b>(2)</b>
 
     module.myConstant = 1984;
     module.login = function(userNameValue, userPasswordValue) {
-        console.log("login implementation for " + userNameValue + "and" + userPasswordValue + "omitted");
+        console.log("login implementation for " + userNameValue + "and" +
+                    userPasswordValue + "omitted");
     };
 
     module.logout = function() {
@@ -888,11 +904,13 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 })(this);</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Here we have modification of the approach described in previous snippet. To avoid name conflicts, create a namespace for our application called <code>ssc</code>. Note that we check for this object existence in the next line.</td>
+<td>Here we have modification of the approach described in the previous snippet. To avoid name conflicts, create a namespace for our application called <code>ssc</code>. Note that we check for this object existence in the next line.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -901,23 +919,26 @@ No matter how slow your Web application is, it should never feel like it&#8217;s
 </table>
 </div>
 <div class="paragraph">
-<p>The Module patterns works well for implementing encapsulation in a rather small applications. It&#8217;s easy to implement and is framework-agnostic. However this approach doesn&#8217;t scale well because when working with an application with the large number of modules you may find yourself adding lots of boilerplate code checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: since you are the one who put an object into the global scope, you need to think  how to avoid accidental names conflicts.</p>
+<p>The Module pattern works well for implementing encapsulation in rather small applications. It&#8217;s easy to implement and is framework-agnostic. However, this approach doesn&#8217;t scale well because, when working with an application with the large number of modules, you might find yourself adding lots of boilerplate code, checking objects' existence in the global scope for each new module. Also, you need to be careful with managing namespaces: because you are the one who put an object into the global scope, you need to think about how to avoid accidental names conflicts.</p>
 </div>
 <div class="paragraph">
-<p>The Module pattern has a serious drawback - you  still need to deal with manual dependency management and manually arrange <code>&lt;script&gt;</code> tags in the HTML document.</p>
+<p>The Module pattern has a serious drawback: you  still need to deal with manual dependency management and manually arrange <code>&lt;script&gt;</code> tags in the HTML document.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_commonjs"><a class="anchor" href="#_commonjs"></a>CommonJS</h4>
 <div class="paragraph">
-<p><a href="http://www.commonjs.org/">CommonJS</a> is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for various JavaScript API (similar to standard libraries in Java, Python and etc) including standards for modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server-side. The CommonJS module format was optimized for non-browser environments since the early days of the server-side JavaScript.</p>
+<p><a href="http://www.commonjs.org">CommonJS</a> is an effort to standardize JavaScript APIs. People who work on CommonJS APIs have attempted to develop standards for various JavaScript APIs (similar to standard libraries in Java, Python, and so forth), including standards for modules and packages. The CommonJS module proposal specifies a simple API for declaring modules, but mainly on the server side. The CommonJS module format has been optimized for nonbrowser environments since the early days of server-side JavaScript.</p>
 </div>
 <div class="paragraph">
-<p>On the Web browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One of the solutions suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which was not a concern for the server-side JavaScript engines because file access is nearly instantaneous. On the server side separation of the code allowed to dedicate each file to exactly one module for ease development, testing and maintainability.</p>
+<p>On the web-browser side, you always need to consider potentially slow HTTP communications, which is not the case on the server. One solution suitable for browsers is to concatenate all scripts into a handful of bundles to decrease the number of HTTP calls, which is not a concern for server-side JavaScript engines because file access is nearly instantaneous. On the server side, separation of the code allows us to dedicate each file to exactly one module for ease of development, testing, and maintainability.</p>
 </div>
 <div class="paragraph">
-<p>In brief, the CommonJS specification requires the environment to have  <a href="http://wiki.commonjs.org/wiki/Modules/1.1#Module_Context">three free variables</a>: <code>require</code>, <code>exports</code>, and <code>module</code>. The syntax to define the module is called <em>authoring format</em>. To make the module loadable by a Web browser it has to be transformed into <em>transport format</em>.</p>
+<p>In brief, the CommonJS specification requires the environment to have <a href="http://bit.ly/1qr5q6m">three free variables</a>: <code>require</code>, <code>exports</code>, and <code>module</code> (see <a href="#ex_commonjs_sample_module">A CommonJS sample module</a>). The syntax to define the module is called <em>authoring format</em>. To make the module loadable by a web browser, it has to be transformed into <em>transport format</em>.</p>
 </div>
+<div id="ex_commonjs_sample_module" class="exampleblock">
+<div class="title">Example 5. A CommonJS sample module</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">"use strict";
@@ -954,19 +975,21 @@ loginModule.printMetadata = function(){
 };</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>If a module requires other modules, declare references to those modules inside the current module&#8217;s scope by using the <code>require</code> function. You need to call <code>require(id)</code> for each module it  depends on.  The module id has slashes defining the file path or a URL to indicate namespaces for external modules. Modules are grouped into a packages.</td>
+<td>If a module requires other modules, declare references to those modules inside the current module&#8217;s scope by using the <code>require</code> function. You need to call <code>require(id)</code> for each module it depends on. The module ID has slashes defining the file path or a URL to indicate namespaces for external modules. Modules are grouped into packages.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>exports</code> object exposes the public API of a module. All objects, functions, constructors that your module exposes must be declared as properties of the <code>exports</code> object. The rest of the module&#8217;s code won&#8217;t be exposed.</td>
+<td>The <code>exports</code> object exposes the public API of a module. All objects, functions, and constructors that your module exposes must be declared as properties of the <code>exports</code> object. The rest of the module&#8217;s code won&#8217;t be exposed.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The <code>module</code> variable provides the metadata about the module. It holds such properties as <code>id</code> and a unique <code>uri</code> of each module. The <code>module.export</code> exposes <code>exports</code> object as its property. Because objects in JavaScript are passed as references, the <code>exports</code> and <code>module.exports</code> point at the same object.</td>
+<td>The <code>module</code> variable provides the metadata about the module. It holds such properties as <code>id</code> and a unique <code>uri</code> for each module. The <code>module.export</code> exposes the <code>exports</code> object as its property. Because objects in JavaScript are passed as references, the <code>exports</code> and <code>module.export</code> point at the same object.</td>
 </tr>
 </table>
 </div>
@@ -977,13 +1000,13 @@ loginModule.printMetadata = function(){
 <i class="icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-The snippet above may give you an impression that the module&#8217;s code is executed in the global scope, but it&#8217;s not. Each module is executed in its own scope which helps to isolate them. This works automatically when you write modules for NodeJS environment running on the server. But to use CommonJS module format in the Web browser you need to use an extra tool to generate transport format from <em>authoring format</em>. <a href="http://browserify.org/">Browserify</a> takes all your scripts and concatenates them it to one large file.  Besides the module&#8217;s code the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually developers perform the <em>code/save/refresh browser</em> routine, but it doesn&#8217;t work in this case and requires an extra steps as you need to install the additional build tool and write  build scripts.
+The preceding snippet might give you the impression that the module&#8217;s code is executed in the global scope, but it&#8217;s not. Each module is executed in its own scope, which helps to isolate them. This works automatically when you write modules for a NodeJS environment running on the server. But to use the CommonJS module format in the web browser, you need to use an extra tool to generate transport format from <em>authoring format</em>. <a href="http://browserify.org">Browserify</a> takes all your scripts and concatenates them into one large file. Besides the module&#8217;s code, the generated transport bundle will contain the boilerplate code that provides CommonJS modules runtime support in the browser environment. This build step complicates the development workflow. Usually, developers perform the <em>code/save/refresh browser</em> routine, but it doesn&#8217;t work in this case and requires extra steps as you need to install the additional build tool and write  build scripts.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p><span class="underline">Pros to using CommonJS:</span></p>
+<p>The following are pros of using CommonJS:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -991,23 +1014,23 @@ The snippet above may give you an impression that the module&#8217;s code is exe
 <p>It&#8217;s a simple API for writing and using modules.</p>
 </li>
 <li>
-<p>Such a pattern of organizing  modules is widespread in the server-side JavaScript, e.g. NodeJS.</p>
+<p>Such a pattern of organizing  modules is widespread in server-side JavaScript, for example, NodeJS.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p><span class="underline">Cons to using CommonJS:</span></p>
+<p>Cons to using CommonJS:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Web browsers don&#8217;t automatically create the scoped variables <code>require</code>, <code>exports</code>, <code>module</code> hence the additional build step is required.</p>
+<p>Web browsers don&#8217;t automatically create the scoped variables <code>require</code>, <code>exports</code>, and <code>module</code>, so the additional build step is required.</p>
 </li>
 <li>
-<p>The <code>require</code> method is synchronous, but there is no exact indication if dependent module&#8217;s values are fully loaded because of the asynchronous nature of Web browsers. There is no event to notify the application that 100% of the required resources is loaded.</p>
+<p>The <code>require</code> method is synchronous, but there is no exact indication if a dependent module&#8217;s values are fully loaded because of the asynchronous nature of web browsers. There is no event to notify the application that 100 percent of the required resources are loaded.</p>
 </li>
 <li>
-<p>CommonJS API is suitable for loading <code>.js</code> files, but it can&#8217;t load other assets like CSS and HTML.</p>
+<p>The CommonJS API is suitable for loading <em>.js</em> files, but it can&#8217;t load other assets such as CSS and HTML.</p>
 </li>
 </ul>
 </div>
@@ -1018,56 +1041,81 @@ The snippet above may give you an impression that the module&#8217;s code is exe
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-If you want to write modules in the format that can be used in both browser and server&#8217;s  environments read our suggestions in the  <a href="#umd">Universal Module Definition</a> section on this chapter.
+If you want to write modules in a format that can be used in both browser and server environments, read our suggestions in <a href="#umd">Universal Module Definition</a>.
 </td>
 </tr>
 </table>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="icon-note" title="Note"></i>
+</td>
+<td class="content">
 <div class="paragraph">
-<p>Further reading:</p>
+<p>You can find additional materials on CommonJS by following these links:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="http://wiki.commonjs.org/wiki/Modules/1.1">CommonJS Modules 1.1 specification</a></p>
+<p><a href="http://bit.ly/1ohYoxk">CommonJS Modules 1.1 specification</a></p>
 </li>
 <li>
-<p><a href="http://nodejs.org/docs/latest/api/modules.html#modules_modules">Node.js Modules Reference</a></p>
+<p><a href="http://bit.ly/1x59eut">Node.js Modules Reference</a></p>
 </li>
 <li>
-<p><a href="http://browserify.org/">Browserify</a></p>
+<p><a href="http://browserify.org">Browserify</a></p>
 </li>
 </ul>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect3">
 <h4 id="amd_section"><a class="anchor" href="#amd_section"></a>Asynchronous Module Definition</h4>
 <div class="paragraph">
-<p>The AMD module format itself is a proposal for defining modules where both the module and dependencies can be asynchronously loaded.
-The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">this specification</a>.</p>
+<p>The AMD format itself is a proposal for defining modules, whereby both the module and dependencies can be asynchronously loaded.
+The AMD API is based on <a href="http://bit.ly/Yp9ozD">this specification</a>.</p>
 </div>
 <div class="paragraph">
-<p>AMD began as a draft specification for module format in CommonJS, but since the full agreement about its content was not reached, the further work on module&#8217;s format moved to the <a href="https://github.com/amdjs">amdjs Github page</a>.</p>
+<p>AMD began as a draft specification for module format in CommonJS, but because full agreement about its content was not reached, further work on the module&#8217;s format moved to the <a href="https://github.com/amdjs">amdjs GitHub page</a>.</p>
 </div>
 <div class="paragraph">
-<p>The AMD API have the following main functions:</p>
+<p>The AMD API has the following main functions:</p>
 </div>
 <div id="DEFINE_DESC" class="ulist">
 <ul>
 <li>
-<p><code>define</code> for facilitating module definition. This function takes tree arguments:</p>
+<p><code>define</code> for defining the module</p>
+</li>
+<li>
+<p><code>require</code> for loading the module and its dependencies</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>define</code> function takes three arguments, as shown in <a href="#LISTING_define_func">The signature of the define function</a>:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>The optional module id</p>
+<p>The optional module ID</p>
 </li>
 <li>
-<p>An optional array of modules' IDs of dependencies</p>
+<p>An optional array of IDs of the dependencies</p>
 </li>
 <li>
-<p>A callback function (a.k.a <em>factory function</em>), which will be invoked when dependencies are loaded.</p>
-<div id="LISTING_define_func" class="listingblock">
-<div class="title">The signature of a <code>define</code> function</div>
+<p>A callback function (a.k.a., <em>factory function</em>), which will be invoked when dependencies are loaded</p>
+</li>
+</ul>
+</div>
+<div id="LISTING_define_func" class="exampleblock">
+<div class="title">Example 6. The signature of the define function</div>
+<div class="content">
+<div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define(
     module_id,          <i class="conum" data-value="1"></i><b>(1)</b>
@@ -1076,34 +1124,32 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 );</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This string literal defines <code>module_id</code> that will be used by the AMD loader for loading this module.</td>
+<td>This string literal defines <code>module_id</code>, which will be used by the AMD loader to load this module.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>An optional array of dependencies' ids.</td>
+<td>An optional array of the dependencies' IDs.</td>
 </tr>
 </table>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
+<div class="paragraph">
+<p>The preceding factory <code>function{}</code> will be executed only once.</p>
 </div>
 <div class="paragraph">
-<p>The factory <code>function{}</code> above will only be executed once.</p>
+<p>For example, the Save The Child application has a Way To Give menu, which in turn depends on another module called <code>otherContent</code>. If the user clicks this menu, we can load the module that can be defined in the <em>wayToGive.js</em> file, as shown in <a href="#LISTING_define_modeule">The definition of the wayToGive module</a>.</p>
 </div>
-<div class="paragraph">
-<p>For example, the Save The Child application has a menu Way To Give, which in turn depends on other module called <code>otherContent</code>. If the user clicks on this menu, we can load the module that can be defined in the <code>wayToGive.js</code> as follows:</p>
-</div>
-<div id="LISTING_define_modeule" class="listingblock">
-<div class="title">The definition of the wayToGive module</div>
+<div id="LISTING_define_modeule" class="exampleblock">
+<div class="title">Example 7. The definition of the wayToGive module</div>
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">define(["otherContent"], function(otherContent) { <i class="conum" data-value="1"></i><b>(1)</b>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">define(["otherContent"], function(otherContent) {  <i class="conum" data-value="1"></i><b>(1)</b>
     var wayToGive;
 
     console.log("otherContent module is loaded");
@@ -1115,7 +1161,8 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
                 whatWeDoButton = "way-to-give";
                 newContainerID = "way-to-give-container";
                 dataUrl = "assets/html-includes/way-to-give.html";
-                otherContent.getNewContent(whatWeDoButton, newContainerID, dataUrl); <i class="conum" data-value="2"></i><b>(2)</b>
+                otherContent.getNewContent(whatWeDoButton, newContainerID,
+                    dataUrl);   <i class="conum" data-value="2"></i><b>(2)</b>
                 return console.log("way-to-give module is rendered");
             },
             init: function() {
@@ -1123,136 +1170,128 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
             }
         };
     };
-    return wayToGive; <i class="conum" data-value="3"></i><b>(3)</b>
+    return wayToGive;   <i class="conum" data-value="3"></i><b>(3)</b>
 });</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This code doesn&#8217;t have the optional <code>module_id</code>. The loader will use the file name without the <code>.js</code> extension as <code>module_id</code>. Our module has one dependency on the module called <code>otherContent</code>. The dependent module instance will be passed in the factory method as variable <code>otherContent</code>.</td>
+<td>This code doesn&#8217;t have the optional <code>module_id</code>. The loader will use the filename without the <em>.js</em> extension as <code>module_id</code>. Our module has one dependency, called <code>otherContent</code>. The dependent module instance will be passed in the factory method as the variable <code>otherContent</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>We can start using the dependency object immediately. AMD loader have taken care of loading and instantiation of this dependency.</td>
+<td>We can start using the dependency object immediately. The AMD loader has taken care of loading and instantiation of this dependency.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The module returns constructor function to be used for creation of new objects.</td>
+<td>The module returns a constructor function to be used for creation of new objects.</td>
 </tr>
 </table>
 </div>
-<div id="REQUIRE_DESC" class="ulist">
-<ul>
-<li>
-<p>The <code>require</code> function takes two arguments</p>
+<div class="paragraph">
+<p>The <code>require</code> function takes two arguments:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>An array of module IDs to load. Module ID is a string literal.</p>
+<p>An array of module IDs to load. The module ID is a string literal.</p>
 </li>
 <li>
-<p>A callback to be executed once those modules are available. The modules loaded by IDs are passed into the callback in order. <a href="#LISTING_Require_func">Here is example</a> of the <code>require</code> function usage.</p>
-<div id="LISTING_require_func" class="listingblock">
-<div class="title">The example of <code>require</code> function usage</div>
+<p>A callback to be executed after those modules are available. The modules loaded by IDs are passed into the callback in order. <a href="#LISTING_require_func">An example of require function usage</a> shows the <code>require</code> function usage.</p>
+</li>
+</ul>
+</div>
+<div id="LISTING_require_func" class="exampleblock">
+<div class="title">Example 8. An example of require function usage</div>
+<div class="content">
+<div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">require(["main"], function() {
     console.log("module main is loaded");
 });</code></pre>
 </div>
 </div>
-</li>
-</ul>
 </div>
-</li>
-</ul>
 </div>
 <div class="paragraph">
-<p><span class="underline">Pros to using AMD:</span></p>
+<p>The following are pros of using AMD:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>It&#8217;s a very simple API that has only two functions - <code>require</code> and <code>define</code>.</p>
+<p>It&#8217;s a simple API that has only two functions: <code>require</code> and <code>define</code>.</p>
 </li>
 <li>
-<p>A wide variety of loaders is available. You&#8217;ll find more coverage on loaders in the <a href="#REQUIREJS">RequireJS section</a>.</p>
+<p>A wide variety of loaders is available. You&#8217;ll find more coverage on loaders in <a href="#REQUIREJS">Dicing the Save The Child Application into Modules</a>.</p>
 </li>
 <li>
-<p>The CommonJS module authoring format is supported by the majority of loaders. You&#8217;ll see an example of modules later in the <a href="#require_cjs">Using CommonJS module format in RequireJS</a> section.</p>
+<p>The CommonJS module authoring format is supported by the majority of loaders. You&#8217;ll see an example of modules later in <a href="#require_cjs">Using CommonJS module format in RequireJS</a>.</p>
 </li>
 <li>
-<p>Plugins offer an immense amount of flexibility.</p>
+<p>Plug-ins offer an immense amount of flexibility.</p>
 </li>
 <li>
 <p>AMD is easy to debug.</p>
 <div class="paragraph">
-<p>Consider the following error messages that JavaScript interpreter may throw:</p>
+<p>Consider the following error messages that the JavaScript interpreter may throw:</p>
 </div>
 <div class="paragraph">
 <p><em>There was an error in <code>/modules/loginModule.js</code> on line</em> <strong>42</strong></p>
 </div>
 <div class="paragraph">
-<p><strong>vs</strong></p>
+<p><strong>versus</strong></p>
 </div>
 <div class="paragraph">
 <p><em>There was an error in <code>/built-app.js</code> on line</em> <strong>1984</strong></p>
 </div>
 <div class="paragraph">
-<p>In modularized applications you can easier localize errors.</p>
+<p>In modularized applications, you can more easily localize errors.</p>
 </div>
 </li>
 <li>
-<p>Performance: module are loaded only when required hence the initial portion of the application&#8217;s code become smaller.</p>
+<p>Performance: Modules are loaded only when required; hence, the initial portion of the application&#8217;s code become smaller.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p><span class="underline">Cons to using AMD:</span></p>
+<p>The following are cons of using AMD:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>The dependency array can get rather large for complex modules.</p>
+<p>The dependency array can get rather large for complex modules:</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define(
-       ["alpha", "beta", "gamma", "delta", "epsilon", "omega"], <i class="conum" data-value="1"></i><b>(1)</b>
+       ["alpha", "beta", "gamma", "delta", "epsilon", "omega"],
        function(alpha, beta, gamma, delta, epsilon, omega){
             "use strict";
             // module's code omitted
 });</code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>In the real-world enterprise applications the array of dependency modules might be pretty large.</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>In real-world enterprise applications, the array of dependency modules might be pretty large.</p>
 </div>
 </li>
 <li>
-<p>Human errors can result in mismatch between dependency array and callback arguments.</p>
+<p>Human errors can result in a mismatch between the dependency array and callback arguments:</p>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define(
        ["alpha", "beta", "gamma", "delta", "epsilon", "omega"],
-       function(alpha, beta, gamma, delta, omega, epsilon){     <i class="conum" data-value="1"></i><b>(1)</b>
+       function(alpha, beta, gamma, delta, omega, epsilon){
             "use strict";
             // module's code omitted
 });</code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The mismatch of module IDs and factory function arguments will cause module usage problems.</td>
-</tr>
-</table>
+<div class="paragraph">
+<p>The mismatch of module IDs and factory function arguments will cause module usage problems.</p>
 </div>
 </li>
 </ul>
@@ -1261,21 +1300,24 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 <div class="sect3">
 <h4 id="umd"><a class="anchor" href="#umd"></a>Universal Module Definition</h4>
 <div class="paragraph">
-<p>Universal Module Definition (UMD) is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. Those patterns can be used to support multiple module formats. UMD is not a specification or a standard. You need to pay attention to UMD patterns in case when your modules will run in more than one type of environment (e.g. a Web browser and on the server side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.</p>
+<p><em>Universal Module Definition (UMD)</em> is a series of patterns and code snippets that provide compatibility boilerplate to make modules environment-independent. These patterns can be used to support multiple module formats. UMD is not a specification or a standard. You need to pay attention to UMD patterns if your modules will run in more than one type of environment (for example, in a web browser and on the server-side engine running NodeJS). In most cases, it makes a lot of sense to use a single module format.</p>
 </div>
 <div class="paragraph">
-<p>Here is an example of the module definition in UMD notation. In the following example, the module can be used with the AMD loader and as one of the variations of the Module Pattern.</p>
+<p><a href="#ex_umd_module_notation">The module in UMD notation</a> shows a module definition in UMD notation. In this example, the module can be used with the AMD loader and as one of the variations of the Module pattern.</p>
 </div>
+<div id="ex_umd_module_notation" class="exampleblock">
+<div class="title">Example 9. The module in UMD notation</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">(function(root, factory) {
     "use strict";
-    if (typeof define === "function" &amp;&amp; define.amd) { <i class="conum" data-value="1"></i><b>(1)</b>
+    if (typeof define === "function" &amp;&amp; define.amd) {  <i class="conum" data-value="1"></i><b>(1)</b>
         define(["login"], factory);
     } else {
-        root.ssc = factory(root.login); <i class="conum" data-value="2"></i><b>(2)</b>
+        root.ssc = factory(root.login);   <i class="conum" data-value="2"></i><b>(2)</b>
     }
-}(this, function(login) { <i class="conum" data-value="3"></i><b>(3)</b>
+}(this, function(login) {   <i class="conum" data-value="3"></i><b>(3)</b>
     "use strict";
     return {
         myConstant: 1984,
@@ -1289,11 +1331,13 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 }));</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>If the AMD loader is available proceed with defining the module according to AMD specification.</td>
+<td>If the AMD loader is available, proceed with defining the module according to the AMD specification.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -1301,7 +1345,7 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Passing the top-level context and providing a implementation of a factory function.</td>
+<td>Passing in the top-level context and providing an implementation of a factory function.</td>
 </tr>
 </table>
 </div>
@@ -1312,42 +1356,52 @@ The AMD API is based on <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">th
 <div class="sect3">
 <h4 id="_ecmascript-6-modules"><a class="anchor" href="#_ecmascript-6-modules"></a>ECMAScript 6 Modules</h4>
 <div class="paragraph">
-<p>The ECMAScript 6 (ES6) specification is an evolving draft outlining changes and features for the next version of the JavaScript language. This specification is not finalized yet and the browsers' support for anything defined in ES6 will be experimental at best and cannot be relied upon for Web applications that must be deployed in production mode in multiple browsers.</p>
+<p>The ECMAScript 6 (ES6) specification is an evolving draft outlining changes and features for the next version of the JavaScript language. This specification is not finalized yet, so browser support for anything defined in ES6 will be experimental at best. You cannot rely on ES6 for web applications that must be deployed in production mode in multiple browsers.</p>
 </div>
 <div class="paragraph">
-<p>One of the most important features of ES6 specification is the <em>module syntax</em>. Here is an example of some login module definition:</p>
+<p>One of the most important features of the ES6 specification is <em>module syntax</em>. <a href="#ex_login_module_definition">Login module definition</a> provides a login module definition.</p>
 </div>
+<div id="ex_login_module_definition" class="exampleblock">
+<div class="title">Example 10. Login module definition</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">Login module definition</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">export function login(userNameValue, userPasswordValue) {
     return userNameValue + "_" + userNameValue;
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>The keyword <code>export</code> specifies the function or object (a separate file) to be exposed as a module, which can be used from any other JavaScript code as follows:</p>
 </div>
+</div>
+<div class="paragraph">
+<p>The keyword <code>export</code> specifies the function or object (a separate file) to be exposed as a module, which can be used from any other JavaScript code, as shown in <a href="#ex_main_application_module">Main application module</a>.</p>
+</div>
+<div id="ex_main_application_module" class="exampleblock">
+<div class="title">Example 11. Main application module</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">Main application module</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">import {login} from './login'
 var result = login("admin", "password");</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="paragraph">
-<p>With the <code>import</code> keyword we assign instance of <code>login()</code> function imported from <code>login</code> module.</p>
+<p>With the <code>import</code> keyword, we assign an instance of the <code>login()</code> function imported from the <code>login</code> module.</p>
 </div>
 <div class="sect4">
 <h5 id="_es6-module-transpiler"><a class="anchor" href="#_es6-module-transpiler"></a>ES6 Module Transpiler</h5>
 <div class="paragraph">
-<p>Although ES6 standard is not implemented yet by most of browsers you can use the third party tools to get a taste of upcoming enhancements in JavaScript language. <a href="http://corner.squareup.com/2013/02/es6-module-transpiler.html">ES6 Module Transpiler</a> library developed by the <a href="http://squareup.com/">Square</a> Engineers helps using the module authoring syntax from ES6 and compile it down to the transport formats that you learned earlier in this chapter.</p>
+<p>Although the ES6 standard is not implemented yet by most browsers, you can use third-party tools to get a taste of upcoming enhancements in the JavaScript language. The <a href="http://bit.ly/1y8HR4a">ES6 Module Transpiler</a> library developed by <a href="http://squareup.com/">Square</a> engineers helps use the module authoring syntax from ES6 and compile it down to the transport formats that you learned earlier in this chapter.</p>
 </div>
 <div class="paragraph">
-<p>Consider the following module circle.js:</p>
+<p>Consider the module <em>circle.js</em>, shown in <a href="#ex_circle-js_module">A circle.js module</a>.</p>
 </div>
+<div id="ex_circle-js_module" class="exampleblock">
+<div class="title">Example 12. A circle.js module</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">A <code>circle.js</code> module</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">function area(radius) {
     return Math.PI * radius * radius;
@@ -1360,16 +1414,22 @@ function circumference(radius) {
 export {area, circumference};</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>This module exports two functions: <code>area()</code> and <code>circumference()</code>.</p>
 </div>
+</div>
+<div class="paragraph">
+<p>This module exports two functions: <code>area()</code> and <code>circumference()</code>, as shown in <a href="#ex_main-js_script">The main application&#8217;s script main.js can use these functions</a>.</p>
+</div>
+<div id="ex_main-js_script" class="exampleblock">
+<div class="title">Example 13. The main application&#8217;s script main.js can use these functions</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">The main application&#8217;s script <code>main.js</code> can use these functions</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">import { area, circumference } from './circle';     <i class="conum" data-value="1"></i><b>(1)</b>
 
 console.log("Area of the circle: " + area(2) + " meter squared");   <i class="conum" data-value="2"></i><b>(2)</b>
 console.log("Circumference of the circle: " + circumference(5) + " meters");</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="colist arabic">
@@ -1385,7 +1445,7 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 </table>
 </div>
 <div class="paragraph">
-<p>The ES6 Module Transpiler&#8217;s command <code>compile-module</code> can compile the module to be compliant with CommonJS, AMD, or the code that implements the Module pattern. With the <code>type</code> command line option you can specify that output format will be: <em>amd</em>, <em>cjs</em> and <em>globals</em>.</p>
+<p>The ES6 Module Transpiler&#8217;s command <code>compile-module</code> can compile the module to be compliant with CommonJS, AMD, or the code that implements the Module pattern. With the <code>type</code> command-line option, you can specify that the output format will be <em>amd</em>, <em>cjs</em>, or <em>globals</em>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1393,12 +1453,13 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 compile-modules main.js --type cjs --to ../js/</pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>CommonJS</strong> format</p>
+<div class="paragraph">
+<p><a href="#ex_circle-js">circle.js</a> shows the resulting <em>circle.js</em> module in CommonJS format.</p>
+</div>
+<div id="ex_circle-js" class="exampleblock">
+<div class="title">Example 14. circle.js</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">circle.js</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">"use strict";
 function area(radius) {
@@ -1413,8 +1474,15 @@ exports.area = area;
 exports.circumference = circumference;</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="#ex_main-js_in_commonjs">main.js</a> shows the resulting <em>main.js</em> module in CommonJS format.</p>
+</div>
+<div id="ex_main-js_in_commonjs" class="exampleblock">
+<div class="title">Example 15. main.js</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">main.js</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">"use strict";
 var area = require("./circle").area;
@@ -1424,18 +1492,18 @@ console.log("Area of the circle: " + area(2) + " meter squared");
 console.log("Circumference of the circle: " + circumference(5) + " meters");</code></pre>
 </div>
 </div>
-</li>
-</ul>
+</div>
 </div>
 <div class="paragraph">
-<p>Should we compiled the modules into the AMD format using the option <em>amd</em>, we would have received a different output in the AMD format.</p>
+<p>If we compile the modules into AMD format by using the option <em>amd</em>, we would receive a different output in AMD format.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>AMD</strong> format</p>
+<div class="paragraph">
+<p><a href="#ex_circle-js_in_amd">circle.js</a> shows the resulting <em>circle.js</em> module in AMD format. <a href="#ex_main-js_in_amd">main.js</a> shows the resulting <em>main.js</em> module in AMD format.</p>
+</div>
+<div id="ex_circle-js_in_amd" class="exampleblock">
+<div class="title">Example 16. circle.js</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">circle.js</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define("circle",
   ["exports"],
@@ -1454,8 +1522,12 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
   });</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div id="ex_main-js_in_amd" class="exampleblock">
+<div class="title">Example 17. main.js</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">main.js</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define("main",
   ["./circle"],
@@ -1469,18 +1541,18 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
   });</code></pre>
 </div>
 </div>
-</li>
-</ul>
+</div>
 </div>
 <div class="paragraph">
-<p>Using the <em>globals</em> option in the <em>compile-modules</em> command line produces the code that can be used as described in the Module Pattern section earlier in the chapter.</p>
+<p>Using the <code>globals</code> option in the <code>compile-modules</code> command line produces the code that can be used as described in <a href="#the_module_pattern">The Module Pattern</a>.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Browser globals</p>
+<div class="paragraph">
+<p>In <a href="#ex_circle-js_using_browser_globals">circle.js</a>, the resulting <em>circle.js</em> module uses browser globals (the Module pattern) as its module format.</p>
+</div>
+<div id="ex_circle-js_using_browser_globals" class="exampleblock">
+<div class="title">Example 18. circle.js</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">circle.js</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">(function(exports) {
     "use strict";
@@ -1497,8 +1569,15 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 })(window);</code></pre>
 </div>
 </div>
+</div>
+</div>
+<div class="paragraph">
+<p>In <a href="#ex_main-js_using_browser_globals">main.js</a>, the resulting <em>main.js</em> module uses browser globals (the Module pattern) as its module format.</p>
+</div>
+<div id="ex_main-js_using_browser_globals" class="exampleblock">
+<div class="title">Example 19. main.js</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">main.js</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">(function(circle) {
     "use strict";
@@ -1511,11 +1590,10 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 })(window.circle);</code></pre>
 </div>
 </div>
-</li>
-</ul>
+</div>
 </div>
 <div class="paragraph">
-<p>To learn the up-to-date information on the ES6 browsers' support visit <a href="http://kangax.github.io/es5-compat-table/es6/">ECMAScript 6 compatibility table</a>.</p>
+<p>For up-to-date information on ES6 browser support, visit the <a href="http://bit.ly/1iSSdAL">ECMAScript 6 compatibility table</a>.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1524,7 +1602,7 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-<a href="http://www.typescriptlang.org/">TypeScript</a> is an open-source language from Microsoft that compiles to JavaScript and brings object-oriented concepts like classes and modules to JavaScript. It has a module syntax, which is very similar to what ES6 standard proposes. The TypeScript compiler can produce CommonJS and AMD module formats. You can learn more about TypeScript from <a href="http://www.typescriptlang.org/Content/TypeScript%20Language%20Specification.pdf">language specification</a>.
+<a href="http://www.typescriptlang.org">TypeScript</a> is an open source language from Microsoft that compiles to JavaScript and brings object-oriented concepts such as classes and modules to JavaScript. It has a module syntax, which is similar to what the ES6 standard proposes. The TypeScript compiler can produce CommonJS and AMD formats. You can learn more about TypeScript from its <a href="http://bit.ly/1mA0K6o">language specification</a>.
 </td>
 </tr>
 </table>
@@ -1533,9 +1611,9 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 </div>
 </div>
 <div class="sect2">
-<h3 id="REQUIREJS"><a class="anchor" href="#REQUIREJS"></a>Dicing the Save The Child Application Into Modules</h3>
+<h3 id="REQUIREJS"><a class="anchor" href="#REQUIREJS"></a>Dicing the Save The Child Application into Modules</h3>
 <div class="paragraph">
-<p>Now that you know the basics of AMD and different modularization patterns, let&#8217;s see how you can dice our Save The Child application into smaller pieces. In this section we&#8217;ll apply the AMD-complaint module loader from the framework <a href="http://requirejs.org/">RequireJS</a>.</p>
+<p>Now that you know the basics of AMD and different modularization patterns, let&#8217;s see how you can dice our Save The Child application into smaller pieces. In this section, we&#8217;ll apply the AMD-compliant module loader from the framework <a href="http://requirejs.org">RequireJS</a>.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1544,59 +1622,61 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-<a href="http://github.com/cujojs/curl">curl.js</a> offers  another AMD-compliant asynchronous resource loader. Both curl.js and RequireJS have similar functionality, and to learn how they differ follow <a href="https://groups.google.com/forum/#!topic/requirejs/niUyLZrivgs">this thread on RequireJS group</a>.
+<a href="http://github.com/cujojs/curl">curl.js</a> offers  another AMD-compliant asynchronous resource loader. Both curl.js and RequireJS have similar functionality, and to learn how they differ, follow <a href="http://bit.ly/U2rtCu">this thread on the RequireJS group</a>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s start with a brief explanation of the directory structure of the modularized Save The Child application.</p>
+<p>Let&#8217;s start with a brief explanation of the directory structure of the modularized Save The Child application. <a href="#ssc_structure">A directory structure of Save The Child</a> shows this directory structure.</p>
 </div>
-<div id="ssc_structure" class="imageblock" style="text-align: center">
+<div id="ssc_structure" class="imageblock">
 <div class="content">
-<img src="./images/fig_07_05.png" alt="fig 07 05">
+<img src="images/ewdv_0602.png" alt="ewdv 0602">
 </div>
 <div class="title">Figure 2. A directory structure of Save The Child</div>
+</div>
+<div class="paragraph">
+<p>The content of the project folders is listed here:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>All application&#8217;s JavaScript files reside in the <em>app/modules</em> directory.</p>
-<div class="paragraph">
-<p>Inside the <em>modules</em> directory you can have as many nested folders as you want, e.g. <em>utils</em> folder.</p>
-</div>
+<p>All application JavaScript files reside in the <em>app/modules</em> directory. Inside the <em>modules</em> directory, you can have as many nested folders as you want (for example, <em>utils</em> folder).</p>
 </li>
 <li>
 <p>The application assets remain the same as in previous chapters.</p>
 </li>
 <li>
-<p>We keep all Bower-managed dependencies in the <em>bower_components</em> directory such as  RequireJS, jQuery etc.</p>
+<p>We keep all Bower-managed dependencies in the <em>bower_components</em> directory (such as  RequireJS and jQuery).</p>
 </li>
 <li>
-<p>The <em>dist</em>  directory serves as the location for the optimized version of our application. We will cover optimization with <code>r.js</code> later in the <a href="#using_reuiqrejs_optimizer">Using RequireJS Optimizer</a> section.</p>
+<p>The <em>dist</em>  directory serves as the location for the optimized version of our application. We cover optimization with <em>r.js</em> in the section <a href="#using_reuiqrejs_optimizer">Using RequireJS Optimizer</a>.</p>
 </li>
 <li>
-<p>The QUnit/Jasmine tests will live in the <em>test</em> directory. Testing will be covered in Chapter 8.</p>
+<p>The QUnit/Jasmine tests reside in the <em>test</em> directory. Testing is covered in <a href="#tdd_with_javascript">[tdd_with_javascript]</a>.</p>
 </li>
 </ol>
 </div>
 <div class="paragraph">
-<p>We are not going to dice the Save The Child application into multiple modules, but will just show you how to start this process. <a href="#ssc_modules_graph">The modules graph of Save The Child</a> illustrates the modules' dependencies. For example, the <code>main</code> module depends on <code>login</code>, <code>svg-pie-chart</code>, <code>campaigns-map</code>, <code>donation</code>, and <code>generic</code>. There is also a group of modules that will be loaded on demand: <code>whereWeWork</code>, <code>whatWeDo</code>, <code>wayToGive</code>, <code>whoWeAre</code>.</p>
+<p>We are not going to dice the Save The Child application into multiple modules, but will show you how to start the process. <a href="#ssc_modules_graph">The modules graph of Save The Child</a> illustrates the modules' dependencies. For example, the <code>main</code> module depends on <code>login</code>, <code>svg-pie-chart</code>, <code>campaigns-map</code>, <code>donation</code>, and <code>generic</code>. There is also a group of modules that will be loaded on demand: <code>whereWeWork</code>, <code>whatWeDo</code>, <code>wayToGive</code>, <code>whoWeAre</code>.</p>
 </div>
 <div id="ssc_modules_graph" class="imageblock" style="text-align: center">
 <div class="content">
-<img src="./images/fig_07_08.png" alt="fig 07 08">
+<img src="images/ewdv_0603.png" alt="ewdv 0603">
 </div>
 <div class="title">Figure 3. The modules graph of Save The Child</div>
 </div>
 <div class="paragraph">
-<p>To dice the application into modules you&#8217;ll need the the modularization framework RequireJS, which can either be downloaded from its github repository or you can install it using a package manager Bower that was explained in previous chapter on automation tools.</p>
+<p>To dice the application into modules, you need the modularization framework RequireJS, which can either be downloaded from its GitHub repository or you can install it by using the package manager Bower that was explained in <a href="#productivity_tools">[productivity_tools]</a>.</p>
 </div>
 <div class="paragraph">
-<p>Once RequireJS downloaded and placed into the project directory, add it to the index.html file as demonstrated in <a href="#add_requirejs">Adding RequireJS to the web page</a> snippet.</p>
+<p>After RequireJS is downloaded and placed into the project directory, add it to the <em>index.html</em> file, as demonstrated in <a href="#add_requirejs">Adding RequireJS to the web page</a>.</p>
 </div>
-<div id="add_requirejs" class="listingblock">
-<div class="title">Adding RequireJS to the web page</div>
+<div id="add_requirejs" class="exampleblock">
+<div class="title">Example 20. Adding RequireJS to the web page</div>
+<div class="content">
+<div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
 &lt;head&gt;
@@ -1612,23 +1692,28 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 &lt;/html&gt;</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div id="data_main_attrib" class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Once the RequireJS library is loaded it will look for the <code>data-main</code> attribute and attempt to load the <code>app/config.js</code> script asynchronously. The <code>app/config.js</code> will become the entry point of our application.</td>
+<td>When the RequireJS library is loaded, it will look for the <code>data-main</code> attribute and attempt to load the <em>app/config.js</em> script asynchronously. The <em>app/config.js</em> script will become the entry point of our application.</td>
 </tr>
 </table>
 </div>
 <div class="sect3">
-<h4 id="inside_config"><a class="anchor" href="#inside_config"></a>Inside RequireJS configuration: config.js</h4>
+<h4 id="inside_config"><a class="anchor" href="#inside_config"></a>Inside the RequireJS Configuration: config.js</h4>
 <div class="paragraph">
-<p>RequiredJS uses a configuration object that includes modules and dependencies that have to be managed by the framework.</p>
+<p>RequireJS uses a configuration object that includes modules and dependencies that have to be managed by the framework, as shown in <a href="#ex_stc_config-js_file">The config.js file from the Save The Child app</a>.</p>
 </div>
+<div id="ex_stc_config-js_file" class="exampleblock">
+<div class="title">Example 21. The config.js file from the Save The Child app</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">require.config({        <i class="conum" data-value="1"></i><b>(1)</b>
-    paths: {             <i class="conum" data-value="2"></i><b>(2)</b>
+<pre class="highlight"><code class="javascript language-javascript">require.config({          <i class="conum" data-value="1"></i><b>(1)</b>
+    paths: {              <i class="conum" data-value="2"></i><b>(2)</b>
         'login': 'modules/login',
         'donation': 'modules/donation',
         'svg-pie-chart': 'modules/svg-pie-chart',
@@ -1645,23 +1730,25 @@ console.log("Circumference of the circle: " + circumference(5) + " meters");</co
 });
 
 
-require(['main'], function () {     <i class="conum" data-value="3"></i><b>(3)</b>
+require(['main'], function () {       <i class="conum" data-value="3"></i><b>(3)</b>
 });</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <a href="http://requirejs.org/docs/api.html#config">RequireJS documentation</a> has a comprehensive overview of all configuration options. We&#8217;ve included some of them here.</td>
+<td>The <a href="http://bit.ly/TwttSM">RequireJS documentation</a> has a comprehensive overview of all configuration options. We&#8217;ve included some of them here.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>paths</code> configuration option defines the mapping for module names and their paths. The <code>paths</code> is used for module names and shouldn&#8217;t contain file extensions.</td>
+<td>The <code>paths</code> configuration option defines the mapping for module names and their paths. The <code>paths</code> option is used for module names and shouldn&#8217;t contain file extensions.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>After configuring the modules' paths we&#8217;re loading the <em>main</em> module. The navigation of our application flow starts there.</td>
+<td>After configuring the modules' paths, we&#8217;re loading the <em>main</em> module. The navigation of our application flow starts there.</td>
 </tr>
 </table>
 </div>
@@ -1669,18 +1756,21 @@ require(['main'], function () {     <i class="conum" data-value="3"></i><b>(3)</
 <div class="sect3">
 <h4 id="_writing-amd-modules"><a class="anchor" href="#_writing-amd-modules"></a>Writing AMD Modules</h4>
 <div class="paragraph">
-<p>Let&#8217;s take a closer look at the module&#8217;s internals that make it consumable by the RequireJS module loader.</p>
+<p><a href="#ex_generic_module_loader">Generic module loader: generic-module.js</a> provides a closer look at the module&#8217;s internals that make it consumable by the RequireJS module loader.</p>
 </div>
+<div id="ex_generic_module_loader" class="exampleblock">
+<div class="title">Example 22. Generic module loader: generic-module.js</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">define(["newContentLoader"], function(contentLoader) {      <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlight"><code class="javascript language-javascript">define(["newContentLoader"], function(contentLoader) {       <i class="conum" data-value="1"></i><b>(1)</b>
     "use strict";
     var genericModule;
 
-    genericModule = function(moduleId) {    <i class="conum" data-value="2"></i><b>(2)</b>
+    genericModule = function(moduleId) {      <i class="conum" data-value="2"></i><b>(2)</b>
         return {
             render: function(button, containerId, dataUrl) {
-                contentLoader.getNewContent(button, containerId, dataUrl);  <i class="conum" data-value="3"></i><b>(3)</b>
+                contentLoader.getNewContent(button, containerId, dataUrl);    <i class="conum" data-value="3"></i><b>(3)</b>
                 console.log("Module " + moduleId + " is rendered...");
             }
         };
@@ -1689,36 +1779,40 @@ require(['main'], function () {     <i class="conum" data-value="3"></i><b>(3)</
 });</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>As we discussed in the <a href="#amd_section">Asynchronous Module Definition</a> section, the code that you want to expose as a module should be wrapped in the <code>define()</code> function call. The first parameter is an array of dependencies. The location of dependencies files is defined <a href="#inside_config">inside the config file</a>. The dependency object doesn&#8217;t have the same name as the dependency string id. The order of arguments in the factory function should be the same as the order in the dependencies array.</td>
+<td>As we discussed in the section <a href="#amd_section">Asynchronous Module Definition</a>, the code that you want to expose as a module should be wrapped in the <code>define()</code> function call. The first parameter is an array of dependencies. The location of dependency files is defined <a href="#inside_config">inside the config file</a>. The dependency object doesn&#8217;t have the same name as the dependency string ID. The order of arguments in the factory function should be the same as the order in the dependencies array.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>In this module we export only in the constructor function that returns the object that uses the <em>render</em> function to draw the visual component on the screen.</td>
+<td>In this module, we export only the constructor function, which in turn returns the <em>render</em> function to draw the visual component on the screen.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The <code>contentLoader</code> object loaded from <em>app/modules/util/new-content-loader.js</em> (see the <code>paths</code> property <a href="#inside_config">in RequireJS config object</a>), is instantiated by RequireJS and is ready to use.</td>
+<td>The <code>contentLoader</code> object loaded from <em>app/modules/util/new-content-loader.js</em> (see the <code>paths</code> property <a href="#inside_config">in the RequireJS config object</a>), is instantiated by RequireJS and is ready to use.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>RequreJS also supports the CommonJS module format with a slightly different signature of the <code>define()</code> function. This helps to bridge the gap between AMD and CommonJS. If your factory function accepts parameters but no dependency array, the AMD environment assumes that you wish to emulate the  CommonJS module environment. The standard <code>require</code>, <code>exports</code>, and <code>module</code> variables will be injected as parameters into the factory.</p>
+<p>RequireJS also supports the CommonJS module format with a slightly different signature for the <code>define()</code> function. This helps bridge the gap between AMD and CommonJS. If your factory function accepts parameters but no dependency array, the AMD environment assumes that you wish to emulate the  CommonJS module environment. The standard <code>require</code>, <code>exports</code>, and <code>module</code> variables will be injected as parameters into the factory.</p>
 </div>
 <div class="paragraph">
-<p>Here is an example of CommonJS module format with RequireJS.</p>
+<p><a href="#require_cjs">Using CommonJS module format in RequireJS</a> shows the CommonJS module format with RequireJS.</p>
 </div>
-<div id="require_cjs" class="listingblock">
-<div class="title">Using CommonJS module format in RequireJS</div>
+<div id="require_cjs" class="exampleblock">
+<div class="title">Example 23. Using CommonJS module format in RequireJS</div>
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">define(function(require, exports, module) { <i class="conum" data-value="1"></i><b>(1)</b>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="javascript language-javascript">define(function(require, exports, module) {   <i class="conum" data-value="1"></i><b>(1)</b>
     "use strict";
-    module.exports = (function() {      <i class="conum" data-value="2"></i><b>(2)</b>
+    module.exports = (function() {        <i class="conum" data-value="2"></i><b>(2)</b>
 
-        var dependency = require("dependencyId");   <i class="conum" data-value="3"></i><b>(3)</b>
+        var dependency = require("dependencyId");     <i class="conum" data-value="3"></i><b>(3)</b>
 
         function AuctionDTO(_arg) {
             this.auctionState = _arg.auctionState;
@@ -1737,6 +1831,8 @@ require(['main'], function () {     <i class="conum" data-value="3"></i><b>(3)</
 });</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
@@ -1745,50 +1841,52 @@ require(['main'], function () {     <i class="conum" data-value="3"></i><b>(3)</
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Export your module rather than returning it. You can export an object in two ways - assign the the module directly to <code>module.exports</code> as shown in this snippet, or set the  properties on the <code>exports</code> object.</td>
+<td>Export your module rather than return it. You can export an object in two ways: assign the module directly to <code>module.exports</code>, as shown in this snippet, or set the  properties on the <code>exports</code> object.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>In CommonJS, dependencies are assigned to local variables using the <code>require(id)</code> function.</td>
+<td>In CommonJS, dependencies are assigned to local variables by using the <literal role="keep-together">require(id)</literal> function.</td>
 </tr>
 </table>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_loading-modules-on-demand"><a class="anchor" href="#_loading-modules-on-demand"></a>Loading Modules On-Demand</h4>
+<h4 id="_loading-modules-on-demand"><a class="anchor" href="#_loading-modules-on-demand"></a>Loading Modules On Demand</h4>
 <div class="paragraph">
-<p>As per the Save The Child modules graph, some components shouldn&#8217;t load when the application starts. Similar to Mercedes Benz website example, some functionality of Save The Child can be loaded later when user needs it. The user might never want to visit the "Where we work" section. Hence this functionality is a good candidate for the <em>load on-demand</em> module. You may want to load such a module on demand when the user clicks the button or selects a menu item.</p>
+<p>As per the Save The Child modules graph, some components shouldn&#8217;t load when the application starts. Similar to the Mercedes Benz website example, some functionality of Save The Child can be loaded later, when the user needs it. The user might never want to visit the Where We Work section. Hence, this functionality is a good candidate for the <em>load on-demand</em> module. You might want to load such a module on demand when the user clicks a button or selects a menu item. <a href="#load_ondemand_snippet">Loading the module on demand</a> shows the code for loading a module on demand (on a button click).</p>
 </div>
 <div class="paragraph">
-<p>At any given time a module can be in one of three states:</p>
+<p>At any given time, a module can be in one of three states:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>not loaded (<code>module === null</code>)</p>
+<p>Not loaded (<code>module === null</code>)</p>
 </li>
 <li>
-<p>loading is in progress (<code>module === 'loading'</code>)</p>
+<p>Loading is in progress (<code>module === 'loading'</code>)</p>
 </li>
 <li>
-<p>fully loaded (<code>module !== null</code>).</p>
+<p>Fully loaded (<code>module !== null</code>)</p>
 </li>
 </ul>
 </div>
-<div id="load_ondemand_snippet" class="listingblock">
-<div class="title">Loading the module on demand</div>
+<div id="load_ondemand_snippet" class="exampleblock">
+<div class="title">Example 24. Loading the module on demand</div>
+<div class="content">
+<div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">var module;
 var buttonClickHandler = function(event) {
     "use strict";
-  if (module === "loading") {       <i class="conum" data-value="1"></i><b>(1)</b>
+  if (module === "loading") {         <i class="conum" data-value="1"></i><b>(1)</b>
     return;
   }
-  if (module !== null) {        <i class="conum" data-value="2"></i><b>(2)</b>
+  if (module !== null) {          <i class="conum" data-value="2"></i><b>(2)</b>
     module.render();
   } else {
-    module = "loading";         <i class="conum" data-value="3"></i><b>(3)</b>
-    require(["modules/wereWeWork"], function(ModuleObject) { <i class="conum" data-value="4"></i><b>(4)</b>
+    module = "loading";           <i class="conum" data-value="3"></i><b>(3)</b>
+    require(["modules/wereWeWork"], function(ModuleObject) {   <i class="conum" data-value="4"></i><b>(4)</b>
       module = new ModuleObject();
       module.render();
     });
@@ -1796,15 +1894,17 @@ var buttonClickHandler = function(event) {
 };</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Checking if module loading in progress.</td>
+<td>Checking whether module loading is in progress.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Don&#8217;t re-load the same module. If the module was already loaded just call the method to render the widget on the Web page.</td>
+<td>Don&#8217;t reload the same module. If the module was already loaded, just call the method to render the widget on the web page.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -1812,15 +1912,17 @@ var buttonClickHandler = function(event) {
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Once the <code>whereWeWork</code> module is loaded, the callback will receive the reference to this module - instantiate <code>whereWeWork</code> and render it on the page.</td>
+<td>After the <code>whereWeWork</code> module is loaded, the callback will receive the reference to this module&#8212;instantiate <code>whereWeWork</code> and render it on the page.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s apply the technique demonstrated in <a href="#load_ondemand_snippet">Loading the module on demand</a> snippet for Save The Child application to lazy load the "Who We Are", "What We Do", "Where We Work" and "What To Give" modules only if the user clicked on the corresponding top bar link.</p>
+<p>Let&#8217;s apply the technique demonstrated in <a href="#load_ondemand_snippet">Loading the module on demand</a> for the Save The Child application to lazy-load the Who We Are, What We Do, Where We Work, and What To Give modules only if the user clicks the corresponding top bar link. See <a href="#ex_the_main_module">The main module</a>.</p>
 </div>
+<div id="ex_the_main_module" class="exampleblock">
+<div class="title">Example 25. The main module</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">The Main Module</div>
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define(['login',
     'donation',
@@ -1835,13 +1937,15 @@ var buttonClickHandler = function(event) {
                 return;
             }
             if (config.amdInstance != null) {
-                config.amdInstance.render(event.target.id, config.containerId, config.viewUrl);
+                config.amdInstance.render(event.target.id, config.containerId,
+                                          config.viewUrl);
             } else {
                 config.amdInstance = 'loading';
                 require(['modules/generic-module'], function(GenericModule) {
                     var moduleInstance;
                     moduleInstance = new GenericModule(config.moduleId);
-                    moduleInstance.render(event.target.id, config.containerId, config.viewUrl);
+                    moduleInstance.render(event.target.id, config.containerId,
+                                          config.viewUrl);
                     config.amdInstance = moduleInstance;
                 });
             }
@@ -1892,6 +1996,8 @@ var buttonClickHandler = function(event) {
 });</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
@@ -1900,11 +2006,11 @@ var buttonClickHandler = function(event) {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Here we&#8217;re using the approach described in the <a href="#load_ondemand_snippet">Loading the module on demand</a> section. This factory function produces the handler for the button click event. It uses RequireJS API to load the module once the  user clicked on the button.</td>
+<td>Here, we&#8217;re using the approach described in <a href="#load_ondemand_snippet">Loading the module on demand</a>. This factory function produces the handler for the button click event. It uses the RequireJS API to load the module after the user clicks the button.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Instantiate the click handler function using <code>onDemandLoadingClickHandlerFactory</code> and assign it to the button defined in the module config.</td>
+<td>Instantiate the click handler function by using <code>onDemandLoadingClickHandlerFactory</code> and assign it to the button defined in the module config.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
@@ -1912,44 +2018,50 @@ var buttonClickHandler = function(event) {
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>In the last step, we need to initialize each module button with the lazy loading handler.</td>
+<td>In the last step, we need to initialize each module button with the lazy-loading handler.</td>
 </tr>
 </table>
 </div>
 </div>
 <div class="sect3">
-<h4 id="requirejs_plugins"><a class="anchor" href="#requirejs_plugins"></a>RequireJS plugins</h4>
+<h4 id="requirejs_plugins"><a class="anchor" href="#requirejs_plugins"></a>Using RequireJS Plug-ins</h4>
 <div class="paragraph">
-<p>RequireJS plugins are special modules that implement specific API. For example, the <em>text</em> plugin allows to specify a text file as a dependency, <em>cs!</em> translates <em>CoffeeScript</em> files into JavaScript. The plugin&#8217;s module name comes before the <em>!</em> separator. Plugins can extend the default loader&#8217;s functionality.</p>
+<p>RequireJS plug-ins are special modules that implement a specific API. For example, the <em>text</em> plug-in allows you to specify a text file as a dependency, and <em>cs!</em> translates <em>CoffeeScript</em> files into JavaScript. The plug-in&#8217;s module name comes before the <em>!</em> separator. Plug-ins can extend the default loader&#8217;s functionality.</p>
 </div>
 <div class="paragraph">
-<p>In the Save The Child application we use the <em>order.js</em> plugin that allows to specify the exact order in which the dependencies should be loaded. You can find the full list of the available RequireJS plugins at the following <a href="https://github.com/jrburke/requirejs/wiki/Plugins">wiki page</a>.</p>
+<p>In the Save The Child application, we use the <em>order.js</em> plug-in that allows us to specify the exact order in which the dependencies should be loaded. You can find the full list of available RequireJS plug-ins at the <a href="http://bit.ly/1pAGHvZ">wiki page</a>.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="using_reuiqrejs_optimizer"><a class="anchor" href="#using_reuiqrejs_optimizer"></a>Using RequireJS Optimizer</h4>
 <div class="paragraph">
-<p>RequireJS comes with the optimization tool called <a href="http://requirejs.org/docs/optimization.html"><em>r.js</em></a>, which is a utility that performs module optimization.
-Earlier in this chapter, we&#8217;ve specified the dependencies as an array of string literals that are passed to the top-level <a href="#REQUIRE_DESC">require</a> and <a href="#DEFINE_DESC">define</a> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.</p>
+<p>RequireJS comes with the optimization tool called <a href="http://bit.ly/1qHiV1v"><em>r.js</em></a>, which is a utility that performs module optimization. Earlier in this chapter, we specified the dependencies as an array of string literals that are passed to the top-level <code>require</code> and <code>define</code> calls. The optimizer will combine modules and their dependencies into a single file based on these dependencies.</p>
 </div>
 <div class="paragraph">
-<p>Furthermore, r.js integrates with other optimization tools like <a href="https://github.com/mishoo/UglifyJS2"><code>UglifyJS</code></a> and <a href="https://developers.google.com/closure/compiler/"><code>Closure Compiler</code></a> to minify the content of script files. We are going to use the JavaScript task runner <a href="http://gruntjs.com/">Grunt</a> that you learned in previous chapter on automation tools.</p>
+<p>Furthermore, <em>r.js</em> integrates with other optimization tools such as <a href="http://bit.ly/1vo281q">UglifyJS</a> and <a href="http://bit.ly/1lJvK8M">Closure Compiler</a> to minify the content of script files. We are going to use the JavaScript task runner <a href="http://gruntjs.com">Grunt</a> that you learned about in <a href="#productivity_tools">[productivity_tools]</a>.</p>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s configure our Grunt project to enable the optimization task. Here&#8217;s the command to install RequireJS, and Grunt&#8217;s task packages clean, concat and uglify and save them as development dependencies in the file package.json:</p>
+<p>Let&#8217;s configure our Grunt project to enable the optimization task. <a href="#ex_adding_dependencies">Adding dependencies to package.json</a> shows the command to install RequireJS, and Grunt&#8217;s task packages <code>clean</code>, <code>concat</code>, and <code>uglify</code>, and save them as development dependencies in the file <em>package.json</em>.</p>
 </div>
+<div id="ex_adding_dependencies" class="exampleblock">
+<div class="title">Example 26. Adding dependencies to package.json</div>
+<div class="content">
 <div class="listingblock">
-<div class="title">Adding dependencies to package.json</div>
 <div class="content">
 <pre class="highlight"><code class="bash language-bash">&gt; npm install grunt-contrib-requirejs\
 grunt-contrib-concat grunt-contrib-clean\
 grunt-contrib-uglify --saveDev</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p><a href="#rjs_gruntfile_list">The following listing</a> describes the script to setup RequireJS optimizer and the related optimization tasks for Grunt. You&#8217;ll need to run this script to generate optimized version of the Save The Child application.</p>
 </div>
-<div id="rjs_gruntfile_list" class="listingblock">
+</div>
+<div class="paragraph">
+<p><a href="#rjs_gruntfile_list">Script to set up RequireJS optimizer</a> describes the script to set up the RequireJS optimizer and the related optimization tasks for Grunt. You&#8217;ll need to run this script to generate an optimized version of the Save The Child application.</p>
+</div>
+<div id="rjs_gruntfile_list" class="exampleblock">
+<div class="title">Example 27. Script to set up RequireJS optimizer</div>
+<div class="content">
+<div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">"use strict";
 
@@ -1961,7 +2073,7 @@ module.exports = function (grunt) {
         clean: {
             files: ["dist"] <i class="conum" data-value="1"></i><b>(1)</b>
         },
-        requirejs: {        <i class="conum" data-value="2"></i><b>(2)</b>
+        requirejs: {         <i class="conum" data-value="2"></i><b>(2)</b>
             compile: {
                 options: {
                     name: "config",
@@ -1973,7 +2085,8 @@ module.exports = function (grunt) {
         },
         concat: {       <i class="conum" data-value="3"></i><b>(3)</b>
             dist: {
-                src: ["components/requirejs/require.js", "&lt;%= concat.dist.dest %&gt;"],
+                src: ["components/requirejs/require.js",
+                      "&lt;%= concat.dist.dest %&gt;"],
                 dest: "dist/require.js"
             }
         },
@@ -1990,31 +2103,33 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-uglify");
 
-    grunt.registerTask("default", ["clean", "requirejs", "concat", "uglify"]);  <i class="conum" data-value="6"></i><b>(6)</b>
+    grunt.registerTask("default", ["clean", "requirejs", "concat", "uglify"]); <i class="conum" data-value="6"></i><b>(6)</b>
 };</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The <code>clean</code> task cleans output directory. In the <code>files</code> section of task config we specify what folder should be cleaned.</td>
+<td>The <code>clean</code> task cleans the output directory. In the <code>files</code> section of the task <code>config</code>, we specify folder that should be cleaned.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The <code>requirejs</code> task. The configuration properties of <code>requrejs</code> task are self-explanatory. <code>mainConfigFile</code> points at the same file that <a href="#data_main_attrib"><code>data-main</code> attribute</a> of RequireJS script tag. <code>out</code> parameter specifies output directory where optimized script will be created.</td>
+<td>The <code>requirejs</code> task. The configuration properties of the <code>requrejs</code> task are self-explanatory. <code>mainConfigFile</code> points at the same file as the <a href="#data_main_attrib"><code>data-main</code> attribute</a> of the RequireJS script tag. The <code>out</code> parameter specifies the output directory where the optimized script will be created.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The <code>concat</code> task combines/concatenates  optimized modules code and RequireJS loader code.</td>
+<td>The <code>concat</code> task combines/concatenates optimized module code and RequireJS loader code.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The <code>uglify</code> task minifies provided files (see <code>src</code> properties) using <a href="http://lisperator.net/uglifyjs/">UglifyJS</a> - a compressor/minifier tool. UglifyJS produces significantly smaller version of the original script by reducing the <a href="http://en.wikipedia.org/wiki/Abstract_syntax_tree">Abstract Syntax Tree (AST)</a> and changing local variable names to single-letters.</td>
+<td>The <code>uglify</code> task minifies files using <a href="http://bit.ly/1sRs7SY">UglifyJS</a>—a compressor/minifier tool. Input and output of this task is configured with <code>src</code> and <code>dest</code> properties of <code>uglify</code> object.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Loading plugins that provide necessary tasks.</td>
+<td>Loading plug-ins that provide necessary tasks.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
@@ -2023,22 +2138,22 @@ module.exports = function (grunt) {
 </table>
 </div>
 <div class="paragraph">
-<p>Run the <a href="http://localhost:8080/ssc-requirejs">Save The Child</a> application built with RequireJS and monitor the network traffic in Chrome Developer Tools. You&#8217;ll see  many HTTP requests that load modules asynchronously. As you can see from the <a href="#unoptim_require_fig">from following screenshot</a>, 12 out of 14 browser&#8217;s requests are for loading all required modules. The modules that may be loaded on demand are not here.</p>
+<p>Run the <a href="http://localhost:8080/ssc-requirejs">Save The Child</a> application built with RequireJS and monitor the network traffic in Chrome Developer Tools. You&#8217;ll see  many HTTP requests that load modules asynchronously. As you can see in <a href="#unoptim_require_fig">Unoptimized version of the Save The Child application</a>, 12 out of 24 of the browser&#8217;s requests are for loading all required modules. The modules that may be loaded on demand are not here.</p>
+</div>
+<div class="paragraph">
+<p><a href="#optim_with_rjs_fig">Loading the optimized version of Save The Child</a> shows the loading of the Save The Child application, optimized with the RequireJS optimizer. We&#8217;ve managed to pack all our modules, their dependencies, and the loader&#8217;s code into a single file, which considerably decreases the number of server-side calls.</p>
 </div>
 <div id="unoptim_require_fig" class="imageblock">
 <div class="content">
-<img src="./images/fig_07_02.png" alt="fig 07 02">
+<img src="images/ewdv_0604.png" alt="ewdv 0604">
 </div>
-<div class="title">Figure 4. Unoptimized version of the Save The Child Application</div>
-</div>
-<div class="paragraph">
-<p>The next <a href="#optim_with_rjs_fig">screenshot</a> shows loading of the Save The Child application optimized with RequireJS optimizer. We&#8217;ve managed to pack all our modules, their dependencies and loader&#8217;s code into a single file, which considerably decreased the number of the server-side calls.</p>
+<div class="title">Figure 4. Unoptimized version of the Save The Child application</div>
 </div>
 <div id="optim_with_rjs_fig" class="imageblock">
 <div class="content">
-<img src="./images/fig_07_03.png" alt="fig 07 03">
+<img src="images/ewdv_0605.png" alt="ewdv 0605">
 </div>
-<div class="title">Figure 5. Loading of optimized version of the Save The Child</div>
+<div class="title">Figure 5. Loading the optimized version of Save The Child</div>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2047,13 +2162,13 @@ module.exports = function (grunt) {
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Read more on optimization topics in the RequireJS documentation site under <a href="http://requirejs.org/docs/optimization.html">&#8220;Optimization&#8221;</a> section.
+You can read more on optimization topics at the RequireJS documentation site under <a href="http://bit.ly/1qHiV1v">Optimization</a>.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>RequireJS took care of the optimal module loading, but you should properly arrange the inter-module communication. The Save The Child application doesn&#8217;t have modules that heed to exchange data so we&#8217;ll describe how to properly arrange inter-module communications in a separate application.</p>
+<p>RequireJS took care of the optimal module loading, but you should properly arrange the intermodule communication. The Save The Child application doesn&#8217;t have modules that heed to exchange data, so we&#8217;ll describe how to properly arrange intermodule communications in a separate application.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -2062,7 +2177,7 @@ Read more on optimization topics in the RequireJS documentation site under <a hr
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Google has created <a href="https://developers.google.com/speed/pagespeed/insights/">PageSpeed Insights</a>, a Web tool that offers suggestions for improving the performance of your Web application on all devices. Just enter the URL of your application and a second later you&#8217;ll see some optimization suggestions.
+Google has created <a href="http://bit.ly/1q9Xgxw">PageSpeed Insights</a>, a web tool that offers suggestions for improving the performance of your web application on all devices. Just enter the URL of your application and a second later you&#8217;ll see some optimization suggestions.
 </td>
 </tr>
 </table>
@@ -2070,43 +2185,46 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 </div>
 </div>
 <div class="sect2">
-<h3 id="mediator_section"><a class="anchor" href="#mediator_section"></a>Loosely-Coupled Inter-Module Communications With Mediator</h3>
+<h3 id="mediator_section"><a class="anchor" href="#mediator_section"></a>Loosely Coupled InterModule Communications with Mediator</h3>
 <div class="paragraph">
-<p>Almost any complex enterprise Web application consists of a number of components and modules.</p>
+<p>Almost any complex enterprise web application consists of various components and modules. A simple approach of arranging communication among  components is to allow all components to directly access the public properties of one another. This would produce an application with tightly coupled components that know about one another, but removal of one component could lead to multiple code changes in the application.</p>
 </div>
 <div class="paragraph">
-<p>A simple approach of arranging communications between the components is to allow all these components directly accessing public properties of each other. This would produce an application with tightly coupled components that know about each other and removal of one component could lead to multiple code changes in the application.</p>
+<p>A better approach is to create loosely coupled components that are self-contained, do not know about one another, and can communicate with the "outside world" by sending and receiving events.</p>
 </div>
 <div class="paragraph">
-<p>A better approach is to create loosely coupled components that are self-contained, do not know about one another and can communicate with the "outside world" by sending and receiving events.</p>
+<p>Creating a UI from reusable components and applying messaging techniques requires creation of loosely coupled components. Say you&#8217;ve created a window for a financial trader. This window gets a data push from the server, showing the latest stock prices. When the trader likes the price, he may click the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate component, and establishing inter-component communications the right way is really important.</p>
 </div>
 <div class="paragraph">
-<p>Creating UI of from reusable components applying messaging techniques requires creation of loosely coupled components. Say you&#8217;ve created a window for a financial trader. This window gets a data push from the server showing the latest stock prices. When the trader likes the price he may click on the Buy or Sell button to initiate a trade. The trading engine can be implemented in a separate component  and establishing inter-component communications the right way is really important.</p>
+<p>As you learned from <a href="#using_ajax_and_json">[using_ajax_and_json]</a>, <em>Mediator</em> is a behavioral design pattern that allows you to unify communication of the application components. The Mediator pattern promotes the use of a single shared object that handles (mediates) communication between other objects. None of the components is aware of the others, but each of them knows about a single object&#8212;the mediator.</p>
 </div>
 <div class="paragraph">
-<p>As you&#8217;ve learned from Chapter 2, <em>Mediator</em> is a behavioral design pattern that allows to unify communications of the application components. The Mediator pattern promotes the use of a single shared object that handles (mediates) communication between other objects. None of the components is aware of the others, but each of them knows about a single object - the mediator.</p>
+<p>In <a href="#using_ajax_and_json">[using_ajax_and_json]</a> we introduced an example of a small fragment of a trader&#8217;s desktop. Let&#8217;s reuse the same example&#8212;this time not with <code>postMessage</code>, but with the Mediator object.</p>
 </div>
 <div class="paragraph">
-<p>In Chapter 2 we&#8217;ve introduced an example of a small fragment of a trader&#8217;s desktop. Let&#8217;s reuse the same example, but this time not with <code>postMessage</code> but with the Mediator object.</p>
+<p>In <a href="#FIG6-6">Before the trader clicks the Price panel</a>, the Price panel on the left gets the data feed about the current prices of IBM stock. When the user clicks the Bid or Ask button, the Price panel just sends the event with the relevant trade information (for example, a JSON-formatted string containing the stock symbol, price, buy or sell flag, or date).</p>
 </div>
-<div class="paragraph">
-<p>In Figure <a href="#FIG7-6">Before the trader clicked on the Price Panel</a>, the Pricing Panel on the left gets the data feed about the current prices of the IBM stock. When the user clicks on Bid or Ask button, the Pricing Panel just sends the event with the relevant trade information, e.g. a JSON-formatted string containing the stock symbol, price, buy or sell flag, date, etc.</p>
-</div>
-<div id="FIG7-6" class="imageblock">
+<div id="FIG6-6" class="imageblock">
 <div class="content">
-<img src="./images/fig_07_06.png" alt="fig 07 06">
+<img src="images/ewdv_0606.png" alt="ewdv 0606">
 </div>
-<div class="title">Figure 6. Before the trader clicked on the Price Panel</div>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="./images/fig_07_07.png" alt="fig 07 07">
-</div>
-<div class="title">Figure 7. After the trader clicked on the Price Panel</div>
+<div class="title">Figure 6. Before the trader clicks the Price panel</div>
 </div>
 <div class="paragraph">
-<p>Here is a HTML code snipped that implements the above scenario.</p>
+<p><a href="#FIG6-7">After the trader clicks the Price panel</a> shows the wire after the user clicks the Price panel.</p>
 </div>
+<div id="FIG6-7" class="imageblock">
+<div class="content">
+<img src="images/ewdv_0607.png" alt="ewdv 0607">
+</div>
+<div class="title">Figure 7. After the trader clicks the Price panel</div>
+</div>
+<div class="paragraph">
+<p><a href="#ex_implementing_trade_event">Implementation of Mediator Design Pattern</a> shows an HTML code snippet that implements this scenario.</p>
+</div>
+<div id="ex_implementing_trade_event" class="exampleblock">
+<div class="title">Example 28. Implementation of Mediator Design Pattern</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="html language-html">&lt;!DOCTYPE html&gt;
@@ -2114,7 +2232,8 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 &lt;head&gt;
     &lt;meta charset="utf-8"&gt;
     &lt;title&gt;An example of Mediator Design Pattern&lt;/title&gt;
-    &lt;script data-main="app/config" src="bower_components/requirejs/require.js"&gt;&lt;/script&gt;
+    &lt;script data-main="app/config" src="bower_components/requirejs/require.js"&gt;
+    &lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
     &lt;h1&gt;mediator and RequireJS example&lt;/h1&gt;
@@ -2139,50 +2258,54 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 &lt;/html&gt;</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>This <code>div</code> element contains <em>Pricing Panel</em> with Bid and Ask controls.</td>
+<td>This <code>div</code> element contains <em>Price Panel</em> with Bid and Ask controls.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>This <code>div</code> element contains <em>Order Panel</em> with Quantity, Go and Cancel controls.</td>
+<td>This <code>div</code> element contains <em>Order Panel</em> with Quantity, Go, and Cancel controls.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>As we stated before, we need a Mediator to handle communication between the application components. The components need to register themselves with the  Mediator so it knows about them and can route communications. The following snippet is a sample  Mediator implementation (we use <code>define</code> and <code>require</code> from RequireJS here).</p>
+<p>As we stated earlier, we need a mediator to handle communication among application components. The components need to register themselves with the  mediator so that it knows about them and can route communications. <a href="#mediator_impl">The implementation of the Mediator pattern</a> is a sample mediator implementation (we use <code>define</code> and <code>require</code> from RequireJS here).</p>
 </div>
-<div id="mediator_impl" class="listingblock">
-<div class="title">The implementation of Mediator pattern.</div>
+<div id="mediator_impl" class="exampleblock">
+<div class="title">Example 29. The implementation of the Mediator pattern</div>
+<div class="content">
+<div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define(function() {
     "use strict";
-    return (function() {    <i class="conum" data-value="1"></i><b>(1)</b>
+    return (function() {      <i class="conum" data-value="1"></i><b>(1)</b>
         var components = {};
 
         function Mediator() {}
 
-        Mediator.registerComponent = function(name, component) { <i class="conum" data-value="2"></i><b>(2)</b>
+        Mediator.registerComponent = function(name, component) {   <i class="conum" data-value="2"></i><b>(2)</b>
             var cmp;
             for (cmp in components) {
                 if (components[cmp] === component) {
                     break;
                 }
             }
-            component.setMediator(Mediator);            <i class="conum" data-value="3"></i><b>(3)</b>
-            components[name] = component;               <i class="conum" data-value="4"></i><b>(4)</b>
+            component.setMediator(Mediator);              <i class="conum" data-value="3"></i><b>(3)</b>
+            components[name] = component;                 <i class="conum" data-value="4"></i><b>(4)</b>
         };
 
-        Mediator.broadcast = function(event, args, source) {    <i class="conum" data-value="5"></i><b>(5)</b>
+        Mediator.broadcast = function(event, args, source) {      <i class="conum" data-value="5"></i><b>(5)</b>
             var cmp;
             if (!event) {
                 return;
             }
             args = args || [];
             for (cmp in components) {
-                if (typeof components[cmp]["on" + event] === "function") {      <i class="conum" data-value="6"></i><b>(6)</b>
+                if (typeof components[cmp]["on" + event] === "function") {        <i class="conum" data-value="6"></i><b>(6)</b>
                     source = source || components[cmp];
                     components[cmp]["on" + event].apply(source, args);
                 }
@@ -2193,6 +2316,8 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 });</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
@@ -2201,15 +2326,15 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>With the <code>Mediator.register()</code> function we can store components in the associative array. The Mediator is a singleton object here.</td>
+<td>With the <code>Mediator.register()</code> function, we can store components in the associative array. The mediator is a singleton object here.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Assigning the mediator instance to the component being registered.</td>
+<td>Assign the mediator instance to the component being registered.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Registering component in the array using  provided <code>name</code> as key.</td>
+<td>Register the component in the array by using the provided <code>name</code> as key.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
@@ -2217,22 +2342,27 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>If a component has a function property with the  name matching the pattern <code>"on" + event</code>, e.g. <code>onClickEvent</code>, the Mediator will invoke this function in the context of <code>source</code> object.</td>
+<td>If a component has a function property with the name matching the pattern <code>"on" + event</code>—for example, <code>onClickEvent</code>—the mediator will invoke this function in the context of the <code>source</code> object.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The following code sample shows the main entry point of the application that uses the above mediator.</p>
+<p><a href="#ex_application_entry">The application entry point</a> shows the main entry point of the application that uses the mediator.</p>
 </div>
+<div id="ex_application_entry" class="exampleblock">
+<div class="title">Example 30. The application entry point</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="javascript language-javascript">define(["mediator", "pricePanel", "orderPanel"], function(Mediator, PricePanel, OrderPanel) {   <i class="conum" data-value="1"></i><b>(1)</b>
+<pre class="highlight"><code class="javascript language-javascript">define(["mediator", "pricePanel", "orderPanel"], function(Mediator, PricePanel,
+                                                          OrderPanel) {   <i class="conum" data-value="1"></i><b>(1)</b>
     "use strict";
     return (function() {
         Mediator.registerComponent("pricePanel", new PricePanel());     <i class="conum" data-value="2"></i><b>(2)</b>
         Mediator.registerComponent("orderPanel", new OrderPanel());
 
-        document.getElementById("priceInput").addEventListener("click", function() {   <i class="conum" data-value="3"></i><b>(3)</b>
+        document.getElementById("priceInput").addEventListener("click",
+                                                               function() {   <i class="conum" data-value="3"></i><b>(3)</b>
             if ( !! this.value) {
                 return Mediator.broadcast("BidClick", [this.value]);     <i class="conum" data-value="4"></i><b>(4)</b>
             }
@@ -2240,6 +2370,8 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 
     })();
 });</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="colist arabic">
@@ -2250,21 +2382,24 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Registering our components with the Mediator.</td>
+<td>Register our components with the mediator.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Adding the <code>click</code> event listener for the Bid Price component.</td>
+<td>Add the <code>click</code> event listener for the Bid Price component.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>When the user clicks on the bid price the Mediator will broadcast the <code>BidClick</code> event to all registered component. Only the component that has this specific event handler with the name matching  the pattern <code>"on" + event</code> will receive this event.</td>
+<td>When the user clicks the bid price, the mediator will broadcast the <code>BidClick</code> event to all registered components. Only the component that has this specific event handler with the name matching  the pattern <code>"on" + event</code> will receive this event.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Let&#8217;s see how the code of the <code>PricePanel</code> and <code>OrderPanel</code> components looks like.</p>
+<p>Examples <xref linkend="ex_pricepanel_module" xrefstyle="select: labelnumber"/> and <xref linkend="ex_orderpanel_module" xrefstyle="select: labelnumber"/> show the code of the <code>PricePanel</code> and <code>OrderPanel</code> components, respectively.</p>
 </div>
+<div id="ex_pricepanel_module" class="exampleblock">
+<div class="title">Example 31. The PricePanel module</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define(function() {
@@ -2275,20 +2410,20 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
         function PricePanel() {
         }
 
-        PricePanel.prototype.setMediator = function(m) {    <i class="conum" data-value="1"></i><b>(1)</b>
+        PricePanel.prototype.setMediator = function(m) {      <i class="conum" data-value="1"></i><b>(1)</b>
             mediator = m;
         };
 
-        PricePanel.prototype.getMediator = function() {     <i class="conum" data-value="2"></i><b>(2)</b>
+        PricePanel.prototype.getMediator = function() {       <i class="conum" data-value="2"></i><b>(2)</b>
             return mediator;
         };
 
-        PricePanel.prototype.onBidClick = function(currentPrice) {      <i class="conum" data-value="3"></i><b>(3)</b>
+        PricePanel.prototype.onBidClick = function(currentPrice) {        <i class="conum" data-value="3"></i><b>(3)</b>
             console.log("Bid clicked on price " + currentPrice);
             this.getMediator().broadcast("PlaceBid", [currentPrice]);
         };
 
-        PricePanel.prototype.onAskClick = function() {      <i class="conum" data-value="4"></i><b>(4)</b>
+        PricePanel.prototype.onAskClick = function() {        <i class="conum" data-value="4"></i><b>(4)</b>
             console.log("Ask clicked");
         };
 
@@ -2297,11 +2432,13 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 });</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The setter of the Mediator object. Mediator injects its' instance during component registration (refer to <a href="#mediator_impl">The implementation of Mediator pattern.</a> snippet).</td>
+<td>The setter of the Mediator object. The mediator injects its instance during component registration (refer to <a href="#mediator_impl">The implementation of the Mediator pattern</a>).</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -2309,10 +2446,17 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>The <code>onBidClick</code> event handler. The Mediator will call this function when the <code>BidClick</code> event will be broadcast. Using getter <code>getMediator</code> we can broadcast <code>PlaceBid</code> event to all registered components.</td>
+<td>The <code>onBidClick</code> event handler. The mediator will call this function when the <code>BidClick</code> event is broadcast. Using the getter <code>getMediator</code>, we can broadcast the <code>PlaceBid</code> event to all registered components.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The <code>onAskClick</code> event handler. The mediator will call this function when the <code>AskClick</code> event is broadcast.</td>
 </tr>
 </table>
 </div>
+<div id="ex_orderpanel_module" class="exampleblock">
+<div class="title">Example 32. The OrderPanel module</div>
+<div class="content">
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="javascript language-javascript">define(function () {
@@ -2323,7 +2467,7 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
         function OrderPanel() {
         }
 
-        OrderPanel.prototype.getMediator = function () {      <i class="conum" data-value="1"></i><b>(1)</b>
+        OrderPanel.prototype.getMediator = function () {        <i class="conum" data-value="1"></i><b>(1)</b>
             return mediator;
         };
 
@@ -2343,35 +2487,37 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 });</code></pre>
 </div>
 </div>
+</div>
+</div>
 <div class="colist arabic">
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The Mediator&#8217;s getter and setter have the purpose similar to described in previous snippet.</td>
+<td>The mediator&#8217;s getter and setter have a purpose similar to that described in previous snippet.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Defining the <code>PlaceBid</code> event handler - <code>onPlaceBid()</code>.</td>
+<td>Defining the <code>PlaceBid</code> event handler, <code>onPlaceBid()</code>.</td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>As you noticed, both <code>OrderPanel</code> and <code>PricePanel</code> don&#8217;t know about the existence of each other, but nevertheless they can sent and receive data with the help of intermediary - the Mediator object.</p>
+<p>As you noticed, both <code>OrderPanel</code> and <code>PricePanel</code> don&#8217;t know about the existence of each other, but nevertheless they can send and receive data with the help of an intermediary&#8212;the Mediator object.</p>
 </div>
 <div class="paragraph">
-<p>The introduction of the Mediator increases reusability of components by decoupling them from each other. The Mediator pattern simplifies the maintenance of any application by centralizing the  navigational logic.</p>
+<p>The introduction of the mediator increases reusability of components by decoupling them from each other. The Mediator pattern simplifies the maintenance of any application by centralizing the  navigational logic.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h3>
 <div class="paragraph">
-<p>The size of any application tends to increase with time, and sooner or later you&#8217;ll need to decide how to cut it into several loadable blocks of functionality. The sooner you start modularizing your application the better.</p>
+<p>The size of any application tends to increase with time, and sooner or later you&#8217;ll need to decide how to cut it into several loadable blocks of functionality. The sooner you start modularizing your application, the better.</p>
 </div>
 <div class="paragraph">
-<p>In this chapter we&#8217;ve reviewed several options available for writing modular JavaScript using modern module formats. These formats have a number of advantages over using just the classical  Module Pattern. These advantages include avoiding creating global variables for each module and better support for static and dynamic dependency management.</p>
+<p>In this chapter, we reviewed several options for writing modular JavaScript by using modern module formats. These formats have advantages over using just the classical Module pattern. These advantages include avoiding creating global variables for each module and better support for static and dynamic dependency management.</p>
 </div>
 <div class="paragraph">
-<p>Understanding various technologies and frameworks available in JavaScript, combined with the knowledge of different ways of linking modules and libraries is crucial for developers who want their JavaScript applications to be more responsive.</p>
+<p>Understanding various technologies and frameworks available in JavaScript, combined with the knowledge of different ways of linking modules and libraries, is crucial for developers who want their JavaScript applications to be more responsive.</p>
 </div>
 </div>
 </div>
@@ -2379,7 +2525,7 @@ Google has created <a href="https://developers.google.com/speed/pagespeed/insigh
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-03-06 08:31:38 EST
+Last updated 2014-07-23 23:50:42 EDT
 </div>
 </div>
 </body>

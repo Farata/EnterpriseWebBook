@@ -570,22 +570,22 @@ p.tableblock.header { color: #6d6e71; }
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#_introduction-to-web-application-security">Introduction to Web Application Security</a></li>
+<li><a href="#intro_to_security">Introduction to Web Application Security</a></li>
 <li>
 <ul class="sectlevel2">
-<li><a href="#_http-vs-https">HTTP vs HTTPS</a></li>
+<li><a href="#_http-versus-https">HTTP versus HTTPS</a></li>
 <li><a href="#_authentication-and-passwords">Authentication and Passwords</a></li>
 <li>
 <ul class="sectlevel3">
 <li><a href="#_basic-and-digest-authentication">Basic and Digest Authentication</a></li>
 <li><a href="#_single-sign-on">Single Sign-on</a></li>
-<li><a href="#_dealing-with-passwords">Dealing With Passwords</a></li>
+<li><a href="#_handling-passwords">Handling Passwords</a></li>
 </ul>
 </li>
 <li><a href="#_authorization">Authorization</a></li>
 <li>
 <ul class="sectlevel3">
-<li><a href="#_oauth-based-authentication-and-authorization">OAuth-Based Authentication and Authorization</a></li>
+<li><a href="#oath_authentication_and_authorization">OAuth-Based Authentication and Authorization</a></li>
 <li><a href="#_federated-identity-with-openid-connect-and-json-web-tokens">Federated Identity with OpenID Connect and JSON Web Tokens</a></li>
 <li><a href="#_oauth-2-0-main-actors">OAuth 2.0 Main Actors</a></li>
 <li><a href="#_save-the-child-and-oauth">Save The Child and OAuth</a></li>
@@ -607,19 +607,19 @@ p.tableblock.header { color: #6d6e71; }
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_introduction-to-web-application-security"><a class="anchor" href="#_introduction-to-web-application-security"></a>Introduction to Web Application Security</h2>
+<h2 id="intro_to_security"><a class="anchor" href="#intro_to_security"></a>Introduction to Web Application Security</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Every newly deployed Web application creates a new security hole in accessing of your organization&#8217;s data. The hackers get access to the data by sneaking through the ports that are supposedly hidden behind the firewalls. There is no way to guarantee that your Web application is 100% secure. If it was never attacked by hackers most likely it&#8217;s too small and is of no interest to them.</p>
+<p>Every newly deployed web application creates a new security hole and potential access of your organization&#8217;s data. Hackers gain access to data by sneaking through ports that are supposedly hidden behind firewalls. There is no way to guarantee that your web application is 100 percent secure. If it has never been attacked by hackers, most likely it&#8217;s too small and is of no interest to them.</p>
 </div>
 <div class="paragraph">
-<p>This chapter is a brief overview of major security vulnerabilities that Web application developers need to be aware of. We&#8217;ll also cover delegated authorization with OAuth, and possible authentication and authorization scenarios for our Save The Child application.</p>
+<p>This chapter provides a brief overview of major security vulnerabilities of which web application developers need to be aware. We also cover delegated authorization with OAuth, and possible authentication and authorization scenarios for our Save The Child application.</p>
 </div>
 <div class="paragraph">
-<p>There are plenty of books and online articles that cover security, and enterprises usually have dedicated teams handling security for the entire organization. Dealing with security threats is their bread and butter, and this chapter won&#8217;t have revelations for security professionals. But a typical enterprise application developer just knows that each person in the organization has an account in some kind of a naming server that&#8217;s stores IDs, passwords and roles, which takes care of authentication and authorization flows. Application developers should find useful information in this chapter.</p>
+<p>There are plenty of books and online articles that cover security, and enterprises usually have dedicated teams handling security for the entire organization. Dealing with security threats is their bread and butter, and this chapter won&#8217;t have revelations for security professionals. But a typical enterprise application developer just knows that each person in the organization has an account in some kind of a naming server that stores IDs, passwords, and roles, which takes care of authentication and authorization flows. Application developers should find useful information in this chapter.</p>
 </div>
 <div class="paragraph">
-<p>If an enterprise developer needs an access to some internal application, opening an issue with technical support team grants the required access privileges. But software developers should have at least a broad understanding of what makes a Web application more or less secure and which threats Web applications face - this is what this chapter is about. To implement any of the security mechanisms mentioned in this chapter you&#8217;ll need to do additional research.</p>
+<p>If an enterprise developer needs access to an internal application, opening the issue with the technical support team grants the required access privileges. But software developers should have at least a broad understanding of what makes a web application more or less secure, and which threats web applications face&#8212;this is what this chapter is about. To implement any of the security mechanisms mentioned in this chapter, you&#8217;ll need to do additional research.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -628,18 +628,18 @@ p.tableblock.header { color: #6d6e71; }
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-A good starting point for establishing security process for your enterprise project is  Microsoft&#8217;s Web site <a href="http://www.microsoft.com/security/sdl/default.aspx">Security Development Lifecycle</a>. It contains a number of documents describing the software development process that helps developers build more secure software and address security compliance requirements while reducing development cost.
+A good starting point for establishing security processes for your enterprise project is  Microsoft&#8217;s <a href="http://bit.ly/1nYsK6v">Security Development Lifecycle</a> website. It contains documents describing the software development process that helps developers build more secure software and address security compliance requirements while reducing development costs.
 </td>
 </tr>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_http-vs-https"><a class="anchor" href="#_http-vs-https"></a>HTTP vs HTTPS</h3>
+<h3 id="_http-versus-https"><a class="anchor" href="#_http-versus-https"></a>HTTP versus HTTPS</h3>
 <div class="paragraph">
-<p>Imagine a popular night club with a tall fence and two entry doors. People are waiting in lines to get in. The door number 80 is not guarded in any way - a college student checks the tickets and let people in. The other door has the number 443 on it, and it&#8217;s protected by an armed bully letting only qualified people in. The chances of unwanted people getting into the club through the door 443 are pretty slim (unless the bully is corrupted), which is not the case with door 80 - once in a while people that have no right to be there get inside.</p>
+<p>Imagine a popular nightclub with a tall fence and two entry doors. People are waiting in lines to get in. Door number 80 is not guarded in any way: a college student checks tickets but lets people in whether or not they have a ticket. The other door has the number 443 on it, and it&#8217;s protected by an armed bully letting only qualified people in. The chances of unwanted people getting into the club through door 443 are pretty slim (unless the bully is corrupt), which is not the case with door 80&#8212;once in a while, people who have no right to be there get inside.</p>
 </div>
 <div class="paragraph">
-<p>On a similar note, your organization created <em>network security</em> with a firewall (the fence) with only two ports (the doors) opened: 80 for HTTP requests and 443 for HTTPS. One door&#8217;s not secure, the other one is.</p>
+<p>On a similar note, your organization has created <em>network security</em> with a firewall (the fence) with only two ports (the doors) open: 80 for HTTP requests and 443 for HTTPS. One door is not secure; the other one is.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -648,19 +648,19 @@ A good starting point for establishing security process for your enterprise proj
 <i class="icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-Don&#8217;t assume that your Web application is secure if it&#8217;s deployed behind the firewall. As long as there are opened ports that allow external users accessing your Web application, you need to invest into the <em>application security</em> too.
+Don&#8217;t assume that your web application is secure if it&#8217;s deployed behind a firewall. As long as there are open ports that allow external users to access your web application, you need to invest in the <em>application security</em>, too.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The letter "s" in <em>https</em> means <em>secure</em>. Technically, https creates a secure channel over the insecure Internet connection. In the past, only the Web pages that dealt with logins, payments or other  sensitive data would use URL&#8217;s starting with https. Today, more and more Web pages use https and rightly so, because it forces Web browsers to use Secure Socket Layer (SSL) or its successor Transport Layer Security (TLS) protocol for encrypting all the data (including request and response headers) that travel between connected Internet resources. The O&#8217;Reilly book "High Performance Browser Networking" by Ilya Grigorik  contains <a href="http://chimera.labs.oreilly.com/books/1230000000545/ch04.html">a chapter</a> with detailed coverage of the TLS protocol.</p>
+<p>The letter <em>s</em> in <em>HTTPS</em> stands for <em>secure</em>. Technically, HTTPS creates a secure channel over an insecure Internet connection. In the past, only web pages that dealt with logins, payments, or other sensitive data would use URLs starting with <em>https</em>. Today, more and more web pages use HTTPS, and rightly so, because it forces web browsers to use Secure Sockets Layer (SSL) or its successor, Transport Layer Security (TLS) protocol, for encrypting all the data (including request and response headers) that travel between connected Internet resources. <em>High Performance Browser Networking</em> contains <a href="http://bit.ly/1z23t2z">a chapter</a> with detailed coverage of the TLS protocol.</p>
 </div>
 <div class="paragraph">
-<p>The organization that runs the Web server creates the  public key certificate that has to be signed by a trusted certificate authority (otherwise browsers will display invalid certificate warnings). The authority certifies that the holder of the certificate is a valid operator of this Web server.  SSL/TLS layers authenticate the servers using these certificates to ensure that the browser&#8217;s request is being processed by the proper server and not by some hacker&#8217;s site.</p>
+<p>Organizations that run web servers create a public-key certificate that has to be signed by a trusted certificate authority (otherwise, browsers will display invalid certificate warnings). The authority certifies that the holder of the certificate is a valid operator of this web server. SSL/TLS layers authenticate the servers by using these certificates to ensure that the browser&#8217;s request is being processed by the proper server and not by some hacker&#8217;s site.</p>
 </div>
 <div class="paragraph">
-<p>When the client connects to the server via https, the client offers to the server a list of supported ciphers (authentication-encryption-decryption algorithms). The server replies with the cipher they both support.</p>
+<p>When a client connects to a server via HTTPS, that client offers to the server a list of supported ciphers (authentication-encryption-decryption algorithms). The server replies with a cipher they both support.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -669,49 +669,48 @@ Don&#8217;t assume that your Web application is secure if it&#8217;s deployed be
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-The annual <a href="http://www.blackhat.com/">Black Hat</a> computer security conference is dedicated to the information security. This conference is attended by both hackers and security professionals.
+The annual <a href="http://www.blackhat.com">Black Hat</a> computer security conference is dedicated to information security. This conference is attended by both hackers and security professionals.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>If https is clearly more secure than http, why not every Web site uses only https communications? Since https encrypts all the messages that travel between the client&#8217;s browser and the server, such communications are a slower and need more CPU power comparing to http-based data exchanges. But this little slowness won&#8217;t be noticeable in most Web applications (unless thousands of concurrent users hit the Web server), while the benefits of using https are huge.</p>
+<p>If HTTPS is clearly more secure than HTTP, why doesn&#8217;t every website use only HTTPS communication? Because HTTPS encrypts all messages that travel between the client&#8217;s browser and the server, its communications are slower and need more CPU power compared to HTTP-based data exchanges. But this slowness isn&#8217;t noticeable in most web applications (unless thousands of concurrent users hit the web server), whereas the benefits of using HTTPS are huge.</p>
 </div>
 <div class="paragraph">
-<p>When entering any sensitive or private information in someone&#8217;s Web application always pay attention to the URL to make sure that it uses https protocol.</p>
+<p>When entering any sensitive or private information in someone&#8217;s web application, always pay attention to the URL to make sure that it uses HTTPS.</p>
 </div>
 <div class="paragraph">
-<p>As a Web developer, you should always use the https protocol to prevent an attacker from stealing the user&#8217;s session id. The fact that the National Security Agency has broken SSL encryption algorithm is not the reason for your application for not using https.</p>
+<p>As a web developer, you should always use HTTPS to prevent an attacker from stealing the user&#8217;s session ID. The fact that the National Security Agency has broken the SSL encryption algorithm is not a reason for your application to not use HTTPS.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_authentication-and-passwords"><a class="anchor" href="#_authentication-and-passwords"></a>Authentication and Passwords</h3>
 <div class="paragraph">
-<p><em>Authentication</em> is an ability to confirm that the user is who he claims to be. The fact the the user has provided a valid id/password combination just proves that he is known to the Web application. That&#8217;s all.</p>
+<p><em>Authentication</em> is the ability to confirm that a user is who he claims to be. The fact that the user has provided a valid ID and password combination proves only that he is known to the web application. That&#8217;s all.</p>
 </div>
 <div class="paragraph">
-<p>Specifying the correct user id/password combination may not be enough for some Web applications. Banks often ask for additional information like "What&#8217;s your pet&#8217;s name?" or "What&#8217;s your favorite movie?</p>
+<p>Specifying the correct user ID/password combination might not be enough for some web applications. Banks often ask for additional information (for example, "What&#8217;s your pet&#8217;s name?" or "What&#8217;s your favorite movie?").</p>
 </div>
 <div class="paragraph">
-<p>Large corporations often use the RSA Secure ID (a.k.a. RSA hard token), which is a physical device with random-generated combination of digits. This combination changes every minute or so and has to be entered as a part of the authentication process. Beside physical devices there are programs (soft tokens) that perform user authentication in a similar way.
-Many financial institutions, social networks, and  large Web portals support 2-factor verification -  in addition to asking for a user ID and password, they send you either an email, voice mail, or text message with a code that you&#8217;ll need to use after entering the right id/password combination.</p>
+<p>Large corporations often use RSA SecurID (a.k.a. RSA hard token), which is a physical device with a randomly generated combination of digits. This combination changes every minute or so and has to be entered as a part of the authentication process. In addition to physical devices, programs (soft tokens) can perform user authentication in a similar way. Many financial institutions, social networks, and large web portals support two-factor verification:  in addition to asking for a user ID and password, they send you an email, voice mail, or text message with a code that you&#8217;ll need to use after entering the right ID/password combination.</p>
 </div>
 <div class="paragraph">
-<p>To make the authentication process more secure some systems check the biometrics of the user. For example, in the USA the Global Entry system is implemented in many international airports. People who successfully passed a special background check are entered into the system deployed in the passport control checkpoints. These applications deployed in a special kiosks scan the users passports, check the face topography and fingerprints. The process takes several seconds and the <em>authenticated</em> person can pass the border without waiting in long lines.</p>
+<p>To make the authentication process more secure, some systems check the biometrics of the user. For example, in the United States, the Global Entry system is implemented in many international airports. People who successfully pass a special background check are entered into the system deployed at passport-control checkpoints. These applications, deployed in a special kiosks, scan users' passports and check the face topography and fingerprints. The process takes only a few seconds, and the <em>authenticated</em> person can pass the border without waiting in long lines.</p>
 </div>
 <div class="paragraph">
-<p>Biometrics devices become more common these days, and the fingerprint scanners that can be connected to the user&#8217;s computer are very inexpensive. Apple&#8217;s iPhone 5S unlocks the phone based on the fingerprint of its owner - no need to enter the passcode. In some places you can enter the gym only after your fingerprints are scanned and matched. National Institute of Standards and Technology hosts a discussion about using biometrics web services, and you can participate by sending an email to <a href="mailto:bws-request@nist.gov">bws-request@nist.gov</a> with <em>subscribe</em> as the subject.</p>
+<p>Biometric devices have become more common these days, and fingerprint scanners that can be connected to a user&#8217;s computer are very inexpensive. Apple&#8217;s iPhone 5S unlocks based on the fingerprint of its owner&#8212;no need to enter a passcode. In some places, you can enter a gym only after your fingerprints have been scanned and matched. The National Institute of Standards and Technology hosts a discussion about using biometric web services, and you can participate by sending an email to <a href="mailto:bws-request@nist.gov">bws-request@nist.gov</a> with <em>subscribe</em> as the subject.</p>
 </div>
 <div class="sect3">
 <h4 id="_basic-and-digest-authentication"><a class="anchor" href="#_basic-and-digest-authentication"></a>Basic and Digest Authentication</h4>
 <div class="paragraph">
-<p>HTTP protocol defines two types of authentication: <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic</a> and <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">Digest</a>. All modern web browsers support them, but basic authentication uses base64 encoding and no encryption, which means it should be used only with https protocol.</p>
+<p>HTTP defines two types of authentication: <a href="http://bit.ly/1k5Nmam">Basic</a> and <a href="http://bit.ly/1ohMIuu">Digest</a>. All modern web browsers support them, but basic authentication uses Base64 encoding and no encryption, which means it should be used only with HTTPS.</p>
 </div>
 <div class="paragraph">
-<p>A Web server administrator can configure certain resources to require basic user authentication.  If a Web browser requests such protected resource while the user didn&#8217;t login to the site, the Web server (not your application) sends the HTTP response containing HTTP status code 401 - <em>Unauthorized</em> and <em>WWW-Authenticate: Basic</em>. The browser pops up the login dialog box. The user enters the ID/password, which are turned into an encoded <em>userID:password</em> string and sent to the server as a part of HTTP header. Basic authentication provides no confidentiality because it doesn&#8217;t encrypt the transmitted credentials. Cookies are not used here.</p>
+<p>A web server administrator can configure certain resources to require basic user authentication. If a web browser requests a protected resource but the user didn&#8217;t log in to the site, the web server (not your application) sends the HTTP response containing HTTP status code 401 (<em>Unauthorized</em> and <em>WWW-Authenticate: Basic</em>). The browser pops up the login dialog box. The user enters the ID/password, which is turned into an encoded <em>userID:password</em> string and sent to the server as a part of HTTP header. Basic authentication provides no confidentiality because it doesn&#8217;t encrypt the transmitted credentials. Cookies are not used here.</p>
 </div>
 <div class="paragraph">
-<p>With digest authentication, the server also responds with 401 (<em>WWW-Authenticate: Digest</em>). However, it also sends along additional data which allows the Web Browser to apply a hash function to the password. Then the browser sends encrypted password to the server. Digest authentication is more secure than the basic one, but it&#8217;s still less secure than authentication that uses public keys or Kerberos authentication protocol.</p>
+<p>With digest authentication, the server also responds with 401 (<em>WWW-Authenticate: Digest</em>). However, it sends along additional data that allows the web browser to apply a hash function to the password. Then, the browser sends an encrypted password to the server. Digest authentication is more secure than the basic one, but it&#8217;s still less secure than authentication that uses public keys or the Kerberos authentication protocol.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -720,79 +719,77 @@ Many financial institutions, social networks, and  large Web portals support 2-f
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-The HTTP status code 403 (<em>Forbidden</em>) differs from 401. While 401 means that the user needs to login to access the resource, 403 means that the user is authenticated, but his security level is not high enough to see the data. For example, not every user role is authorized to see the Web page with salary report.
+The HTTP status code 403 (<em>Forbidden</em>) differs from 401. Whereas 401 means that the user needs to log in to access the resource, 403 means that the user is authenticated, but his security level is not high enough to see the data. For example, not every user role is authorized to see a web page that displays salary reports.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>In application security the term <em>man in the middle attack</em> refers to the case when an attacker intercepts and modifies the data transmitted between two parties (usually the client and the server). Digest authentication protects the Web application from losing the clear text password to an attacker, but doesn&#8217;t prevent man in the middle attacks.</p>
+<p>In application security, the term <em>man-in-the-middle attack</em> refers to an attacker intercepting and modifying data transmitted between two parties (usually the client and the server). Digest authentication protects the web application from losing the clear-text password to an attacker, but doesn&#8217;t prevent man-in-the-middle attacks.</p>
 </div>
 <div class="paragraph">
-<p>While digest authentication inly encrypts the user is and password, using HTTPS protocol encrypts everything that goes between the Web browser and the server.</p>
+<p>Whereas digest authentication encrypts only the user ID and password, using HTTPS encrypts everything that goes between the web browser and the server.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_single-sign-on"><a class="anchor" href="#_single-sign-on"></a>Single Sign-on</h4>
 <div class="paragraph">
-<p>Pretty often an enterprise user has to work with more than one corporate Web applications, and maintaining, remembering, supporting multiple passwords should be avoided. Many enterprises implement internally so-called Single Sign-On (SSO) mechanism to eliminate the need for the user to enter his login credential more then once even if the user works with multiple applications. Accordingly, signing out from one of these applications terminates the user&#8217;s access to all of them. SSO solutions makes authentication totally transparent to your application.</p>
+<p>Often, an enterprise user has to work with more than one corporate web application, and maintaining, remembering, and supporting multiple passwords should be avoided. Many enterprises implement internally a single sign-on (SSO) mechanism to eliminate the need for a user to enter login credentials more than once, even if that user works with multiple applications. Accordingly, signing out from one of these applications terminates the user&#8217;s access to all of them. SSO solutions make authentication totally transparent to your application.</p>
 </div>
 <div class="paragraph">
-<p>With SSO, when the user logs on to your application, the logon request is intercepted and handled by pre-configured SSO software (e.g. Oracle Enterprise Single Sign-On, CA SiteMinder, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO). The SSO infrastructure verifies user&#8217;s credentials by making a call to a corporate LDAP server and creates a user&#8217;s session.
-Usually a Web server is configured with some Web agent, which will add the user&#8217;s credential to the HTTP header, which your application can fetch.</p>
+<p>With SSO, when the user logs on to your application, the logon request is intercepted and handled by preconfigured SSO software (for example, Oracle Enterprise Single Sign-On, CA SiteMinder, IBM Security Access Manager for Enterprise SSO, or Evidian Enterprise SSO). The SSO infrastructure verifies a user&#8217;s credentials by making a call to a corporate Lightweight Directory Access Protocol (LDAP) server and creates a user&#8217;s session. Usually a web server is configured with some web agent that will add the user&#8217;s credentials to the HTTP header, which your application can fetch.</p>
 </div>
 <div class="paragraph">
-<p>The future access to the protected Web application is handled automatically by the SSO server without even displaying a logon window as long as the user&#8217;s session is active. SSO servers also log all login attempts in a central place, which can be very important to meet the enterprise regulatory requirements (e.g. Sarbanes-Oxley in financial industry or medical confidentiality in the insurance business).</p>
+<p>Future access to the protected web application is handled automatically by the SSO server, without even displaying a logon window, as long as the user&#8217;s session is active. SSO servers also log all login attempts in a central place, which can be important in meeting enterprise regulatory requirements (for example, Sarbanes-Oxley in the financial industry or medical confidentiality in the insurance business).</p>
 </div>
 <div class="paragraph">
-<p>In the consumer-oriented Internet space single (or reduced) sign-on solutions become more and more popular. For example, some Web applications allow reusing your Twitter or Facebook credentials (provided that you&#8217;ve logged on to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegate authentication procedures to Facebook, Twitter, Google and other authorization services, which we&#8217;ll discuss later in the section on OAuth.</p>
+<p>In the consumer-oriented Internet space, single (or reduced) sign-on solutions have become more and more popular. For example, some web applications allow you to reuse your Twitter or Facebook credentials (provided that you&#8217;ve logged in to one of these applications) without the need to go through additional authentication procedures. Basically, your application can delegate authentication procedures to Facebook, Twitter, Google, and other authorization services, which we&#8217;ll discuss later in <a href="#oath_authentication_and_authorization">OAuth-Based Authentication and Authorization</a>.</p>
 </div>
 <div class="paragraph">
-<p>Back in 2010, Facebook has introduced their <a href="https://www.facebook.com/pages/Single-sign-on/108568432501463#">SSO solution</a> that still helps millions of people to log on to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking the user to enter credentials, your application can show the button "Login with Facebook".</p>
+<p>Back in 2010, Facebook introduced its <a href="http://on.fb.me/1lrYTAw">SSO solution</a> that still helps millions of people log in to other applications. This is especially important in the mobile world, where users' typing should be minimized. Instead of asking a user to enter credentials, your application can provide a Login with Facebook button.</p>
 </div>
 <div class="paragraph">
-<p>Facebook has published JavaScript API that allows implementing Facebook Login in your Web applications(they also offer native API for iOS and Android apps). For more details visit online documentation on <a href="https://developers.facebook.com/docs/facebook-login/">FaceBook Login API</a>.</p>
+<p>Facebook has published a JavaScript API with which you can implement Facebook Login in your web applications (it also offers native APIs for iOS and Android apps). For more details, read the online documentation on the <a href="http://bit.ly/1lE6QlY">FaceBook Login API</a>.</p>
 </div>
 <div class="paragraph">
-<p>Besides Facebook other popular social networks offer authentication across the applications:</p>
+<p>Besides Facebook, other popular social networks offer authentication across applications:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>If you want your application to have a button "Login with Twitter", refer to the Sign in with Twitter API <a href="https://dev.twitter.com/docs/auth/sign-twitter">documentation</a>.</p>
+<p>If you want your application to have a Login with Twitter button, refer to the Sign in with Twitter API <a href="http://bit.ly/1eon8lS">documentation</a>.</p>
 </li>
 <li>
-<p>LinkedIn is a popular social network for professionals. It also offers API to create the button "Sign in with LinkedIn". For details visit LinkedIn <a href="http://developer.linkedin.com/javascript">online documentation</a> for developers.</p>
+<p>LinkedIn is a popular social network for professionals. It also offers an API for creating a Sign In with LinkedIn button. For details, visit the LinkedIn <a href="http://linkd.in/1oGVXaT">online documentation</a> for developers.</p>
 </li>
 <li>
-<p>Google also offers the OAuth-based authentication API. Details about their client library for JavaScript are published <a href="https://developers.google.com/api-client-library/javascript/features/authentication">online</a>. For implementing SAML-based SSO with Google, visit  <a href="https://developers.google.com/google-apps/sso/saml_reference_implementation">this Web page</a>.</p>
+<p>Google also offers the OAuth-based authentication API. Details about its client library for JavaScript are published <a href="http://bit.ly/1lE72S0">online</a>. To implement SAML-based SSO with Google, visit <a href="http://bit.ly/1lDmN00">this web page</a>.</p>
 </li>
 <li>
-<p>Mozilla offers a new way to sign-in using any of your existing email addresses using <a href="http://www.mozilla.org/en-US/persona/">Persona</a>.</p>
+<p>Mozilla offers a new way to sign in with any of your existing email addresses by using <a href="http://mzl.la/1uDllM7">Persona</a>.</p>
 </li>
 <li>
-<p>Several large organizations (e.g. Google, Yahoo!, Microsoft, Facebook) either issue or accept <a href="http://openid.net/">OpenID</a>, which allows to sign in to more than 50000 Web sites.</p>
+<p>Several large organizations (for example, Google, Yahoo!, Microsoft, and Facebook) either issue or accept <a href="http://openid.net">OpenID</a>, which makes it possible for users to sign in to more than 50,000 websites.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Typically, large enterprises would not want users  to use logins from social networks. But some organizations started integrating their applications with social networks.  Especially now, with the spread of mobile devices, the users may need to be able to get authenticated and authorized while being outside of the enterprise perimeter. We&#8217;ll discuss it in more detail in the section on OAuth.</p>
+<p>Typically, large enterprises don&#8217;t want users to use logins from social networks. But some organizations have started integrating their applications with social networks. Especially now, with the spread of mobile devices, users might need to be authenticated and authorized while being outside the enterprise perimeter. We discuss this in more detail in <a href="#oath_authentication_and_authorization">OAuth-Based Authentication and Authorization</a>.</p>
 </div>
 <div class="sect4">
 <h5 id="_save-the-child-and-sso"><a class="anchor" href="#_save-the-child-and-sso"></a>Save The Child and SSO</h5>
 <div class="paragraph">
-<p>Is there a use of SSO for our charity application Save The Child? Certainly. In this book we&#8217;re mostly concerned about developing the UI for the consumer-facing part of this application. But there is also a back office team that is involved with the content management that produces the information for the consumer.</p>
+<p>Does our Save The Child application have a use for SSO? Certainly. In this book, we&#8217;re concerned mostly about developing a UI for the consumer-facing part of this application. But there is also a back-office team that is involved with content management and that produces information for the consumer.</p>
 </div>
 <div class="paragraph">
-<p>For example, the employees of our charity organization create fund-raising campaigns in different cities. If an employee of this firm logged in to his desktop, our Save The Child Web application shouldn&#8217;t ask him to login. SSO can be a solution here.</p>
+<p>For example, the employees of our charity organization create fundraising campaigns in different cities. If an employee of this firm logged in to his desktop, our Save The Child web application shouldn&#8217;t ask him to log in. SSO can be a solution here.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_dealing-with-passwords"><a class="anchor" href="#_dealing-with-passwords"></a>Dealing With Passwords</h4>
+<h4 id="_handling-passwords"><a class="anchor" href="#_handling-passwords"></a>Handling Passwords</h4>
 <div class="paragraph">
-<p>It might sound obvious, but we&#8217;ll still remind you  that the Web client should never send passwords in clear text. Use <a href="http://en.wikipedia.org/wiki/Secure_Hash_Algorithm">Secure Hash Algorithms</a> (SHA). Longer passwords are more secure, because if an attacker will try to guess the password  by using dictionaries to generate every possible combination of characters (a <a href="http://en.wikipedia.org/wiki/Brute-force_attack"><em>brute-force attack</em></a>), it&#8217;ll take a lot more time with long passwords. Periodic changing of the passwords makes the hacker&#8217;s work more difficult too.
-Typically, after successful authentication the server creates and sends to the Web client the session ID, which is stored as a cookie on the client&#8217;s computer. Then, on each subsequent request to the server the Web browser will place the session id in the HTTP request object and send it along with each request. Technically, the user&#8217;s identity is  always known at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it) whenever the Web client requests the protected resource.</p>
+<p>It might sound obvious, but we&#8217;ll still remind you that the web client should never send passwords in clear text. You should always use a <a href="http://bit.ly/1mdvAaS">Secure Hash Algorithm</a> (SHA). Longer passwords are more secure, because if an attacker tries to guess the password by using dictionaries to generate every possible combination of characters (a <a href="http://bit.ly/1l3kzHE"><em>brute-force attack</em></a>), it will take a lot more time with long passwords. Periodically changing passwords makes the hacker&#8217;s work more difficult, too. Typically, after successful authentication, the server creates and sends to the web client the session ID, which is stored as a cookie on the client&#8217;s computer. Then, on each subsequent request to the server, the web browser places the session ID in the HTTP request object and sends it along with each request. Technically, the user&#8217;s identity is  always known at the server side, so the server-side code can re-authenticate the user more than once (without the user even knowing it), whenever the web client requests the protected resource.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -801,23 +798,23 @@ Typically, after successful authentication the server creates and sends to the W
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Salted hashes increase security by adding <em>salt</em> - a randomly generated data that&#8217;s concatenated with the password and then processed by a hash function.
+Salted hashes increase security by adding <em>salt</em>—randomly generated data that&#8217;s concatenated with the password and then processed by a hash function.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Have you ever wondered why Automated Teller Machines (ATM) often ask you to enter PIN more then once? Say, you&#8217;ve deposited a check and then want to see  the balance on your account. After the check deposit has been completed your ATM session was invalidated to protect the careless users who may rush out from the bank in a hurry as soon as the transaction is finished. Otherwise the next person by the ATM could have requested a cash withdrawal from your bank account.</p>
+<p>Have you ever wondered why automated teller machines (ATMs) often ask you to enter your PIN more than once? Say you&#8217;ve deposited a check and then want to see the balance on your account. After the check deposit is completed, your ATM session is invalidated to protect careless users who might rush out from the bank in a hurry as soon as the transaction is finished. This prevents the next person at the ATM from requesting a cash withdrawal from your bank account.</p>
 </div>
 <div class="paragraph">
-<p>On the same note, if the Web application&#8217;s session is idling more than allowed time interval, the session should be automatically invalidated.  For example, if a trader in a brokerage house is not interacting with the Web trading application for some time, invalidate the session programmatically to exclude the situation when the trader stepped out, and someone else is buying financial products on his behalf.</p>
+<p>On the same note, if a web application&#8217;s session is idling for more than the allowed time interval, the session should be automatically invalidated.  For example, if a trader in a brokerage house stops interacting with a web trading application for some time, invalidate the session programmatically to prevent someone else from buying financial products on his behalf when he steps out for a coffee.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_authorization"><a class="anchor" href="#_authorization"></a>Authorization</h3>
 <div class="paragraph">
-<p><em>Authorization</em> is a way to determine which operations the user can perform and what data he can access. For example, the owner of the company can perform money withdrawals and transfers from the online business bank account, while the company accountant is provided with the read-only access.</p>
+<p><em>Authorization</em> is a way to determine which operations the user can perform and what data he can access. For example, the owner of a company can perform money withdrawals and transfers from an online business bank account, whereas the company accountant is provided with read-only access.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -826,19 +823,19 @@ Salted hashes increase security by adding <em>salt</em> - a randomly generated d
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-Similarly to authentication the user&#8217;s authorization can be checked more than once during the user&#8217;s session. As a matter of fact, authorization can even change during the session (e.g. a financial application can allow trades only during business hours of the stock exchange).
+Similar to authentication, the user&#8217;s authorization can be checked more than once during that user&#8217;s session. As a matter of fact, authorization can even change during a session (for example, a financial application can allow trades only during business hours of the stock exchange).
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Users of the application are grouped by roles, and each role comes with a set of privileges. The user can be given a privilege to read and modify certain data, while other can be hidden. In the relational DBMS realm there is a term <em>row-level security</em>, which means that the same query can produce different results to different users. Such security policies are implemented at the data source level.</p>
+<p>Users of an application are grouped by roles, and each role comes with a set of privileges. A user can be given a privilege to read and modify certain data, whereas other data can be hidden. In the relational DBMS realm, the term <em>row-level security</em> means that the same query can produce different results for different users. Such security policies are implemented at the data-source level.</p>
 </div>
 <div class="paragraph">
-<p>A simple use case where row-level security is really useful is a salary report. While the employee can see only his salary report, the head of department can see the data of all subordinates.</p>
+<p>A simple use case for which row-level security is really useful is a salary report. Whereas the employee can see only his salary report, the head of department can see the data of all subordinates.</p>
 </div>
 <div class="paragraph">
-<p>Authorization is usually linked with the user&#8217;s session. HTTP is stateless protocol, so if a user retrieves a Web page from a Web server, and then goes to another Web page, this second page does not know what has been shown or selected on the first one. For example, in case of an online store the user adds an item to the shopping cart and moves to another page to continue shopping. To preserve the data reused in more than one Web page (e.g. the content of the shopping cart) the server-side code must implement <em>session tracking</em>. The session information can be passed all the way down to the database level when need be.</p>
+<p>Authorization is usually linked to a user&#8217;s session. HTTP is a stateless protocol, so if a user retrieves a web page from a web server, and then goes to another web page, this second page does not know what has been shown or selected on the first one. In an online store, for example, a user adds an item to a shopping cart and moves to another page to continue shopping. To preserve the data reused in more than one web page (for example, the content of the shopping cart), the server-side code must implement <em>session-tracking</em>. The session information can be passed all the way down to the database level when need be.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -847,71 +844,83 @@ Similarly to authentication the user&#8217;s authorization can be checked more t
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-Session tracking is usually controlled on the server side. If you&#8217;d like to get familiar with session tracking options in greater details, consult the product documentation for the server or technology being used with your Web application. For example, if you use Java, you can read Oracle&#8217;s documentation for their <a href="http://docs.oracle.com/cd/E13222_01/wls/docs103/webapp/sessions.html">WebLogic server</a> that describes the options for  session management.
+Session tracking is usually controlled on the server side. To become familiar with session tracking options in greater detail, consult the product documentation for the server or technology being used with your web application. For example, if you use Java, you can read Oracle&#8217;s documentation for its <a href="http://bit.ly/T7Ba1U">WebLogic server</a> that describes options for  session management.
 </td>
 </tr>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_oauth-based-authentication-and-authorization"><a class="anchor" href="#_oauth-based-authentication-and-authorization"></a>OAuth-Based Authentication and Authorization</h4>
+<h4 id="oath_authentication_and_authorization"><a class="anchor" href="#oath_authentication_and_authorization"></a>OAuth-Based Authentication and Authorization</h4>
 <div class="paragraph">
-<p>To put it simple, OAuth is a mechanism of delegated authorization. OpenID Connect is a OAuth-based mechanism for authentication.</p>
+<p>To put it simply, OAuth is a mechanism for delegated authorization. OpenID Connect is an OAuth-based mechanism for authentication.</p>
 </div>
 <div class="paragraph">
-<p>Most likely you ran into Web applications that offer you to share your actions via social networks. For example, you just made a donation and want to share this information via social networks.</p>
+<p>Most likely, you have come across web applications that enable you to share your actions via social networks. For example, if you just made a donation, you might want to share this information via social networks.</p>
 </div>
 <div class="paragraph">
-<p>If our charity application needed to access the user&#8217;s Facebook account for authentication, the charity app could have asked the user Facebook&#8217;s ID and password. This wouldn&#8217;t be the right approach, because the charity application would get the user&#8217;s Facebook id/password in clear text along with the  full access to the user&#8217;s Facebook account. But the charity app only needed to authenticate the Facebook user. Hence there is a need for a mechanism to give a <em>limited access</em> to Facebook to the third party applications.</p>
+<p>If our charity application needs to access a user&#8217;s Facebook account for authentication, the charity app could ask for the user&#8217;s Facebook ID and password. This wouldn&#8217;t be the correct approach, however, because the charity application would get the user&#8217;s Facebook ID/password in clear text, along with full access to the user&#8217;s Facebook account. The charity app needs only to authenticate the Facebook user. Hence, there is a need for a mechanism that gives <em>limited access</em> to Facebook.</p>
 </div>
 <div class="paragraph">
-<p><a href="http://oauth.net/">OAuth</a> became one of the mechanisms for providing a limited access to an authorizing facility. OAuth is "An open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications".
-Its <a href="http://tools.ietf.org/html/rfc6749">current draft specification</a> provides the following definition:</p>
+<p><a href="http://oauth.net/">OAuth</a> has become one of the mechanisms for providing limited access to an authorizing facility. OAuth is "An open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications." Its <a href="http://bit.ly/rfc-6749">current draft specification</a> provides the following definition:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>The OAuth 2.0 authorization framework enables a third-party application to obtain limited access to an HTTP service, either on behalf of a resource owner by orchestrating an approval interaction between the resource owner and the HTTP service, or by allowing the third-party application to obtain access on its own behalf.</p>
+</div>
+</blockquote>
 </div>
 <div class="paragraph">
-<p><em>The OAuth 2.0 authorization framework enables a third-party application to obtain limited access to an HTTP service, either on behalf of a resource owner by orchestrating an approval interaction between the resource owner and the HTTP service, or by allowing the third-party application to obtain access on its own behalf.</em></p>
+<p><a href="http://bit.ly/1nuEEJC">"OAuth Study Notes"</a> includes the following:</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>Many luxury cars come with a valet key. It is a special key you give the parking attendant and unlike your regular key, will only allow the car to be driven a short distance while blocking access to the trunk.</p>
+</div>
+</blockquote>
 </div>
 <div class="paragraph">
-<p>Aron Parecki writes in his book "OAuth 2.0: The Definite Guide: <em>"Many cars today come with a valet key. It is a special key you give a parking attendant. Unlike your regular key, the valet key can only turn on the engine but will not open the trunk or glove compartment, or may not let the car drive more than a mile or two. Regardless of what restrictions the valet key imposes, the idea is very clever. You give someone limited access to your car with a special key, while using your regular key to unlock everything."</em> This is a good example of a limited access to a resource in a real life. The OAuth 2.0 authorization server gives the requesting application an <em>access token</em> (think valet key) so it can access, say the charity application.</p>
+<p>This is a good example of limited access to a resource in a real life. The OAuth 2.0 authorization server gives the requesting application an <em>access token</em> (think, valet key) so it can access, say, the charity application.</p>
 </div>
 <div class="paragraph">
-<p>OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in a form of access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook (unless we have our own enterprise authentication server), the former would get a limited access to the user&#8217;s Facebook account (just the valet key, not the master key).</p>
+<p>OAuth allows users to give limited access to third-party applications without giving away their passwords. The access permission is given to the user in the form of an access token with limited privileges and for a limited time. Coming back to our example of communication between the charity app and Facebook (unless we have our own enterprise authentication server), the former would gain limited access to the user&#8217;s Facebook account (just the valet key, not the master key).</p>
 </div>
 <div class="paragraph">
-<p>OAuth becomes a standard protocol for developing the applications that require authorization. With OAuth application developers won&#8217;t need to use proprietary protocols if they need to add an ability to identify the user via multiple authorization servers.</p>
+<p>OAuth has become a standard protocol for developing applications that require authorization. With OAuth, application developers won&#8217;t need to use proprietary protocols if they need to add an ability to identify a user via multiple authorization servers.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_federated-identity-with-openid-connect-and-json-web-tokens"><a class="anchor" href="#_federated-identity-with-openid-connect-and-json-web-tokens"></a>Federated Identity with OpenID Connect and JSON Web Tokens</h4>
 <div class="paragraph">
-<p>There is a term <a href="http://en.wikipedia.org/wiki/Federated_identity"><em>federated identity</em></a>, which Wikipedia defines as the means of linking a person&#8217;s electronic identity and attributes, stored across multiple distinct identity management systems. This is similar to the enterprise single sign-on, but is wider because the authentication token with the information about the user&#8217;s identity can be passed across multiple departments or organizations and software systems.</p>
+<p>Wikipedia defines <a href="http://bit.ly/1m2k806"><em>federated identity</em></a> as a means of linking a person&#8217;s electronic identity and attributes, stored across multiple distinct identity management systems. This is similar to enterprise SSO, but the effect of federated identity is broader because the authentication token with information about a user&#8217;s identity can be passed across multiple departments or organizations and software systems.</p>
 </div>
 <div class="paragraph">
-<p>Microsoft&#8217;s publication called <a href="http://msdn.microsoft.com/en-us/library/ff423674.aspx">"A Guide to Claims-Based Identity and Access Control"</a> includes a section on <a href="http://msdn.microsoft.com/en-us/library/ff359110.aspx">federated identity for Web applications</a> with greater details on this subject.</p>
+<p>Microsoft&#8217;s <a href="http://bit.ly/1r8sgNa">"A Guide to Claims-Based Identity and Access Control"</a> includes a section on <a href="http://bit.ly/1r8sfsw">federated identity for web applications</a> with greater details on this subject.</p>
 </div>
 <div class="paragraph">
-<p>In the past, the markup language <a href="http://en.wikipedia.org/wiki/Security_Assertion_Markup_Language">SAML</a> was the most popular open standard data format for exchanging authentication and authorization data. <a href="http://openid.net/connect/">OpenID Connect</a> is a newer open standard. It&#8217;s a layer on top of OAuth 2.0 that simply verifies the identity of the user.  <a href="http://openid.net/get-an-openid/">OpenID providers</a> that can confirm the user&#8217;s identity include such companies as Google, Yahoo!, IBM, VeriSign and more.
-Typically OpenID Connect uses so-called <a href="http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html">JSON Web Tokens(JWT)</a>, which should eventually replace popular XML-based SAML tokens. JSON Web Token is base64 encoded and signed JSON data structure. While OAuth 2.0 spec doesn&#8217;t mandate using JSON Web Tokens, they became a de-facto standard token format.</p>
+<p>In the past, the markup language <a href="http://bit.ly/1pJ5FJv">SAML</a> was the most popular open-standard data format for exchanging authentication and authorization data. <a href="http://openid.net/connect">OpenID Connect</a> is a newer open standard. It&#8217;s a layer on top of OAuth 2.0 that simply verifies the identity of a user. <a href="http://openid.net/get-an-openid/">OpenID providers</a> that can confirm a user&#8217;s identity include such companies as Google, Yahoo!, IBM, Verisign, and more. Typically, OpenID Connect uses <a href="http://bit.ly/T7BMED">JSON Web Token (JWT)</a>, which should eventually replace popular XML-based SAML tokens. JWT is a Base64 encoded and signed JSON data structure. Although the OAuth 2.0 spec doesn&#8217;t mandate using JWT, it became a de facto standard token format.</p>
 </div>
 <div class="paragraph">
-<p>To have a better understanding of how the JSON Web tokens are encoded, visit the <a href="http://openidtest.uninett.no/jwt">Federation Lab</a>, which is a Web site with a set of tools for testing and verification od various identity protocols. In particular, you can enter a JWT in a clear text, select a secret signature and encode the token using the HS256 algorithm as shown on the diagram <a href="#FIG10-000">Encoding JSON Web Token</a>.</p>
+<p>To have a better understanding of how JWTs are encoded, visit the <a href="http://openidtest.uninett.no/jwt">Federation Lab</a>, which is a website with a set of tools for testing and verifying various identity protocols. In particular, you can enter a JWT in clear text, select a secret signature, and encode the token by using the HS256 algorithm, as shown in <a href="#FIG10-000">Encoding a JSON Web Token</a>.</p>
 </div>
 <div id="FIG10-000" class="imageblock">
 <div class="content">
-<img src="images/fig_10_000.png" alt="fig 10 000">
+<img src="images/ewdv_0901.png" alt="ewdv 0901">
 </div>
-<div class="title">Figure 1. Encoding JSON Web Token</div>
+<div class="title">Figure 1. Encoding a JSON Web Token</div>
 </div>
 <div class="sidebarblock">
 <div class="content">
-<div class="title">Using Facebook API</div>
+<div class="title">Using the Facebook API</div>
 <div class="paragraph">
-<p>Facebook is one of the authorization servers that offer OAuth-based authentication and authorization API.  The online document <a href="https://developers.facebook.com/docs/javascript/quickstart/">"Quickstart: Facebook SDK for JavaScript"</a> is a good starting point.</p>
+<p>Facebook is one of the authorization servers that offer an OAuth-based authentication and authorization API.  The online document <a href="http://bit.ly/1jzg4jx">"Quickstart: Facebook SDK for JavaScript"</a> is a good starting point.</p>
 </div>
 <div class="paragraph">
-<p>Before using the SDK you need to register your application with Facebook by creating a client ID and obtaining the client secret (the password). Then use the JavaScript SDK code (provided by Facebook) in your Web application. Include the newly created app id there. During this registration stage you&#8217;ll need to specify the URI where the user should be redirected in case of successful login. Then add a JavaScript code to support required Facebook API (e.g. for Login) to your application. You can find a sample JavaScript code that uses Facebook Login API in <a href="https://developers.facebook.com/docs/facebook-login/login-flow-for-web/">this guide</a>.</p>
+<p>Before using the SDK, you need to register your application with Facebook by creating a client ID and obtaining the client secret (the password). Then, use the JavaScript SDK code (provided by Facebook) in your web application. Include the newly created app ID there. During this registration stage, you&#8217;ll need to specify the URI where the user should be redirected in case of successful login. Then, add a JavaScript code to support the required Facebook API (for example, for Login) to your application. You can find sample JavaScript code that uses the Facebook Login API in <a href="http://bit.ly/1qecvV1">this guide</a>.</p>
 </div>
 <div class="paragraph">
-<p>Facebook Login API communicates with your application by sending events as soon as the login status changes. Facebook will send the authorization token to your application&#8217;s code. As we mentioned earlier, authorization token is a secure encoded string that identifies the user and the app, contains the information about permissions and has the expiration time. Your application&#8217;s JavaScript code makes calls to Facebook SDK API, and each of these calls will include the token as a parameter or inside the HTTP request header.</p>
+<p>The Facebook Login API communicates with your application by sending events as soon as the login status changes. Facebook will send the authorization token to your application&#8217;s code. As we mentioned earlier, the authorization token is a secure encoded string that identifies the user and the app, contains information about permissions, and has an expiration time. Your application&#8217;s JavaScript code makes calls to the Facebook SDK API, and each of these calls will include the token as a parameter or inside the HTTP request header.</p>
 </div>
 </div>
 </div>
@@ -919,64 +928,64 @@ Typically OpenID Connect uses so-called <a href="http://self-issued.info/docs/dr
 <div class="sect3">
 <h4 id="_oauth-2-0-main-actors"><a class="anchor" href="#_oauth-2-0-main-actors"></a>OAuth 2.0 Main Actors</h4>
 <div class="paragraph">
-<p>Any communications with OAuth 2.0 servers are made through https connections. Below are the main actors of the OAuth flows:</p>
+<p>Any communication with OAuth 2.0 servers are made through HTTPS connections. The following are the main actors of the OAuth flows:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>The user who owns the account with some of the resource servers (e.g. account at Facebook, Google et al.) is called <em>resource owner</em>.</p>
+<p>The user who owns the account with some of the resource servers (for example, an account at Facebook or Google) is called the <em>resource owner</em>.</p>
 </li>
 <li>
-<p>The application that tries to authenticate the resource owner is called <em>the client application</em>. This is an application that offers the buttons like "Login with Facebook", "Login with Twitter" and the likes.  The client application</p>
+<p>The application that tries to authenticate the resource owner is called the <em>client application</em>. This is an application that offers buttons such as Login with Facebook, Login with Twitter, and the like.</p>
 </li>
 <li>
-<p>The <em>resource server</em> is a place where the resource owner stores his data (e.g. Facebook, Google et al.)</p>
+<p>The <em>resource server</em> is a place where the resource owner stores his data (for example, Facebook or Google).</p>
 </li>
 <li>
-<p>The <em>authorization server</em> checks the credentials of the resource owner and returns an authorization token with limited information about the user. It can be the same as resource server, but not necessarily. Facebook, Google, Windows Live, Twitter, GitHub are some of the examples of authorization servers. For the current list of OAuth 2.0  implementations visit <a href="http://oauth.net/2">oauth.net/2</a>.</p>
+<p>The <em>authorization server</em> checks the credentials of the resource owner and returns an authorization token with limited information about the user. This server can be the same as the resource server but is not necessarily the same one. Facebook, Google, Windows Live, Twitter, and GitHub are examples of authorization servers. For the current list of OAuth 2.0 implementations, visit <a href="http://oauth.net/2">oauth.net/2</a>.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>To implement OAuth in your client application, you need to pick the a resource/authorization server and study their API documentation. Keep in mind that OAuth defines two types of clients - public and confidential. Public clients use embedded password while communicating with the authorization server. If you&#8217;re going to keep the password inside your JavaScript code, it won&#8217;t be safe. To be considered  a confidential client, a Web application should store its password on the server side.</p>
+<p>To implement OAuth in your client application, you need to pick a resource/authorization server and study its API documentation. Keep in mind that OAuth defines two types of clients: public and confidential. Public clients use embedded passwords while communicating with the authorization server. If you&#8217;re going to keep the password inside your JavaScript code, it won&#8217;t be safe. To be considered a confidential client, a web application should store its password on the server side.</p>
 </div>
 <div class="paragraph">
-<p>OAuth has provisions for creating authorization tokens to browser-only applications, for mobile applications, and for the server-to-server communications. For the in-depth coverage get the O&#8217;Reilly book by Aaron Parecki <a href="http://shop.oreilly.com/product/0636920023531.do">"OAuth 2.0: The Definite Guide"</a>.</p>
+<p>OAuth has provisions for creating authorization tokens for browser-only applications, for mobile applications, and for server-to-server communications.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_save-the-child-and-oauth"><a class="anchor" href="#_save-the-child-and-oauth"></a>Save The Child and OAuth</h4>
 <div class="paragraph">
-<p>We can distinguish two major scenarios of a third party application working with the OAuth server. In one scenario OAuth authorization servers are publicly available, in the other - privately own by the enterprise. Let&#8217;s consider these scenarios in the context of our charity non-profit organization.</p>
+<p>We can distinguish two major scenarios of a third-party application working with an OAuth server. In one scenario, OAuth authorization servers are publicly available. In the other scenario, the servers are privately owned by the enterprise. Let&#8217;s consider these scenarios in the context of our charity nonprofit organization.</p>
 </div>
 <div class="sect4">
-<h5 id="_public-authorization-servers"><a class="anchor" href="#_public-authorization-servers"></a>Public Authorization Servers</h5>
+<h5 id="_public-authorization-servers"><a class="anchor" href="#_public-authorization-servers"></a>Public authorization servers</h5>
 <div class="paragraph">
-<p>A Facebook account owner works with <em>the client</em> (the Save The Child application) . The client uses the external <em>authorization server</em> (Facebook) to request the authorization of the the user&#8217;s work with the charity application. The client has to be registered (has assigned clientID, secret, and redirect URL) with the authorization server to be able to participate in such OAuth flow. The authorization server returns a token offering a limited access (e.g. to Facebook&#8217;s account) to the Save The Child application. The diagram <a href="#FIG10-0">Save The Child and OAuth</a> shows a use case where Save The Child uses Facebook for authentication and authorization.</p>
+<p>A Facebook account owner works with <em>the client</em> (the Save The Child application). The client uses an external <em>authorization server</em> (Facebook) to request authorization of the user&#8217;s work with the charity application. The client has to be registered (has an assigned client ID, secret, and redirect URL) with the authorization server to be able to participate in this OAuth flow. The authorization server returns a token offering limited access (for example, to Facebook&#8217;s account) to the Save The Child application. <a href="#FIG10-0">Save The Child and OAuth</a> shows Save The Child using Facebook for authentication and authorization.</p>
 </div>
 <div id="FIG10-0" class="imageblock">
 <div class="content">
-<img src="images/fig_10_00.png" alt="fig 10 00">
+<img src="images/ewdv_0902.png" alt="ewdv 0902">
 </div>
 <div class="title">Figure 2. Save The Child and OAuth</div>
 </div>
 <div class="paragraph">
-<p>While the client application tries to get an  authorization from the authorization server, it can open a so-called <em>consent window</em> that should warn the user that the Save The Child application tries to access certain information from your Facebook or Google&#8217;s account. In this scenario the user still has a chance to deny such access. It&#8217;s a good idea to display a message that the user&#8217;s password (e.g. to Facebook or Google) will not be given to the client application.</p>
+<p>While the client application tries to get authorization from the authorization server, it can open a so-called <em>consent window</em> that warns the user that the Save The Child application is trying to access certain information from the user&#8217;s Facebook or Google account. In this scenario, the user still has a chance to deny such access. It&#8217;s a good idea to display a message that the user&#8217;s password (to Facebook or Google) will not be given to the client application.</p>
 </div>
 <div class="paragraph">
-<p>Your application should request only minimum access to the user&#8217;s resource server. For example, if the Save The Child application just needs to offer an easy authentication for all Facebook users, then do not request the write access to the user&#8217;s Facebook account. On the other hand, if a kid was cured with the involvement of our charity application, and he wants to share the good news with his Facebook friends, the Save The Child application needs a write permission to the user&#8217;s Facebook account.</p>
+<p>Your application should request only minimum access to the user&#8217;s resource server. For example, if the Save The Child application just needs to offer an easy authentication method for all Facebook users, don&#8217;t request write access to the user&#8217;s Facebook account. On the other hand, if a child was cured as a result of the involvement of our charity application, and he wants to share the good news with his Facebook friends, the Save The Child application needs write permission to the user&#8217;s Facebook account.</p>
 </div>
 <div class="paragraph">
-<p>The UI code of the Save The Child application doesn&#8217;t have to know how to parse the token returned by the authorization server. It can simply pass it to the Save The Child&#8217;s server software (e.g. via the HTTP request header). The server has to know how to read and decipher the information from the token. The client application sends to the authorization server only the client id, and not the <em>client secret</em> needed for deciphering the user&#8217;s information from the token.</p>
+<p>The UI code of the Save The Child application doesn&#8217;t have to know how to parse the token returned by the authorization server. It can simply pass it to Save The Child&#8217;s server software (for example, via the HTTP request header). The server has to know how to read and decipher the information from the token. The client application sends to the authorization server only the client ID, and not the <em>client secret</em> needed for deciphering the user&#8217;s information from the token.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_private-authorization-servers"><a class="anchor" href="#_private-authorization-servers"></a>Private Authorization Servers</h5>
+<h5 id="_private-authorization-servers"><a class="anchor" href="#_private-authorization-servers"></a>Private authorization servers</h5>
 <div class="paragraph">
-<p>The OAuth authorization server may be configured inside the enterprise, but may serve not only internal employees, but external partners too. Say,  one of the upcoming charity events is a marathon to fight cancer. To prepare such a marathon our charity organization needs to use help of a partner company named Global Marathon Suppliers, which will take care of the logistics (providing banners, water, food, rain ponchos, blankets, branded tents et al.)</p>
+<p>The OAuth authorization server is configured inside the enterprise. However, the server can attend to not only internal employees, but also external partners. Suppose that one of the upcoming charity events is a marathon to fight cancer. To prepare this marathon, our charity organization needs the help of a partner company named Global Marathon Suppliers, which will take care of the logistics (providing banners, water, food, rain ponchos, blankets, branded tents, and so forth).</p>
 </div>
 <div class="paragraph">
-<p>It would be nice if our supplier would know up-to-date information about the number of participants in this event. If our charity firm will set them up with the access to our internal authorization server, the employees of the Global Marathon Suppliers can have limited access to the marathon participants. On the other hand, if the suppliers would open a limited access to their data, this could increase the productivity of the charity company employees. This is practical and cost-saving setup.</p>
+<p>It would be nice if our supplier could have up-to-date information about the number of participants in this event. If our charity firm sets them up with access to our internal authorization server, the employees of Global Marathon Suppliers can have limited access to the marathon participants. On the other hand, if the suppliers open limited access to their data, this could increase the productivity of the charity company employees. This is a practical and cost-saving setup.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -985,8 +994,8 @@ Typically OpenID Connect uses so-called <a href="http://self-issued.info/docs/dr
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-The authors of this book were helping <a href="http://www.lls.org/">Leukemia and Lymphoma Society (LLS)</a> with developing both front and back end software.  LLS ran a number of successful marathons as well as many other campaigns for charity causes.
-We also using <a href="https://developer.intuit.com/docs/0025_quickbooksapi/0055_devkits/0150_ipp_.net_devkit_3.0/authorization/0001_oauth_authorization">OAuth solution from Intuit QuickBooks</a> in the billing workflows for our software product for insurance industry at <a href="http://www.surancebay.com/">SuranceBay</a>. Our partner companies get limited access to our billing systems and  to our software can access theirs.
+The authors of this book have helped the <a href="http://www.lls.org">Leukemia and Lymphoma Society (LLS)</a> develop both front- and backend software. LLS ran a number of successful marathons as well as many other campaigns for charity causes.
+We also use an <a href="http://bit.ly/1lVNwVX">OAuth solution from Intuit QuickBooks</a> in billing workflows for our insurance industry software product at <a href="http://www.surancebay.com">SuranceBay</a>. Our partner companies get limited access to our billing systems, and our software can access theirs.
 </td>
 </tr>
 </table>
@@ -997,36 +1006,36 @@ We also using <a href="https://developer.intuit.com/docs/0025_quickbooksapi/0055
 <div class="sect2">
 <h3 id="_top-security-risks"><a class="anchor" href="#_top-security-risks"></a>Top Security Risks</h3>
 <div class="paragraph">
-<p><a href="https://www.owasp.org"> Open Web Application Security Project (OWASP)</a> is an open source project focused on improving security of Web applications. OWASP is a collection of guides and tools for increasing  security of Web applications. OWASP publishes and maintains the list of <a href="https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project">top 10 security risks</a>. Figure <a href="#FIG10-1">Top 10 security risks circa 2013</a> shows how this list looked in 2013:</p>
+<p>The <a href="https://www.owasp.org"> Open Web Application Security Project (OWASP)</a> is an open source project focused on improving security of web applications by providing a collection of guides and tools. OWASP publishes and maintains a list of the <a href="http://bit.ly/1lE9VSQ">top 10 security risks</a>. <a href="#FIG10-1">Top 10 security risks, circa 2013</a> shows how this list looked in 2013.</p>
 </div>
-<div id="FIG10-1" class="imageblock">
+<div id="FIG10-1" class="imageblock" style="float: true">
 <div class="content">
-<img src="images/fig_10_01.png" alt="fig 10 01">
+<img src="images/ewdv_0903.png" alt="ewdv 0903">
 </div>
-<div class="title">Figure 3. Top 10 security risks circa 2013</div>
+<div class="title">Figure 3. Top 10 security risks, circa 2013</div>
 </div>
 <div class="paragraph">
-<p>This Web site allows you to drill down on each of the items from this list, see the illustration of the selected security vulnerability and recommendations on how to prevent it. You can also download this list as a <a href="http://owasptop10.googlecode.com/files/OWASP%20Top%2010%20-%202013.pdf">PDF document</a>. Let&#8217;s review a couple of the top 10 security threats: injection and cross-site scripting.</p>
+<p>On this website, you can drill down into each list item to see the selected security vulnerabilities and recommendations on how to prevent them. You can also download this list as a <a href="http://bit.ly/1r5Bi0m">PDF document</a>. Let&#8217;s review a couple of the top-10 security threats: <em>injection</em> and <em>cross-site scripting</em>.</p>
 </div>
 <div class="sect3">
 <h4 id="_injection"><a class="anchor" href="#_injection"></a>Injection</h4>
 <div class="paragraph">
-<p>If a bad guy will be able to <em>inject</em> a piece of code that will run inside your Web application, such code can steal or damage the data from this  application. In the world of compiled libraries and executables injecting malicious code would be a rather difficult task. But if an application uses interpreted languages (e.g. JavaScript or clear text SQL) the task of injecting malicious code becomes a lot easier than you might think. Let&#8217;s look at a typical example of SQL injection.</p>
+<p>If a bad guy can <em>inject</em> a piece of code that will run inside your web application, that code could steal or damage data from the  application. In the world of compiled libraries and executables, injecting malicious code is a rather difficult task. But if an application uses interpreted languages (for example, JavaScript or clear-text SQL), the task of injecting malicious code becomes a lot easier than you might think. Let&#8217;s look at a typical example of SQL injection.</p>
 </div>
 <div class="paragraph">
-<p>Say your application can search for data based on some keywords the user enters into a text input field. For example, to find all donors in the city of New York the user will enter the following:</p>
+<p>Suppose that your application can search for data based on keywords a user enters into a text input field. For example, to find all donors in the city of New York, a user enters the following:</p>
 </div>
 <div class="paragraph">
-<p><em>"New York"; delete from donors;</em></p>
+<p><code>"New York"; delete from donors;</code></p>
 </div>
 <div class="paragraph">
-<p>If the server side code of your application would be simply attaching the entered text to the SQL statement, this could result in execution of the following command:</p>
+<p>If the server-side code of your application simply attaches the entered text to the SQL statement, this could result in execution of the following command:</p>
 </div>
 <div class="paragraph">
-<p><em>Select * from donors where city="New York"; delete from donors;</em></p>
+<p><code>Select * from donors where city="New York"; delete from donors;</code></p>
 </div>
 <div class="paragraph">
-<p>This command doesn&#8217;t require any additional comments, does it? Is there a way to prevent the users of you Web application from entering something like this? The first thing that comes to mind is to not allow the user to enter the city, but force him to select it from the list. But such a list of possible values might be huge. Besides, the hacker can modify the HTTP request after the browser sends it to the server.</p>
+<p>This command doesn&#8217;t require any additional comments, does it? Is there a way to prevent users of your web application from entering something like this? The first thing that comes to mind is to not allow the user to enter the city, but force her to select it from a list. But such a list of possible values might be huge. Besides, the hacker can modify the HTTP request after the browser sends it to the server.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1035,13 +1044,13 @@ We also using <a href="https://developer.intuit.com/docs/0025_quickbooksapi/0055
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Always use pre-compiled SQL statements that use parameters to pass the user&#8217;s input into the database query (e.g. the <em>PreparedStatement</em> in Java).
+Always use precompiled SQL statements that use parameters to pass the user&#8217;s input into the database query (for example, <code>PreparedStatement</code> in Java).
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The importance of the server-side validation shouldn&#8217;t be underestimated. In some scenarios you can come up with a regular expression that checks for the matching patterns in the data received from the clients. In other cases you can write a regular expression that invalidate the data if it contains SQL (or other) keywords that leads to modifications  of the data on the server.</p>
+<p>The importance of server-side validation shouldn&#8217;t be underestimated. In some scenarios, you can come up with a regular expression that checks for matching patterns in data received from clients. In other cases, you can write a regular expression that invalidates data if it contains SQL (or other) keywords that lead to modifications of data on the server.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1056,59 +1065,67 @@ Always minimize the interval between validating and using the data.
 </table>
 </div>
 <div class="paragraph">
-<p>In the ideal world the client-side code should not even send the non-validated data to the server. But in real-world you&#8217;ll end up with duplicating some of the validation code in both the client and server.</p>
+<p>In an ideal world, client-side code should not even send nonvalidated data to the server. But in the real-world, you&#8217;ll end up duplicating some of the validation code in both the client and the server.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_cross-site-scripting"><a class="anchor" href="#_cross-site-scripting"></a>Cross-Site Scripting</h4>
 <div class="paragraph">
-<p>Cross-site scripting (XSS) is when an attacker injects the malicious code into a browser-side script of your Web application.  The user was accessing a trusted Web site, but got an injection from a malicious server that reached the user via the trusted server (hence cross-site).
-Single-page AJAX-based applications make lots of under-the-hood requests to the servers, which increases the attack surface comparing to traditional legacy Web sites that would be downloading Web pages a lot less frequently.
+<p><em>Cross-site scripting (XSS)</em> occurs when an attacker injects malicious code into a browser-side script of your web application. The user is accessing a trusted website, but gets an injection from a malicious server that reaches the user via the trusted server (hence, <em>cross-site</em>). Single-page Ajax-based applications make lots of under-the-hood requests to servers, which increases the attack surface compared to traditional legacy websites that download web pages a lot less frequently.
 XSS can happen in three ways:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Reflected (a.k.a. phishing) - the Web page contains a link that seems valid, but when the user clicks on it, the user&#8217;s browser receives and executes the the script created by the attacker.</p>
-</li>
-<li>
-<p>Stored - the external attacker managed to store the malicious script on the server that hosts someone&#8217;s  Web application so every user will get it as a part of the Web page and their Web browser will execute it. For example, if a user&#8217;s forum allows posting texts that include JavaScript code, a malicious code typed by a "bad guy" can be saved in the server&#8217;s database and executed by users' browsers visited this forum afterward.</p>
-</li>
-<li>
-<p>Local - no server is involved. Web page A opens Web page B with malicious code, which in turn modifies the code of the page A. If your application uses a hash-tag(#) in URLs (e.g. <a href="http://savesickchild.org#something)">http://savesickchild.org#something)</a>, make sure that before processing this <em>something</em> doesn&#8217;t contain anything like "<em>javascript:somecode</em>", which may have been attached to the URL by an attacker.</p>
-</li>
-</ul>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Reflected (a.k.a. phishing)</dt>
+<dd>
+<p>The web page contains a link that seems valid, but when the user clicks it, the user&#8217;s browser receives and executes the script created by the attacker.</p>
+</dd>
+<dt class="hdlist1">Stored</dt>
+<dd>
+<p>The external attacker manages to store a malicious script on a server that hosts someone&#8217;s web application, so every user gets the script as a part of that web page, and their web browser executes it. For example, if a user&#8217;s forum allows posting texts that include JavaScript code, malicious code typed by a "bad guy" can be saved in the server&#8217;s database and executed by users' browsers visiting this forum afterward.</p>
+</dd>
+<dt class="hdlist1">Local</dt>
+<dd>
+<p>No server is involved. Web page A opens web page B with malicious code, which in turn modifies the code of page A. If your application uses a hash tag (#) in URLs (for example, <a href="http://savesickchild.org#something)">http://savesickchild.org#something)</a>, make sure that before processing, this <em>something</em> doesn&#8217;t contain anything like <code><em>javascript:somecode</em></code>, which might have been attached to the URL by an attacker.</p>
+</dd>
+</dl>
 </div>
 <div class="paragraph">
-<p>W3C has published the draft of the <a href="https://dvcs.w3.org/hg/content-security-policy/raw-file/tip/csp-specification.dev.html">Content Security Policy</a> document - "a mechanism web applications can use to mitigate a broad class of content injection vulnerabilities, such as cross-site scripting".</p>
+<p>The World Wide Web Consortium (W3C) has published a draft of the <a href="http://bit.ly/1iMQXiD">Content Security Policy</a> document, "a mechanism web applications can use to mitigate a broad class of content injection vulnerabilities, such as cross-site scripting."</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
-<div class="title">STRIDE - Classification of Security Threats</div>
+<div class="title">STRIDE&#8212;Classification of Security Threats</div>
 <div class="paragraph">
-<p>Microsoft has published <a href="http://msdn.microsoft.com/en-us/magazine/cc163519.aspx#S2">a classification</a> that divides security threats into six categories (hence six letters in the acronym STRIDE):</p>
+<p>Microsoft has published <a href="http://bit.ly/1mzDuFP">a classification</a> that divides security threats into six categories (hence six letters in the acronym STRIDE):</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Spoofing - an attacker pretends to be a legitimate user of some application, e.g. a banking system. This may be implemented using XSS.</p>
-</li>
-<li>
-<p>Tampering - modifying the data that were not supposed to be modified (e.g. via SQL injection).</p>
-</li>
-<li>
-<p>Repudiation - the user denies that he sent the data (e.g. made an online transaction like purchase or sale) by modifying application&#8217;s log files.</p>
-</li>
-<li>
-<p>Information disclosure - an attacker get an access to the classified information</p>
-</li>
-<li>
-<p>Denial of Service (a.k.a. DoS) - make a server unavailable for the legitimate users, which often is implemented by generating a large number of simultaneous requests to saturate the server.</p>
-</li>
-<li>
-<p>Elevation of privilege - gaining an elevated access to the data, e.g. by obtaining administrative rights.</p>
-</li>
-</ul>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Spoofing</dt>
+<dd>
+<p>An attacker pretends to be a legitimate user of an application (for example, a banking system). This can be implemented by using XSS.</p>
+</dd>
+<dt class="hdlist1">Tampering</dt>
+<dd>
+<p>Modifying data that was not supposed to be modified (for example, via SQL injection).</p>
+</dd>
+<dt class="hdlist1">Repudiation</dt>
+<dd>
+<p>The user denies sending data (for example, making an online transaction such as a purchase or sale) by modifying the application&#8217;s logfiles.</p>
+</dd>
+<dt class="hdlist1">Information disclosure</dt>
+<dd>
+<p>An attacker gains access to classified information.</p>
+</dd>
+<dt class="hdlist1">Denial of service (a.k.a. DoS)</dt>
+<dd>
+<p>A server is made unavailable to legitimate users, which often is implemented by generating a large number of simultaneous requests to saturate the server.</p>
+</dd>
+<dt class="hdlist1">Elevation of privilege</dt>
+<dd>
+<p>Gaining an elevated level of access to data (for example, by obtaining administrative rights).</p>
+</dd>
+</dl>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1117,7 +1134,7 @@ XSS can happen in three ways:</p>
 <i class="icon-note" title="Note"></i>
 </td>
 <td class="content">
-While we&#8217;ve been working on the section describing Apple&#8217;s developers certificates (Chapter 14) their Web site was hacked and was not available for about two weeks.
+While we were working on a section of this book describing Apple&#8217;s developer certificates (<a href="#epilog">[epilog]</a>), its website was hacked, and was not available for about two weeks.
 </td>
 </tr>
 </table>
@@ -1131,72 +1148,72 @@ While we&#8217;ve been working on the section describing Apple&#8217;s developer
 <i class="icon-important" title="Important"></i>
 </td>
 <td class="content">
-One of the OWASP guides is titled <a href="https://www.owasp.org/index.php/Web_Application_Penetration_Testing">Web Application Penetration Testing</a>. In about 350 pages it explains the methodology of testing a Web application for each vulnerability. OWASP defines <em>penetration test</em> as a method of evaluating the security of a computer systems by simulating an attack. Hundreds of security experts from around the world have contributed to this guide. Running penetration tests should become a part of your development process, and the sooner you start running them the better.
+One of the OWASP guides is titled <a href="http://bit.ly/1iMRhxQ">Web Application Penetration Testing</a>. In about 350 pages, it explains the methodology of testing a web application for each vulnerability. OWASP defines <em>penetration test</em> as a method of evaluating the security of a computer system by simulating an attack. Hundreds of security experts from around the world have contributed to this guide. Running penetration tests should become part of your development process, and the sooner you start running them, the better.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>For example, the Payment Card Industry published a Data Security Standard, which includes a <a href="https://www.pcisecuritystandards.org/documents/information_supplement_11.3.pdf">Requirement 11.3</a> of penetration testing.</p>
+<p>For example, the Payment Card Industry published a Data Security Standard, which includes a <a href="http://bit.ly/TJkRsh">Requirement 11.3</a> of penetration testing.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_regulatory-compliance-and-enterprise-security"><a class="anchor" href="#_regulatory-compliance-and-enterprise-security"></a>Regulatory Compliance and Enterprise Security</h3>
 <div class="paragraph">
-<p>So far in this chapter we&#8217;ve been discussing security vulnerabilities from the technical perspective. But there is another aspect that can&#8217;t be ignored - the regulatory compliance of the business you automate.</p>
+<p>So far in this chapter, we&#8217;ve been discussing security vulnerabilities from a technical perspective. But another aspect can&#8217;t be ignored: the regulatory compliance of the business you automate.</p>
 </div>
 <div class="paragraph">
-<p>During the last four years the authors of this book  develop, deploy, support, and market the software that automates certain workflows for insurance agents. We serve more several hundreds of insurance agencies and more than 100K agents.  In this section we&#8217;ll share with you our real-world experience of dealing with security while running our company, which sells software as service.  In addition to developing the application we had to set up the data centers and take care of security issues too.</p>
+<p>During the last four years, the authors of this book have developed, deployed, supported, and marketed software that automates certain workflows for insurance agents. We serve several hundred insurance agencies and more than 100,000 agents. In this section, we&#8217;ll share our real-world experience of dealing with security while running our company, which sells software as a service. In addition to developing the application, we had to set up data centers and take care of security issues, too.</p>
 </div>
 <div class="paragraph">
-<p>Our customers are insurance agencies and carriers. We charge for our services, and our customers pay using credit cards using our application. This opens up a totally different category of security concerns:</p>
+<p>Our customers are insurance agencies and carriers. We charge for our services, and our customers pay by using credit cards via our application. This opens up a totally different category of security concerns:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Where the credit card numbers are stored?</p>
+<p>Where are the credit card numbers stored?</p>
 </li>
 <li>
-<p>What if they get stolen?</p>
+<p>What if they are stolen?</p>
 </li>
 <li>
-<p>How secure is the payment portion of your application?</p>
+<p>How secure is the payment portion of the application?</p>
 </li>
 <li>
-<p>How the card holder&#8217;s data is protected?</p>
+<p>How is the card holder&#8217;s data protected?</p>
 </li>
 <li>
-<p>Is there a firewall protecting customer&#8217;s data?</p>
+<p>Is there a firewall protecting each customer&#8217;s data?</p>
 </li>
 <li>
-<p>How the data is encrypted?</p>
+<p>How is the data encrypted?</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>One of the first questions our perspective customers ask if our application is <em>PCI compliant</em>. They won&#8217;t work with us until they review the <em>application-level security</em> implemented in our system. As per the <a href="http://www.pcicomplianceguide.org/pci-basics.php">PCI Compliance Guide</a>, "the Payment Card Industry Data Security Standard is used by all card brands to assure the security of the data gathered while an employee is making a transaction at a bank or participating vendor".</p>
+<p>One of the first questions our prospective customers ask is whether our application is <em>PCI compliant</em>. They won&#8217;t work with us until they review the <em>application-level security</em> implemented in our system. As per the <a href="http://bit.ly/1r5C4dB">PCI Compliance Guide</a>, "The Payment Card Industry Data Security Standard is used by all card brands to assure the security of the data gathered while an employee is making a transaction at a bank or participating vendor."</p>
 </div>
 <div class="paragraph">
-<p>If your application stores PCI data, authenticating via Facebook, Google or a similar OAuth service won&#8217;t be an option. The users will be required to authenticate themselves by entering long passwords containing combinations of letters, numbers and special characters.</p>
+<p>If your application stores PCI data, authenticating via Facebook, Google, or a similar OAuth service isn&#8217;t an option. Users are required to authenticate themselves by entering long passwords containing combinations of letters, numbers, and special characters.</p>
 </div>
 <div class="paragraph">
-<p>Even if you are not dealing with the credit card information, there are other areas where the application data must be protected. Take the human resources application - social security numbers (unique ID&#8217;s of the USA residents) of employees must be encrypted.</p>
+<p>Even if you are not dealing with credit card information, there are other areas where application data must be protected. Take a human resources application—Social Security numbers (unique IDs of United States citizens) of employees must be encrypted.</p>
 </div>
 <div class="paragraph">
-<p>Some of our perspective customers send us a questionnaire to see if our security measures are compliant with their requirements. In some cases this document can include as many as 300 questions.</p>
+<p>Some of our prospective customers send us a questionnaire to establish whether our security measures are compliant with their requirements. In some cases, this document can include as many as 300 questions.</p>
 </div>
 <div class="paragraph">
-<p>You may want to implement different levels of security depending on what devices is being used to access your application - a public computer, an internal corporate computer, iPad or an Android tablet. If a desktop user forgot his password, you may implement a recovery mechanism that send an email to the user and expects to receive a certain  response from him. If the user holds a smartphone, the application can send a text message to his device.</p>
+<p>You might want to implement different levels of security depending on which type of device is being used to access your application&#8212;a public computer, an internal corporate computer, an iPad, or an Android tablet. If a desktop user forgets his password, you could implement a recovery mechanism that sends an email to that user and expects to receive a certain response from him. If the user has a smartphone, the application could send a text message to that device.</p>
 </div>
 <div class="paragraph">
-<p>If the user&#8217;s record contains both his email and the cell phone number, the application should ask where to send the password recovery instructions. If a mobile device runs the hybrid or native version of the application, the user can be automatically switched to a messaging app of the device so he can read the text message while the main application remains at the view where authentication was required.</p>
+<p>If the user&#8217;s record contains both his email and cell phone number, the application should ask where to send the password recovery instructions. If a mobile device runs a hybrid or native version of the application, the user could be automatically switched to a messaging app of the device so that he can read the text message while the main application remains at the view where authentication is required.</p>
 </div>
 <div class="paragraph">
-<p>In the enterprise Web applications more than one layer of security must be implemented: at the communication protocol level, at the session level, and at the application level. The HTTP server <a href="http://nginx.com/">Nginx</a> besides being a high-performance proxy server and load balancer can serve as a security layer too. Your Web application can offload authentication tasks and validation of SSL certificates to Nginx.</p>
+<p>In enterprise web applications, more than one layer of security must be implemented: at the communication protocol level, at the session level, and at the application level. The HTTP server <a href="http://nginx.com">NGINX</a>, besides being a high-performance proxy server and load balancer, can serve as a security layer, too. Your web application can offload authentication tasks and validation of SSL certificates to NGINX.</p>
 </div>
 <div class="paragraph">
-<p>Most of the enterprise Web applications are deployed on the cluster of servers, which adds another task to your project plan: how to manage sessions in a cluster. The user&#8217;s session has to be shared between all servers in a cluster. High-end application servers may implement this feature out of the box. For example, IBM WebSphere server has an option to tightly integrate HTTP sessions with its application security module. Another example is Terracotta Cluster, which has the Terracotta Web Sessions module that allows session to survive the nod hops and failures. But small or mid-size applications may require some custom solutions for distributed sessions.</p>
+<p>Most enterprise web applications are deployed on a cluster of servers, which adds another task to your project plan: how to manage sessions in a cluster. The user&#8217;s session has to be shared among all servers in a cluster. High-end application servers might implement this feature out of the box. For example, an IBM WebSphere server has an option to tightly integrate HTTP sessions with its application security module. Another example is Terracotta clusters, which utilize Terracotta Web Sessions to allow sessions to survive node hops and failures. But small or mid-sized applications might require custom solutions for distributed sessions.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -1205,37 +1222,37 @@ One of the OWASP guides is titled <a href="https://www.owasp.org/index.php/Web_A
 <i class="icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Minimize the amount of data stored in the user&#8217;s session to simplify session replication. Store the data in the application cache, that can be replicated quickly and efficiently using open source or commercial products (e.g. JGroups, Terracotta et al).
+Minimize the amount of data stored in a user&#8217;s session, to simplify session replication. Store the data in an application cache that can be replicated quickly and efficiently by using open source or commercial products (for example, JGroups or Terracotta).
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>Here&#8217;s another topic to consider: multiple data centers when each one runs a cluster of servers. To speed up the disaster recovery process, your Web application has to be deployed in more than one data centers located in different geographical regions. The user authentication must work even if one of the data centers becomes not operational.</p>
+<p>Here&#8217;s another topic to consider: multiple data centers, with each one running a cluster of servers. To speed up the disaster recovery process, your web application has to be deployed in more than one data center, located in different geographical regions. User authentication must work even if one of the data centers becomes nonoperational.</p>
 </div>
 <div class="paragraph">
-<p>An external computer (e.g. Nginx server) can perform token-based authentication, but inside the system the token is used only when the access to protected resources is required. For example, when the application need to process a payment, it doesn&#8217;t need to know any credit card details - it just uses the token to authorize the transaction of the  previously authenticated user.</p>
+<p>An external computer (for example, a NGINX server) can perform token-based authentication, but inside the system, the token is used only when access to protected resources is required. For example, when the application needs to process a payment, it doesn&#8217;t need to know any credit card details; it just uses the token to authorize the transaction of the  previously authenticated user.</p>
 </div>
 <div class="paragraph">
-<p>This grab bag of security considerations mentioned in this section is not a complete list of security-related issues that your IT organization needs to take care of. If you work for a large enterprise on the Intranet applications, these security issues may not sound as overly important. But as soon as your Web application starts serving external Internet users, someone has to worry about potential security holes that were not in the picture for internal applications. Our message to you is simple: "Take security very seriously if you are planning to develop deploy, and run a production-grade  enterprise Web application".</p>
+<p>This grab bag of security considerations mentioned in this section is not a complete list of security-related issues to which your IT organization needs to attend. If you work for a large enterprise on intranet applications, these security issues might not sound overly important. But as soon as your web application starts serving external Internet users, someone has to worry about potential security holes that were not in the picture for internal applications. Our message to you is simple: Take security very seriously if you are planning to develop, deploy, and run a production-grade  enterprise web application.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h3>
 <div class="paragraph">
-<p>Every enterprise Web application has to run in a secure environment. The mere fact that the application runs inside the firewall doesn&#8217;t make it secure. First, if you&#8217;re opening at least one port to the outside world, a malicious code can sneak in. Second, there can be an "angry employee" or just a "curious programmer" inside the organization who can inject the unwanted code.</p>
+<p>Every enterprise web application has to run in a secure environment. The mere fact that the application runs inside a firewall doesn&#8217;t make it secure. First, if you&#8217;re opening at least one port to the outside world, malicious code can sneak in. Second, an "angry employee" or just a "curious programmer" inside the organization could inject unwanted code.</p>
 </div>
 <div class="paragraph">
-<p>The proper validation of the received data is very important. Ideally, use the <em>white list</em> validation to compare the user&#8217;s input against the list of allowed values. Otherwise do a <em>black list</em> validation to compare against the keywords that are not allowed in the data entered by the user.</p>
+<p>Proper validation of received data is very important. Ideally, use <em>white list</em> validation to compare user input against a list of allowed values. Otherwise, use <em>black list</em> validation to compare against keywords that are not allowed in data entered by users.</p>
 </div>
 <div class="paragraph">
-<p>There is no way to to guarantee that your application is 100% protected from security breaches. But you should ensure that your application runs in the environment with the latest available patches for known security vulnerabilities. For example, if your application includes components written in  Java programming language, install <a href="http://www.oracle.com/technetwork/topics/security/alerts-086861.html">critical security patches</a> as soon as they become available.</p>
+<p>There is no way to guarantee that your application is 100 percent protected from security breaches. But you should ensure that your application runs in an environment with the latest available patches for known security vulnerabilities. For example, if your application includes components written in the Java programming language, install <a href="http://bit.ly/Uc1Gbg">critical security patches</a> as soon as they become available.</p>
 </div>
 <div class="paragraph">
-<p>With proliferation of clouds, social networks, and sites that offer free or cheap storage people lose control over security hoping that Amazon, Google or Dropbox will take care of it. Besides software solutions, software-as-a-service providers deploy specialized hardware - security appliances that serve as firewalls, perform content filtering, virus and intrusion detection. Interestingly enough, hardware security appliances are also vulnerable.</p>
+<p>With the proliferation of clouds, social networks, and sites that offer free or cheap storage, people lose control over security, hoping that Amazon, Google, or Dropbox will take care of it. Besides software solutions, software-as-a-service providers deploy specialized hardware&#8212;security appliances that serve as firewalls, perform content filtering, and virus and intrusion detection. Interestingly enough, hardware security appliances are also vulnerable.</p>
 </div>
 <div class="paragraph">
-<p>In any case, the end users upload their personal files without thinking twice. Enterprises are more cautious and prefer private clouds installed on their own servers, where they administer and protect data themselves. The users who access Internet from their mobile devices have little or no control of how secure their devices are. So the person in charge of the Web application has to make sure that it&#8217;s as secure as possible.</p>
+<p>In any case, end users upload their personal files without thinking twice. Enterprises are more cautious and prefer private clouds installed on their own servers, where they administer and protect data themselves. Users who access the Internet from their mobile devices have little or no control over how secure their devices are. So the person in charge of the web application has to make sure that it&#8217;s as secure as possible.</p>
 </div>
 </div>
 </div>
@@ -1243,7 +1260,7 @@ Minimize the amount of data stored in the user&#8217;s session to simplify sessi
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2014-02-28 06:30:50 EST
+Last updated 2014-07-23 23:48:54 EDT
 </div>
 </div>
 </body>
