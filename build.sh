@@ -56,7 +56,7 @@ if [ "$1" = "html" ]; then
     makeDir $OUT_DIR
 
     # list all asciidoc files in the DOCS_DIR
-    adoc_files=(./acknowledgements.asciidoc ./appendix_a_advancedjs.asciidoc ./appendix_b_html.asciidoc ./appendix_c_ide.asciidoc ./ch10_responsive.asciidoc ./ch11_jquerymobile.asciidoc ./ch12_senchatouch.asciidoc ./ch13_hybrid.asciidoc ./ch1_mockup.asciidoc ./ch2_ajax_json.asciidoc ./ch3_jquery.asciidoc ./ch4_ext_js.asciidoc ./ch5_tools.asciidoc ./ch6_large_js_apps.asciidoc ./ch7_testdriven_js.asciidoc ./ch8_websockets.asciidoc ./ch9_security.asciidoc ./ch_preface.asciidoc ./Introduction.asciidoc ./ch_epilogue.asciidoc )
+    adoc_files=(./appendix_a_advancedjs.asciidoc ./appendix_b_html.asciidoc ./appendix_c_ide.asciidoc ./ch10_responsive.asciidoc ./ch11_jquerymobile.asciidoc ./ch12_senchatouch.asciidoc ./ch13_hybrid.asciidoc ./ch1_mockup.asciidoc ./ch2_ajax_json.asciidoc ./ch3_jquery.asciidoc ./ch4_ext_js.asciidoc ./ch5_tools.asciidoc ./ch6_large_js_apps.asciidoc ./ch7_testdriven_js.asciidoc ./ch8_websockets.asciidoc ./ch9_security.asciidoc ./ch_preface.asciidoc ./Introduction.asciidoc ./ch_epilogue.asciidoc )
 
     convert `printf "%s " "${adoc_files[@]}" | cut -d " " -f 1-${#adoc_files[@]}`
 
